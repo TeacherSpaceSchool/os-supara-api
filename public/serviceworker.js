@@ -1,1 +1,0 @@
-importScripts("https://kassirkg.push.world/https.serviceworker.js");

@@ -1,21 +1,20 @@
-const url = 'https://kassir.kg/',
+const url = '/',
     adminLogin = 'admin',
-    adminPass = 'SehzHp',
+    adminPass = 'pE48hS',
     month = {
-    '01':'янв',
-    '02':'фев',
-    '03':'мар',
-    '04':'апр',
-    '05':'май',
-    '06':'июн',
-    '07':'июл',
-    '08':'авг',
-    '09':'сен',
-    '10':'окт',
-    '11':'ноя',
-    '12':'дек'
-
-}
+        '01':'янв',
+        '02':'фев',
+        '03':'мар',
+        '04':'апр',
+        '05':'май',
+        '06':'июн',
+        '07':'июл',
+        '08':'авг',
+        '09':'сен',
+        '10':'окт',
+        '11':'ноя',
+        '12':'дек'
+    }
 const stringifyDateTime = (dateTime) => {
     dateTime = new Date(dateTime)
     dateTime.setHours(dateTime.getHours() + 6);

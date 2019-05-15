@@ -5,8 +5,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const connectDB = require('./models/index');
 const app = express();
-const paymentRouter = require('./routes/payment');
-const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const dataRouter = require('./routes/data');
 const passportEngine = require('./module/passport');
@@ -21,8 +19,6 @@ const bodyParser = require('body-parser');
 require('body-parser-xml-json')(bodyParser);
 module.exports.dirname = __dirname;
 
-
-//run passport
 passportEngine.start();
 user.createAdmin();
 
@@ -31,14 +27,10 @@ const options = {
     autoClean: true
 };
 
-//datebase
 connectDB.connect()
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(logger('dev'));
-//app.use(express.json());
-//app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());
 app.use(function(req, res, next){
@@ -68,11 +60,9 @@ app.use(formData.stream());
 // union body and files
 app.use(formData.union());
 app.set('trust proxy', true)
-app.use(/^\/(faq|about|logo|cashboxes|offer|return|delivery|contacts|vacancies|halls|profile|historycinema|historyevent|events\/[\s\S]+|search|check\/[\s\S]+|hall\/[\s\S]+|event\/[\s\S]+|selectplace\/[\s\S]+|cinema|movie\/[\s\S]+)?/, indexRouter);
-app.use('/admin', adminRouter);
+app.use('/', adminRouter);
 app.use('/users', usersRouter);
 app.use('/data', dataRouter);
-app.use('/payment', paymentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

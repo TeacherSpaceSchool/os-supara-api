@@ -135,7 +135,7 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/lib/pickmeup.scss" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/lib/slider-baner.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/manifest.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/precache-manifest.d96a7dc4e6cd63aa801c08ae5226e557.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/precache-manifest.cf585b1c8828e49be28c7702b05fb282.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/service-worker.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/css/7.dd9b1b63.chunk.css" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/css/7.dd9b1b63.chunk.css.map" afterPath="" />
@@ -189,24 +189,175 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/5.e5454f47.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/6.7069d9a6.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/6.7069d9a6.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/7.13a80191.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/7.13a80191.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/8.4571fa0b.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/8.4571fa0b.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/7.70dd740d.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/7.70dd740d.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/8.c74eeaa8.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/8.c74eeaa8.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/9.7cb03a52.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/9.7cb03a52.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/main.0193e4ff.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/main.0193e4ff.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/runtime~main.e9226261.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/runtime~main.e9226261.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/runtime~main.a768fa85.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/js/runtime~main.a768fa85.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/8plq6-uc7g9.c353ea59.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/KASSIR_KG_BANNER_WEB-01.e905f332.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/RUS.f8730e6d.PNG" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/od3ht-7o9q5.345c573b.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/oplata.15cddd07.png" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/aclient/static/media/xebjc-kyva5.ba501caa.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/asset-manifest.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/favicon.ico" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/manifest.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.017e3d97e61084292e6a49a05ce8984f.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/12.a16b80a3.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/12.a16b80a3.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/14.a16b80a3.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/14.a16b80a3.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/23.06dc080f.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/23.06dc080f.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/5.dd16b89c.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/5.dd16b89c.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.42efad34.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.42efad34.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.73ab97a9.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.73ab97a9.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.62ce2aeb.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.62ce2aeb.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.275da031.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.275da031.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.f8362eef.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.f8362eef.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.ee6fbad2.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.ee6fbad2.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.e2a92861.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.e2a92861.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.55a9696c.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.55a9696c.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.5337f0ce.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.5337f0ce.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.23a481c8.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.23a481c8.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.70507df0.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.70507df0.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.592d0c6b.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.592d0c6b.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.33417ea0.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.33417ea0.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/2.9e783193.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/2.9e783193.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.042e0184.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.042e0184.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.1857ce69.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.1857ce69.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/22.75640454.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/22.75640454.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/23.b34ef730.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/23.b34ef730.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/24.b9910452.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/24.b9910452.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/25.5b462499.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/25.5b462499.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/26.2603affe.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/26.2603affe.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.63f86ce9.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.63f86ce9.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.d2354267.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.d2354267.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.6651b2fe.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.6651b2fe.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.3ee7a037.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.3ee7a037.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.3aca0a91.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.3aca0a91.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.013610cd.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.013610cd.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.3d57326e.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.3d57326e.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.2ab9a4a4.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.2ab9a4a4.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/media/logo.fdc48fe4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/ca_bundle.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/certificate.crt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/bin/private.key" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/FAQBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/aboutBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/adsBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/billboardBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/cashboxBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/checkVisaBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/cinemaHallBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/contactBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/emailBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/eventBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/index.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/logoBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/mailingBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/movieBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/paymentBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/personalBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/phoneBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/seanceBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/socialBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/ticketBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/ticketCinemaBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/vacancyBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/whereBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/FAQBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/aboutBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/adsBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/bilboardBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/cashboxBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/checkVisaBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/cinemaHallBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/const.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/contactBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/emailBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/eventBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/logoBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/mailchimp.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/mailingBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/movieBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/passport.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/paymentBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/personalBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/phoneBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/seanceBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/socialBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/statisticBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/ticketBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/ticketCinemaBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/user.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/userBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/vacancyBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/whereBiletiki.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/php/visa.php" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/barcode/.gitignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/barcode/QvvD25c69235ab9cee61d14996e2e5c6e3878b70c3e244893bdc4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/barcode/jPGwZ5c69235ab9cee61d14996e2e5c6e3878b70c3e244893bdc4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/barcode/nzuXU5c69235ab9cee61d14996e2e5c6e3878b70c3e244893bdc4.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/document/ВСЕ_БИЛЕТЫ_КАССИРKG.ai" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/document/заявление_на_возврат_денежных_средств.doc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/document/заяление_на_возврат_денежных_средств_за_электроный_билет.doc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/document/публ_оферта.docx" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/font/roboto/NotoSans-Regular.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/font/roboto/Roboto-Black.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/font/roboto/Roboto-Bold.ttf" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/qr/.gitignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/serviceworker-update.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/serviceworker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/ticket/.gitignore" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/visa/a.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/yandex_4a98e0f6f68e3e56.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/routes/data123.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/routes/payment.js" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/models/userBiletiki.js" afterPath="$PROJECT_DIR$/models/userShoro.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/payment.js" afterPath="$PROJECT_DIR$/routes/payment.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/www" afterPath="$PROJECT_DIR$/bin/www" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/manifest.json" afterPath="$PROJECT_DIR$/public/manifest.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="$PROJECT_DIR$/routes/data.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -223,78 +374,62 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="organizatorShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/organizatorShoro.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1717">
+              <caret line="101" column="51" lean-forward="false" selection-start-line="101" selection-start-column="51" selection-end-line="101" selection-end-column="51" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3910">
+              <caret line="230" column="6" lean-forward="false" selection-start-line="230" selection-start-column="6" selection-end-line="230" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="const.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/module/const.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="306">
+              <caret line="18" column="33" lean-forward="false" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="data.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/data.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1366" column="208" lean-forward="false" selection-start-line="1366" selection-start-column="208" selection-end-line="1366" selection-end-column="208" />
-              <folding>
-                <element signature="e#1906#5481#0" expanded="false" />
-                <element signature="e#5537#6301#0" expanded="false" />
-                <element signature="e#6345#17677#0" expanded="false" />
-                <element signature="e#13615#14085#0" expanded="false" />
-                <element signature="e#14122#15158#0" expanded="false" />
-                <element signature="e#15192#15902#0" expanded="false" />
-                <element signature="e#15935#17668#0" expanded="false" />
-                <element signature="e#17724#25529#0" expanded="false" />
-                <element signature="e#26823#57027#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="passport.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/passport.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2091">
-              <caret line="123" column="22" lean-forward="false" selection-start-line="123" selection-start-column="22" selection-end-line="123" selection-end-column="22" />
+            <state relative-caret-position="2397">
+              <caret line="141" column="58" lean-forward="false" selection-start-line="141" selection-start-column="58" selection-end-line="141" selection-end-column="58" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="user.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/user.js">
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="31" lean-forward="false" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
+            <state relative-caret-position="561">
+              <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="payment.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/routes/payment.js">
+      <file leaf-file-name="zavSkladShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/zavSkladShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="158" column="24" lean-forward="false" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
-              <folding>
-                <element signature="e#1053#9747#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ticketBiletiki.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/ticketBiletiki.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2618">
-              <caret line="324" column="6" lean-forward="false" selection-start-line="324" selection-start-column="6" selection-end-line="324" selection-end-column="6" />
-              <folding>
-                <element signature="e#751#9049#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ticketCinemaBiletiki.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/ticketCinemaBiletiki.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="30" lean-forward="false" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
-              <folding>
-                <element signature="e#765#7930#0" expanded="false" />
-              </folding>
+            <state relative-caret-position="1836">
+              <caret line="108" column="28" lean-forward="false" selection-start-line="108" selection-start-column="19" selection-end-line="108" selection-end-column="28" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -311,68 +446,68 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Рассылка</find>
-      <find>await Jimp</find>
-      <find>image</find>
-      <find>wallet.status!='обработка'&amp;&amp;wallet.status!='ошибка'</find>
-      <find>сеанс</find>
-      <find>format</find>
-      <find>mongoose</find>
-      <find>sign</find>
-      <find>_id</find>
-      <find>signup</find>
-      <find>signupuser</find>
-      <find>signin</find>
-      <find>setProfile</find>
-      <find>getProfile</find>
-      <find>subject</find>
-      <find>Место:</find>
-      <find>' Место: '+data.seats[i][0]['name']</find>
-      <find>nodemailer</find>
-      <find>await TicketBiletiki.checkHash</find>
-      <find>TicketBiletiki.checkHash</find>
-      <find>if(data.seats[i][0]['name'].split(':')[0]!==undefined)</find>
-      <find>filename: 'Билет на '+ticket.event</find>
-      <find>filename: 'Билет на '+ticket.event,</find>
-      <find>new PDFDocument</find>
-      <find>ip.includes</find>
-      <find>data.event.where.name</find>
-      <find>data.event.where</find>
-      <find>body.name == 'Билеты'</find>
-      <find>data</find>
-      <find>event.</find>
+      <find>Organizator</find>
+      <find>RealizatorShoro</find>
+      <find>PriceShoro</find>
+      <find>PointShoro</find>
+      <find>new UserShoro</find>
+      <find>BlogShoro</find>
+      <find>_1</find>
+      <find>Chalap</find>
+      <find>tretiy</find>
+      <find>vozvr</find>
+      <find>itogo</find>
+      <find>UserMuseumKNMII</find>
+      <find>Realizator</find>
+      <find>routes</find>
+      <find>регион</find>
+      <find>Реализатор</find>
+      <find>phone1</find>
+      <find>Shoro</find>
+      <find>OrganizatorShoro</find>
+      <find>Bil</find>
+      <find>1</find>
+      <find>d1</find>
+      <find>Накладная склад №1</find>
+      <find>Накладная на пустую тару</find>
+      <find>NakladnayaNaPustuyTaruShoro</find>
+      <find>PustayaTaraShoro</find>
+      <find>PustayaTara</find>
+      <find>NakladnayaNaPustuyTaru</find>
+      <find>Organ</find>
+      <find>.organizator</find>
     </findStrings>
     <replaceStrings>
-      <replace>TicketCinema</replace>
-      <replace>Билеты кино</replace>
-      <replace>movie</replace>
-      <replace>===</replace>
-      <replace>Wallet</replace>
-      <replace>Payment</replace>
-      <replace>payment</replace>
-      <replace>(</replace>
-      <replace>.length</replace>
-      <replace>\d\w</replace>
-      <replace>new Date(parseInt(req.param('txn_date')))</replace>
-      <replace>+</replace>
-      <replace>body.</replace>
-      <replace>Cashbox</replace>
-      <replace>fontSize(12</replace>
-      <replace>'</replace>
-      <replace>send</replace>
-      <replace>json</replace>
-      <replace>responce.CashierNo</replace>
-      <replace>PartnerTrnID</replace>
-      <replace>CheckVisa</replace>
-      <replace>CheckVisaBiletiki</replace>
-      <replace>justify</replace>
-      <replace>11</replace>
-      <replace>' Ряд '+data.seats[i][0]['name'].split(':')[0].split(' ')[1]+' Место '+data.seats[i][0]['name'].split(':')[1].split(' ')[0]</replace>
-      <replace>if(data.seats[i][0]['name'].split(':')[1]!==undefined)</replace>
-      <replace>event</replace>
-      <replace>data.</replace>
-      <replace>image</replace>
-      <replace>myNew</replace>
+      <replace>BlogShoro</replace>
+      <replace>CarShoro</replace>
+      <replace>OrganizatorShoro</replace>
+      <replace>Realizator</replace>
+      <replace>Plan</replace>
+      <replace>PriceShoro</replace>
+      <replace>ZavSkladShoro</replace>
+      <replace>PointShoro</replace>
+      <replace>RegionShoro</replace>
+      <replace>PustayaTaraShoro</replace>
+      <replace>Kvas</replace>
+      <replace>vozvr</replace>
+      <replace>rasvasovka</replace>
+      <replace>pervyi</replace>
+      <replace>vtoroi</replace>
+      <replace>tretiy</replace>
+      <replace>itogo</replace>
+      <replace>_2</replace>
+      <replace>syem</replace>
+      <replace>UserShoro</replace>
+      <replace>ZavSklad</replace>
+      <replace>точка</replace>
+      <replace>Shoro1</replace>
+      <replace>NakladnayaNaPustuyTaruShoro</replace>
+      <replace>NakladnayaSklad1Shoro</replace>
+      <replace>2</replace>
+      <replace>d2</replace>
+      <replace>NakladnayaNaVecherniyVozvratShoro</replace>
+      <replace>OtchetOrganizatora</replace>
+      <replace>Real</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -381,57 +516,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/module/walletBiletiki.js" />
-        <option value="$PROJECT_DIR$/models/ticketBiletiki.js" />
-        <option value="$PROJECT_DIR$/public/images/.gitignore" />
-        <option value="$PROJECT_DIR$/public/qr/.gitignore" />
-        <option value="$PROJECT_DIR$/public/ticket/.gitignore" />
-        <option value="$PROJECT_DIR$/public/thumbnail/.gitignore" />
-        <option value="$PROJECT_DIR$/routes/index.js" />
-        <option value="$PROJECT_DIR$/views/error.jade" />
-        <option value="$PROJECT_DIR$/models/walletBiletiki.js" />
-        <option value="$PROJECT_DIR$/models/paymentBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/user.js" />
-        <option value="$PROJECT_DIR$/models/eventBiletiki.js" />
-        <option value="$PROJECT_DIR$/bin/www" />
-        <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/php/visa.php" />
-        <option value="$PROJECT_DIR$/models/checkVisa.js" />
-        <option value="$PROJECT_DIR$/models/checkVisaBiletiki.js" />
-        <option value="$PROJECT_DIR$/routes/data123.js" />
-        <option value="$PROJECT_DIR$/aclient/index.html" />
-        <option value="$PROJECT_DIR$/public/yandex_4a98e0f6f68e3e56.html" />
-        <option value="$PROJECT_DIR$/module/const.js" />
-        <option value="$PROJECT_DIR$/module/emailBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/adsBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/bilboardBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/checkVisaBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/cinemaHallBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/contactBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/aboutBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/eventBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/FAQBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/logoBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/mailingBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/movieBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/paymentBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/personalBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/phoneBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/seanceBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/socialBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/statisticBiletiki.js" />
         <option value="$PROJECT_DIR$/module/userBiletiki.js" />
         <option value="$PROJECT_DIR$/module/vacancyBiletiki.js" />
         <option value="$PROJECT_DIR$/module/whereBiletiki.js" />
-        <option value="$PROJECT_DIR$/module/passport.js" />
         <option value="$PROJECT_DIR$/module/mailchimp.js" />
-        <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/models/cashboxBiletiki.js" />
         <option value="$PROJECT_DIR$/module/cashboxBiletiki.js" />
         <option value="$PROJECT_DIR$/module/ticketCinemaBiletiki.js" />
         <option value="$PROJECT_DIR$/module/ticketBiletiki.js" />
-        <option value="$PROJECT_DIR$/routes/data.js" />
         <option value="$PROJECT_DIR$/routes/payment.js" />
+        <option value="$PROJECT_DIR$/module/const.js" />
+        <option value="$PROJECT_DIR$/models/priceShoro.js" />
+        <option value="$PROJECT_DIR$/public/manifest.json" />
+        <option value="$PROJECT_DIR$/bin/www" />
+        <option value="$PROJECT_DIR$/models/pustayaTaraShoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaSkladOdinShoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaSkladDvaShoro.js" />
+        <option value="$PROJECT_DIR$/module/user.js" />
+        <option value="$PROJECT_DIR$/models/index.js" />
+        <option value="$PROJECT_DIR$/models/userShoro.js" />
+        <option value="$PROJECT_DIR$/models/realizatorShoro.js" />
+        <option value="$PROJECT_DIR$/models/organizatorShoro.js" />
+        <option value="$PROJECT_DIR$/models/blogShoro.js" />
+        <option value="$PROJECT_DIR$/models/carShoro.js" />
+        <option value="$PROJECT_DIR$/models/pointShoro.js" />
+        <option value="$PROJECT_DIR$/models/regionShoro.js" />
+        <option value="$PROJECT_DIR$/module/blogShoro.js" />
+        <option value="$PROJECT_DIR$/module/regionShoro.js" />
+        <option value="$PROJECT_DIR$/models/zavSkladShoro.js" />
+        <option value="$PROJECT_DIR$/module/zavSkladShoro.js" />
+        <option value="$PROJECT_DIR$/module/pointShoro.js" />
+        <option value="$PROJECT_DIR$/module/planShoro.js" />
+        <option value="$PROJECT_DIR$/models/planShoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js" />
+        <option value="$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js" />
+        <option value="$PROJECT_DIR$/models/otchetOrganizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/module/carShoro.js" />
+        <option value="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" />
+        <option value="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" />
+        <option value="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" />
+        <option value="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" />
+        <option value="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/module/passport.js" />
+        <option value="$PROJECT_DIR$/models/otchetRealizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/module/realizatorShoro.js" />
+        <option value="$PROJECT_DIR$/routes/data.js" />
+        <option value="$PROJECT_DIR$/module/priceShoro.js" />
+        <option value="$PROJECT_DIR$/module/organizatorShoro.js" />
+        <option value="$PROJECT_DIR$/app.js" />
       </list>
     </option>
   </component>
@@ -476,62 +611,57 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
               <item name="bin" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
               <item name="module" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="ticket" type="462c0819:PsiDirectoryNode" />
+              <item name="stylesheets" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
               <item name="routes" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="biletiki-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="biletiki-api" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="watcher.settings" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_interpreter_path" value="C:/Nodist/bin/node" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Documents/project1181768" />
+    <property name="last_opened_file_path" value="E:/untitled60" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -553,11 +683,11 @@
       <recent name="C:\projects\museum\museum-api" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\projects\shoro\shoro-api\module" />
+      <recent name="C:\projects\shoro\shoro-api\models" />
       <recent name="C:\projects\biletiki\biletiki-api\module" />
       <recent name="C:\projects\biletiki\biletiki-api\models" />
       <recent name="C:\projects\biletiki\biletiki-api\routes" />
-      <recent name="C:\projects\biletiki\biletiki-api\node_modules" />
-      <recent name="C:\projects\biletiki\biletiki-api\public\barcode" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -697,12 +827,31 @@
       <workItem from="1555583353512" duration="2064000" />
       <workItem from="1555652831619" duration="1621000" />
       <workItem from="1555674637093" duration="3731000" />
-      <workItem from="1555841480356" duration="1319000" />
+      <workItem from="1555841480356" duration="1630000" />
+      <workItem from="1555929063247" duration="51000" />
+      <workItem from="1556002068001" duration="145000" />
+      <workItem from="1556002703764" duration="102000" />
+      <workItem from="1556002897505" duration="21081000" />
+      <workItem from="1556163457000" duration="1697000" />
+      <workItem from="1556605276540" duration="33436000" />
+      <workItem from="1556776863886" duration="13138000" />
+      <workItem from="1557117412258" duration="5816000" />
+      <workItem from="1557207819602" duration="1133000" />
+      <workItem from="1557237710599" duration="12602000" />
+      <workItem from="1557383572772" duration="3368000" />
+      <workItem from="1557391771370" duration="8703000" />
+      <workItem from="1557468191384" duration="5181000" />
+      <workItem from="1557561695918" duration="3642000" />
+      <workItem from="1557719340571" duration="349000" />
+      <workItem from="1557727527133" duration="1331000" />
+      <workItem from="1557812330197" duration="1104000" />
+      <workItem from="1557911476500" duration="976000" />
+      <workItem from="1557922342764" duration="598000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="863662000" />
+    <option name="totallyTimeSpent" value="978426000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -717,12 +866,12 @@
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18821293" sideWeight="0.7221239" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.76177657" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18821293" sideWeight="0.2778761" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2395693" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.23822342" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26244953" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -744,272 +893,41 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="3" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/module/priceShoro.js</url>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="6" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/package.json">
+    <entry file="file://$PROJECT_DIR$/routes/payment.js" />
+    <entry file="file://$PROJECT_DIR$/models/aboutBiletiki.js" />
+    <entry file="file://$PROJECT_DIR$/module/aboutBiletiki.js" />
+    <entry file="file://$PROJECT_DIR$/module/cinemaHallBiletiki.js" />
+    <entry file="file://$PROJECT_DIR$/module/whereBiletiki.js" />
+    <entry file="file://$PROJECT_DIR$/public/manifest.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="29" column="18" lean-forward="false" selection-start-line="29" selection-start-column="18" selection-end-line="29" selection-end-column="18" />
+        <state relative-caret-position="0">
+          <caret line="0" column="43" lean-forward="false" selection-start-line="0" selection-start-column="43" selection-end-line="0" selection-end-column="43" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/visa/a.txt">
+    <entry file="file://$PROJECT_DIR$/public/stylesheets/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/ticket/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/paymentBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="11" column="11" lean-forward="false" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/checkVisaBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="10" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/qr/0JrSg5c80dcf43637771678e3d5ee5c80c935945e573174d55ea7.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/form-data/lib/form_data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaSkladOdinShoro.js" />
     <entry file="file://$PROJECT_DIR$/routes/admin.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="0" lean-forward="true" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="13" lean-forward="false" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bin/www">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1483">
-          <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/data123.js">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/aclient/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="37" lean-forward="false" selection-start-line="0" selection-start-column="37" selection-end-line="0" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/yandex_4a98e0f6f68e3e56.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="7" lean-forward="false" selection-start-line="5" selection-start-column="7" selection-end-line="5" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/const.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="250">
-          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/aboutBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/adsBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/bilboardBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="49" column="32" lean-forward="false" selection-start-line="49" selection-start-column="32" selection-end-line="49" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/checkVisaBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="38" column="20" lean-forward="false" selection-start-line="38" selection-start-column="20" selection-end-line="38" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/cinemaHallBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="213" column="25" lean-forward="false" selection-start-line="213" selection-start-column="25" selection-end-line="213" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/contactBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="72" column="32" lean-forward="false" selection-start-line="72" selection-start-column="32" selection-end-line="72" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/eventBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2108">
-          <caret line="124" column="32" lean-forward="false" selection-start-line="124" selection-start-column="32" selection-end-line="124" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/FAQBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="53" column="65" lean-forward="false" selection-start-line="53" selection-start-column="65" selection-end-line="53" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/logoBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="52" column="32" lean-forward="false" selection-start-line="52" selection-start-column="32" selection-end-line="52" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/movieBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="986">
-          <caret line="80" column="33" lean-forward="false" selection-start-line="80" selection-start-column="33" selection-end-line="80" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/paymentBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="91" column="32" lean-forward="false" selection-start-line="91" selection-start-column="32" selection-end-line="91" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/personalBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="850">
-          <caret line="50" column="32" lean-forward="false" selection-start-line="50" selection-start-column="32" selection-end-line="50" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/phoneBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="43" column="32" lean-forward="false" selection-start-line="43" selection-start-column="32" selection-end-line="43" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/seanceBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/socialBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="663">
-          <caret line="39" column="32" lean-forward="false" selection-start-line="39" selection-start-column="32" selection-end-line="39" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/statisticBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="43">
-          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/vacancyBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-503">
-          <caret line="115" column="0" lean-forward="false" selection-start-line="115" selection-start-column="0" selection-end-line="115" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/emailBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/whereBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-268">
-          <caret line="113" column="22" lean-forward="false" selection-start-line="113" selection-start-column="22" selection-end-line="113" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/mailchimp.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="70" column="135" lean-forward="false" selection-start-line="70" selection-start-column="135" selection-end-line="70" selection-end-column="135" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="11" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/aboutBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="31" lean-forward="false" selection-start-line="4" selection-start-column="31" selection-end-line="5" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/adsBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1020,109 +938,285 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/userBiletiki.js">
+    <entry file="file://$PROJECT_DIR$/routes/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/mailingBiletiki.js">
+    <entry file="file://$PROJECT_DIR$/bin/www">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="0" lean-forward="true" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+        <state relative-caret-position="102">
+          <caret line="6" column="10" lean-forward="false" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/ticketBiletiki.js">
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaSkladDvaShoro.js" />
+    <entry file="file://$PROJECT_DIR$/models/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="9" lean-forward="false" selection-start-line="17" selection-start-column="4" selection-end-line="17" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/ticketCinemaBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="21" column="8" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/cashboxBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1271">
-          <caret line="16" column="16" lean-forward="true" selection-start-line="12" selection-start-column="16" selection-end-line="16" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/cashboxBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="14" lean-forward="true" selection-start-line="8" selection-start-column="14" selection-end-line="8" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/ticketCinemaBiletiki.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="30" lean-forward="false" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
-          <folding>
-            <element signature="e#765#7930#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="102">
+          <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/module/user.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="31" lean-forward="false" selection-start-line="15" selection-start-column="31" selection-end-line="15" selection-end-column="31" />
-          <folding />
+        <state relative-caret-position="51">
+          <caret line="3" column="39" lean-forward="false" selection-start-line="3" selection-start-column="39" selection-end-line="3" selection-end-column="39" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/ticketBiletiki.js">
+    <entry file="file://$PROJECT_DIR$/models/pointShoro.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2618">
-          <caret line="324" column="6" lean-forward="false" selection-start-line="324" selection-start-column="6" selection-end-line="324" selection-end-column="6" />
-          <folding>
-            <element signature="e#751#9049#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="153">
+          <caret line="9" column="10" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/regionShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/blogShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="104" column="40" lean-forward="false" selection-start-line="104" selection-start-column="40" selection-end-line="104" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/blogShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="23" lean-forward="true" selection-start-line="10" selection-start-column="23" selection-end-line="11" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/regionShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="83" column="0" lean-forward="false" selection-start-line="83" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/realizatorShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="9" lean-forward="false" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/zavSkladShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="6" lean-forward="false" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/carShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="22" lean-forward="true" selection-start-line="6" selection-start-column="22" selection-end-line="7" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/pustayaTaraShoro.js" />
+    <entry file="file://$PROJECT_DIR$/models/planShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="20" lean-forward="false" selection-start-line="5" selection-start-column="20" selection-end-line="5" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/userShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="38" column="20" lean-forward="false" selection-start-line="38" selection-start-column="19" selection-end-line="38" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/planShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="8" lean-forward="true" selection-start-line="4" selection-start-column="8" selection-end-line="10" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="24" lean-forward="false" selection-start-line="6" selection-start-column="24" selection-end-line="6" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="33" lean-forward="false" selection-start-line="16" selection-start-column="33" selection-end-line="16" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="50" lean-forward="false" selection-start-line="16" selection-start-column="50" selection-end-line="16" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/otchetOrganizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="35" lean-forward="false" selection-start-line="16" selection-start-column="35" selection-end-line="16" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/pointShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-357">
+          <caret line="12" column="10" lean-forward="true" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/carShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="71" column="60" lean-forward="false" selection-start-line="71" selection-start-column="60" selection-end-line="71" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="21" column="102" lean-forward="false" selection-start-line="21" selection-start-column="102" selection-end-line="21" selection-end-column="102" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="108" lean-forward="false" selection-start-line="21" selection-start-column="108" selection-end-line="21" selection-end-column="108" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="96" lean-forward="false" selection-start-line="21" selection-start-column="96" selection-end-line="21" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="96" lean-forward="false" selection-start-line="21" selection-start-column="96" selection-end-line="21" selection-end-column="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/otchetOrganizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="21" column="98" lean-forward="false" selection-start-line="21" selection-start-column="98" selection-end-line="21" selection-end-column="98" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/module/passport.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2091">
-          <caret line="123" column="22" lean-forward="false" selection-start-line="123" selection-start-column="22" selection-end-line="123" selection-end-column="22" />
+        <state relative-caret-position="445">
+          <caret line="101" column="31" lean-forward="false" selection-start-line="101" selection-start-column="31" selection-end-line="101" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/otchetRealizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="15" selection-end-line="7" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/organizatorShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="10" lean-forward="false" selection-start-line="11" selection-start-column="4" selection-end-line="11" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/realizatorShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1666">
+          <caret line="98" column="36" lean-forward="false" selection-start-line="98" selection-start-column="36" selection-end-line="98" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/priceShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="8" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/priceShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/zavSkladShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1836">
+          <caret line="108" column="28" lean-forward="false" selection-start-line="108" selection-start-column="19" selection-end-line="108" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/organizatorShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1717">
+          <caret line="101" column="51" lean-forward="false" selection-start-line="101" selection-start-column="51" selection-end-line="101" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3910">
+          <caret line="230" column="6" lean-forward="false" selection-start-line="230" selection-start-column="6" selection-end-line="230" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/data.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1366" column="208" lean-forward="false" selection-start-line="1366" selection-start-column="208" selection-end-line="1366" selection-end-column="208" />
-          <folding>
-            <element signature="e#1906#5481#0" expanded="false" />
-            <element signature="e#5537#6301#0" expanded="false" />
-            <element signature="e#6345#17677#0" expanded="false" />
-            <element signature="e#13615#14085#0" expanded="false" />
-            <element signature="e#14122#15158#0" expanded="false" />
-            <element signature="e#15192#15902#0" expanded="false" />
-            <element signature="e#15935#17668#0" expanded="false" />
-            <element signature="e#17724#25529#0" expanded="false" />
-            <element signature="e#26823#57027#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="2397">
+          <caret line="141" column="58" lean-forward="false" selection-start-line="141" selection-start-column="58" selection-end-line="141" selection-end-column="58" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/payment.js">
+    <entry file="file://$PROJECT_DIR$/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/const.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
-          <caret line="158" column="24" lean-forward="false" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
-          <folding>
-            <element signature="e#1053#9747#0" expanded="false" />
-          </folding>
+          <caret line="18" column="33" lean-forward="false" selection-start-line="18" selection-start-column="33" selection-end-line="18" selection-end-column="33" />
+          <folding />
         </state>
       </provider>
     </entry>
