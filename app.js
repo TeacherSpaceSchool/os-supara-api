@@ -11,6 +11,7 @@ const passportEngine = require('./module/passport');
 const cors = require('cors');
 const adminRouter = require('./routes/admin');
 const user = require('./module/user');
+const start = require('./module/start');
 const formData = require('express-form-data');
 const os = require('os');
 const compression = require('compression');
@@ -21,6 +22,7 @@ module.exports.dirname = __dirname;
 
 passportEngine.start();
 user.createAdmin();
+start.start();
 
 const options = {
     uploadDir: os.tmpdir(),

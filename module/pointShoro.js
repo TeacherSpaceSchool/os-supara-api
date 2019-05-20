@@ -5,6 +5,7 @@ const RealizatorShoro = require('../models/realizatorShoro');
 
 const getPointShoro = async (search, sort, skip) => {
     try{
+        //console.log(await PointShoro.deleteMany())
         let findResult = [], data = [], count;
         const row = [
             'название',

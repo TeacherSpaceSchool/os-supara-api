@@ -4,7 +4,6 @@ const uniqueValidator = require('mongoose-unique-validator');
 const PointShoroSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true,
         unique: true
     },
     region: {

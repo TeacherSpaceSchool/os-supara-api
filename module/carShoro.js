@@ -69,7 +69,6 @@ const getCarShoro = async (search, sort, skip) => {
 
 const getCarNumber = async () => {
     try{
-        console.log(await CarShoro.find().distinct('number'))
        return await CarShoro.find().distinct('number');
     } catch(error) {
         console.error(error)
