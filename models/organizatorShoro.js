@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const OrganizatorShoroSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true
     },
     phone: {
         type: String,
@@ -21,6 +23,7 @@ const OrganizatorShoroSchema = mongoose.Schema({
     timestamps: true
 });
 
+OrganizatorShoroSchema.plugin(uniqueValidator);
 
 const OrganizatorShoro = mongoose.model('OrganizatorShoro', OrganizatorShoroSchema);
 

@@ -1,4 +1,5 @@
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
+const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const mongoose = require('mongoose');
@@ -65,7 +66,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + '-' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -133,7 +134,7 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + '-' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -209,7 +210,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + '-' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -221,8 +222,60 @@ const addOtchetRealizatoraShoro = async (object) => {
     try{
         if(await OtchetRealizatoraShoro.findOne({data: object.data, realizator: object.realizator, region: object.region, point: object.point})===null){
             let _object = new OtchetRealizatoraShoro(object);
+
+            let find = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+            if(find!==null){
+                let findDataTable = JSON.parse(find.dataTable)
+                let addDataTable = JSON.parse(object.dataTable)
+
+                findDataTable.r.otr += 100
+
+                findDataTable.p.m.v += addDataTable.vydano.i.ml
+                findDataTable.p.ch.v += addDataTable.vydano.i.chl
+                findDataTable.p.k.v += addDataTable.vydano.i.kl
+                findDataTable.p.sl.v += addDataTable.vydano.i.sl
+
+                findDataTable.p.m.o += addDataTable.vozvrat.v.ml
+                findDataTable.p.ch.o += addDataTable.vozvrat.v.chl
+                findDataTable.p.k.o += addDataTable.vozvrat.v.kl
+                findDataTable.p.sl.o += addDataTable.vozvrat.v.sl
+
+                findDataTable.p.m.s += addDataTable.vozvrat.s.ml
+                findDataTable.p.ch.s += addDataTable.vozvrat.s.chl
+                findDataTable.p.k.s += addDataTable.vozvrat.s.kl
+                findDataTable.p.sl.s += addDataTable.vozvrat.s.sl
+
+                findDataTable.p.m.pl += addDataTable.vozvrat.p.ml
+                findDataTable.p.ch.pl += addDataTable.vozvrat.p.chl
+                findDataTable.p.k.pl += addDataTable.vozvrat.p.kl
+                findDataTable.p.sl.pl += addDataTable.vozvrat.p.sl
+
+                findDataTable.p.m.ps += addDataTable.vozvrat.virychka.ml
+                findDataTable.p.ch.ps += addDataTable.vozvrat.virychka.chl
+                findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
+                findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
+
+                findDataTable.r.ntp += addDataTable.vozvrat.virychka.sl
+
+                findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
+                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+
+
+                findDataTable = JSON.stringify(findDataTable)
+                await OtchetOrganizatoraShoro.findOneAndUpdate({_id: find._id}, {$set: {dataTable: findDataTable}});
+
+            }
+
             await OtchetRealizatoraShoro.create(_object);
         }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getOtchetRealizatoraShoroByDate = async (data, organizator, region) => {
+    try{
+        return(await OtchetRealizatoraShoro.find({data: data, organizator: organizator, region: region}))
     } catch(error) {
         console.error(error)
     }
@@ -250,3 +303,4 @@ module.exports.addOtchetRealizatoraShoro = addOtchetRealizatoraShoro;
 module.exports.getOtchetRealizatoraShoroRealizator = getOtchetRealizatoraShoroRealizator;
 module.exports.getOtchetRealizatoraShoroOrganizator = getOtchetRealizatoraShoroOrganizator;
 module.exports.getOtchetRealizatoraShoroByData = getOtchetRealizatoraShoroByData;
+module.exports.getOtchetRealizatoraShoroByDate = getOtchetRealizatoraShoroByDate;

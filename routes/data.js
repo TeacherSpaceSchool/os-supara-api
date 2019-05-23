@@ -124,6 +124,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Отчет реализатора по данным'){
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
+                } else if(req.body.name == 'Все отчеты реализаторов по дате'){
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByDate(data.data, data.organizator, data.region))
                 }
             });
         }
@@ -415,7 +417,7 @@ router.post('/add', async (req, res) => {
             });
         }
         else if(role==='реализатор'){
-            await passportEngine.verifydorganizator(req, res, async (user)=>{
+            await passportEngine.verifydrealizator(req, res, async (user)=>{
                 let myNew = JSON.parse(req.body.new);
                 if(req.body.name == 'Отчет реализатора'){
                     if(req.body.id==undefined)

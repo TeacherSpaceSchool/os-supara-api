@@ -1,4 +1,5 @@
 const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
+const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const mongoose = require('mongoose');
 

@@ -164,7 +164,6 @@ const deleteOrganizatorShoro = async (id) => {
     try{
         for(let i=0; i<id.length; i++){
             let object = await OrganizatorShoro.findOne({name: id[i].split('|')[0], region: id[i].split('|')[1]})
-            console.log(object)
             await UserShoro.deleteMany({_id: {$in: object.user}});
             await OrganizatorShoro.deleteMany({name: id[i].split('|')[0], region: id[i].split('|')[1]});
         }
