@@ -27,7 +27,6 @@ let addRealizator = async () => {
             for(let i=0; i<realizators.length; i++){
                 realizators[i] = realizators[i].replace('\r', '')
                 realizators[i] = realizators[i].split(':')
-                realizators[i] = realizators[i][2]
                 let find = await UserShoro.findOne({email: realizators[i][3]});
                 if(find==null){
                     let _user = new UserShoro({
