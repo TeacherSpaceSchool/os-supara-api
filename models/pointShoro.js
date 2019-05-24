@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
 
 const PointShoroSchema = mongoose.Schema({
     name: {
         type: String,
-        unique: true
+        required: true,
     },
     region: {
         type: String,
@@ -14,8 +13,6 @@ const PointShoroSchema = mongoose.Schema({
     timestamps: true
 });
 
-PointShoroSchema.plugin(uniqueValidator);
-
-const PointShoro = mongoose.model('PointShoro', PointShoroSchema);
+const PointShoro = mongoose.model('PointShoro1', PointShoroSchema);
 
 module.exports = PointShoro;

@@ -124,7 +124,9 @@ const getPlanShoroByDate = async (date) => {
 
 const deletePlanShoro = async (id) => {
     try{
-        await PlanShoro.deleteMany({_id: {$in: id}});
+        for(let i=0; i<id.length; i++) {
+            await PlanShoro.deleteMany({date: {$in: id}});
+        }
     } catch(error) {
         console.error(error)
     }

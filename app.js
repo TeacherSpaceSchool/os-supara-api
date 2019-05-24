@@ -21,7 +21,7 @@ require('body-parser-xml-json')(bodyParser);
 module.exports.dirname = __dirname;
 
 passportEngine.start();
-//start.start();
+start.start();
 user.createAdmin();
 
 const options = {

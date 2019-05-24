@@ -45,11 +45,11 @@ router.post('/get', async (req, res) => {
                 } else if(req.body.name == 'Реализатор'){
                     await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'РеализаторПоИмени'){
-                    await res.send(await RealizatorShoro.getRealizatorShoroByName(data.name, data.point))
+                    await res.send(await RealizatorShoro.getRealizatorShoroByName(data.name, data.point, data.region, data.phone))
                 } else if(req.body.name == 'ОрганизаторПоИмени'){
-                    await res.send(await OrganizatorShoro.getOrganizatorShoroByName(data.name, data.region))
+                    await res.send(await OrganizatorShoro.getOrganizatorShoroByName(data.phone))
                 } else if(req.body.name == 'ЗавскладаПоИмени'){
-                    await res.send(await ZavSkladShoro.getZavSkladShoroByName(data.name))
+                    await res.send(await ZavSkladShoro.getZavSkladShoroByName(data.phone))
                 } else if(req.body.name == 'РегионИмя'){
                     await res.send(await RegionShoro.getRegionShoroName())
                 } else if(req.body.name == 'ТочкаИмя'){

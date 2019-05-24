@@ -75,7 +75,7 @@ const getOrganizatorShoro = async (search, sort, skip) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].name, findResult[i].region]);
+            data.push([findResult[i].name, findResult[i].region, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -142,9 +142,9 @@ const getOrganizatorShoroById = async (id) => {
     }
 }
 
-const getOrganizatorShoroByName = async (name, region) => {
+const getOrganizatorShoroByName = async (phone) => {
     try{
-        let object = await OrganizatorShoro.findOne({name: name, region: region});
+        let object = await OrganizatorShoro.findOne({phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
             status: user.status,
@@ -163,9 +163,9 @@ const getOrganizatorShoroByName = async (name, region) => {
 const deleteOrganizatorShoro = async (id) => {
     try{
         for(let i=0; i<id.length; i++){
-            let object = await OrganizatorShoro.findOne({name: id[i].split('|')[0], region: id[i].split('|')[1]})
+            let object = await OrganizatorShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
-            await OrganizatorShoro.deleteMany({name: id[i].split('|')[0], region: id[i].split('|')[1]});
+            await OrganizatorShoro.deleteMany({phone: id[i]});
         }
     } catch(error) {
         console.error(error)

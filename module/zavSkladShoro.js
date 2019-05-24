@@ -94,7 +94,7 @@ const getZavSkladShoro = async (search, sort, skip) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].name]);
+            data.push([findResult[i].name, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -122,9 +122,9 @@ const addZavSkladShoro = async (object) => {
     }
 }
 
-const getZavSkladShoroByName = async (name) => {
+const getZavSkladShoroByName = async (phone) => {
     try{
-        let object = await ZavSkladShoro.findOne({name: name});
+        let object = await ZavSkladShoro.findOne({phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
             status: user.status,
@@ -156,9 +156,9 @@ const setZavSkladShoro = async (object, id) => {
 const deleteZavSkladShoro = async (id) => {
     try{
         for(let i=0; i<id.length; i++){
-            let object = await ZavSkladShoro.findOne({name: id[i]})
+            let object = await ZavSkladShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
-            await ZavSkladShoro.deleteMany({name: id[i]});
+            await ZavSkladShoro.deleteMany({phone: id[i]});
         }
     } catch(error) {
         console.error(error)

@@ -88,8 +88,8 @@ const addPointShoro = async (object) => {
 
 const setPointShoro = async (object, id) => {
     try{
-        await RealizatorShoro.findOneAndUpdate({point: id}, {$set: {point: object.name}});
-        await PointShoro.findOneAndUpdate({name: id}, {$set: object});
+        await RealizatorShoro.findOneAndUpdate({point: id, region: object.region}, {$set: {point: object.name}});
+        await PointShoro.findOneAndUpdate({name: id, region: object.region}, {$set: object});
     } catch(error) {
         console.error(error)
     }
@@ -97,7 +97,9 @@ const setPointShoro = async (object, id) => {
 
 const deletePointShoro = async (id) => {
     try{
-        await PointShoro.deleteMany({name: {$in: id}});
+        for(let i=0; i<id.length; i++){
+            await PointShoro.deleteMany({name: {$in: id[i].split('|')[0]}, region: {$in: id[i].split('|')[1]}});
+        }
     } catch(error) {
         console.error(error)
     }

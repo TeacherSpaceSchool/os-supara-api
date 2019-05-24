@@ -10,6 +10,7 @@ const getRealizatorShoro = async (search, sort, skip) => {
         const row = [
             'имя',
             'точка',
+            'регион',
         ];
         if(sort == undefined||sort=='')
             sort = '-updatedAt';
@@ -18,8 +19,12 @@ const getRealizatorShoro = async (search, sort, skip) => {
         else if(sort[0]=='имя'&&sort[1]=='ascending')
             sort = 'name';
         else if(sort[0]=='точка'&&sort[1]=='descending')
-            sort = '-region';
+            sort = '-point';
         else if(sort[0]=='точка'&&sort[1]=='ascending')
+            sort = 'point';
+        else if(sort[0]=='регион'&&sort[1]=='descending')
+            sort = '-region';
+        else if(sort[0]=='регион'&&sort[1]=='ascending')
             sort = 'region';
         else if(sort[0]=='статус'&&sort[1]=='descending')
             sort = '-status';
@@ -40,7 +45,8 @@ const getRealizatorShoro = async (search, sort, skip) => {
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}}
                 ]
             });
             findResult = await RealizatorShoro.find({
@@ -50,7 +56,8 @@ const getRealizatorShoro = async (search, sort, skip) => {
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}}
                 ]
             })
                 .sort(sort)
@@ -63,7 +70,8 @@ const getRealizatorShoro = async (search, sort, skip) => {
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}}
                 ]
             });
             findResult = await RealizatorShoro.find({
@@ -72,7 +80,8 @@ const getRealizatorShoro = async (search, sort, skip) => {
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}}
                 ]
             })
                 .sort(sort)
@@ -80,7 +89,7 @@ const getRealizatorShoro = async (search, sort, skip) => {
                 .limit(10);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].name, findResult[i].region+'-'+findResult[i].point]);
+            data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -131,9 +140,9 @@ const addRealizatorShoro = async (object) => {
     }
 }
 
-const getRealizatorShoroByName = async (name, point) => {
+const getRealizatorShoroByName = async (name, point, region, phone) => {
     try{
-        let object = await RealizatorShoro.findOne({name: name, point: point});
+        let object = await RealizatorShoro.findOne({name: name, region: region, point: point, phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
             status: user.status,
@@ -171,9 +180,9 @@ const setRealizatorShoro = async (object, id) => {
 const deleteRealizatorShoro = async (id) => {
     try{
         for(let i=0; i<id.length; i++){
-            let object = await RealizatorShoro.findOne({name: id[i].split('|')[0], point: id[i].split('|')[1]})
+            let object = await RealizatorShoro.findOne({phone: id})
             await UserShoro.deleteMany({_id: {$in: object.user}});
-            await RealizatorShoro.deleteMany({name: id[i].split('|')[0], point: id[i].split('|')[1]});
+            await RealizatorShoro.deleteMany({phone: id});
         }
     } catch(error) {
         console.error(error)
