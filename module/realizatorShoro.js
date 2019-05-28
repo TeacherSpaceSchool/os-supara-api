@@ -4,6 +4,101 @@ const UserShoro = require('../models/userShoro');
 const format = require('./const').stringifyDateTime ;
 const mongoose = require('mongoose');
 
+const getRealizatorShoro1 = async (search, sort, skip, id) => {
+    try{
+        let findResult = [], data = [], count;
+        const row = [
+            'имя',
+            'точка',
+            'регион',
+        ];
+        let organizator = await OrganizatorShoro.findOne({user: id})
+        let region = organizator.region
+        if(sort == undefined||sort=='')
+            sort = '-updatedAt';
+        else if(sort[0]=='имя'&&sort[1]=='descending')
+            sort = '-name';
+        else if(sort[0]=='имя'&&sort[1]=='ascending')
+            sort = 'name';
+        else if(sort[0]=='точка'&&sort[1]=='descending')
+            sort = '-point';
+        else if(sort[0]=='точка'&&sort[1]=='ascending')
+            sort = 'point';
+        else if(sort[0]=='регион'&&sort[1]=='descending')
+            sort = '-region';
+        else if(sort[0]=='регион'&&sort[1]=='ascending')
+            sort = 'region';
+        else if(sort[0]=='статус'&&sort[1]=='descending')
+            sort = '-status';
+        else if(sort[0]=='статус'&&sort[1]=='ascending')
+            sort = 'status';
+        if(search == ''){
+            count = await RealizatorShoro.count();
+            findResult = await RealizatorShoro
+                .find({region: region})
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10)
+        } else if (mongoose.Types.ObjectId.isValid(search)) {
+            count = await RealizatorShoro.count({
+                $or: [
+                    {_id: search},
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {phone: {'$regex': search, '$options': 'i'}},
+                    {inn: {'$regex': search, '$options': 'i'}},
+                    {address: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}}
+                ],
+                region: region
+            });
+            findResult = await RealizatorShoro.find({
+                $or: [
+                    {_id: search},
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {phone: {'$regex': search, '$options': 'i'}},
+                    {inn: {'$regex': search, '$options': 'i'}},
+                    {address: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}}
+                ],
+                region: region
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10);
+        } else {
+            count = await RealizatorShoro.count({
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {phone: {'$regex': search, '$options': 'i'}},
+                    {inn: {'$regex': search, '$options': 'i'}},
+                    {address: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}}
+                ],
+                region: region
+            });
+            findResult = await RealizatorShoro.find({
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {phone: {'$regex': search, '$options': 'i'}},
+                    {inn: {'$regex': search, '$options': 'i'}},
+                    {address: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}}
+                ],
+                region: region
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10);
+        }
+        for (let i=0; i<findResult.length; i++){
+            data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);
+        }
+        return {data: data, count: count, row: row}
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 const getRealizatorShoro = async (search, sort, skip) => {
     try{
         let findResult = [], data = [], count;
@@ -191,6 +286,7 @@ const deleteRealizatorShoro = async (id) => {
 
 module.exports.deleteRealizatorShoro = deleteRealizatorShoro;
 module.exports.getRealizatorShoro = getRealizatorShoro;
+module.exports.getRealizatorShoro1 = getRealizatorShoro1;
 module.exports.setRealizatorShoro = setRealizatorShoro;
 module.exports.addRealizatorShoro = addRealizatorShoro;
 module.exports.getRealizatorShoroByName = getRealizatorShoroByName;

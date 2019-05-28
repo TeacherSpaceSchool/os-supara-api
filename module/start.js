@@ -31,7 +31,7 @@ let addRealizator = async () => {
                 if(find==null){
                     let _user = new UserShoro({
                         email: realizators[i][3],
-                        role: 'организатор',
+                        role: 'реализатор',
                         status: 'active',
                         password: realizators[i][4],
                     });
@@ -127,11 +127,11 @@ let addPoint = async () => {
 }
 
 let start = async () => {
-    /*await deleteAll()
+    await deleteAll()
     await addPoint()
     await addRegion()
     await addOrganizator()
-    await addRealizator()*/
+    await addRealizator()
     console.log('lol')
 }
 
