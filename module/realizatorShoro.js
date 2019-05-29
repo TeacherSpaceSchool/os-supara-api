@@ -1,8 +1,8 @@
 const RealizatorShoro = require('../models/realizatorShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const UserShoro = require('../models/userShoro');
-const format = require('./const').stringifyDateTime ;
 const mongoose = require('mongoose');
+
 
 const getRealizatorShoro1 = async (search, sort, skip, id) => {
     try{

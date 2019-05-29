@@ -128,6 +128,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByDate(data.data, data.organizator, data.region))
                 } else if(req.body.name == 'Реализатор'){
                     await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'ТочкаВсе'){
+                    await res.send(await PointShoro.getPointShoroAll(user._id))
+                }  else if(req.body.name == 'Цена'){
+                    await res.send(await PriceShoro.getPriceShoroAll())
                 }
             });
         }

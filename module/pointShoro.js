@@ -2,6 +2,19 @@ const PointShoro = require('../models/pointShoro');
 const format = require('./const').stringifyDateTime
 const mongoose = require('mongoose');
 const RealizatorShoro = require('../models/realizatorShoro');
+const OrganizatorShoro = require('../models/organizatorShoro');
+
+const getPointShoroAll = async (id) => {
+    try{
+        let organizator = await OrganizatorShoro.findOne({user: id})
+        let region = organizator.region
+        return await PointShoro
+            .find({region: region})
+            .distinct('name')
+    } catch(error) {
+        console.error(error)
+    }
+}
 
 const getPointShoro = async (search, sort, skip) => {
     try{
@@ -127,3 +140,4 @@ module.exports.setPointShoro = setPointShoro;
 module.exports.addPointShoro = addPointShoro;
 module.exports.getPointShoroName = getPointShoroName;
 module.exports.getPointShoroRegion = getPointShoroRegion;
+module.exports.getPointShoroAll = getPointShoroAll;
