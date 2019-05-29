@@ -96,6 +96,8 @@ router.post('/get', async (req, res) => {
                     data = JSON.parse(req.body.data);
                 if(req.body.name == 'Накладная на пустую тару'){
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'РеализаторПоИмени'){
+                    await res.send(await RealizatorShoro.getRealizatorShoroByName(data.name, data.point, data.region, data.phone))
                 } else if(req.body.name == 'ОрганизаторПоИмени'){
                     await res.send(await OrganizatorShoro.getOrganizatorShoroByName(data.name, data.region))
                 } else if(req.body.name == 'ОрганизаторПоID'){
@@ -132,6 +134,12 @@ router.post('/get', async (req, res) => {
                     await res.send(await PointShoro.getPointShoroAll(user._id))
                 }  else if(req.body.name == 'Цена'){
                     await res.send(await PriceShoro.getPriceShoroAll())
+                } else if(req.body.name == 'РеализаторПоТочке'){
+                    await res.send(await RealizatorShoro.getRealizatorShoroByPoint(data.point))
+                } else if(req.body.name == 'РегионИмя'){
+                    await res.send(await RegionShoro.getRegionShoroName())
+                } else if(req.body.name == 'ТочкаПоРегиону'){
+                    await res.send(await PointShoro.getPointShoroRegion(data.region))
                 }
             });
         }
@@ -420,6 +428,19 @@ router.post('/add', async (req, res) => {
                         await OtchetOrganizatoraShoro.setOtchetOrganizatoraShoro(myNew, req.body.id)
                     await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
+                else if(req.body.name == 'Отчет реализатора'){
+                    if(req.body.id==undefined)
+                        await OtchetRealizatoraShoro.addOtchetRealizatoraShoro(myNew)
+                    else
+                        await OtchetRealizatoraShoro.setOtchetRealizatoraShoro(myNew, req.body.id)
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroRealizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'Реализатор'){
+                    if(req.body.id==undefined)
+                        await RealizatorShoro.addRealizatorShoro(myNew)
+                    else
+                        await RealizatorShoro.setRealizatorShoro(myNew, req.body.id)
+                    await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
+                }
             });
         }
         else if(role==='реализатор'){
@@ -430,7 +451,7 @@ router.post('/add', async (req, res) => {
                         await OtchetRealizatoraShoro.addOtchetRealizatoraShoro(myNew)
                     else
                         await OtchetRealizatoraShoro.setOtchetRealizatoraShoro(myNew, req.body.id)
-                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroRealizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
             });
         }

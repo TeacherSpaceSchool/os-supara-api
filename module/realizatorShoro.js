@@ -3,6 +3,20 @@ const OrganizatorShoro = require('../models/organizatorShoro');
 const UserShoro = require('../models/userShoro');
 const mongoose = require('mongoose');
 
+const getRealizatorShoroByPoint = async (point) => {
+    try{
+        let data = await RealizatorShoro.findOne({point: point})
+        let res = {
+            name: data.name,
+            region: data.region,
+            point: data.point,
+            organizator: (await OrganizatorShoro.findOne({region: data.region})).name
+        }
+        return res
+    } catch(error) {
+        console.error(error)
+    }
+}
 
 const getRealizatorShoro1 = async (search, sort, skip, id) => {
     try{
@@ -33,7 +47,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
         else if(sort[0]=='статус'&&sort[1]=='ascending')
             sort = 'status';
         if(search == ''){
-            count = await RealizatorShoro.count();
+            count = await RealizatorShoro.count({region: region});
             findResult = await RealizatorShoro
                 .find({region: region})
                 .sort(sort)
@@ -291,3 +305,4 @@ module.exports.setRealizatorShoro = setRealizatorShoro;
 module.exports.addRealizatorShoro = addRealizatorShoro;
 module.exports.getRealizatorShoroByName = getRealizatorShoroByName;
 module.exports.getRealizatorShoroById = getRealizatorShoroById;
+module.exports.getRealizatorShoroByPoint = getRealizatorShoroByPoint;
