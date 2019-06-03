@@ -13,6 +13,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
         ];
         let organizator = await OrganizatorShoro.findOne({user: id})
         let region = organizator.region
+        organizator = organizator.name
         if(sort == undefined||sort=='')
             sort = '-updatedAt';
         else if(sort[0]=='дата'&&sort[1]=='descending')
@@ -20,19 +21,23 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await OtchetRealizatoraShoro.count({region: region});
+            count = await OtchetRealizatoraShoro.count({organizator: organizator,region: region});
             findResult = await OtchetRealizatoraShoro
-                .find({region: region})
+                .find({organizator: organizator,region: region})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(10)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
+                organizator: organizator,
                 region: region,
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}},
+                    {realizator: {'$regex': search, '$options': 'i'}},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
@@ -41,6 +46,9 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}},
+                    {realizator: {'$regex': search, '$options': 'i'}},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
                 ]
             })
                 .sort(sort)
@@ -52,6 +60,9 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}},
+                    {realizator: {'$regex': search, '$options': 'i'}},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
@@ -59,6 +70,9 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}},
+                    {realizator: {'$regex': search, '$options': 'i'}},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
                 ]
             })
                 .sort(sort)
@@ -174,6 +188,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
@@ -183,6 +198,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}},
                 ]
             })
                 .sort(sort)
@@ -195,6 +211,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
@@ -203,6 +220,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
+                    {point: {'$regex': search, '$options': 'i'}},
                 ]
             })
                 .sort(sort)
@@ -265,7 +283,6 @@ const addOtchetRealizatoraShoro = async (object) => {
                 await OtchetOrganizatoraShoro.findOneAndUpdate({_id: find._id}, {$set: {dataTable: findDataTable}});
 
             }
-
             await OtchetRealizatoraShoro.create(_object);
         }
     } catch(error) {

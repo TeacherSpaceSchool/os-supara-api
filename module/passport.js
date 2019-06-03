@@ -5,6 +5,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwtsecret = '@615141ViDiK141516@';
 const UserShoro = require('../models/userShoro');
 const jwt = require('jsonwebtoken');
+const socketioJwt = require('socketio-jwt');
 
 let start = () => {
 //настройка паспорта
