@@ -240,13 +240,245 @@ const addOtchetRealizatoraShoro = async (object) => {
     try{
         if(await OtchetRealizatoraShoro.findOne({data: object.data, realizator: object.realizator, region: object.region, point: object.point})===null){
             let _object = new OtchetRealizatoraShoro(object);
+            await OtchetRealizatoraShoro.create(_object);
 
-            let find = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
-            if(find!==null){
-                let findDataTable = JSON.parse(find.dataTable)
+            let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+            let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
+            if(findOrganizator!==null){
+                let findDataTable = JSON.parse(findOrganizator.dataTable)
+                findDataTable.r.otr += 100
+
+                findDataTable.p.m.v = 0
+                findDataTable.p.ch.v = 0
+                findDataTable.p.k.v = 0
+                findDataTable.p.sl.v = 0
+
+                findDataTable.p.m.o = 0
+                findDataTable.p.ch.o = 0
+                findDataTable.p.k.o = 0
+                findDataTable.p.sl.o = 0
+
+                findDataTable.p.m.s = 0
+                findDataTable.p.ch.s = 0
+                findDataTable.p.k.s = 0
+                findDataTable.p.sl.s = 0
+
+                findDataTable.p.m.pl = 0
+                findDataTable.p.ch.pl = 0
+                findDataTable.p.k.pl = 0
+                findDataTable.p.sl.pl = 0
+
+                findDataTable.p.m.ps = 0
+                findDataTable.p.ch.ps = 0
+                findDataTable.p.k.ps = 0
+                findDataTable.p.sl.ps = 0
+
+                findDataTable.p.m.ktt = findRealizators.length
+                findDataTable.p.ch.ktt = findRealizators.length
+                findDataTable.p.k.ktt = findRealizators.length
+                findDataTable.p.sl.ktt = findRealizators.length
+
+                findDataTable.r.ntp = 0
+
+                findDataTable['p']['i'] = 0
+                findDataTable['i'] = 0
+
+                let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = []
+
+                for(let i = 0; i<findRealizators.length; i++){
+                    let addDataTable = JSON.parse(object.dataTable)
+
+                    if(addDataTable.vydano.d1.ml){
+                        dolivkiM[i]=1
+                    }
+                    if(addDataTable.vydano.d2.ml!==0){
+                        dolivkiM[i]=2
+                    }
+                    if(addDataTable.vydano.d3.ml!==0){
+                        dolivkiM[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.kl){
+                        dolivkiK[i]=1
+                    }
+                    if(addDataTable.vydano.d2.kl!==0){
+                        dolivkiK[i]=2
+                    }
+                    if(addDataTable.vydano.d3.kl!==0){
+                        dolivkiK[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.chl){
+                        dolivkiCh[i]=1
+                    }
+                    if(addDataTable.vydano.d2.chl!==0){
+                        dolivkiCh[i]=2
+                    }
+                    if(addDataTable.vydano.d3.chl!==0){
+                        dolivkiCh[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.sl){
+                        dolivkiSl[i]=1
+                    }
+                    if(addDataTable.vydano.d2.sl!==0){
+                        dolivkiSl[i]=2
+                    }
+                    if(addDataTable.vydano.d3.sl!==0){
+                        dolivkiSl[i]=3
+                    }
+
+                    findDataTable.p.m.v += addDataTable.vydano.i.ml
+                    findDataTable.p.ch.v += addDataTable.vydano.i.chl
+                    findDataTable.p.k.v += addDataTable.vydano.i.kl
+                    findDataTable.p.sl.v += addDataTable.vydano.i.sl
+
+                    findDataTable.p.m.o += addDataTable.vozvrat.v.ml
+                    findDataTable.p.ch.o += addDataTable.vozvrat.v.chl
+                    findDataTable.p.k.o += addDataTable.vozvrat.v.kl
+                    findDataTable.p.sl.o += addDataTable.vozvrat.v.sl
+
+                    findDataTable.p.m.s += addDataTable.vozvrat.s.ml
+                    findDataTable.p.ch.s += addDataTable.vozvrat.s.chl
+                    findDataTable.p.k.s += addDataTable.vozvrat.s.kl
+                    findDataTable.p.sl.s += addDataTable.vozvrat.s.sl
+
+                    findDataTable.p.m.pl += addDataTable.vozvrat.p.ml
+                    findDataTable.p.ch.pl += addDataTable.vozvrat.p.chl
+                    findDataTable.p.k.pl += addDataTable.vozvrat.p.kl
+                    findDataTable.p.sl.pl += addDataTable.vozvrat.p.sl
+
+                    findDataTable.p.m.ps += addDataTable.vozvrat.virychka.ml
+                    findDataTable.p.ch.ps += addDataTable.vozvrat.virychka.chl
+                    findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
+                    findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
+
+                    findDataTable.r.ntp += addDataTable.i.n
+
+                }
+
+                findDataTable.p.m.kd = Math.max.apply(Math, dolivkiM);
+                findDataTable.p.k.kd = Math.max.apply(Math, dolivkiK);
+                findDataTable.p.ch.kd = Math.max.apply(Math, dolivkiCh);
+                findDataTable.p.sl.kd = Math.max.apply(Math, dolivkiSl);
+
+                findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
+                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+
+                findDataTable = JSON.stringify(findDataTable)
+                await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});
+
+            }
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getOtchetRealizatoraShoroByDate = async (data, organizator, region) => {
+    try{
+        return(await OtchetRealizatoraShoro.find({data: data, organizator: organizator, region: region}))
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getOtchetRealizatoraShoroByData = async (data, realizator, region, point) => {
+    try{
+        return(await OtchetRealizatoraShoro.findOne({data: data, realizator: realizator, region: region, point: point}))
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const setOtchetRealizatoraShoro = async (object, id) => {
+    try{
+        await OtchetRealizatoraShoro.findOneAndUpdate({_id: id}, {$set: object});
+
+        let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
+        if(findOrganizator!==null){
+            let findDataTable = JSON.parse(findOrganizator.dataTable)
+
+            findDataTable.p.m.v = 0
+            findDataTable.p.ch.v = 0
+            findDataTable.p.k.v = 0
+            findDataTable.p.sl.v = 0
+
+            findDataTable.p.m.o = 0
+            findDataTable.p.ch.o = 0
+            findDataTable.p.k.o = 0
+            findDataTable.p.sl.o = 0
+
+            findDataTable.p.m.s = 0
+            findDataTable.p.ch.s = 0
+            findDataTable.p.k.s = 0
+            findDataTable.p.sl.s = 0
+
+            findDataTable.p.m.pl = 0
+            findDataTable.p.ch.pl = 0
+            findDataTable.p.k.pl = 0
+            findDataTable.p.sl.pl = 0
+
+            findDataTable.p.m.ps = 0
+            findDataTable.p.ch.ps = 0
+            findDataTable.p.k.ps = 0
+            findDataTable.p.sl.ps = 0
+
+            findDataTable.p.m.ktt = findRealizators.length
+            findDataTable.p.ch.ktt = findRealizators.length
+            findDataTable.p.k.ktt = findRealizators.length
+            findDataTable.p.sl.ktt = findRealizators.length
+
+            findDataTable.r.ntp = 0
+
+            findDataTable['p']['i'] = 0
+            findDataTable['i'] = 0
+
+            let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = []
+
+            for(let i = 0; i<findRealizators.length; i++){
                 let addDataTable = JSON.parse(object.dataTable)
 
-                findDataTable.r.otr += 100
+                if(addDataTable.vydano.d1.ml){
+                    dolivkiM[i]=1
+                }
+                if(addDataTable.vydano.d2.ml!==0){
+                    dolivkiM[i]=2
+                }
+                if(addDataTable.vydano.d3.ml!==0){
+                    dolivkiM[i]=3
+                }
+
+                if(addDataTable.vydano.d1.kl){
+                    dolivkiK[i]=1
+                }
+                if(addDataTable.vydano.d2.kl!==0){
+                    dolivkiK[i]=2
+                }
+                if(addDataTable.vydano.d3.kl!==0){
+                    dolivkiK[i]=3
+                }
+
+                if(addDataTable.vydano.d1.chl){
+                    dolivkiCh[i]=1
+                }
+                if(addDataTable.vydano.d2.chl!==0){
+                    dolivkiCh[i]=2
+                }
+                if(addDataTable.vydano.d3.chl!==0){
+                    dolivkiCh[i]=3
+                }
+
+                if(addDataTable.vydano.d1.sl){
+                    dolivkiSl[i]=1
+                }
+                if(addDataTable.vydano.d2.sl!==0){
+                    dolivkiSl[i]=2
+                }
+                if(addDataTable.vydano.d3.sl!==0){
+                    dolivkiSl[i]=3
+                }
 
                 findDataTable.p.m.v += addDataTable.vydano.i.ml
                 findDataTable.p.ch.v += addDataTable.vydano.i.chl
@@ -273,42 +505,23 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
                 findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
 
-                findDataTable.r.ntp += addDataTable.vozvrat.virychka.sl
-
-                findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
-                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
-
-
-                findDataTable = JSON.stringify(findDataTable)
-                await OtchetOrganizatoraShoro.findOneAndUpdate({_id: find._id}, {$set: {dataTable: findDataTable}});
+                findDataTable.r.ntp += addDataTable.i.n
 
             }
-            await OtchetRealizatoraShoro.create(_object);
+
+            findDataTable.p.m.kd = Math.max.apply(Math, dolivkiM);
+            findDataTable.p.k.kd = Math.max.apply(Math, dolivkiK);
+            findDataTable.p.ch.kd = Math.max.apply(Math, dolivkiCh);
+            findDataTable.p.sl.kd = Math.max.apply(Math, dolivkiSl);
+
+            findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
+            findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+
+            findDataTable = JSON.stringify(findDataTable)
+            await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});
+
         }
-    } catch(error) {
-        console.error(error)
-    }
-}
 
-const getOtchetRealizatoraShoroByDate = async (data, organizator, region) => {
-    try{
-        return(await OtchetRealizatoraShoro.find({data: data, organizator: organizator, region: region}))
-    } catch(error) {
-        console.error(error)
-    }
-}
-
-const getOtchetRealizatoraShoroByData = async (data, realizator, region, point) => {
-    try{
-        return(await OtchetRealizatoraShoro.findOne({data: data, realizator: realizator, region: region, point: point}))
-    } catch(error) {
-        console.error(error)
-    }
-}
-
-const setOtchetRealizatoraShoro = async (object, id) => {
-    try{
-        await OtchetRealizatoraShoro.findOneAndUpdate({_id: id}, {$set: object});
     } catch(error) {
         console.error(error)
     }
