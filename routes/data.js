@@ -433,7 +433,7 @@ router.post('/add', async (req, res) => {
                         await OtchetRealizatoraShoro.addOtchetRealizatoraShoro(myNew)
                     else
                         await OtchetRealizatoraShoro.setOtchetRealizatoraShoro(myNew, req.body.id)
-                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroRealizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Реализатор'){
                     if(req.body.id==undefined)
                         await RealizatorShoro.addRealizatorShoro(myNew)
@@ -451,7 +451,7 @@ router.post('/add', async (req, res) => {
                         await OtchetRealizatoraShoro.addOtchetRealizatoraShoro(myNew)
                     else
                         await OtchetRealizatoraShoro.setOtchetRealizatoraShoro(myNew, req.body.id)
-                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroRealizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
             });
         }
