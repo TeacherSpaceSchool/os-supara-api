@@ -326,7 +326,8 @@ router.post('/add', async (req, res) => {
                             }
                         })
                     }
-                } else {
+                }
+                else {
                     if(req.body.name == 'Блог'){
                         if(req.body.id==undefined)
                             await BlogShoro.addBlogShoro(myNew)
@@ -387,6 +388,32 @@ router.post('/add', async (req, res) => {
                             await OtchetOrganizatoraShoro.setOtchetOrganizatoraShoro(myNew, req.body.id)
                         await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip))
                     }
+                    else if(req.body.name == 'Отчет реализатора'){
+                        if(req.body.id!==undefined)
+                            await OtchetRealizatoraShoro.setOtchetRealizatoraShoro(myNew, req.body.id)
+                        await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else  if(req.body.name == 'Накладная на пустую тару'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaNaPustuyTaruShoro.setNakladnayaNaPustuyTaruShoro(myNew, req.body.id)
+                        await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'Накладная склад №1'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaSklad1Shoro.setNakladnayaSklad1Shoro(myNew, req.body.id)
+                        await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skipd))
+                    }
+                    else if(req.body.name == 'Накладная склад №2'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaSklad2Shoro.setNakladnayaSklad2Shoro(myNew, req.body.id)
+                        await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'Накладная на вечерний возврат'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaNaVecherniyVozvratShoro.setNakladnayaNaVecherniyVozvratShoro(myNew, req.body.id)
+                        await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                    }
+
                 }
             });
         }
