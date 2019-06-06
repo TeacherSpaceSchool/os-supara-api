@@ -107,7 +107,7 @@ const setPriceShoro = async (object, id) => {
 
 const deletePriceShoro = async (id) => {
     try{
-        await PriceShoro.deleteMany({_id: {$in: id}});
+        await PriceShoro.deleteMany({name: {$in: id}});
     } catch(error) {
         console.error(error)
     }

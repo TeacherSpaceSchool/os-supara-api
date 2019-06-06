@@ -80,10 +80,10 @@ const addRegionShoro = async (object) => {
 
 const setRegionShoro = async (object, id) => {
     try{
-        await OrganizatorShoro.findOneAndUpdate({region: id}, {$set: {region: object.name}});
-        await RealizatorShoro.findOneAndUpdate({region: id}, {$set: {region: object.name}});
-        await PointShoro.findOneAndUpdate({region: id}, {$set: {region: object.name}});
-        await RegionShoro.findOneAndUpdate({name: id}, {$set: object});
+        await OrganizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
+        await RealizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
+        await PointShoro.updateMany({region: id}, {$set: {region: object.name}});
+        await RegionShoro.updateMany({name: id}, {$set: object});
     } catch(error) {
         console.error(error)
     }

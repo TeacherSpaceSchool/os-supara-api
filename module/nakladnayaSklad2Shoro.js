@@ -169,6 +169,23 @@ const setNakladnayaSklad2Shoro = async (object, id) => {
     }
 }
 
+const deleteNakladnayaSklad2Shoro = async (id) => {
+    try{
+        for(let i=0; i<id.length; i++){
+            let id1 = id[i].split('|')
+            id1[0] = id1[1].split(': ')[0]
+            id1[1] = id1[1].split(': ')[1]
+            await NakladnayaSklad2Shoro.deleteMany({data: id1[2],
+                organizator: id1[0],
+                region: id1[1]})
+
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.deleteNakladnayaSklad2Shoro = deleteNakladnayaSklad2Shoro;
 module.exports.getNakladnayaSklad2Shoro = getNakladnayaSklad2Shoro;
 module.exports.setNakladnayaSklad2Shoro = setNakladnayaSklad2Shoro;
 module.exports.addNakladnayaSklad2Shoro = addNakladnayaSklad2Shoro;

@@ -527,6 +527,27 @@ const setOtchetRealizatoraShoro = async (object, id) => {
     }
 }
 
+const deleteOtchetRealizatoraShoro = async (id) => {
+    try{
+        for(let i=0; i<id.length; i++){
+            let id1 = id[i].split('|')
+            id1[0] = id1[2].split(': ')[0]
+            id1[1] = id1[2].split(': ')[1].split(' - ')[0]
+            id1[2] = id1[2].split(': ')[1].split(' - ')[1]
+            await OtchetRealizatoraShoro.deleteMany({
+                realizator: id1[0],
+                region: id1[1],
+                point: id1[2],
+                data: id1[3],
+                })
+
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.deleteOtchetRealizatoraShoro = deleteOtchetRealizatoraShoro;
 module.exports.getOtchetRealizatoraShoro = getOtchetRealizatoraShoro;
 module.exports.setOtchetRealizatoraShoro = setOtchetRealizatoraShoro;
 module.exports.addOtchetRealizatoraShoro = addOtchetRealizatoraShoro;

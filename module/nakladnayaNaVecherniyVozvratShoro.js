@@ -169,6 +169,23 @@ const setNakladnayaNaVecherniyVozvratShoro = async (object, id) => {
     }
 }
 
+const deleteNakladnayaNaVecherniyVozvratShoro = async (id) => {
+    try{
+        for(let i=0; i<id.length; i++){
+            let id1 = id[i].split('|')
+            id1[0] = id1[1].split(': ')[0]
+            id1[1] = id1[1].split(': ')[1]
+            await NakladnayaNaVecherniyVozvratShoro.deleteMany({data: id1[2],
+                organizator: id1[0],
+                region: id1[1]})
+
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.deleteNakladnayaNaVecherniyVozvratShoro = deleteNakladnayaNaVecherniyVozvratShoro;
 module.exports.getNakladnayaNaVecherniyVozvratShoro = getNakladnayaNaVecherniyVozvratShoro;
 module.exports.setNakladnayaNaVecherniyVozvratShoro = setNakladnayaNaVecherniyVozvratShoro;
 module.exports.addNakladnayaNaVecherniyVozvratShoro = addNakladnayaNaVecherniyVozvratShoro;

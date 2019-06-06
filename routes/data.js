@@ -226,6 +226,24 @@ router.post('/delete', async (req, res) => {
                 } else if(req.body.name == 'Завсклада'){
                     await ZavSkladShoro.deleteZavSkladShoro(JSON.parse(req.body.deleted))
                     await res.send(await ZavSkladShoro.getZavSkladShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
+                    await NakladnayaNaPustuyTaruShoro.deleteNakladnayaNaPustuyTaruShoro(JSON.parse(req.body.deleted))
+                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №1'){
+                    await NakladnayaSklad1Shoro.deleteNakladnayaSklad1Shoro(JSON.parse(req.body.deleted))
+                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №2'){
+                    await NakladnayaSklad2Shoro.deleteNakladnayaSklad2Shoro(JSON.parse(req.body.deleted))
+                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на вечерний возврат'){
+                    await NakladnayaNaVecherniyVozvratShoro.deleteNakladnayaNaVecherniyVozvratShoro(JSON.parse(req.body.deleted))
+                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет организатора'){
+                    await OtchetOrganizatoraShoro.deleteOtchetOrganizatoraShoro(JSON.parse(req.body.deleted))
+                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет реализатора'){
+                    await OtchetRealizatoraShoro.deleteOtchetRealizatoraShoro(JSON.parse(req.body.deleted))
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
                 }
             });
         }

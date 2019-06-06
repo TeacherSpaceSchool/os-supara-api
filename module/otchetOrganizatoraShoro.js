@@ -170,6 +170,23 @@ const setOtchetOrganizatoraShoro = async (object, id) => {
     }
 }
 
+const deleteOtchetOrganizatoraShoro = async (id) => {
+    try{
+        for(let i=0; i<id.length; i++){
+            let id1 = id[i].split('|')
+            id1[0] = id1[1].split(': ')[0]
+            id1[1] = id1[1].split(': ')[1]
+            await OtchetOrganizatoraShoro.deleteMany({data: id1[2],
+                organizator: id1[0],
+                region: id1[1]})
+
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.deleteOtchetOrganizatoraShoro = deleteOtchetOrganizatoraShoro;
 module.exports.getOtchetOrganizatoraShoro = getOtchetOrganizatoraShoro;
 module.exports.setOtchetOrganizatoraShoro = setOtchetOrganizatoraShoro;
 module.exports.addOtchetOrganizatoraShoro = addOtchetOrganizatoraShoro;
