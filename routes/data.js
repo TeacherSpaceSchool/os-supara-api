@@ -98,6 +98,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'РеализаторПоИмени'){
                     await res.send(await RealizatorShoro.getRealizatorShoroByName(data.name, data.point, data.region, data.phone))
+                } else if(req.body.name == 'Профиль'){
+                    await res.send(await OrganizatorShoro.getProfileOrganizatorShoro(user._id))
                 } else if(req.body.name == 'ОрганизаторПоИмени'){
                     await res.send(await OrganizatorShoro.getOrganizatorShoroByName(data.name, data.region))
                 } else if(req.body.name == 'ОрганизаторПоID'){
@@ -140,6 +142,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await RegionShoro.getRegionShoroName())
                 } else if(req.body.name == 'ТочкаПоРегиону'){
                     await res.send(await PointShoro.getPointShoroRegion(data.region))
+                } else if(req.body.name == 'План'){
+                    await res.send(await PlanShoro.getPlanShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'ПланПоДате'){
+                    await res.send(await PlanShoro.getPlanShoroByDate(data.date))
                 }
             });
         }
@@ -485,6 +491,10 @@ router.post('/add', async (req, res) => {
                     else
                         await RealizatorShoro.setRealizatorShoro(myNew, req.body.id)
                     await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'План'){
+                    if(req.body.id!==undefined)
+                        await PlanShoro.setPlanShoro(myNew, req.body.id)
+                    await res.send(await PlanShoro.getPlanShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
             });
         }

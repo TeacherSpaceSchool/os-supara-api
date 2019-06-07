@@ -2,6 +2,7 @@ const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
+const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
 
 const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
@@ -244,6 +245,30 @@ const addOtchetRealizatoraShoro = async (object) => {
 
             let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
             let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
+            let findPlan = await PlanShoro.findOne({date: (object.data).substring(3)})
+            if(findPlan!==null) {
+                let findPlanRegions = JSON.parse(findPlan.regions)
+                findPlan.current = 0
+                for (let i = 0; i < findPlanRegions.length; i++) {
+                    if (findPlanRegions[i]['name'] == object.region) {
+                        findPlanRegions[i]['current'] = 0
+                        for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
+                            if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
+                                findPlanRegions[i]['points'][i1]['current'] = JSON.parse(object.dataTable)['i']['fv']
+                                findPlan.current += findPlanRegions[i]['current']
+                            }
+                            findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
+                        }
+                    }
+                    findPlan.current += findPlanRegions[i]['current']
+                }
+                await PlanShoro.findOneAndUpdate({_id: findPlan._id}, {
+                    $set: {
+                        regions: JSON.stringify(findPlanRegions),
+                        current: findPlan.current
+                    }
+                });
+            }
             if(findOrganizator!==null){
                 let findDataTable = JSON.parse(findOrganizator.dataTable)
                 findDataTable.r.otr += 100
@@ -357,10 +382,10 @@ const addOtchetRealizatoraShoro = async (object) => {
 
                 }
 
-                findDataTable.p.m.kd = Math.max.apply(Math, dolivkiM);
-                findDataTable.p.k.kd = Math.max.apply(Math, dolivkiK);
-                findDataTable.p.ch.kd = Math.max.apply(Math, dolivkiCh);
-                findDataTable.p.sl.kd = Math.max.apply(Math, dolivkiSl);
+                findDataTable.p.m.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiM):0;
+                findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
+                findDataTable.p.ch.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiCh):0;
+                findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
 
                 findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
                 findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
@@ -394,7 +419,30 @@ const getOtchetRealizatoraShoroByData = async (data, realizator, region, point) 
 const setOtchetRealizatoraShoro = async (object, id) => {
     try{
         await OtchetRealizatoraShoro.findOneAndUpdate({_id: id}, {$set: object});
-
+        let findPlan = await PlanShoro.findOne({date: (object.data).substring(3)})
+        if(findPlan!==null) {
+            let findPlanRegions = JSON.parse(findPlan.regions)
+            findPlan.current = 0
+            for (let i = 0; i < findPlanRegions.length; i++) {
+                if (findPlanRegions[i]['name'] == object.region) {
+                    findPlanRegions[i]['current'] = 0
+                    for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
+                        if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
+                            findPlanRegions[i]['points'][i1]['current'] = JSON.parse(object.dataTable)['i']['fv']
+                            findPlan.current += findPlanRegions[i]['current']
+                        }
+                        findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
+                    }
+                }
+                findPlan.current += findPlanRegions[i]['current']
+            }
+            await PlanShoro.findOneAndUpdate({_id: findPlan._id}, {
+                $set: {
+                    regions: JSON.stringify(findPlanRegions),
+                    current: findPlan.current
+                }
+            });
+        }
         let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
         let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
         if(findOrganizator!==null){
@@ -440,7 +488,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             for(let i = 0; i<findRealizators.length; i++){
                 let addDataTable = JSON.parse(object.dataTable)
 
-                if(addDataTable.vydano.d1.ml){
+                if(addDataTable.vydano.d1.ml!==0){
                     dolivkiM[i]=1
                 }
                 if(addDataTable.vydano.d2.ml!==0){
@@ -450,7 +498,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                     dolivkiM[i]=3
                 }
 
-                if(addDataTable.vydano.d1.kl){
+                if(addDataTable.vydano.d1.kl!==0){
                     dolivkiK[i]=1
                 }
                 if(addDataTable.vydano.d2.kl!==0){
@@ -460,7 +508,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                     dolivkiK[i]=3
                 }
 
-                if(addDataTable.vydano.d1.chl){
+                if(addDataTable.vydano.d1.chl!==0){
                     dolivkiCh[i]=1
                 }
                 if(addDataTable.vydano.d2.chl!==0){
@@ -470,7 +518,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                     dolivkiCh[i]=3
                 }
 
-                if(addDataTable.vydano.d1.sl){
+                if(addDataTable.vydano.d1.sl!==0){
                     dolivkiSl[i]=1
                 }
                 if(addDataTable.vydano.d2.sl!==0){
@@ -509,10 +557,11 @@ const setOtchetRealizatoraShoro = async (object, id) => {
 
             }
 
-            findDataTable.p.m.kd = Math.max.apply(Math, dolivkiM);
-            findDataTable.p.k.kd = Math.max.apply(Math, dolivkiK);
-            findDataTable.p.ch.kd = Math.max.apply(Math, dolivkiCh);
-            findDataTable.p.sl.kd = Math.max.apply(Math, dolivkiSl);
+
+            findDataTable.p.m.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiM):0;
+            findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
+            findDataTable.p.ch.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiCh):0;
+            findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
 
             findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
             findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']

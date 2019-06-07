@@ -172,9 +172,28 @@ const deleteOrganizatorShoro = async (id) => {
     }
 }
 
+const getProfileOrganizatorShoro = async (id) => {
+    try{
+        let object = await OrganizatorShoro.findOne({user: id});
+        let user = await UserShoro.findOne({_id: object.user})
+        let res = {
+            status: user.status,
+            name: object.name,
+            phone: object.phone,
+            region: object.region,
+            _id: object._id,
+            user: object.user,
+        }
+        return res
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 module.exports.deleteOrganizatorShoro = deleteOrganizatorShoro;
 module.exports.getOrganizatorShoroByName = getOrganizatorShoroByName;
 module.exports.getOrganizatorShoro = getOrganizatorShoro;
 module.exports.setOrganizatorShoro = setOrganizatorShoro;
 module.exports.addOrganizatorShoro = addOrganizatorShoro;
 module.exports.getOrganizatorShoroById = getOrganizatorShoroById
+module.exports.getProfileOrganizatorShoro = getProfileOrganizatorShoro
