@@ -86,6 +86,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Отчет реализатора по данным'){
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
+                } else if(req.body.name == 'Номера авто'){
+                    await res.send(await CarShoro.getCarNumber())
                 }
             });
         }
