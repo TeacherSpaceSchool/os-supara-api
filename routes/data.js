@@ -162,6 +162,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await RealizatorShoro.getRealizatorShoroById(user._id))
                 }  else if(req.body.name == 'Цена'){
                     await res.send(await PriceShoro.getPriceShoroAll())
+                } else if(req.body.name == 'Профиль'){
+                    await res.send(await RealizatorShoro.getProfileRealizatorShoro(user._id))
                 }
             });
         }

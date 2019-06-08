@@ -249,6 +249,25 @@ const addRealizatorShoro = async (object) => {
     }
 }
 
+const getProfileRealizatorShoro = async (id) => {
+    try{
+        let object = await RealizatorShoro.findOne({user: id});
+        let user = await UserShoro.findOne({_id: object.user})
+        let res = {
+            status: user.status,
+            name: object.name,
+            phone: object.phone,
+            region: object.region,
+            point: object.point,
+            _id: object._id,
+            user: object.user,
+        }
+        return res
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 const getRealizatorShoroByName = async (name, point, region, phone) => {
     try{
         let object = await RealizatorShoro.findOne({name: name, region: region, point: point, phone: phone});
@@ -305,4 +324,5 @@ module.exports.setRealizatorShoro = setRealizatorShoro;
 module.exports.addRealizatorShoro = addRealizatorShoro;
 module.exports.getRealizatorShoroByName = getRealizatorShoroByName;
 module.exports.getRealizatorShoroById = getRealizatorShoroById;
+module.exports.getProfileRealizatorShoro = getProfileRealizatorShoro;
 module.exports.getRealizatorShoroByPoint = getRealizatorShoroByPoint;
