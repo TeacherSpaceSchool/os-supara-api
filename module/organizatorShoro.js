@@ -85,7 +85,7 @@ const getOrganizatorShoro = async (search, sort, skip) => {
 
 const addOrganizatorShoro = async (object) => {
     try{
-        if(await OrganizatorShoro.count({region: object.region})===0){
+        if(object.region==='Резерв'||await OrganizatorShoro.count({region: object.region})===0){
             let _user = new UserShoro({
                 email: object.phone,
                 role: 'организатор',

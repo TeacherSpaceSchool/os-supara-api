@@ -4,8 +4,7 @@ const uniqueValidator = require('mongoose-unique-validator');
 const OrganizatorShoroSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     phone: {
         type: String,

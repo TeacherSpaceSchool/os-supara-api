@@ -229,21 +229,23 @@ const getRealizatorShoroById = async (id) => {
 
 const addRealizatorShoro = async (object) => {
     try{
-        let _user = new UserShoro({
-            email: object.phone,
-            role: 'реализатор',
-            status: object.status,
-            password: object.password,
-        });
-        const user = await UserShoro.create(_user);
-        let _object = new RealizatorShoro({
-            name: object.name,
-            phone: object.phone,
-            point: object.point,
-            region: object.region,
-            user: user._id
-        });
-        await RealizatorShoro.create(_object);
+        if(object.point==='Резерв'||await RealizatorShoro.count({region: object.region, point: object.point})===0){
+            let _user = new UserShoro({
+                email: object.phone,
+                role: 'реализатор',
+                status: object.status,
+                password: object.password,
+            });
+            const user = await UserShoro.create(_user);
+            let _object = new RealizatorShoro({
+                name: object.name,
+                phone: object.phone,
+                point: object.point,
+                region: object.region,
+                user: user._id
+            });
+            await RealizatorShoro.create(_object);
+        }
     } catch(error) {
         console.error(error)
     }
