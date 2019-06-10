@@ -254,8 +254,11 @@ const addOtchetRealizatoraShoro = async (object) => {
                         findPlanRegions[i]['current'] = 0
                         for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
                             if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
-                                findPlanRegions[i]['points'][i1]['current'] = JSON.parse(object.dataTable)['i']['fv']
-                                findPlan.current += findPlanRegions[i]['current']
+                                let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                                findPlanRegions[i]['points'][i1]['current'] = 0
+                                for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
+                                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                                }
                             }
                             findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
                         }
@@ -302,7 +305,6 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.k.ktt = findRealizators.length
                 findDataTable.p.sl.ktt = findRealizators.length
                 findDataTable.r.otr = findRealizators.length*100
-
                 findDataTable.r.ntp = 0
 
                 findDataTable['p']['i'] = 0
@@ -428,8 +430,11 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                     findPlanRegions[i]['current'] = 0
                     for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
                         if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
-                            findPlanRegions[i]['points'][i1]['current'] = JSON.parse(object.dataTable)['i']['fv']
-                            findPlan.current += findPlanRegions[i]['current']
+                            let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                            findPlanRegions[i]['points'][i1]['current'] = 0
+                            for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
+                                findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                            }
                         }
                         findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
                     }
@@ -478,6 +483,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable.p.k.ktt = findRealizators.length
             findDataTable.p.sl.ktt = findRealizators.length
             findDataTable.r.otr = findRealizators.length*100
+            console.log(findRealizators.length)
 
             findDataTable.r.ntp = 0
 
@@ -610,8 +616,11 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                         findPlanRegions[i]['current'] = 0
                         for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
                             if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
-                                findPlanRegions[i]['points'][i1]['current'] = 0
-                                findPlan.current += findPlanRegions[i]['current']
+                                    let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                                    findPlanRegions[i]['points'][i1]['current'] = 0
+                                    for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
+                                        findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                                    }
                             }
                             findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
                         }

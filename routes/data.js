@@ -42,6 +42,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip))
                 }  else if(req.body.name == 'Цена'){
                     await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Цена1'){
+                    await res.send(await PriceShoro.getPriceShoroAll())
                 } else if(req.body.name == 'Реализатор'){
                     await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'РеализаторПоИмени'){
@@ -136,7 +138,7 @@ router.post('/get', async (req, res) => {
                     await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'ТочкаВсе'){
                     await res.send(await PointShoro.getPointShoroAll(user._id))
-                }  else if(req.body.name == 'Цена'){
+                }  else if(req.body.name == 'Цена1'){
                     await res.send(await PriceShoro.getPriceShoroAll())
                 } else if(req.body.name == 'РеализаторПоТочке'){
                     await res.send(await RealizatorShoro.getRealizatorShoroByPoint(data.point))
@@ -162,7 +164,7 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
                 } else if(req.body.name == 'РеализаторПоID'){
                     await res.send(await RealizatorShoro.getRealizatorShoroById(user._id))
-                }  else if(req.body.name == 'Цена'){
+                }  else if(req.body.name == 'Цена1'){
                     await res.send(await PriceShoro.getPriceShoroAll())
                 } else if(req.body.name == 'Профиль'){
                     await res.send(await RealizatorShoro.getProfileRealizatorShoro(user._id))

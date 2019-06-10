@@ -1,6 +1,7 @@
 const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
 const OrganizatorShoro = require('../models/organizatorShoro');
+const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 
 const getPlanShoroOrganizator = async (search, sort, skip, id) => {
     try{
@@ -23,9 +24,9 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
         else if(sort[0]=='регион'&&sort[1]=='ascending')
             sort = 'region';
         else if(sort[0]=='дата'&&sort[1]=='descending')
-            sort = '-phone';
+            sort = '-date';
         else if(sort[0]=='дата'&&sort[1]=='ascending')
-            sort = 'phone';
+            sort = 'date';
         else if(sort[0]=='текущее'&&sort[1]=='descending')
             sort = '-inn';
         else if(sort[0]=='текущее'&&sort[1]=='ascending')
@@ -116,9 +117,9 @@ const getPlanShoro = async (search, sort, skip) => {
         else if(sort[0]=='регион'&&sort[1]=='ascending')
             sort = 'region';
         else if(sort[0]=='дата'&&sort[1]=='descending')
-            sort = '-phone';
+            sort = '-date';
         else if(sort[0]=='дата'&&sort[1]=='ascending')
-            sort = 'phone';
+            sort = 'date';
         else if(sort[0]=='текущее'&&sort[1]=='descending')
             sort = '-inn';
         else if(sort[0]=='текущее'&&sort[1]=='ascending')
@@ -185,6 +186,20 @@ const getPlanShoro = async (search, sort, skip) => {
 const addPlanShoro = async (object) => {
     try{
         object.current = 0
+        let findPlanRegions = JSON.parse(object.regions)
+        for (let i = 0; i < findPlanRegions.length; i++) {
+            findPlanRegions[i]['current'] = 0
+            for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
+                let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': object.date, '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                findPlanRegions[i]['points'][i1]['current'] = 0
+                for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
+                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                }
+                findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
+            }
+            object.current += findPlanRegions[i]['current']
+        }
+        object.regions = JSON.stringify(findPlanRegions)
         let _object = new PlanShoro(object);
         await PlanShoro.create(_object);
     } catch(error) {
