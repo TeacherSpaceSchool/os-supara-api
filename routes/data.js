@@ -257,6 +257,111 @@ router.post('/delete', async (req, res) => {
                 }
             });
         }
+        else if(role==='организатор'){
+            await passportEngine.verifydadmin(req, res, async ()=>{
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Машина'){
+                    await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Организатор'){
+                    await res.send(await OrganizatorShoro.getOrganizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'План'){
+                    await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Точка'){
+                    await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip))
+                }  else if(req.body.name == 'Цена'){
+                    await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Реализатор'){
+                    await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Регион'){
+                    await res.send(await RegionShoro.getRegionShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Завсклада'){
+                    await res.send(await ZavSkladShoro.getZavSkladShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
+                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №1'){
+                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №2'){
+                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на вечерний возврат'){
+                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет организатора'){
+                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет реализатора'){
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                }
+            });
+        }
+        else if(role==='реализатор'){
+            await passportEngine.verifydadmin(req, res, async ()=>{
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Машина'){
+                    await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Организатор'){
+                    await res.send(await OrganizatorShoro.getOrganizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'План'){
+                    await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Точка'){
+                    await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip))
+                }  else if(req.body.name == 'Цена'){
+                    await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Реализатор'){
+                    await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Регион'){
+                    await res.send(await RegionShoro.getRegionShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Завсклада'){
+                    await res.send(await ZavSkladShoro.getZavSkladShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
+                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №1'){
+                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №2'){
+                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на вечерний возврат'){
+                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет организатора'){
+                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет реализатора'){
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                }
+            });
+        }
+        else if(role==='завсклада'){
+            await passportEngine.verifydadmin(req, res, async ()=>{
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Машина'){
+                    await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Организатор'){
+                    await res.send(await OrganizatorShoro.getOrganizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'План'){
+                    await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Точка'){
+                    await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip))
+                }  else if(req.body.name == 'Цена'){
+                    await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Реализатор'){
+                    await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Регион'){
+                    await res.send(await RegionShoro.getRegionShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Завсклада'){
+                    await res.send(await ZavSkladShoro.getZavSkladShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
+                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №1'){
+                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная склад №2'){
+                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Накладная на вечерний возврат'){
+                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет организатора'){
+                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'Отчет реализатора'){
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip))
+                }
+            });
+        }
     })
 });
 
