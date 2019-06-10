@@ -101,7 +101,6 @@ const addPointShoro = async (object) => {
 
 const setPointShoro = async (object, id) => {
     try{
-        console.log(object)
         await RealizatorShoro.findOneAndUpdate({point: id, region: object.region}, {$set: {point: object.name}});
         await PointShoro.findOneAndUpdate({name: id, region: object.region}, {$set: object});
     } catch(error) {

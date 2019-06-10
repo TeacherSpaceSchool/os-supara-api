@@ -77,7 +77,6 @@ const getCarNumber = async () => {
 
 const addCarShoro = async (object) => {
     try{
-        console.log(object)
         let _object = new CarShoro(object);
         await CarShoro.create(_object);
     } catch(error) {

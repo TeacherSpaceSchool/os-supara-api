@@ -308,9 +308,9 @@ const setRealizatorShoro = async (object, id) => {
 const deleteRealizatorShoro = async (id) => {
     try{
         for(let i=0; i<id.length; i++){
-            let object = await RealizatorShoro.findOne({phone: id})
+            let object = await RealizatorShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
-            await RealizatorShoro.deleteMany({phone: id});
+            await RealizatorShoro.deleteMany({phone: id[i]});
         }
     } catch(error) {
         console.error(error)
