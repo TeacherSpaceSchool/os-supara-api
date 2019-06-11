@@ -7,7 +7,7 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/gora.jpg" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/manifest.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.0859644a13dcb0829cafad04a0b94f48.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.fb1714014d05364799f5b175fe0e2b79.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/16.eaa6eb26.chunk.css" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/16.eaa6eb26.chunk.css.map" afterPath="" />
@@ -21,10 +21,10 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.15465a3b.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.bc0d3b89.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.bc0d3b89.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.9ebd08e6.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.9ebd08e6.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.94969482.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.94969482.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.38d18fd3.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.38d18fd3.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.ce1818ab.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.ce1818ab.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.0ca74670.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.0ca74670.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.5dfadf3b.chunk.js" afterPath="" />
@@ -37,8 +37,8 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.6fe0e04c.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.b79eaab2.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.b79eaab2.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.c30c5a31.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.c30c5a31.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.cbff999d.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.cbff999d.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.e2c89836.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.e2c89836.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.fc901fe0.chunk.js" afterPath="" />
@@ -49,17 +49,12 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.72644ba4.chunk.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.ff6f4555.chunk.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.ff6f4555.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.6e2cf690.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.6e2cf690.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.d0afa82a.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.d0afa82a.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.939f03d7.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.939f03d7.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.346906bb.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.346906bb.js.map" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/media/logo.587aa57a.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/planShoro.js" afterPath="$PROJECT_DIR$/module/planShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/points.txt" afterPath="$PROJECT_DIR$/points.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/regions.txt" afterPath="$PROJECT_DIR$/regions.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="$PROJECT_DIR$/routes/data.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -79,7 +74,7 @@
       <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="397">
+            <state relative-caret-position="646">
               <caret line="264" column="21" lean-forward="false" selection-start-line="264" selection-start-column="21" selection-end-line="265" selection-end-column="69" />
               <folding>
                 <element signature="e#448#4029#0" expanded="false" />
@@ -99,7 +94,7 @@
       <file leaf-file-name="planShoro.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/module/planShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
+            <state relative-caret-position="181">
               <caret line="199" column="19" lean-forward="false" selection-start-line="199" selection-start-column="19" selection-end-line="199" selection-end-column="19" />
               <folding>
                 <element signature="e#295#3819#0" expanded="false" />
@@ -115,7 +110,7 @@
       <file leaf-file-name="data.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/data.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-352">
+            <state relative-caret-position="1428">
               <caret line="84" column="72" lean-forward="false" selection-start-line="84" selection-start-column="44" selection-end-line="84" selection-end-column="72" />
               <folding>
                 <element signature="e#13598#15600#0" expanded="false" />
@@ -143,7 +138,7 @@
       <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/module/const.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
+            <state relative-caret-position="34">
               <caret line="2" column="20" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="23" />
               <folding />
             </state>
@@ -173,7 +168,7 @@
       <file leaf-file-name="realizators.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/realizators.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
+            <state relative-caret-position="6630">
               <caret line="390" column="56" lean-forward="false" selection-start-line="390" selection-start-column="56" selection-end-line="390" selection-end-column="56" />
               <folding />
             </state>
@@ -183,7 +178,7 @@
       <file leaf-file-name="points.txt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/points.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="422">
+            <state relative-caret-position="7106">
               <caret line="418" column="13" lean-forward="false" selection-start-line="418" selection-start-column="13" selection-end-line="418" selection-end-column="13" />
               <folding />
             </state>
@@ -367,13 +362,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
               <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
@@ -400,6 +399,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -624,12 +624,13 @@
       <workItem from="1560009094967" duration="1650000" />
       <workItem from="1560049391698" duration="4288000" />
       <workItem from="1560134707333" duration="6226000" />
-      <workItem from="1560154247446" duration="8069000" />
+      <workItem from="1560154247446" duration="8693000" />
+      <workItem from="1560233111333" duration="1101000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1101231000" />
+    <option name="totallyTimeSpent" value="1102956000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -643,12 +644,12 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.7626812" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.865942" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.23731884" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25706595" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25706595" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.13405797" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -936,7 +937,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
           <caret line="87" column="0" lean-forward="false" selection-start-line="87" selection-start-column="0" selection-end-line="88" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -944,7 +944,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="422">
           <caret line="246" column="12" lean-forward="false" selection-start-line="232" selection-start-column="12" selection-end-line="246" selection-end-column="12" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -966,7 +965,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/realizators.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
+        <state relative-caret-position="6630">
           <caret line="390" column="56" lean-forward="false" selection-start-line="390" selection-start-column="56" selection-end-line="390" selection-end-column="56" />
           <folding />
         </state>
@@ -974,7 +973,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/points.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="422">
+        <state relative-caret-position="7106">
           <caret line="418" column="13" lean-forward="false" selection-start-line="418" selection-start-column="13" selection-end-line="418" selection-end-column="13" />
           <folding />
         </state>
@@ -982,7 +981,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/module/const.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
+        <state relative-caret-position="34">
           <caret line="2" column="20" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="23" />
           <folding />
         </state>
@@ -990,7 +989,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/data.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-352">
+        <state relative-caret-position="1428">
           <caret line="84" column="72" lean-forward="false" selection-start-line="84" selection-start-column="44" selection-end-line="84" selection-end-column="72" />
           <folding>
             <element signature="e#13598#15600#0" expanded="false" />
@@ -1014,7 +1013,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
+        <state relative-caret-position="646">
           <caret line="264" column="21" lean-forward="false" selection-start-line="264" selection-start-column="21" selection-end-line="265" selection-end-column="69" />
           <folding>
             <element signature="e#448#4029#0" expanded="false" />
@@ -1032,7 +1031,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/module/planShoro.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
+        <state relative-caret-position="181">
           <caret line="199" column="19" lean-forward="false" selection-start-line="199" selection-start-column="19" selection-end-line="199" selection-end-column="19" />
           <folding>
             <element signature="e#295#3819#0" expanded="false" />
