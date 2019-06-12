@@ -16,6 +16,86 @@ const getPointShoroAll = async (id) => {
     }
 }
 
+const getPointShoro1 = async (search, sort, skip, id) => {
+    try{
+        //console.log(await PointShoro.deleteMany())
+        let findResult = [], data = [], count;
+        const row = [
+            'название',
+            'регион',
+            'создан'
+        ];
+        let organizator = await OrganizatorShoro.findOne({user: id})
+        let region = organizator.region
+        if(sort == undefined||sort=='')
+            sort = '-updatedAt';
+        else if(sort[0]=='название'&&sort[1]=='descending')
+            sort = '-name';
+        else if(sort[0]=='название'&&sort[1]=='ascending')
+            sort = 'name';
+        else if(sort[0]=='регион'&&sort[1]=='descending')
+            sort = '-region';
+        else if(sort[0]=='регион'&&sort[1]=='ascending')
+            sort = 'region';
+        else if(sort[0]=='создан'&&sort[1]=='descending')
+            sort = '-updatedAt';
+        else if(sort[0]=='создан'&&sort[1]=='ascending')
+            sort = 'updatedAt';
+        if(search == ''){
+            count = await PointShoro.count({
+                region: region,
+            });
+            findResult = await PointShoro
+                .find({
+                    region: region,
+                })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10)
+        } else if (mongoose.Types.ObjectId.isValid(search)) {
+            count = await PointShoro.count({
+            region: region,
+                $or: [
+                    {_id: search},
+                    {name: {'$regex': search, '$options': 'i'}},
+                ]
+            });
+            findResult = await PointShoro.find({
+                region: region,
+                $or: [
+                    {_id: search},
+                    {name: {'$regex': search, '$options': 'i'}},
+                ]
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10)
+        } else {
+            count = await PointShoro.count({
+                region: region,
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                ]
+            });
+            findResult = await PointShoro.find({
+                region: region,
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                 ]
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(10)
+        }
+        for (let i=0; i<findResult.length; i++){
+            data.push([ findResult[i].name, findResult[i].region, format(findResult[i].updatedAt)]);
+        }
+        return {data: data, count: count, row: row}
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 const getPointShoro = async (search, sort, skip) => {
     try{
         //console.log(await PointShoro.deleteMany())
@@ -136,6 +216,7 @@ const getPointShoroRegion = async (region) => {
 
 module.exports.deletePointShoro = deletePointShoro;
 module.exports.getPointShoro = getPointShoro;
+module.exports.getPointShoro1 = getPointShoro1;
 module.exports.setPointShoro = setPointShoro;
 module.exports.addPointShoro = addPointShoro;
 module.exports.getPointShoroName = getPointShoroName;

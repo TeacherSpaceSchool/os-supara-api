@@ -257,7 +257,7 @@ const addOtchetRealizatoraShoro = async (object) => {
                                 let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
                                 findPlanRegions[i]['points'][i1]['current'] = 0
                                 for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
-                                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv']
                                 }
                             }
                             findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
@@ -306,6 +306,8 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.sl.ktt = findRealizators.length
                 findDataTable.r.otr = findRealizators.length*100
                 findDataTable.r.ntp = 0
+                findDataTable.r.att = 0
+                findDataTable.r.inc = 0
 
                 findDataTable['p']['i'] = 0
                 findDataTable['i'] = 0
@@ -381,7 +383,8 @@ const addOtchetRealizatoraShoro = async (object) => {
                     findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
 
                     findDataTable.r.ntp += addDataTable.i.n
-
+                    findDataTable.r.att += addDataTable.i.m
+                    findDataTable.r.inc += addDataTable.i.inc
                 }
 
                 findDataTable.p.m.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiM):0;
@@ -390,7 +393,7 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
 
                 findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
-                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
 
                 findDataTable = JSON.stringify(findDataTable)
                 await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});
@@ -433,7 +436,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                             let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
                             findPlanRegions[i]['points'][i1]['current'] = 0
                             for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
-                                findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                                findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv']
                             }
                         }
                         findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
@@ -486,6 +489,8 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             console.log(findRealizators.length)
 
             findDataTable.r.ntp = 0
+            findDataTable.r.att = 0
+            findDataTable.r.inc = 0
 
             findDataTable['p']['i'] = 0
             findDataTable['i'] = 0
@@ -561,6 +566,8 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                 findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
 
                 findDataTable.r.ntp += addDataTable.i.n
+                findDataTable.r.att += addDataTable.i.m
+                findDataTable.r.inc += addDataTable.i.inc
 
             }
 
@@ -571,7 +578,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
 
             findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
-            findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+            findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['att'] - findDataTable['r']['ntp'] - findDataTable['r']['at'] - findDataTable['r']['vs']
 
             findDataTable = JSON.stringify(findDataTable)
             await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});
@@ -619,7 +626,7 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                                     let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
                                     findPlanRegions[i]['points'][i1]['current'] = 0
                                     for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
-                                        findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                                        findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv']
                                     }
                             }
                             findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
@@ -669,6 +676,8 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                 findDataTable.r.otr = findRealizators.length*100
 
                 findDataTable.r.ntp = 0
+                findDataTable.r.att = 0
+                findDataTable.r.inc = 0
 
                 findDataTable['p']['i'] = 0
                 findDataTable['i'] = 0
@@ -744,6 +753,8 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                     findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
 
                     findDataTable.r.ntp += addDataTable.i.n
+                    findDataTable.r.att += addDataTable.i.m
+                    findDataTable.r.inc += addDataTable.i.inc
 
                 }
 
@@ -753,7 +764,7 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                 findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
 
                 findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
-                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
+                findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['att'] - findDataTable['r']['ntp'] - findDataTable['r']['at'] - findDataTable['r']['vs']
 
                 findDataTable = JSON.stringify(findDataTable)
                 await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});

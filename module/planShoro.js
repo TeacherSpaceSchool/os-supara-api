@@ -193,7 +193,7 @@ const addPlanShoro = async (object) => {
                 let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': object.date, '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
                 findPlanRegions[i]['points'][i1]['current'] = 0
                 for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
-                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['fv']
+                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv']
                 }
                 findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
             }

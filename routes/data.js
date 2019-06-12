@@ -150,6 +150,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await PlanShoro.getPlanShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'ПланПоДате'){
                     await res.send(await PlanShoro.getPlanShoroByDate(data.date))
+                } else if(req.body.name == 'Точка'){
+                    await res.send(await PointShoro.getPointShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
             });
         }
@@ -606,6 +608,12 @@ router.post('/add', async (req, res) => {
                     if(req.body.id!==undefined)
                         await PlanShoro.setPlanShoro(myNew, req.body.id)
                     await res.send(await PlanShoro.getPlanShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'Точка'){
+                    if(req.body.id==undefined)
+                        await PointShoro.addPointShoro(myNew)
+                    else
+                        await PointShoro.setPointShoro(myNew, req.body.id)
+                    await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip))
                 }
             });
         }
