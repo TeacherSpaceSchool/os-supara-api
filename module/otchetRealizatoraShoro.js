@@ -1,6 +1,9 @@
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
+const NakladnayaNaVecherniyVozvratShoro = require('../models/nakladnayaNaVecherniyVozvratShoro');
+const NakladnayaSklad1Shoro = require('../models/nakladnayaSklad1Shoro');
+const getTomorrow = require('./const').getTomorrow;
 const OrganizatorShoro = require('../models/organizatorShoro');
 const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
@@ -241,10 +244,60 @@ const addOtchetRealizatoraShoro = async (object) => {
     try{
         if(await OtchetRealizatoraShoro.findOne({data: object.data, realizator: object.realizator, region: object.region, point: object.point})===null){
             let _object = new OtchetRealizatoraShoro(object);
-            await OtchetRealizatoraShoro.create(_object);
+            await OtchetRealizatoraShoro.create(_object)
 
             let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
             let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
+
+            let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+            let findDataNakladnayaNaVecherniyVozvratShoro
+            if(findNakladnayaNaVecherniyVozvratShoro!==null){
+                findDataNakladnayaNaVecherniyVozvratShoro = JSON.parse(findNakladnayaNaVecherniyVozvratShoro.dataTable)
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['ch']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] = 0
+                findDataNakladnayaNaVecherniyVozvratShoro['ch']['all'] = 0
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] = 0
+                for(let i = 0; i<findRealizators.length; i++){
+                    let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['data'].push({'№': addDataTable.vozvrat.v.mn, 'l': addDataTable.vozvrat.v.ml})
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['data'].push({'№': addDataTable.vozvrat.v.kn, 'l': addDataTable.vozvrat.v.kl})
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] += addDataTable.vozvrat.v.ml
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] += addDataTable.vozvrat.v.kl
+                }
+                findDataNakladnayaNaVecherniyVozvratShoro = JSON.stringify(findDataNakladnayaNaVecherniyVozvratShoro)
+                await NakladnayaNaVecherniyVozvratShoro.findOneAndUpdate({_id: findNakladnayaNaVecherniyVozvratShoro._id}, {$set: {dataTable: findDataNakladnayaNaVecherniyVozvratShoro}});
+            }
+
+            let findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: getTomorrow(object.data), region: object.region, organizator: object.organizator})
+            let findDataNakladnayaSklad1Shoro
+            if(findNakladnayaSklad1Shoro!==null){
+                findDataNakladnayaSklad1Shoro = JSON.parse(findNakladnayaSklad1Shoro.dataTable)
+                findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] = 0
+                findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] = 0
+                findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] = 0
+                for(let i = 0; i<findRealizators.length; i++){
+                    let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                    if(addDataTable.vozvrat.v.chl>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] += addDataTable.vozvrat.v.chl
+                        if(addDataTable.vozvrat.v.chn25.length>0){
+                            findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] += 1
+
+                        }
+                        if(addDataTable.vozvrat.v.chn10.length>0){
+                            findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] += 1
+
+                        }
+                    }
+                }
+                findDataNakladnayaSklad1Shoro['vydano']['i']['chl'] = findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['r']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['chl']
+                findDataNakladnayaSklad1Shoro['vydano']['i']['ch10'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch10']
+                findDataNakladnayaSklad1Shoro['vydano']['i']['ch25'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch25']
+                findDataNakladnayaSklad1Shoro = JSON.stringify(findDataNakladnayaSklad1Shoro)
+                await NakladnayaSklad1Shoro.findOneAndUpdate({_id: findNakladnayaSklad1Shoro._id}, {$set: {dataTable: findDataNakladnayaSklad1Shoro}});
+            }
+
             let findPlan = await PlanShoro.findOne({date: (object.data).substring(3)})
             if(findPlan!==null) {
                 let findPlanRegions = JSON.parse(findPlan.regions)
@@ -385,7 +438,8 @@ const addOtchetRealizatoraShoro = async (object) => {
                     findDataTable.r.ntp += addDataTable.i.n
                     findDataTable.r.att += addDataTable.i.m
                     findDataTable.r.inc += addDataTable.i.inc
-                }
+
+                   }
 
                 findDataTable.p.m.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiM):0;
                 findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
@@ -453,8 +507,60 @@ const setOtchetRealizatoraShoro = async (object, id) => {
         }
         let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
         let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
+        let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        let findDataNakladnayaNaVecherniyVozvratShoro
+        if(findNakladnayaNaVecherniyVozvratShoro!==null){
+            findDataNakladnayaNaVecherniyVozvratShoro = JSON.parse(findNakladnayaNaVecherniyVozvratShoro.dataTable)
+            findDataNakladnayaNaVecherniyVozvratShoro['m']['data'] = []
+            findDataNakladnayaNaVecherniyVozvratShoro['ch']['data'] = []
+            findDataNakladnayaNaVecherniyVozvratShoro['k']['data'] = []
+            findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] = 0
+            findDataNakladnayaNaVecherniyVozvratShoro['ch']['all'] = 0
+            findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] = 0
+            for(let i = 0; i<findRealizators.length; i++){
+                let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['data'].push({'№': addDataTable.vozvrat.v.mn, 'l': addDataTable.vozvrat.v.ml})
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['data'].push({'№': addDataTable.vozvrat.v.kn, 'l': addDataTable.vozvrat.v.kl})
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] += addDataTable.vozvrat.v.ml
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] += addDataTable.vozvrat.v.kl
+            }
+            findDataNakladnayaNaVecherniyVozvratShoro = JSON.stringify(findDataNakladnayaNaVecherniyVozvratShoro)
+            await NakladnayaNaVecherniyVozvratShoro.findOneAndUpdate({_id: findNakladnayaNaVecherniyVozvratShoro._id}, {$set: {dataTable: findDataNakladnayaNaVecherniyVozvratShoro}});
+        }
+
+
+        let findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: getTomorrow(object.data), region: object.region, organizator: object.organizator})
+        let findDataNakladnayaSklad1Shoro
+        if(findNakladnayaSklad1Shoro!==null){
+            findDataNakladnayaSklad1Shoro = JSON.parse(findNakladnayaSklad1Shoro.dataTable)
+            findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] = 0
+            findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] = 0
+            findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] = 0
+            for(let i = 0; i<findRealizators.length; i++){
+                let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                if(addDataTable.vozvrat.v.chl>0){
+                    findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] += addDataTable.vozvrat.v.chl
+                    if(addDataTable.vozvrat.v.chn25.length>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] += 1
+
+                    }
+                    if(addDataTable.vozvrat.v.chn10.length>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] += 1
+
+                    }
+                }
+            }
+            findDataNakladnayaSklad1Shoro['vydano']['i']['chl'] = findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['r']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['chl']
+            findDataNakladnayaSklad1Shoro['vydano']['i']['ch10'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch10']
+            findDataNakladnayaSklad1Shoro['vydano']['i']['ch25'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch25'] 
+            findDataNakladnayaSklad1Shoro = JSON.stringify(findDataNakladnayaSklad1Shoro)
+            console.log(findDataNakladnayaSklad1Shoro)
+            await NakladnayaSklad1Shoro.findOneAndUpdate({_id: findNakladnayaSklad1Shoro._id}, {$set: {dataTable: findDataNakladnayaSklad1Shoro}});
+        }
+
         if(findOrganizator!==null){
             let findDataTable = JSON.parse(findOrganizator.dataTable)
+
 
             findDataTable.p.m.v = 0
             findDataTable.p.ch.v = 0
@@ -486,7 +592,6 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable.p.k.ktt = findRealizators.length
             findDataTable.p.sl.ktt = findRealizators.length
             findDataTable.r.otr = findRealizators.length*100
-            console.log(findRealizators.length)
 
             findDataTable.r.ntp = 0
             findDataTable.r.att = 0
@@ -641,6 +746,56 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                     }
                 });
             }
+
+            let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+            let findDataNakladnayaNaVecherniyVozvratShoro
+            if(findNakladnayaNaVecherniyVozvratShoro!==null){
+                findDataNakladnayaNaVecherniyVozvratShoro = JSON.parse(findNakladnayaNaVecherniyVozvratShoro.dataTable)
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['ch']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['data'] = []
+                findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] = 0
+                findDataNakladnayaNaVecherniyVozvratShoro['ch']['all'] = 0
+                findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] = 0
+                for(let i = 0; i<findRealizators.length; i++){
+                    let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['data'].push({'№': addDataTable.vozvrat.v.mn, 'l': addDataTable.vozvrat.v.ml})
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['data'].push({'№': addDataTable.vozvrat.v.kn, 'l': addDataTable.vozvrat.v.kl})
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] += addDataTable.vozvrat.v.ml
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] += addDataTable.vozvrat.v.kl
+                }
+                findDataNakladnayaNaVecherniyVozvratShoro = JSON.stringify(findDataNakladnayaNaVecherniyVozvratShoro)
+                await NakladnayaNaVecherniyVozvratShoro.findOneAndUpdate({_id: findNakladnayaNaVecherniyVozvratShoro._id}, {$set: {dataTable: findDataNakladnayaNaVecherniyVozvratShoro}});
+            }
+
+            let findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: getTomorrow(object.data), region: object.region, organizator: object.organizator})
+            let findDataNakladnayaSklad1Shoro
+            if(findNakladnayaSklad1Shoro!==null){
+                findDataNakladnayaSklad1Shoro = JSON.parse(findNakladnayaSklad1Shoro.dataTable)
+                findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] = 0
+                findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] = 0
+                findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] = 0
+                for(let i = 0; i<findRealizators.length; i++){
+                    let addDataTable = JSON.parse(findRealizators[i].dataTable)
+                    if(addDataTable.vozvrat.v.chl>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] += addDataTable.vozvrat.v.chl
+                        if(addDataTable.vozvrat.v.chn25.length>0){
+                            findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] += 1
+
+                        }
+                        if(addDataTable.vozvrat.v.chn10.length>0){
+                            findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] += 1
+
+                        }
+                    }
+                }
+                findDataNakladnayaSklad1Shoro['vydano']['i']['chl'] = findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['r']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['chl'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['chl']
+                findDataNakladnayaSklad1Shoro['vydano']['i']['ch10'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch10'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch10']
+                findDataNakladnayaSklad1Shoro['vydano']['i']['ch25'] = findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['r']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d1']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d2']['ch25'] + findDataNakladnayaSklad1Shoro['vydano']['d3']['ch25']
+                findDataNakladnayaSklad1Shoro = JSON.stringify(findDataNakladnayaSklad1Shoro)
+                await NakladnayaSklad1Shoro.findOneAndUpdate({_id: findNakladnayaSklad1Shoro._id}, {$set: {dataTable: findDataNakladnayaSklad1Shoro}});
+            }
+
             if(findOrganizator!==null){
                 let findDataTable = JSON.parse(findOrganizator.dataTable)
 

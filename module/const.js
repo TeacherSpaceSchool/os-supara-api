@@ -14,6 +14,48 @@ const url = '/',
         '10':'окт',
         '11':'ноя',
         '12':'дек'
+    },
+    monthWithDay = {
+        'январь': 31,
+        'февраль': 28,
+        'март': 31,
+        'апрель': 30,
+        'май': 31,
+        'июнь': 30,
+        'июль': 31,
+        'август': 31,
+        'сентябрь': 30,
+        'октябрь': 31,
+        'ноябрь': 30,
+        'декабрь': 31
+    },
+    previousMonth = {
+        'январь': 'декабрь',
+        'февраль': 'январь',
+        'март': 'февраль',
+        'апрель': 'март',
+        'май': 'апрель',
+        'июнь': 'май',
+        'июль': 'июнь',
+        'август': 'июль',
+        'сентябрь': 'август',
+        'октябрь': 'сентябрь',
+        'ноябрь': 'октябрь',
+        'декабрь': 'ноябрь'
+    },
+    nextMonth = {
+        'январь': 'февраль',
+        'февраль': 'март',
+        'март': 'апрель',
+        'апрель': 'май',
+        'май': 'июнь',
+        'июнь': 'июль',
+        'июль': 'август',
+        'август': 'сентябрь',
+        'сентябрь': 'октябрь',
+        'октябрь': 'ноябрь',
+        'ноябрь': 'декабрь',
+        'декабрь': 'январь'
     }
 const stringifyDateTime = (dateTime) => {
     dateTime = new Date(dateTime)
@@ -33,6 +75,33 @@ const validPhone = (phone) =>
 {
     return /^[+]{1}996[0-9]{9}$/.test(phone);
 }
+const getYesterday = (day) =>
+{
+    day = day.split(' ')
+    day[0] -= 1
+    if(day[0]===0){
+        day[0] = monthWithDay[day[1]]
+        day[1] = previousMonth[day[1]]
+        if(day[1]==='декабрь'){
+            day[2] -= 1
+        }
+    }
+    return day[0]+' '+day[1]+' '+day[2]
+}
+const getTomorrow = (day) =>
+{
+    day = day.split(' ')
+    day[0] = 1 + parseInt(day[0])
+    if(day[0]>monthWithDay[day[1]]){
+        day[0] = 1
+        day[1] = nextMonth[day[1]]
+        if(day[1]==='январь'){
+            day[2] = parseInt(day[2]) + 1
+        }
+    }
+    return day[0]+' '+day[1]+' '+day[2]
+}
+
 module.exports.stringifyDateTime = stringifyDateTime;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;
@@ -40,3 +109,5 @@ module.exports.month = month;
 module.exports.adminPass = adminPass;
 module.exports.adminLogin = adminLogin;
 module.exports.url = url;
+module.exports.getYesterday = getYesterday;
+module.exports.getTomorrow = getTomorrow;
