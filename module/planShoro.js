@@ -2,6 +2,7 @@ const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
+const skip1 = require('../module/const').skip;
 
 const getPlanShoroOrganizator = async (search, sort, skip, id) => {
     try{
@@ -41,7 +42,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         }
         else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PlanShoro.count({
@@ -62,7 +63,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         else {
             count = await PlanShoro.count({
@@ -81,7 +82,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             let findPlanRegions = JSON.parse(findResult[i].regions)
@@ -134,7 +135,7 @@ const getPlanShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PlanShoro.count({
                 $or: [
@@ -154,7 +155,7 @@ const getPlanShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await PlanShoro.count({
                 $or: [
@@ -172,7 +173,7 @@ const getPlanShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([ findResult[i].date, findResult[i].norma, findResult[i].current]);

@@ -1,6 +1,6 @@
 const OrganizatorShoro = require('../models/organizatorShoro');
 const UserShoro = require('../models/userShoro');
-const format = require('./const').stringifyDateTime ;
+const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getOrganizatorShoro = async (search, sort, skip) => {
@@ -26,7 +26,7 @@ const getOrganizatorShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OrganizatorShoro.count({
                 $or: [
@@ -50,7 +50,7 @@ const getOrganizatorShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await OrganizatorShoro.count({
                 $or: [
@@ -72,7 +72,7 @@ const getOrganizatorShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].name, findResult[i].region, findResult[i].phone]);

@@ -1,5 +1,5 @@
 const PriceShoro = require('../models/priceShoro');
-const format = require('./const').stringifyDateTime
+const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getPriceShoroAll = async () => {
@@ -43,7 +43,7 @@ const getPriceShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PriceShoro.count({
                 $or: [
@@ -61,7 +61,7 @@ const getPriceShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else {
             count = await PriceShoro.count({
                 $or: [
@@ -77,7 +77,7 @@ const getPriceShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         }
         for (let i=0; i<findResult.length; i++){
             data.push([ findResult[i].name, findResult[i].price]);

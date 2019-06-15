@@ -7,6 +7,7 @@ const getTomorrow = require('./const').getTomorrow;
 const OrganizatorShoro = require('../models/organizatorShoro');
 const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
+const skip1 = require('../module/const').skip;
 
 const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
     try{
@@ -30,7 +31,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
                 .find({organizator: organizator,region: region})
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
                 organizator: organizator,
@@ -57,7 +58,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
                 organizator: organizator, region: region,
@@ -81,7 +82,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
@@ -115,7 +116,7 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
                 .find({realizator: realizator, region: region, point: point})
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
                 realizator: realizator, region: region, point: point,
@@ -133,7 +134,7 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
                 realizator: realizator, region: region, point: point,
@@ -149,7 +150,7 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
@@ -183,7 +184,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
                 $or: [
@@ -207,7 +208,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
                 $or: [
@@ -229,7 +230,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
@@ -332,31 +333,49 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.ch.v = 0
                 findDataTable.p.k.v = 0
                 findDataTable.p.sl.v = 0
+                findDataTable.p.s02.v = 0
+                findDataTable.p.s04.v = 0
+                findDataTable.p.b.v = 0
 
                 findDataTable.p.m.o = 0
                 findDataTable.p.ch.o = 0
                 findDataTable.p.k.o = 0
                 findDataTable.p.sl.o = 0
+                findDataTable.p.s02.o = 0
+                findDataTable.p.s04.o = 0
+                findDataTable.p.b.o = 0
 
                 findDataTable.p.m.s = 0
                 findDataTable.p.ch.s = 0
                 findDataTable.p.k.s = 0
                 findDataTable.p.sl.s = 0
+                findDataTable.p.s02.s = 0
+                findDataTable.p.s04.s = 0
+                findDataTable.p.b.s = 0
 
                 findDataTable.p.m.pl = 0
                 findDataTable.p.ch.pl = 0
                 findDataTable.p.k.pl = 0
                 findDataTable.p.sl.pl = 0
+                findDataTable.p.s02.pl = 0
+                findDataTable.p.s04.pl = 0
+                findDataTable.p.b.pl = 0
 
                 findDataTable.p.m.ps = 0
                 findDataTable.p.ch.ps = 0
                 findDataTable.p.k.ps = 0
                 findDataTable.p.sl.ps = 0
+                findDataTable.p.s02.ps = 0
+                findDataTable.p.s04.ps = 0
+                findDataTable.p.b.ps = 0
 
                 findDataTable.p.m.ktt = findRealizators.length
                 findDataTable.p.ch.ktt = findRealizators.length
                 findDataTable.p.k.ktt = findRealizators.length
                 findDataTable.p.sl.ktt = findRealizators.length
+                findDataTable.p.s02.ktt = findRealizators.length
+                findDataTable.p.s04.ktt = findRealizators.length
+                findDataTable.p.b.ktt = findRealizators.length
                 findDataTable.r.otr = findRealizators.length*100
                 findDataTable.r.ntp = 0
                 findDataTable.r.att = 0
@@ -365,7 +384,7 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable['p']['i'] = 0
                 findDataTable['i'] = 0
 
-                let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = []
+                let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = [], dolivkiS02 = [], dolivkiS04 = [], dolivkiB = []
 
                 for(let i = 0; i<findRealizators.length; i++){
                     let addDataTable = JSON.parse(findRealizators[i].dataTable)
@@ -410,30 +429,75 @@ const addOtchetRealizatoraShoro = async (object) => {
                         dolivkiSl[i]=3
                     }
 
+                    if(addDataTable.vydano.d1.s02){
+                        dolivkiS02[i]=1
+                    }
+                    if(addDataTable.vydano.d2.s02!==0){
+                        dolivkiS02[i]=2
+                    }
+                    if(addDataTable.vydano.d3.s02!==0){
+                        dolivkiS02[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.s04){
+                        dolivkiS04[i]=1
+                    }
+                    if(addDataTable.vydano.d2.s04!==0){
+                        dolivkiS04[i]=2
+                    }
+                    if(addDataTable.vydano.d3.s04!==0){
+                        dolivkiS04[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.b){
+                        dolivkiB[i]=1
+                    }
+                    if(addDataTable.vydano.d2.b!==0){
+                        dolivkiB[i]=2
+                    }
+                    if(addDataTable.vydano.d3.b!==0){
+                        dolivkiB[i]=3
+                    }
+
                     findDataTable.p.m.v += addDataTable.vydano.i.ml
                     findDataTable.p.ch.v += addDataTable.vydano.i.chl
                     findDataTable.p.k.v += addDataTable.vydano.i.kl
                     findDataTable.p.sl.v += addDataTable.vydano.i.sl
+                    findDataTable.p.s02.v += addDataTable.vydano.i.s02
+                    findDataTable.p.s04.v += addDataTable.vydano.i.s04
+                    findDataTable.p.b.v += addDataTable.vydano.i.b
 
                     findDataTable.p.m.o += addDataTable.vozvrat.v.ml
                     findDataTable.p.ch.o += addDataTable.vozvrat.v.chl
                     findDataTable.p.k.o += addDataTable.vozvrat.v.kl
                     findDataTable.p.sl.o += addDataTable.vozvrat.v.sl
+                    findDataTable.p.s02.o += addDataTable.vozvrat.v.s02
+                    findDataTable.p.s04.o += addDataTable.vozvrat.v.s04
+                    findDataTable.p.b.o += addDataTable.vozvrat.v.b
 
                     findDataTable.p.m.s += addDataTable.vozvrat.s.ml
                     findDataTable.p.ch.s += addDataTable.vozvrat.s.chl
                     findDataTable.p.k.s += addDataTable.vozvrat.s.kl
                     findDataTable.p.sl.s += addDataTable.vozvrat.s.sl
+                    findDataTable.p.s02.s += addDataTable.vozvrat.s.s02
+                    findDataTable.p.s04.s += addDataTable.vozvrat.s.s04
+                    findDataTable.p.b.s += addDataTable.vozvrat.s.b
 
                     findDataTable.p.m.pl += addDataTable.vozvrat.p.ml
                     findDataTable.p.ch.pl += addDataTable.vozvrat.p.chl
                     findDataTable.p.k.pl += addDataTable.vozvrat.p.kl
                     findDataTable.p.sl.pl += addDataTable.vozvrat.p.sl
+                    findDataTable.p.s02.pl += addDataTable.vozvrat.p.s02
+                    findDataTable.p.s04.pl += addDataTable.vozvrat.p.s04
+                    findDataTable.p.b.pl += addDataTable.vozvrat.p.b
 
                     findDataTable.p.m.ps += addDataTable.vozvrat.virychka.ml
                     findDataTable.p.ch.ps += addDataTable.vozvrat.virychka.chl
                     findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
                     findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
+                    findDataTable.p.s02.ps += addDataTable.vozvrat.virychka.s02
+                    findDataTable.p.s04.ps += addDataTable.vozvrat.virychka.s04
+                    findDataTable.p.b.ps += addDataTable.vozvrat.virychka.b
 
                     findDataTable.r.ntp += addDataTable.i.n
                     findDataTable.r.att += addDataTable.i.m
@@ -445,6 +509,9 @@ const addOtchetRealizatoraShoro = async (object) => {
                 findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
                 findDataTable.p.ch.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiCh):0;
                 findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
+                findDataTable.p.s02.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiS02):0;
+                findDataTable.p.s04.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiS04):0;
+                findDataTable.p.b.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiB):0;
 
                 findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
                 findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['ntp'] - findDataTable['r']['att'] - findDataTable['r']['at'] - findDataTable['r']['vs']
@@ -566,33 +633,50 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable.p.ch.v = 0
             findDataTable.p.k.v = 0
             findDataTable.p.sl.v = 0
+            findDataTable.p.s02.v = 0
+            findDataTable.p.s04.v = 0
+            findDataTable.p.b.v = 0
 
             findDataTable.p.m.o = 0
             findDataTable.p.ch.o = 0
             findDataTable.p.k.o = 0
             findDataTable.p.sl.o = 0
+            findDataTable.p.s02.o = 0
+            findDataTable.p.s04.o = 0
+            findDataTable.p.b.o = 0
 
             findDataTable.p.m.s = 0
             findDataTable.p.ch.s = 0
             findDataTable.p.k.s = 0
             findDataTable.p.sl.s = 0
+            findDataTable.p.s02.s = 0
+            findDataTable.p.s04.s = 0
+            findDataTable.p.b.s = 0
 
             findDataTable.p.m.pl = 0
             findDataTable.p.ch.pl = 0
             findDataTable.p.k.pl = 0
             findDataTable.p.sl.pl = 0
+            findDataTable.p.s02.pl = 0
+            findDataTable.p.s04.pl = 0
+            findDataTable.p.b.pl = 0
 
             findDataTable.p.m.ps = 0
             findDataTable.p.ch.ps = 0
             findDataTable.p.k.ps = 0
             findDataTable.p.sl.ps = 0
+            findDataTable.p.s02.ps = 0
+            findDataTable.p.s04.ps = 0
+            findDataTable.p.b.ps = 0
 
             findDataTable.p.m.ktt = findRealizators.length
             findDataTable.p.ch.ktt = findRealizators.length
             findDataTable.p.k.ktt = findRealizators.length
             findDataTable.p.sl.ktt = findRealizators.length
+            findDataTable.p.s02.ktt = findRealizators.length
+            findDataTable.p.s04.ktt = findRealizators.length
+            findDataTable.p.b.ktt = findRealizators.length
             findDataTable.r.otr = findRealizators.length*100
-
             findDataTable.r.ntp = 0
             findDataTable.r.att = 0
             findDataTable.r.inc = 0
@@ -600,7 +684,7 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable['p']['i'] = 0
             findDataTable['i'] = 0
 
-            let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = []
+            let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = [], dolivkiS02 = [], dolivkiS04 = [], dolivkiB = []
 
             for(let i = 0; i<findRealizators.length; i++){
                 let addDataTable = JSON.parse(findRealizators[i].dataTable)
@@ -645,30 +729,75 @@ const setOtchetRealizatoraShoro = async (object, id) => {
                     dolivkiSl[i]=3
                 }
 
+                if(addDataTable.vydano.d1.s02){
+                    dolivkiS02[i]=1
+                }
+                if(addDataTable.vydano.d2.s02!==0){
+                    dolivkiS02[i]=2
+                }
+                if(addDataTable.vydano.d3.s02!==0){
+                    dolivkiS02[i]=3
+                }
+
+                if(addDataTable.vydano.d1.s04){
+                    dolivkiS04[i]=1
+                }
+                if(addDataTable.vydano.d2.s04!==0){
+                    dolivkiS04[i]=2
+                }
+                if(addDataTable.vydano.d3.s04!==0){
+                    dolivkiS04[i]=3
+                }
+
+                if(addDataTable.vydano.d1.b){
+                    dolivkiB[i]=1
+                }
+                if(addDataTable.vydano.d2.b!==0){
+                    dolivkiB[i]=2
+                }
+                if(addDataTable.vydano.d3.b!==0){
+                    dolivkiB[i]=3
+                }
+
                 findDataTable.p.m.v += addDataTable.vydano.i.ml
                 findDataTable.p.ch.v += addDataTable.vydano.i.chl
                 findDataTable.p.k.v += addDataTable.vydano.i.kl
                 findDataTable.p.sl.v += addDataTable.vydano.i.sl
+                findDataTable.p.s02.v += addDataTable.vydano.i.s02
+                findDataTable.p.s04.v += addDataTable.vydano.i.s04
+                findDataTable.p.b.v += addDataTable.vydano.i.b
 
                 findDataTable.p.m.o += addDataTable.vozvrat.v.ml
                 findDataTable.p.ch.o += addDataTable.vozvrat.v.chl
                 findDataTable.p.k.o += addDataTable.vozvrat.v.kl
                 findDataTable.p.sl.o += addDataTable.vozvrat.v.sl
+                findDataTable.p.s02.o += addDataTable.vozvrat.v.s02
+                findDataTable.p.s04.o += addDataTable.vozvrat.v.s04
+                findDataTable.p.b.o += addDataTable.vozvrat.v.b
 
                 findDataTable.p.m.s += addDataTable.vozvrat.s.ml
                 findDataTable.p.ch.s += addDataTable.vozvrat.s.chl
                 findDataTable.p.k.s += addDataTable.vozvrat.s.kl
                 findDataTable.p.sl.s += addDataTable.vozvrat.s.sl
+                findDataTable.p.s02.s += addDataTable.vozvrat.s.s02
+                findDataTable.p.s04.s += addDataTable.vozvrat.s.s04
+                findDataTable.p.b.s += addDataTable.vozvrat.s.b
 
                 findDataTable.p.m.pl += addDataTable.vozvrat.p.ml
                 findDataTable.p.ch.pl += addDataTable.vozvrat.p.chl
                 findDataTable.p.k.pl += addDataTable.vozvrat.p.kl
                 findDataTable.p.sl.pl += addDataTable.vozvrat.p.sl
+                findDataTable.p.s02.pl += addDataTable.vozvrat.p.s02
+                findDataTable.p.s04.pl += addDataTable.vozvrat.p.s04
+                findDataTable.p.b.pl += addDataTable.vozvrat.p.b
 
                 findDataTable.p.m.ps += addDataTable.vozvrat.virychka.ml
                 findDataTable.p.ch.ps += addDataTable.vozvrat.virychka.chl
                 findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
                 findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
+                findDataTable.p.s02.ps += addDataTable.vozvrat.virychka.s02
+                findDataTable.p.s04.ps += addDataTable.vozvrat.virychka.s04
+                findDataTable.p.b.ps += addDataTable.vozvrat.virychka.b
 
                 findDataTable.r.ntp += addDataTable.i.n
                 findDataTable.r.att += addDataTable.i.m
@@ -681,6 +810,9 @@ const setOtchetRealizatoraShoro = async (object, id) => {
             findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
             findDataTable.p.ch.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiCh):0;
             findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
+            findDataTable.p.s02.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiS02):0;
+            findDataTable.p.s04.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiS04):0;
+            findDataTable.p.b.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiB):0;
 
             findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
             findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['att'] - findDataTable['r']['ntp'] - findDataTable['r']['at'] - findDataTable['r']['vs']
@@ -803,33 +935,51 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                 findDataTable.p.ch.v = 0
                 findDataTable.p.k.v = 0
                 findDataTable.p.sl.v = 0
+                findDataTable.p.s02.v = 0
+                findDataTable.p.s04.v = 0
+                findDataTable.p.b.v = 0
 
                 findDataTable.p.m.o = 0
                 findDataTable.p.ch.o = 0
                 findDataTable.p.k.o = 0
                 findDataTable.p.sl.o = 0
+                findDataTable.p.s02.o = 0
+                findDataTable.p.s04.o = 0
+                findDataTable.p.b.o = 0
 
                 findDataTable.p.m.s = 0
                 findDataTable.p.ch.s = 0
                 findDataTable.p.k.s = 0
                 findDataTable.p.sl.s = 0
+                findDataTable.p.s02.s = 0
+                findDataTable.p.s04.s = 0
+                findDataTable.p.b.s = 0
 
                 findDataTable.p.m.pl = 0
                 findDataTable.p.ch.pl = 0
                 findDataTable.p.k.pl = 0
                 findDataTable.p.sl.pl = 0
+                findDataTable.p.s02.pl = 0
+                findDataTable.p.s04.pl = 0
+                findDataTable.p.b.pl = 0
 
                 findDataTable.p.m.ps = 0
                 findDataTable.p.ch.ps = 0
                 findDataTable.p.k.ps = 0
                 findDataTable.p.sl.ps = 0
+                findDataTable.p.s02.ps = 0
+                findDataTable.p.s04.ps = 0
+                findDataTable.p.b.ps = 0
 
                 findDataTable.p.m.ktt = findRealizators.length
                 findDataTable.p.ch.ktt = findRealizators.length
                 findDataTable.p.k.ktt = findRealizators.length
                 findDataTable.p.sl.ktt = findRealizators.length
-                findDataTable.r.otr = findRealizators.length*100
+                findDataTable.p.s02.ktt = findRealizators.length
+                findDataTable.p.s04.ktt = findRealizators.length
+                findDataTable.p.b.ktt = findRealizators.length
 
+                findDataTable.r.otr = findRealizators.length*100
                 findDataTable.r.ntp = 0
                 findDataTable.r.att = 0
                 findDataTable.r.inc = 0
@@ -837,7 +987,7 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                 findDataTable['p']['i'] = 0
                 findDataTable['i'] = 0
 
-                let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = []
+                let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = [], dolivkiS02 = [], dolivkiS04 = [], dolivkiB = []
 
                 for(let i = 0; i<findRealizators.length; i++){
                     let addDataTable = JSON.parse(findRealizators[i].dataTable)
@@ -882,30 +1032,75 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                         dolivkiSl[i]=3
                     }
 
+                    if(addDataTable.vydano.d1.s02){
+                        dolivkiS02[i]=1
+                    }
+                    if(addDataTable.vydano.d2.s02!==0){
+                        dolivkiS02[i]=2
+                    }
+                    if(addDataTable.vydano.d3.s02!==0){
+                        dolivkiS02[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.s04){
+                        dolivkiS04[i]=1
+                    }
+                    if(addDataTable.vydano.d2.s04!==0){
+                        dolivkiS04[i]=2
+                    }
+                    if(addDataTable.vydano.d3.s04!==0){
+                        dolivkiS04[i]=3
+                    }
+
+                    if(addDataTable.vydano.d1.b){
+                        dolivkiB[i]=1
+                    }
+                    if(addDataTable.vydano.d2.b!==0){
+                        dolivkiB[i]=2
+                    }
+                    if(addDataTable.vydano.d3.b!==0){
+                        dolivkiB[i]=3
+                    }
+
                     findDataTable.p.m.v += addDataTable.vydano.i.ml
                     findDataTable.p.ch.v += addDataTable.vydano.i.chl
                     findDataTable.p.k.v += addDataTable.vydano.i.kl
                     findDataTable.p.sl.v += addDataTable.vydano.i.sl
+                    findDataTable.p.s02.v += addDataTable.vydano.i.s02
+                    findDataTable.p.s04.v += addDataTable.vydano.i.s04
+                    findDataTable.p.b.v += addDataTable.vydano.i.b
 
                     findDataTable.p.m.o += addDataTable.vozvrat.v.ml
                     findDataTable.p.ch.o += addDataTable.vozvrat.v.chl
                     findDataTable.p.k.o += addDataTable.vozvrat.v.kl
                     findDataTable.p.sl.o += addDataTable.vozvrat.v.sl
+                    findDataTable.p.s02.o += addDataTable.vozvrat.v.s02
+                    findDataTable.p.s04.o += addDataTable.vozvrat.v.s04
+                    findDataTable.p.b.o += addDataTable.vozvrat.v.b
 
                     findDataTable.p.m.s += addDataTable.vozvrat.s.ml
                     findDataTable.p.ch.s += addDataTable.vozvrat.s.chl
                     findDataTable.p.k.s += addDataTable.vozvrat.s.kl
                     findDataTable.p.sl.s += addDataTable.vozvrat.s.sl
+                    findDataTable.p.s02.s += addDataTable.vozvrat.s.s02
+                    findDataTable.p.s04.s += addDataTable.vozvrat.s.s04
+                    findDataTable.p.b.s += addDataTable.vozvrat.s.b
 
                     findDataTable.p.m.pl += addDataTable.vozvrat.p.ml
                     findDataTable.p.ch.pl += addDataTable.vozvrat.p.chl
                     findDataTable.p.k.pl += addDataTable.vozvrat.p.kl
                     findDataTable.p.sl.pl += addDataTable.vozvrat.p.sl
+                    findDataTable.p.s02.pl += addDataTable.vozvrat.p.s02
+                    findDataTable.p.s04.pl += addDataTable.vozvrat.p.s04
+                    findDataTable.p.b.pl += addDataTable.vozvrat.p.b
 
                     findDataTable.p.m.ps += addDataTable.vozvrat.virychka.ml
                     findDataTable.p.ch.ps += addDataTable.vozvrat.virychka.chl
                     findDataTable.p.k.ps += addDataTable.vozvrat.virychka.kl
                     findDataTable.p.sl.ps += addDataTable.vozvrat.virychka.sl
+                    findDataTable.p.s02.ps += addDataTable.vozvrat.virychka.s02
+                    findDataTable.p.s04.ps += addDataTable.vozvrat.virychka.s04
+                    findDataTable.p.b.ps += addDataTable.vozvrat.virychka.b
 
                     findDataTable.r.ntp += addDataTable.i.n
                     findDataTable.r.att += addDataTable.i.m
@@ -917,6 +1112,9 @@ const deleteOtchetRealizatoraShoro = async (id) => {
                 findDataTable.p.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
                 findDataTable.p.ch.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiCh):0;
                 findDataTable.p.sl.kd = dolivkiSl.length>0?Math.max.apply(Math, dolivkiSl):0;
+                findDataTable.p.s02.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiS02):0;
+                findDataTable.p.s04.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiS04):0;
+                findDataTable.p.b.kd = dolivkiCh.length>0?Math.max.apply(Math, dolivkiB):0;
 
                 findDataTable['p']['i'] = findDataTable['p']['m']['ps'] + findDataTable['p']['ch']['ps'] + findDataTable['p']['k']['ps'] + findDataTable['p']['sl']['ps']
                 findDataTable['i'] = findDataTable['p']['i'] - findDataTable['r']['otr'] - findDataTable['r']['oo'] - findDataTable['r']['inc'] - findDataTable['r']['att'] - findDataTable['r']['ntp'] - findDataTable['r']['at'] - findDataTable['r']['vs']

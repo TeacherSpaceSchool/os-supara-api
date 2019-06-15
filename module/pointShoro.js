@@ -3,6 +3,7 @@ const format = require('./const').stringifyDateTime
 const mongoose = require('mongoose');
 const RealizatorShoro = require('../models/realizatorShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
+const skip1 = require('../module/const').skip;
 
 const getPointShoroAll = async (id) => {
     try{
@@ -51,7 +52,7 @@ const getPointShoro1 = async (search, sort, skip, id) => {
                 })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PointShoro.count({
             region: region,
@@ -69,7 +70,7 @@ const getPointShoro1 = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else {
             count = await PointShoro.count({
                 region: region,
@@ -85,7 +86,7 @@ const getPointShoro1 = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         }
         for (let i=0; i<findResult.length; i++){
             data.push([ findResult[i].name, findResult[i].region, format(findResult[i].updatedAt)]);
@@ -125,7 +126,7 @@ const getPointShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PointShoro.count({
                 $or: [
@@ -143,7 +144,7 @@ const getPointShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else {
             count = await PointShoro.count({
                 $or: [
@@ -159,7 +160,7 @@ const getPointShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         }
         for (let i=0; i<findResult.length; i++){
             data.push([ findResult[i].name, findResult[i].region, format(findResult[i].updatedAt)]);

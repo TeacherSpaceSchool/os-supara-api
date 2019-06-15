@@ -2,6 +2,7 @@ const RealizatorShoro = require('../models/realizatorShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const UserShoro = require('../models/userShoro');
 const mongoose = require('mongoose');
+const skip1 = require('../module/const').skip;
 
 const getRealizatorShoroByPoint = async (point) => {
     try{
@@ -52,7 +53,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
                 .find({region: region})
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await RealizatorShoro.count({
                 $or: [
@@ -78,7 +79,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await RealizatorShoro.count({
                 $or: [
@@ -102,7 +103,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);
@@ -145,7 +146,7 @@ const getRealizatorShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await RealizatorShoro.count({
                 $or: [
@@ -171,7 +172,7 @@ const getRealizatorShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await RealizatorShoro.count({
                 $or: [
@@ -195,7 +196,7 @@ const getRealizatorShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);

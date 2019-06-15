@@ -1,5 +1,6 @@
 const NakladnayaNaPustuyTaruShoro = require('../models/nakladnayaNaPustuyTaruShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
+const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id) => {
@@ -24,7 +25,7 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
                 .find({organizator: organizator, region: region})
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaNaPustuyTaruShoro.count({
                 organizator: organizator, region: region,
@@ -42,7 +43,7 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await NakladnayaNaPustuyTaruShoro.count({
                 organizator: organizator, region: region,
@@ -58,7 +59,7 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
@@ -93,7 +94,7 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaNaPustuyTaruShoro.count({
                 $or: [
@@ -113,7 +114,7 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await NakladnayaNaPustuyTaruShoro.count({
                 $or: [
@@ -131,7 +132,7 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);

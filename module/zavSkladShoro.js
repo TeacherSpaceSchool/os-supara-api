@@ -1,6 +1,7 @@
 const ZavSkladShoro = require('../models/zavSkladShoro');
 const mongoose = require('mongoose');
 const UserShoro = require('../models/userShoro');
+const skip1 = require('../module/const').skip;
 
 const getZavSkladShoro = async (search, sort, skip) => {
     try{
@@ -45,7 +46,7 @@ const getZavSkladShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await ZavSkladShoro.count({
                 $or: [
@@ -69,7 +70,7 @@ const getZavSkladShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await ZavSkladShoro.count({
                 $or: [
@@ -91,7 +92,7 @@ const getZavSkladShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].name, findResult[i].phone]);

@@ -1,6 +1,7 @@
 const CarShoro = require('../models/carShoro');
 const format = require('./const').stringifyDateTime ;
 const mongoose = require('mongoose');
+const skip1 = require('../module/const').skip;
 
 const getCarShoro = async (search, sort, skip) => {
     try{
@@ -25,7 +26,7 @@ const getCarShoro = async (search, sort, skip) => {
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10)
+                .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await CarShoro.count({
                 $or: [
@@ -41,7 +42,7 @@ const getCarShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         } else {
             count = await CarShoro.count({
                 $or: [
@@ -55,7 +56,7 @@ const getCarShoro = async (search, sort, skip) => {
             })
                 .sort(sort)
                 .skip(parseInt(skip))
-                .limit(10);
+                .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
             data.push([findResult[i].number, format(findResult[i].updatedAt)]);

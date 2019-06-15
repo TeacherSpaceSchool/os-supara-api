@@ -102,6 +102,9 @@ const getTomorrow = (day) =>
     return day[0]+' '+day[1]+' '+day[2]
 }
 
+const skip = 10
+
+module.exports.skip = skip;
 module.exports.stringifyDateTime = stringifyDateTime;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;
