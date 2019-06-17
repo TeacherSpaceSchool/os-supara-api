@@ -272,16 +272,22 @@ router.post('/delete', async (req, res) => {
                     await RealizatorShoro.deleteRealizatorShoro(JSON.parse(req.body.deleted))
                     await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Накладная на пустую тару'){
+                    await NakladnayaNaPustuyTaruShoro.deleteNakladnayaNaPustuyTaruShoro(JSON.parse(req.body.deleted))
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Накладная склад №1'){
+                    await NakladnayaSklad1Shoro.deleteNakladnayaSklad1Shoro(JSON.parse(req.body.deleted))
                     await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1ShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Накладная склад №2'){
+                    await NakladnayaSklad2Shoro.deleteNakladnayaSklad2Shoro(JSON.parse(req.body.deleted))
                     await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2ShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Накладная на вечерний возврат'){
+                    await NakladnayaNaVecherniyVozvratShoro.deleteNakladnayaNaVecherniyVozvratShoro(JSON.parse(req.body.deleted))
                     await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Отчет организатора'){
+                    await OtchetOrganizatoraShoro.deleteOtchetOrganizatoraShoro(JSON.parse(req.body.deleted))
                     await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Отчет реализатора'){
+                    await OtchetRealizatoraShoro.deleteOtchetRealizatoraShoro(JSON.parse(req.body.deleted))
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 }
             });
