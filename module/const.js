@@ -114,3 +114,4 @@ module.exports.adminLogin = adminLogin;
 module.exports.url = url;
 module.exports.getYesterday = getYesterday;
 module.exports.getTomorrow = getTomorrow;
+module.exports.monthWithDay = monthWithDay;

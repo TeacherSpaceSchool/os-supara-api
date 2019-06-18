@@ -4,9 +4,19 @@ const UserShoro = require('../models/userShoro');
 const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
-const getRealizatorShoroByPoint = async (point) => {
+const getRealizatorShoroName = async () => {
     try{
-        let data = await RealizatorShoro.findOne({point: point})
+        return await RealizatorShoro.find().distinct('name');
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getRealizatorShoroByPoint = async (point, id) => {
+    try{
+        let organizator = await OrganizatorShoro.findOne({user: id})
+        let region = organizator.region
+        let data = await RealizatorShoro.findOne({point: point, region: region})
         let res = {
             name: data.name,
             region: data.region,
@@ -328,4 +338,5 @@ module.exports.addRealizatorShoro = addRealizatorShoro;
 module.exports.getRealizatorShoroByName = getRealizatorShoroByName;
 module.exports.getRealizatorShoroById = getRealizatorShoroById;
 module.exports.getProfileRealizatorShoro = getProfileRealizatorShoro;
+module.exports.getRealizatorShoroName = getRealizatorShoroName;
 module.exports.getRealizatorShoroByPoint = getRealizatorShoroByPoint;

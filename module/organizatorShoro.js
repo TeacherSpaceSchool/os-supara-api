@@ -3,6 +3,14 @@ const UserShoro = require('../models/userShoro');
 const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
+const getOrganizatorShoroName = async () => {
+    try{
+        return await OrganizatorShoro.find().distinct('name');
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 const getOrganizatorShoro = async (search, sort, skip) => {
     try{
         let findResult = [], data = [], count;
@@ -196,4 +204,5 @@ module.exports.getOrganizatorShoro = getOrganizatorShoro;
 module.exports.setOrganizatorShoro = setOrganizatorShoro;
 module.exports.addOrganizatorShoro = addOrganizatorShoro;
 module.exports.getOrganizatorShoroById = getOrganizatorShoroById
+module.exports.getOrganizatorShoroName = getOrganizatorShoroName
 module.exports.getProfileOrganizatorShoro = getProfileOrganizatorShoro

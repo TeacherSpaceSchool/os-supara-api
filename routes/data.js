@@ -14,6 +14,7 @@ const NakladnayaNaPustuyTaruShoro = require('../module/nakladnayaNaPustuyTaruSho
 const NakladnayaSklad1Shoro = require('../module/nakladnayaSklad1Shoro');
 const NakladnayaNaVecherniyVozvratShoro = require('../module/nakladnayaNaVecherniyVozvratShoro');
 const OtchetOrganizatoraShoro = require('../module/otchetOrganizatoraShoro');
+const StatisticShoro = require('../module/statisticShoro');
 const OtchetRealizatoraShoro = require('../module/otchetRealizatoraShoro');
 const myConst = require('../module/const');
 const randomstring = require('randomstring');
@@ -56,6 +57,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await RegionShoro.getRegionShoroName())
                 } else if(req.body.name == 'ТочкаИмя'){
                     await res.send(await PointShoro.getPointShoroName())
+                } else if(req.body.name == 'ОрганизаторИмя'){
+                    await res.send(await OrganizatorShoro.getOrganizatorShoroName())
+                } else if(req.body.name == 'РеализаторИмя'){
+                    await res.send(await RealizatorShoro.getRealizatorShoroName())
                 } else if(req.body.name == 'ТочкаПоРегиону'){
                     await res.send(await PointShoro.getPointShoroRegion(data.region))
                 } else if(req.body.name == 'Регион'){
@@ -90,6 +95,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
                 } else if(req.body.name == 'Номера авто'){
                     await res.send(await CarShoro.getCarNumber())
+                } else if(req.body.name == 'Статистика'){
+                    await res.send(await StatisticShoro.getStatistic(data.type, data.what, data.date))
                 }
             });
         }
@@ -141,7 +148,7 @@ router.post('/get', async (req, res) => {
                 }  else if(req.body.name == 'Цена1'){
                     await res.send(await PriceShoro.getPriceShoroAll())
                 } else if(req.body.name == 'РеализаторПоТочке'){
-                    await res.send(await RealizatorShoro.getRealizatorShoroByPoint(data.point))
+                    await res.send(await RealizatorShoro.getRealizatorShoroByPoint(data.point, user._id))
                 } else if(req.body.name == 'РегионИмя'){
                     await res.send(await RegionShoro.getRegionShoroName())
                 } else if(req.body.name == 'ТочкаПоРегиону'){
