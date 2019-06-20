@@ -234,6 +234,8 @@ const getOtchetRealizatoraShoro = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
+            console.log(findResult[i])
+
             data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
         }
         return {data: data, count: count, row: row}
