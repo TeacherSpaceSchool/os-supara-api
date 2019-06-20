@@ -56,7 +56,8 @@ const url = '/',
         'октябрь': 'ноябрь',
         'ноябрь': 'декабрь',
         'декабрь': 'январь'
-    }
+    },
+    skip = 10
 const stringifyDateTime = (dateTime) => {
     dateTime = new Date(dateTime)
     dateTime.setHours(dateTime.getHours() + 6);
@@ -102,8 +103,11 @@ const getTomorrow = (day) =>
     return day[0]+' '+day[1]+' '+day[2]
 }
 
-const skip = 10
+const checkInt = (int) => {
+    return int===''?0:int
+}
 
+module.exports.checkInt = checkInt;
 module.exports.skip = skip;
 module.exports.stringifyDateTime = stringifyDateTime;
 module.exports.validPhone = validPhone;

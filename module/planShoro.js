@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const skip1 = require('../module/const').skip;
+const checkInt = require('../module/const').checkInt;
 
 const getPlanShoroOrganizator = async (search, sort, skip, id) => {
     try{
@@ -88,7 +89,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             let findPlanRegions = JSON.parse(findResult[i].regions)
             for (let i1 = 0; i1 < findPlanRegions.length; i1++) {
                 if (findPlanRegions[i1]['name'] == region) {
-                    data.push([ findResult[i].date, findPlanRegions[i1]['plan'], Math.round(findPlanRegions[i1]['current']*100/findPlanRegions[i1]['plan'])+'%']);
+                    data.push([ findResult[i].date, findPlanRegions[i1]['plan'], findPlanRegions[i1]['plan']!==0&&findPlanRegions[i1]['plan']!==''?Math.round(findPlanRegions[i1]['current']*100/findPlanRegions[i1]['plan'])+'%':'0%']);
                     break
                 }
             }
@@ -136,7 +137,8 @@ const getPlanShoro = async (search, sort, skip) => {
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
-        } else if (mongoose.Types.ObjectId.isValid(search)) {
+        }
+        else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PlanShoro.count({
                 $or: [
                     {_id: search},
@@ -156,7 +158,8 @@ const getPlanShoro = async (search, sort, skip) => {
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1);
-        } else {
+        }
+        else {
             count = await PlanShoro.count({
                 $or: [
                     {point: {'$regex': search, '$options': 'i'}},
@@ -176,7 +179,7 @@ const getPlanShoro = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([ findResult[i].date, findResult[i].norma, Math.round(findResult[i].current*100/findResult[i].norma)+'%']);
+            data.push([ findResult[i].date, findResult[i].norma, findResult[i].norma!==0&&findResult[i].norma!==''?Math.round(findResult[i].current*100/findResult[i].norma)+'%':'0%']);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -194,11 +197,11 @@ const addPlanShoro = async (object) => {
                 let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': object.date, '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
                 findPlanRegions[i]['points'][i1]['current'] = 0
                 for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
-                    findPlanRegions[i]['points'][i1]['current'] += JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv']
+                    findPlanRegions[i]['points'][i1]['current'] += checkInt(JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv'])
                 }
-                findPlanRegions[i]['current'] += findPlanRegions[i]['points'][i1]['current']
+                findPlanRegions[i]['current'] += checkInt(findPlanRegions[i]['points'][i1]['current'])
             }
-            object.current += findPlanRegions[i]['current']
+            object.current += checkInt(findPlanRegions[i]['current'])
         }
         object.regions = JSON.stringify(findPlanRegions)
         let _object = new PlanShoro(object);

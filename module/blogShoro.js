@@ -77,7 +77,6 @@ const getBlogShoro = async (search, sort, skip) => {
                 image = image.replace(',http://', '\nhttp://');
             data.push([image, findResult[i].name, findResult[i].text, format(findResult[i].updatedAt)]);
         }
-        console.log({data: data, count: count, row: row})
         return {data: data, count: count, row: row}
     } catch(error) {
         console.error(error)

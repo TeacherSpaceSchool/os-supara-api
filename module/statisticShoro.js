@@ -1,5 +1,6 @@
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const monthWithDay = require('../module/const').monthWithDay;
+const checkInt = require('../module/const').checkInt;
 
 const calculate = async (data, date) => {
     let res = []
@@ -22,52 +23,151 @@ const calculate = async (data, date) => {
             if(data[i1].data === day) {
                 x+=1
                 let addDataTable = JSON.parse(data[i1].dataTable)
-                a.m.v += addDataTable.vydano.i.ml
-                a.ch.v += addDataTable.vydano.i.chl
-                a.k.v += addDataTable.vydano.i.kl
-                a.sl.v += addDataTable.vydano.i.sl
-                a.s02.v += addDataTable.vydano.i.s02
-                a.s04.v += addDataTable.vydano.i.s04
-                a.b.v += addDataTable.vydano.i.b
+                
+                if(addDataTable.vydano.d3.ml.length>0){
+                    dolivkiM[i]=3
+                }
+                else if(addDataTable.vydano.d2.ml.length>0){
+                    dolivkiM[i]=2
+                }
+                else if(addDataTable.vydano.d1.ml.length>0){
+                    dolivkiM[i]=1
+                }
+                else {
+                    dolivkiM[i]=0
+                }
 
-                a.m.o += addDataTable.vozvrat.v.ml
-                a.ch.o += addDataTable.vozvrat.v.chl
-                a.k.o += addDataTable.vozvrat.v.kl
-                a.sl.o += addDataTable.vozvrat.v.sl
-                a.s02.o += addDataTable.vozvrat.v.s02
-                a.s04.o += addDataTable.vozvrat.v.s04
-                a.b.o += addDataTable.vozvrat.v.b
+                if(addDataTable.vydano.d3.kl.length>0){
+                    dolivkiK[i]=3
+                }
+                else if(addDataTable.vydano.d2.kl.length>0){
+                    dolivkiK[i]=2
+                }
+                else if(addDataTable.vydano.d1.kl.length>0){
+                    dolivkiK[i]=1
+                }
+                else {
+                    dolivkiK[i]=0
+                }
 
-                a.m.s += addDataTable.vozvrat.s.ml
-                a.ch.s += addDataTable.vozvrat.s.chl
-                a.k.s += addDataTable.vozvrat.s.kl
-                a.sl.s += addDataTable.vozvrat.s.sl
-                a.s02.s += addDataTable.vozvrat.s.s02
-                a.s04.s += addDataTable.vozvrat.s.s04
-                a.b.s += addDataTable.vozvrat.s.b
+                if(addDataTable.vydano.d3.chl.length>0){
+                    dolivkiCh[i]=3
+                }
+                else if(addDataTable.vydano.d2.chl.length>0){
+                    dolivkiCh[i]=2
+                }
+                else if(addDataTable.vydano.d1.chl.length>0){
+                    dolivkiCh[i]=1
+                }
+                else {
+                    dolivkiCh[i]=0
+                }
 
-                a.m.pl += addDataTable.vozvrat.p.ml
-                a.ch.pl += addDataTable.vozvrat.p.chl
-                a.k.pl += addDataTable.vozvrat.p.kl
-                a.sl.pl += addDataTable.vozvrat.p.sl
-                a.s02.pl += addDataTable.vozvrat.p.s02
-                a.s04.pl += addDataTable.vozvrat.p.s04
-                a.b.pl += addDataTable.vozvrat.p.b
-
-                a.m.ps += addDataTable.vozvrat.virychka.ml
-                a.ch.ps += addDataTable.vozvrat.virychka.chl
-                a.k.ps += addDataTable.vozvrat.virychka.kl
-                a.sl.ps += addDataTable.vozvrat.virychka.sl
-                a.s02.ps += addDataTable.vozvrat.virychka.s02
-                a.s04.ps += addDataTable.vozvrat.virychka.s04
-                a.b.ps += addDataTable.vozvrat.virychka.b
+                if(addDataTable.vydano.d3.sl.length>0){
+                    dolivkiSl[i]=3
+                }
+                else if(addDataTable.vydano.d2.sl.length>0){
+                    dolivkiSl[i]=2
+                }
+                else if(addDataTable.vydano.d1.sl.length>0){
+                    dolivkiSl[i]=1
+                }
+                else {
+                    dolivkiSl[i]=0
+                }
 
 
-                a.ntp += addDataTable.i.n
-                a.att += addDataTable.i.m
-                a.inc += addDataTable.i.inc
+                if(addDataTable.vydano.d3.s02.length>0){
+                    dolivkiS02[i]=3
+                }
+                else if(addDataTable.vydano.d2.s02.length>0){
+                    dolivkiS02[i]=2
+                }
+                else if(addDataTable.vydano.d1.s02.length>0){
+                    dolivkiS02[i]=1
+                }
+                else {
+                    dolivkiS02[i]=0
+                }
+
+                if(addDataTable.vydano.d3.s04.length>0){
+                    dolivkiS04[i]=3
+                }
+                else if(addDataTable.vydano.d2.s04.length>0){
+                    dolivkiS04[i]=2
+                }
+                else if(addDataTable.vydano.d1.s04.length>0){
+                    dolivkiS04[i]=1
+                }
+                else {
+                    dolivkiS04[i]=0
+                }
+
+                if(addDataTable.vydano.d3.b!==0){
+                    dolivkiB[i]=3
+                }
+                if(addDataTable.vydano.d1.b){
+                    dolivkiB[i]=1
+                }
+                if(addDataTable.vydano.d2.b!==0){
+                    dolivkiB[i]=2
+                }
+
+                a.m.v += checkInt(addDataTable.vydano.i.ml)
+                a.ch.v += checkInt(addDataTable.vydano.i.chl)
+                a.k.v += checkInt(addDataTable.vydano.i.kl)
+                a.sl.v += checkInt(addDataTable.vydano.i.sl)
+                a.s02.v += checkInt(addDataTable.vydano.i.s02)
+                a.s04.v += checkInt(addDataTable.vydano.i.s04)
+                a.b.v += checkInt(addDataTable.vydano.i.b)
+
+                a.m.o += checkInt(addDataTable.vozvrat.v.ml)
+                a.ch.o += checkInt(addDataTable.vozvrat.v.chl)
+                a.k.o += checkInt(addDataTable.vozvrat.v.kl)
+                a.sl.o += checkInt(addDataTable.vozvrat.v.sl)
+                a.s02.o += checkInt(addDataTable.vozvrat.v.s02)
+                a.s04.o += checkInt(addDataTable.vozvrat.v.s04)
+                a.b.o += checkInt(addDataTable.vozvrat.v.b)
+
+                a.m.s += checkInt(addDataTable.vozvrat.s.ml)
+                a.ch.s += checkInt(addDataTable.vozvrat.s.chl)
+                a.k.s += checkInt(addDataTable.vozvrat.s.kl)
+                a.sl.s += checkInt(addDataTable.vozvrat.s.sl)
+                a.s02.s += checkInt(addDataTable.vozvrat.s.s02)
+                a.s04.s += checkInt(addDataTable.vozvrat.s.s04)
+                a.b.s += checkInt(addDataTable.vozvrat.s.b)
+
+                a.m.pl += checkInt(addDataTable.vozvrat.p.ml)
+                a.ch.pl += checkInt(addDataTable.vozvrat.p.chl)
+                a.k.pl += checkInt(addDataTable.vozvrat.p.kl)
+                a.sl.pl += checkInt(addDataTable.vozvrat.p.sl)
+                a.s02.pl += checkInt(addDataTable.vozvrat.p.s02)
+                a.s04.pl += checkInt(addDataTable.vozvrat.p.s04)
+                a.b.pl += checkInt(addDataTable.vozvrat.p.b)
+
+                a.m.ps += checkInt(addDataTable.vozvrat.virychka.ml)
+                a.ch.ps += checkInt(addDataTable.vozvrat.virychka.chl)
+                a.k.ps += checkInt(addDataTable.vozvrat.virychka.kl)
+                a.sl.ps += checkInt(addDataTable.vozvrat.virychka.sl)
+                a.s02.ps += checkInt(addDataTable.vozvrat.virychka.s02)
+                a.s04.ps += checkInt(addDataTable.vozvrat.virychka.s04)
+                a.b.ps += checkInt(addDataTable.vozvrat.virychka.b)
+
+
+
+
+                a.ntp += checkInt(addDataTable.i.n)
+                a.att += checkInt(addDataTable.i.m)
+                a.inc += checkInt(addDataTable.i.inc)
             }
         }
+        a.m.ktt = x
+        a.ch.ktt = x
+        a.k.ktt = x
+        a.sl.ktt = x
+        a.s02.ktt = x
+        a.s04.ktt = x
+        a.b.ktt = x
         a['i'] = a['m']['ps'] + a['ch']['ps'] + a['k']['ps'] + a['sl']['ps']
         a.m.kd = dolivkiM.length>0?Math.max.apply(Math, dolivkiM):0;
         a.k.kd = dolivkiK.length>0?Math.max.apply(Math, dolivkiK):0;
