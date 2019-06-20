@@ -89,7 +89,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             let findPlanRegions = JSON.parse(findResult[i].regions)
             for (let i1 = 0; i1 < findPlanRegions.length; i1++) {
                 if (findPlanRegions[i1]['name'] == region) {
-                    data.push([ findResult[i].date, findPlanRegions[i1]['plan'], findPlanRegions[i1]['plan']!==0&&findPlanRegions[i1]['plan']!==''?Math.round(findPlanRegions[i1]['current']*100/findPlanRegions[i1]['plan'])+'%':'0%']);
+                    data.push([ findResult[i].date, findPlanRegions[i1]['plan'], findPlanRegions[i1]['plan']!==0&&findPlanRegions[i1]['plan']!==''?Math.round(findPlanRegions[i1]['current']*100/findPlanRegions[i1]['plan'])+'%':findPlanRegions[i1]['current']]);
                     break
                 }
             }
@@ -179,7 +179,8 @@ const getPlanShoro = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([ findResult[i].date, findResult[i].norma, findResult[i].norma!==0&&findResult[i].norma!==''?Math.round(findResult[i].current*100/findResult[i].norma)+'%':'0%']);
+            console.log(findResult[i].current)
+            data.push([ findResult[i].date, findResult[i].norma, findResult[i].norma!==0&&findResult[i].norma!==''?Math.round(findResult[i].current*100/findResult[i].norma)+'%':findResult[i].current]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
