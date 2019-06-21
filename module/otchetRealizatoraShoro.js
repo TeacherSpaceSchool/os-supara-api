@@ -338,12 +338,26 @@ const calculateAll = async (object) => {
                     })
                     findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] += checkInt(addDataTable.vozvrat.v.ml)
                 }
+                if(addDataTable.vozvrat.v.mn1.length>0&&checkInt(addDataTable.vozvrat.v.ml1)>0) {
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['data'].push({
+                        '№': addDataTable.vozvrat.v.mn1,
+                        'l': addDataTable.vozvrat.v.ml1
+                    })
+                    findDataNakladnayaNaVecherniyVozvratShoro['m']['all'] += checkInt(addDataTable.vozvrat.v.ml1)
+                }
                 if(addDataTable.vozvrat.v.kn.length>0&&checkInt(addDataTable.vozvrat.v.kl)>0) {
                     findDataNakladnayaNaVecherniyVozvratShoro['k']['data'].push({
                         '№': addDataTable.vozvrat.v.kn,
                         'l': addDataTable.vozvrat.v.kl
                     })
                     findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] += checkInt(addDataTable.vozvrat.v.kl)
+                }
+                if(addDataTable.vozvrat.v.kn1.length>0&&checkInt(addDataTable.vozvrat.v.kl1)>0) {
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['data'].push({
+                        '№': addDataTable.vozvrat.v.kn1,
+                        'l': addDataTable.vozvrat.v.kl1
+                    })
+                    findDataNakladnayaNaVecherniyVozvratShoro['k']['all'] += checkInt(addDataTable.vozvrat.v.kl1)
                 }
             }
             findDataNakladnayaNaVecherniyVozvratShoro = JSON.stringify(findDataNakladnayaNaVecherniyVozvratShoro)
@@ -366,6 +380,17 @@ const calculateAll = async (object) => {
 
                     }
                     if(addDataTable.vozvrat.v.chn10.length>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] += 1
+
+                    }
+                }
+                if(checkInt(addDataTable.vozvrat.v.chl1)>0){
+                    findDataNakladnayaSklad1Shoro['vydano']['n']['chl'] += checkInt(addDataTable.vozvrat.v.chl1)
+                    if(addDataTable.vozvrat.v.chn251.length>0){
+                        findDataNakladnayaSklad1Shoro['vydano']['n']['ch25'] += 1
+
+                    }
+                    if(addDataTable.vozvrat.v.chn101.length>0){
                         findDataNakladnayaSklad1Shoro['vydano']['n']['ch10'] += 1
 
                     }
@@ -394,6 +419,17 @@ const calculateAll = async (object) => {
 
                     }
                     if(addDataTable.vozvrat.v.chn10.length>0){
+                        findDataNakladnayaSklad1Shoro['vozvrat']['n']['ch10'] += 1
+
+                    }
+                }
+                if(checkInt(addDataTable.vozvrat.v.chl1)>0){
+                    findDataNakladnayaSklad1Shoro['vozvrat']['n']['chl'] += checkInt(addDataTable.vozvrat.v.chl1)
+                    if(addDataTable.vozvrat.v.chn251.length>0){
+                        findDataNakladnayaSklad1Shoro['vozvrat']['n']['ch25'] += 1
+
+                    }
+                    if(addDataTable.vozvrat.v.chn101.length>0){
                         findDataNakladnayaSklad1Shoro['vozvrat']['n']['ch10'] += 1
 
                     }
@@ -597,6 +633,9 @@ const calculateAll = async (object) => {
                 findDataTable.p.m.o += checkInt(addDataTable.vozvrat.v.ml)
                 findDataTable.p.ch.o += checkInt(addDataTable.vozvrat.v.chl)
                 findDataTable.p.k.o += checkInt(addDataTable.vozvrat.v.kl)
+                findDataTable.p.m.o += checkInt(addDataTable.vozvrat.v.ml1)
+                findDataTable.p.ch.o += checkInt(addDataTable.vozvrat.v.chl1)
+                findDataTable.p.k.o += checkInt(addDataTable.vozvrat.v.kl1)
                 findDataTable.p.sl.o += checkInt(addDataTable.vozvrat.v.sl)
                 findDataTable.p.s02.o += checkInt(addDataTable.vozvrat.v.s02)
                 findDataTable.p.s04.o += checkInt(addDataTable.vozvrat.v.s04)

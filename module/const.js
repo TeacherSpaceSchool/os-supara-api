@@ -104,7 +104,7 @@ const getTomorrow = (day) =>
 }
 
 const checkInt = (int) => {
-    return int===''?0:int
+    return int===''||int===undefined?0:int
 }
 
 module.exports.checkInt = checkInt;
