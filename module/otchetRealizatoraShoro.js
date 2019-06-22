@@ -695,16 +695,11 @@ const calculateAll = async (object) => {
 
 const getReiting = async () => {
     try{
-        let dataOrganizatora = await OrganizatorShoro.find()
+        let dataPlan = await PlanShoro.findOne({date: await checkMonth()})
+        dataPlan = JSON.parse(dataPlan.regions)
         let reiting = []
-        for(let i = 0; i < dataOrganizatora.length; i++){
-            let dataOtchetOrganizatora = await OtchetRealizatoraShoro.find({organizator: dataOrganizatora[i].name, data: {'$regex': await checkMonth(), '$options': 'i'}})
-            if(dataOtchetOrganizatora.length>0) {
-                reiting[i] = {name: dataOrganizatora[i].name, score: 0}
-                for (let i1 = 0; i1 < dataOtchetOrganizatora.length; i1++) {
-                    reiting[i].score += JSON.parse(dataOtchetOrganizatora[i1].dataTable).i.fv
-                }
-            }
+        for(let i = 0; i < dataPlan.length; i++){
+            reiting[i] = {name: dataPlan[i].name, score: dataPlan[i].plan!==0&&dataPlan[i].plan!==''?Math.round(dataPlan[i].current*100/dataPlan[i].plan)+'%':dataPlan[i].current}
         }
         reiting.sort((a, b) => (b.score - a.score))
         return(reiting)
