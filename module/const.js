@@ -57,7 +57,21 @@ const url = '/',
         'ноябрь': 'декабрь',
         'декабрь': 'январь'
     },
-    skip = 10
+    skip = 10,
+    month1 = [
+        'январь',
+        'февраль',
+        'март',
+        'апрель',
+        'май',
+        'июнь',
+        'июль',
+        'август',
+        'сентябрь',
+        'октябрь',
+        'ноябрь',
+        'декабрь'
+    ]
 const stringifyDateTime = (dateTime) => {
     dateTime = new Date(dateTime)
     dateTime.setHours(dateTime.getHours() + 6);
@@ -107,6 +121,14 @@ const checkInt = (int) => {
     return int===''||int===undefined?0:int
 }
 
+const checkMonth= () => {
+    let date = new Date()
+    date = JSON.stringify(date).split('-')
+    date = month1[parseInt(date[1])-1]+' '+date[0].replace('"', '')
+    return date
+}
+
+module.exports.checkMonth = checkMonth;
 module.exports.checkInt = checkInt;
 module.exports.skip = skip;
 module.exports.stringifyDateTime = stringifyDateTime;

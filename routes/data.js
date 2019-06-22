@@ -97,6 +97,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await CarShoro.getCarNumber())
                 } else if(req.body.name == 'Статистика'){
                     await res.send(await StatisticShoro.getStatistic(data.type, data.what, data.date))
+                } else if(req.body.name == 'Рейтинг организаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting())
                 }
             });
         }

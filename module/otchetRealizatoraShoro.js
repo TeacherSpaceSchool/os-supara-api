@@ -9,6 +9,7 @@ const PlanShoro = require('../models/planShoro');
 const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 const checkInt = require('../module/const').checkInt;
+const checkMonth = require('../module/const').checkMonth;
 
 const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id) => {
     try{
@@ -692,6 +693,48 @@ const calculateAll = async (object) => {
     }
 }
 
+const getReiting = async () => {
+    try{
+        let dataOrganizatora = await OrganizatorShoro.find()
+        let reiting = []
+        for(let i = 0; i < dataOrganizatora.length; i++){
+            let dataOtchetOrganizatora = await OtchetRealizatoraShoro.find({organizator: dataOrganizatora[i].name, data: {'$regex': await checkMonth(), '$options': 'i'}})
+            if(dataOtchetOrganizatora.length>0) {
+                reiting[i] = {name: dataOrganizatora[i].name, score: 0}
+                for (let i1 = 0; i1 < dataOtchetOrganizatora.length; i1++) {
+                    reiting[i].score += JSON.parse(dataOtchetOrganizatora[i1].dataTable).i.fv
+                }
+            }
+        }
+        reiting.sort((a, b) => (b.score - a.score))
+        return(reiting)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getReiting1 = async () => {
+    try{
+        let dataOrganizatora = await RealizatorShoro.find()
+        let reiting = []
+        for(let i = 0; i < dataOrganizatora.length; i++){
+            let dataOtchetOrganizatora = await OtchetRealizatoraShoro.find({realizator: dataOrganizatora[i].name, data: {'$regex': await checkMonth(), '$options': 'i'}})
+            if(dataOtchetOrganizatora.length>0) {
+                reiting[i] = {name: dataOrganizatora[i].name, score: 0}
+                for (let i1 = 0; i1 < dataOtchetOrganizatora.length; i1++) {
+                    reiting[i].score += JSON.parse(dataOtchetOrganizatora[i1].dataTable).i.fv
+                }
+            }
+        }
+        reiting.sort((a, b) => (b.score - a.score))
+        return(reiting)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.getReiting1 = getReiting1;
+module.exports.getReiting = getReiting;
 module.exports.calculateAll = calculateAll;
 module.exports.deleteOtchetRealizatoraShoro = deleteOtchetRealizatoraShoro;
 module.exports.getOtchetRealizatoraShoro = getOtchetRealizatoraShoro;

@@ -1,5 +1,6 @@
 const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
 const skip1 = require('../module/const').skip;
+const checkMonth = require('../module/const').checkMonth;
 const OrganizatorShoro = require('../models/organizatorShoro');
 const mongoose = require('mongoose');
 

@@ -7,11 +7,60 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/gora.jpg" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/manifest.json" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.12c83b0323f319c3446997037ae77166.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.721e84efb1a1a4222d4d1664b6b586e7.js" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/17.6b7d3834.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/17.6b7d3834.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.65ac6e64.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.65ac6e64.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.92172022.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.92172022.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.98ec2440.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.98ec2440.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.3d0f8c17.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.3d0f8c17.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.2b41ce12.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.2b41ce12.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.2210b1c6.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.2210b1c6.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.48e55a8a.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.48e55a8a.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.eee83764.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.eee83764.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.66a69781.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.66a69781.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.12686d59.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.12686d59.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.bf71c160.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.bf71c160.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.baaf1262.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.baaf1262.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.72d6f5b5.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.72d6f5b5.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.631e71bc.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.631e71bc.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.4a4f5272.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.4a4f5272.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.39ca627a.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.39ca627a.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.a72d3bd6.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.a72d3bd6.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.a5f381be.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.a5f381be.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.0e17907b.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.0e17907b.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.1ef9a56f.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.1ef9a56f.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.02f10bdd.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.02f10bdd.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.3047641a.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.3047641a.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/media/logo.587aa57a.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/const.js" afterPath="$PROJECT_DIR$/module/const.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="$PROJECT_DIR$/routes/data.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -31,97 +80,62 @@
       <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="257">
-              <caret line="386" column="60" lean-forward="false" selection-start-line="386" selection-start-column="60" selection-end-line="386" selection-end-column="60" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="realizators.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/realizators.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6137">
-              <caret line="361" column="59" lean-forward="false" selection-start-line="361" selection-start-column="53" selection-end-line="361" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="regions.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/regions.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="23" column="6" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="planShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/planShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1547">
-              <caret line="91" column="0" lean-forward="false" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
+            <state relative-caret-position="216">
+              <caret line="723" column="75" lean-forward="false" selection-start-line="723" selection-start-column="75" selection-end-line="723" selection-end-column="75" />
               <folding>
-                <element signature="e#4205#4279#0" expanded="false" />
-                <element signature="e#5236#5453#0" expanded="false" />
-                <element signature="e#5512#6294#0" expanded="false" />
-                <element signature="e#6308#7017#0" expanded="false" />
-                <element signature="e#7476#8675#0" expanded="false" />
-                <element signature="e#8720#8857#0" expanded="false" />
-                <element signature="e#8902#9052#0" expanded="false" />
-                <element signature="e#9092#9215#0" expanded="false" />
+                <element signature="e#831#4421#0" expanded="false" />
+                <element signature="e#4501#7077#0" expanded="false" />
+                <element signature="e#7143#10447#0" expanded="false" />
+                <element signature="e#10501#10889#0" expanded="false" />
+                <element signature="e#10968#11142#0" expanded="false" />
+                <element signature="e#11227#11416#0" expanded="false" />
+                <element signature="e#11474#11653#0" expanded="false" />
+                <element signature="e#11706#12471#0" expanded="false" />
+                <element signature="e#12512#33650#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/const.js">
+      <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/otchetRealizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="106" column="36" lean-forward="false" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
+            <state relative-caret-position="102">
+              <caret line="6" column="14" lean-forward="false" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="regionShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/regionShoro.js">
+      <file leaf-file-name="otchetOrganizatoraShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/otchetOrganizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="31" column="22" lean-forward="false" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="22" />
+            <state relative-caret-position="1632">
+              <caret line="189" column="0" lean-forward="false" selection-start-line="189" selection-start-column="0" selection-end-line="189" selection-end-column="0" />
+              <folding>
+                <element signature="e#2909#5645#0" expanded="false" />
+                <element signature="e#5700#6035#0" expanded="false" />
+                <element signature="e#6557#6939#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="organizatorShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/organizatorShoro.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="68">
+              <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="8" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="statisticShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/statisticShoro.js">
+      <file leaf-file-name="otchetOrganizatoraShoro.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/otchetOrganizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1955">
-              <caret line="115" column="59" lean-forward="false" selection-start-line="115" selection-start-column="59" selection-end-line="115" selection-end-column="59" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="zavSkladShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/zavSkladShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="816">
-              <caret line="48" column="22" lean-forward="false" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="organizators.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/organizators.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="41" lean-forward="false" selection-start-line="0" selection-start-column="35" selection-end-line="0" selection-end-column="41" />
+            <state relative-caret-position="51">
+              <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -130,18 +144,28 @@
       <file leaf-file-name="data.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/routes/data.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1377">
-              <caret line="81" column="72" lean-forward="false" selection-start-line="81" selection-start-column="44" selection-end-line="81" selection-end-column="72" />
+            <state relative-caret-position="1700">
+              <caret line="100" column="63" lean-forward="false" selection-start-line="100" selection-start-column="63" selection-end-line="100" selection-end-column="63" />
               <folding>
-                <element signature="e#14298#16300#0" expanded="false" />
-                <element signature="e#16356#26178#0" expanded="false" />
-                <element signature="e#16448#21451#0" expanded="false" />
-                <element signature="e#16566#17148#0" expanded="false" />
-                <element signature="e#26314#39229#0" expanded="false" />
-                <element signature="e#26810#33065#0" expanded="false" />
-                <element signature="e#43667#44316#0" expanded="false" />
-                <element signature="e#44352#46041#0" expanded="false" />
+                <element signature="e#14445#16447#0" expanded="false" />
+                <element signature="e#16503#26325#0" expanded="false" />
+                <element signature="e#16595#21598#0" expanded="false" />
+                <element signature="e#16713#17295#0" expanded="false" />
+                <element signature="e#26461#39376#0" expanded="false" />
+                <element signature="e#26957#33212#0" expanded="false" />
+                <element signature="e#43814#44463#0" expanded="false" />
+                <element signature="e#44499#46188#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/const.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2108">
+              <caret line="124" column="24" lean-forward="false" selection-start-line="124" selection-start-column="24" selection-end-line="124" selection-end-column="24" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -265,12 +289,10 @@
         <option value="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" />
         <option value="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" />
         <option value="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" />
-        <option value="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
         <option value="$PROJECT_DIR$/module/priceShoro.js" />
         <option value="$PROJECT_DIR$/module/regionShoro.js" />
         <option value="$PROJECT_DIR$/module/zavSkladShoro.js" />
         <option value="$PROJECT_DIR$/module/organizatorShoro.js" />
-        <option value="$PROJECT_DIR$/routes/data.js" />
         <option value="$PROJECT_DIR$/module/realizatorShoro.js" />
         <option value="$PROJECT_DIR$/module/pointShoro.js" />
         <option value="$PROJECT_DIR$/module/statisticShoro.js" />
@@ -278,6 +300,8 @@
         <option value="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" />
         <option value="$PROJECT_DIR$/module/planShoro.js" />
         <option value="$PROJECT_DIR$/module/const.js" />
+        <option value="$PROJECT_DIR$/routes/data.js" />
+        <option value="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
         <option value="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
       </list>
     </option>
@@ -323,18 +347,12 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
               <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
-              <item name="admin" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
@@ -366,6 +384,7 @@
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -595,12 +614,13 @@
       <workItem from="1560323282746" duration="29069000" />
       <workItem from="1560573659446" duration="2550000" />
       <workItem from="1560746133748" duration="52815000" />
-      <workItem from="1561099749925" duration="3071000" />
+      <workItem from="1561099749925" duration="6408000" />
+      <workItem from="1561186303044" duration="1259000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1192191000" />
+    <option name="totallyTimeSpent" value="1196787000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -614,12 +634,12 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.7753623" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.76449275" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25706595" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.22463769" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25706595" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.23550725" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -648,7 +668,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/routes/data.js</url>
-          <line>331</line>
+          <line>333</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
@@ -745,13 +765,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/otchetOrganizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="6" lean-forward="false" selection-start-line="14" selection-start-column="6" selection-end-line="14" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -787,13 +800,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/start.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="123" column="19" lean-forward="false" selection-start-line="123" selection-start-column="19" selection-end-line="123" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/module/user.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -801,24 +807,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/organizatorShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="22" lean-forward="false" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/regionShoro.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/otchetRealizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="15" lean-forward="false" selection-start-line="7" selection-start-column="4" selection-end-line="7" selection-end-column="15" />
         </state>
       </provider>
     </entry>
@@ -892,13 +884,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/otchetOrganizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2040">
-          <caret line="120" column="26" lean-forward="false" selection-start-line="120" selection-start-column="26" selection-end-line="120" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/module/pointShoro.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="158">
@@ -925,15 +910,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="527">
           <caret line="31" column="22" lean-forward="false" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="22" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/statisticShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1955">
-          <caret line="115" column="59" lean-forward="false" selection-start-line="115" selection-start-column="59" selection-end-line="115" selection-end-column="59" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -941,7 +917,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="816">
           <caret line="48" column="22" lean-forward="false" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -949,16 +924,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1547">
           <caret line="91" column="0" lean-forward="false" selection-start-line="91" selection-start-column="0" selection-end-line="91" selection-end-column="0" />
-          <folding>
-            <element signature="e#4205#4279#0" expanded="false" />
-            <element signature="e#5236#5453#0" expanded="false" />
-            <element signature="e#5512#6294#0" expanded="false" />
-            <element signature="e#6308#7017#0" expanded="false" />
-            <element signature="e#7476#8675#0" expanded="false" />
-            <element signature="e#8720#8857#0" expanded="false" />
-            <element signature="e#8902#9052#0" expanded="false" />
-            <element signature="e#9092#9215#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -966,7 +931,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="6137">
           <caret line="361" column="59" lean-forward="false" selection-start-line="361" selection-start-column="53" selection-end-line="361" selection-end-column="59" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -974,24 +938,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="6" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1377">
-          <caret line="81" column="72" lean-forward="false" selection-start-line="81" selection-start-column="44" selection-end-line="81" selection-end-column="72" />
-          <folding>
-            <element signature="e#14298#16300#0" expanded="false" />
-            <element signature="e#16356#26178#0" expanded="false" />
-            <element signature="e#16448#21451#0" expanded="false" />
-            <element signature="e#16566#17148#0" expanded="false" />
-            <element signature="e#26314#39229#0" expanded="false" />
-            <element signature="e#26810#33065#0" expanded="false" />
-            <element signature="e#43667#44316#0" expanded="false" />
-            <element signature="e#44352#46041#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -999,23 +945,99 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="41" lean-forward="false" selection-start-line="0" selection-start-column="35" selection-end-line="0" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/start.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="123" column="19" lean-forward="false" selection-start-line="123" selection-start-column="19" selection-end-line="123" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/statisticShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="305">
+          <caret line="197" column="105" lean-forward="true" selection-start-line="197" selection-start-column="72" selection-end-line="197" selection-end-column="105" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/organizatorShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="8" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/otchetOrganizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="13" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/module/const.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="106" column="36" lean-forward="false" selection-start-line="106" selection-start-column="36" selection-end-line="106" selection-end-column="36" />
+        <state relative-caret-position="2108">
+          <caret line="124" column="24" lean-forward="false" selection-start-line="124" selection-start-column="24" selection-end-line="124" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/data.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1700">
+          <caret line="100" column="63" lean-forward="false" selection-start-line="100" selection-start-column="63" selection-end-line="100" selection-end-column="63" />
+          <folding>
+            <element signature="e#14445#16447#0" expanded="false" />
+            <element signature="e#16503#26325#0" expanded="false" />
+            <element signature="e#16595#21598#0" expanded="false" />
+            <element signature="e#16713#17295#0" expanded="false" />
+            <element signature="e#26461#39376#0" expanded="false" />
+            <element signature="e#26957#33212#0" expanded="false" />
+            <element signature="e#43814#44463#0" expanded="false" />
+            <element signature="e#44499#46188#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/otchetOrganizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1632">
+          <caret line="189" column="0" lean-forward="false" selection-start-line="189" selection-start-column="0" selection-end-line="189" selection-end-column="0" />
+          <folding>
+            <element signature="e#2909#5645#0" expanded="false" />
+            <element signature="e#5700#6035#0" expanded="false" />
+            <element signature="e#6557#6939#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/otchetRealizatoraShoro.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="14" lean-forward="false" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="386" column="60" lean-forward="false" selection-start-line="386" selection-start-column="60" selection-end-line="386" selection-end-column="60" />
-          <folding />
+        <state relative-caret-position="216">
+          <caret line="723" column="75" lean-forward="false" selection-start-line="723" selection-start-column="75" selection-end-line="723" selection-end-column="75" />
+          <folding>
+            <element signature="e#831#4421#0" expanded="false" />
+            <element signature="e#4501#7077#0" expanded="false" />
+            <element signature="e#7143#10447#0" expanded="false" />
+            <element signature="e#10501#10889#0" expanded="false" />
+            <element signature="e#10968#11142#0" expanded="false" />
+            <element signature="e#11227#11416#0" expanded="false" />
+            <element signature="e#11474#11653#0" expanded="false" />
+            <element signature="e#11706#12471#0" expanded="false" />
+            <element signature="e#12512#33650#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
