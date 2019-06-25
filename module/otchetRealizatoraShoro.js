@@ -535,8 +535,37 @@ const calculateAll = async (object) => {
 
             let dolivkiM = [], dolivkiCh = [], dolivkiK = [], dolivkiSl = [], dolivkiS02 = [], dolivkiS04 = [], dolivkiB = []
 
+            if(findDataTable['time']===undefined){
+                findDataTable['time'] = {
+                    'r': '',
+                    'd1': '',
+                    'd2': '',
+                    'd3': '',
+                    's': '',
+                }
+            }
+
             for(let i = 0; i<findRealizators.length; i++){
                 let addDataTable = JSON.parse(findRealizators[i].dataTable)
+
+
+                if(findDataTable['time']['r'].length===0&&addDataTable.vydano.r.time.length>0){
+                    findDataTable['time']['r'] = addDataTable.vydano.r.time
+                }
+                if(findDataTable['time']['d1'].length===0&&addDataTable.vydano.d1.time.length>0){
+                    findDataTable['time']['d1'] = addDataTable.vydano.d1.time
+                }
+                if(findDataTable['time']['d2'].length===0&&addDataTable.vydano.d2.time.length>0){
+                    findDataTable['time']['d2'] = addDataTable.vydano.d2.time
+                }
+                if(findDataTable['time']['d3'].length===0&&addDataTable.vydano.d3.time.length>0){
+                    findDataTable['time']['d3'] = addDataTable.vydano.d3.time
+                }
+                if(findDataTable['time']['s'].length===0&&addDataTable.vozvrat.v.time.length>0){
+                    findDataTable['time']['s'] = addDataTable.vozvrat.v.time
+                }
+
+
 
                 if(addDataTable.vydano.d3.ml.length>0){
                     dolivkiM[i]=3
