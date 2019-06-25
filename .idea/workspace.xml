@@ -2,60 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aef3c9e9-2922-42a5-aaa5-79ce22b59d1a" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.a03fc997905ba4d3d54e57a9647333bd.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/19.9df785f0.chunk.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/19.9df785f0.chunk.css.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.b6d0c9c7.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.b6d0c9c7.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.d4a20792.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.d4a20792.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.ab5d6469.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.ab5d6469.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.8edd63d9.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.8edd63d9.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.a880680d.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.a880680d.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.591098ee.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.591098ee.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.6d6a5b2f.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.6d6a5b2f.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.ad422bb4.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.ad422bb4.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.67b16c0c.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.67b16c0c.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.0136058d.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.0136058d.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.d0e150ac.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.d0e150ac.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.76b0f875.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.76b0f875.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.5213a649.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.5213a649.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.10326da6.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.10326da6.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.768b00fe.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/3.768b00fe.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.126adc92.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.126adc92.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.f7fe2da6.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.f7fe2da6.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.c0591ca3.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.c0591ca3.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.28928daf.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.28928daf.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.7ffc12be.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.7ffc12be.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.da704d77.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.da704d77.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.2c7829e9.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.2c7829e9.chunk.js.map" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.7f5a0948.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.7f5a0948.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.a476cba9f356427c0cb54b8d4a3e5c8f.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.3de87ac8.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.3de87ac8.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.86032e8f.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.86032e8f.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.694139db.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.694139db.js.map" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/asset-manifest.json" afterPath="$PROJECT_DIR$/admin/asset-manifest.json" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="$PROJECT_DIR$/admin/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="$PROJECT_DIR$/admin/service-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="$PROJECT_DIR$/routes/data.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -72,7 +30,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="252">
@@ -119,6 +77,25 @@
             <state relative-caret-position="187">
               <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="data.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/routes/data.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="439">
+              <caret line="191" column="17" lean-forward="false" selection-start-line="191" selection-start-column="17" selection-end-line="191" selection-end-column="17" />
+              <folding>
+                <element signature="e#15234#17236#0" expanded="false" />
+                <element signature="e#17292#27114#0" expanded="false" />
+                <element signature="e#17384#22387#0" expanded="false" />
+                <element signature="e#17502#18084#0" expanded="false" />
+                <element signature="e#27250#40165#0" expanded="false" />
+                <element signature="e#27746#34001#0" expanded="false" />
+                <element signature="e#44603#45252#0" expanded="false" />
+                <element signature="e#45288#46977#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -262,10 +239,10 @@
         <option value="$PROJECT_DIR$/module/blogShoro.js" />
         <option value="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" />
         <option value="$PROJECT_DIR$/module/const.js" />
-        <option value="$PROJECT_DIR$/routes/data.js" />
         <option value="$PROJECT_DIR$/module/planShoro.js" />
         <option value="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
         <option value="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/routes/data.js" />
       </list>
     </option>
   </component>
@@ -580,12 +557,12 @@
       <workItem from="1561099749925" duration="6408000" />
       <workItem from="1561186303044" duration="7535000" />
       <workItem from="1561437593659" duration="8888000" />
-      <workItem from="1561455371739" duration="2571000" />
+      <workItem from="1561455371739" duration="4409000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1214522000" />
+    <option name="totallyTimeSpent" value="1216360000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -633,7 +610,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/routes/data.js</url>
-          <line>335</line>
+          <line>343</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
@@ -906,23 +883,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1717">
-          <caret line="101" column="52" lean-forward="false" selection-start-line="101" selection-start-column="52" selection-end-line="101" selection-end-column="64" />
-          <folding>
-            <element signature="e#14610#16612#0" expanded="false" />
-            <element signature="e#16668#26490#0" expanded="false" />
-            <element signature="e#16760#21763#0" expanded="false" />
-            <element signature="e#16878#17460#0" expanded="false" />
-            <element signature="e#26626#39541#0" expanded="false" />
-            <element signature="e#27122#33377#0" expanded="false" />
-            <element signature="e#43979#44628#0" expanded="false" />
-            <element signature="e#44664#46353#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/module/planShoro.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="249">
@@ -1007,6 +967,23 @@
             <element signature="e#16536#19461#0" expanded="false" />
             <element signature="e#19694#22646#0" expanded="false" />
             <element signature="e#22759#24324#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/data.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="191" column="17" lean-forward="false" selection-start-line="191" selection-start-column="17" selection-end-line="191" selection-end-column="17" />
+          <folding>
+            <element signature="e#15234#17236#0" expanded="false" />
+            <element signature="e#17292#27114#0" expanded="false" />
+            <element signature="e#17384#22387#0" expanded="false" />
+            <element signature="e#17502#18084#0" expanded="false" />
+            <element signature="e#27250#40165#0" expanded="false" />
+            <element signature="e#27746#34001#0" expanded="false" />
+            <element signature="e#44603#45252#0" expanded="false" />
+            <element signature="e#45288#46977#0" expanded="false" />
           </folding>
         </state>
       </provider>

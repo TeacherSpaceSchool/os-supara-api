@@ -163,6 +163,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await PlanShoro.getPlanShoroByDate(data.date))
                 } else if(req.body.name == 'Точка'){
                     await res.send(await PointShoro.getPointShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
+                } else if(req.body.name == 'Рейтинг организаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
+                } else if(req.body.name == 'Рейтинг реализаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
                 }
             });
         }
@@ -181,6 +185,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await PriceShoro.getPriceShoroAll())
                 } else if(req.body.name == 'Профиль'){
                     await res.send(await RealizatorShoro.getProfileRealizatorShoro(user._id))
+                } else if(req.body.name == 'Рейтинг организаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
+                } else if(req.body.name == 'Рейтинг реализаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
                 }
             });
         }
