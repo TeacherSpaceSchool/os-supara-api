@@ -121,8 +121,8 @@ const checkInt = (int) => {
     return int===''||int===undefined?0:int
 }
 
-const checkMonth= () => {
-    let date = new Date()
+const checkMonth= (date1) => {
+    let date = new Date(date1)
     date = JSON.stringify(date).split('-')
     date = month1[parseInt(date[1])-1]+' '+date[0].replace('"', '')
     return date

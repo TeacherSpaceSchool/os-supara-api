@@ -1,5 +1,6 @@
 const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
 const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
+const OtchetOrganizatoraShoroModule = require('../module/otchetOrganizatoraShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
 const NakladnayaNaVecherniyVozvratShoro = require('../models/nakladnayaNaVecherniyVozvratShoro');
 const NakladnayaSklad1Shoro = require('../models/nakladnayaSklad1Shoro');
@@ -319,6 +320,10 @@ const deleteOtchetRealizatoraShoro = async (id) => {
 const calculateAll = async (object) => {
     try{
         let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        if(findOrganizator===null) {
+            await OtchetOrganizatoraShoroModule.createOtchetOrganizatoraShoro(object.data, object.organizator, object.region)
+            findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        }
         let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
         let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
         let findDataNakladnayaNaVecherniyVozvratShoro
@@ -471,8 +476,7 @@ const calculateAll = async (object) => {
             });
         }
 
-        if(findOrganizator!==null){
-            let findDataTable = JSON.parse(findOrganizator.dataTable)
+             let findDataTable = JSON.parse(findOrganizator.dataTable)
 
             findDataTable.p.m.v = 0
             findDataTable.p.ch.v = 0
@@ -686,42 +690,48 @@ const calculateAll = async (object) => {
             findDataTable = JSON.stringify(findDataTable)
             await OtchetOrganizatoraShoro.findOneAndUpdate({_id: findOrganizator._id}, {$set: {dataTable: findDataTable}});
 
-        }
+
 
     } catch(error) {
         console.error(error)
     }
 }
 
-const getReiting = async () => {
+const getReiting = async (date) => {
     try{
-        let dataPlan = await PlanShoro.findOne({date: await checkMonth()})
+        let dataPlan = await PlanShoro.findOne({date: await checkMonth(date)})
         dataPlan = JSON.parse(dataPlan.regions)
         let reiting = []
         for(let i = 0; i < dataPlan.length; i++){
             reiting[i] = {name: dataPlan[i].name, score: dataPlan[i].plan!==0&&dataPlan[i].plan!==''?Math.round(dataPlan[i].current*100/dataPlan[i].plan)+'%':dataPlan[i].current}
         }
         reiting.sort((a, b) => (b.score - a.score))
+        for(let i = 0; i < reiting.length; i++){
+            reiting[i] = {number: i+1, name: reiting[i].name, score: reiting[i].score+'%'}
+        }
         return(reiting)
     } catch(error) {
         console.error(error)
     }
 }
 
-const getReiting1 = async () => {
+const getReiting1 = async (date) => {
     try{
-        let dataOrganizatora = await RealizatorShoro.find()
+        let dataPlan = await PlanShoro.findOne({date: await checkMonth(date)})
+        dataPlan = JSON.parse(dataPlan.regions)
+        console.log(dataPlan)
         let reiting = []
-        for(let i = 0; i < dataOrganizatora.length; i++){
-            let dataOtchetOrganizatora = await OtchetRealizatoraShoro.find({realizator: dataOrganizatora[i].name, data: {'$regex': await checkMonth(), '$options': 'i'}})
-            if(dataOtchetOrganizatora.length>0) {
-                reiting[i] = {name: dataOrganizatora[i].name, score: 0}
-                for (let i1 = 0; i1 < dataOtchetOrganizatora.length; i1++) {
-                    reiting[i].score += JSON.parse(dataOtchetOrganizatora[i1].dataTable).i.fv
-                }
+        for(let i = 0; i < dataPlan.length; i++){
+            console.log(dataPlan[i])
+            for(let i1 = 0; i1 < dataPlan[i].points.length; i1++) {
+                console.log(dataPlan[i].points[i1])
+                reiting.push({name: dataPlan[i].points[i1].name, score: dataPlan[i].points[i1].plan!==0&&dataPlan[i].points[i1].plan!==''?Math.round(dataPlan[i].points[i1].current*100/dataPlan[i].points[i1].plan)+'%':dataPlan[i].points[i1].current})
             }
         }
         reiting.sort((a, b) => (b.score - a.score))
+        for(let i = 0; i < reiting.length; i++){
+            reiting[i] = {number: i+1, name: reiting[i].name, score: reiting[i].score+'%'}
+        }
         return(reiting)
     } catch(error) {
         console.error(error)

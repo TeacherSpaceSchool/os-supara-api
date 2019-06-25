@@ -163,6 +163,52 @@ const getOtchetOrganizatoraShoroByData = async (data, organizator, region) => {
     }
 }
 
+const createOtchetOrganizatoraShoro = async (data, organizator, region) => {
+    try{
+        let _object = new OtchetOrganizatoraShoro({
+            dataTable: JSON.stringify({
+                'p': {
+                    'i': 0,
+                    'm': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    'ch': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    'k': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    'sl': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    's02': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    's04': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                    'b': {'v': 0, 'o': 0, 's': 0, 'pl': 0, 'ktt': 0, 'kd': 0, 'ps': 0},
+                },
+                'r': {
+                    'otr': 0,
+                    'oo': 100,
+                    'ntp': 0,
+                    'att': 0,
+                    'at': '',
+                    'vs': '',
+                    'inc': 0
+                },
+                'a': {
+                    'n': '',
+                    'r': '',
+                    'd1': '',
+                    'd2': '',
+                    'd3': '',
+                    's': '',
+                    'lkm': '',
+                },
+                'i': -100,
+                'm': false,
+            }),
+            data: data,
+            organizator: organizator,
+            region: region,
+            disabled: false,
+        });
+        await OtchetOrganizatoraShoro.create(_object)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 const setOtchetOrganizatoraShoro = async (object, id) => {
     try{
         await OtchetOrganizatoraShoro.findOneAndUpdate({_id: id}, {$set: object});
@@ -187,6 +233,7 @@ const deleteOtchetOrganizatoraShoro = async (id) => {
     }
 }
 
+module.exports.createOtchetOrganizatoraShoro = createOtchetOrganizatoraShoro;
 module.exports.deleteOtchetOrganizatoraShoro = deleteOtchetOrganizatoraShoro;
 module.exports.getOtchetOrganizatoraShoro = getOtchetOrganizatoraShoro;
 module.exports.setOtchetOrganizatoraShoro = setOtchetOrganizatoraShoro;

@@ -179,7 +179,6 @@ const getPlanShoro = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            console.log(findResult[i].current)
             data.push([ findResult[i].date, findResult[i].norma, findResult[i].norma!==0&&findResult[i].norma!==''?Math.round(findResult[i].current*100/findResult[i].norma)+'%':findResult[i].current]);
         }
         return {data: data, count: count, row: row}

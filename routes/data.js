@@ -98,7 +98,9 @@ router.post('/get', async (req, res) => {
                 } else if(req.body.name == 'Статистика'){
                     await res.send(await StatisticShoro.getStatistic(data.type, data.what, data.date))
                 } else if(req.body.name == 'Рейтинг организаторов'){
-                    await res.send(await OtchetRealizatoraShoro.getReiting())
+                    await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
+                } else if(req.body.name == 'Рейтинг реализаторов'){
+                    await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
                 }
             });
         }
