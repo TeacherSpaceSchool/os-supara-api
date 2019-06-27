@@ -12,6 +12,7 @@ const RegionShoro = require('../module/regionShoro');
 const ZavSkladShoro = require('../module/zavSkladShoro');
 const NakladnayaNaPustuyTaruShoro = require('../module/nakladnayaNaPustuyTaruShoro');
 const NakladnayaSklad1Shoro = require('../module/nakladnayaSklad1Shoro');
+const FaqShoro = require('../module/faqShoro');
 const NakladnayaNaVecherniyVozvratShoro = require('../module/nakladnayaNaVecherniyVozvratShoro');
 const OtchetOrganizatoraShoro = require('../module/otchetOrganizatoraShoro');
 const StatisticShoro = require('../module/statisticShoro');
@@ -101,6 +102,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
                 } else if(req.body.name == 'Рейтинг реализаторов'){
                     await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
+                } else if(req.body.name == 'FAQ'){
+                    await res.send(await FaqShoro.getFaqShoro(req.body.search, req.body.sort, req.body.skip))
                 }
             });
         }
@@ -109,7 +112,11 @@ router.post('/get', async (req, res) => {
                 let data;
                 if (req.body.data!==undefined)
                     data = JSON.parse(req.body.data);
-                if(req.body.name == 'Накладная на пустую тару'){
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro1(req.body.skip))
+                } else if(req.body.name == 'FAQ'){
+                    await res.send(await FaqShoro.getFaqShoro1(req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'РеализаторПоИмени'){
                     await res.send(await RealizatorShoro.getRealizatorShoroByName(data.name, data.point, data.region, data.phone))
@@ -167,6 +174,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
                 } else if(req.body.name == 'Рейтинг реализаторов'){
                     await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
+                } else if(req.body.name == 'Рейтинг свой'){
+                    await res.send(await OtchetRealizatoraShoro.getReitingMyOrganizator(user._id))
                 }
             });
         }
@@ -175,7 +184,9 @@ router.post('/get', async (req, res) => {
                 let data;
                 if (req.body.data!==undefined)
                     data = JSON.parse(req.body.data);
-                if(req.body.name == 'Отчет реализатора'){
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro1(req.body.skip))
+                } else if(req.body.name == 'Отчет реализатора'){
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroRealizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Отчет реализатора по данным'){
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
@@ -189,6 +200,10 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
                 } else if(req.body.name == 'Рейтинг реализаторов'){
                     await res.send(await OtchetRealizatoraShoro.getReiting1(data.date))
+                } else if(req.body.name == 'FAQ'){
+                    await res.send(await FaqShoro.getFaqShoro1(req.body.skip))
+                } else if(req.body.name == 'Рейтинг свой'){
+                    await res.send(await OtchetRealizatoraShoro.getReitingMyRealizator(user._id))
                 }
             });
         }
@@ -197,7 +212,9 @@ router.post('/get', async (req, res) => {
                 let data;
                 if (req.body.data!==undefined)
                     data = JSON.parse(req.body.data);
-                if(req.body.name == 'Накладная на пустую тару'){
+                if(req.body.name == 'Блог'){
+                    await res.send(await BlogShoro.getBlogShoro1(req.body.skip))
+                } else if(req.body.name == 'Накладная на пустую тару'){
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Накладная на пустую тару по данным'){
                     await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroByData(data.data, data.organizator, data.region))
@@ -213,6 +230,8 @@ router.post('/get', async (req, res) => {
                     await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Накладная на вечерний возврат по данным'){
                     await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoroByData(data.data, data.organizator, data.region))
+                } else if(req.body.name == 'FAQ'){
+                    await res.send(await FaqShoro.getFaqShoro1(req.body.skip))
                 }
             });
         }
@@ -235,6 +254,9 @@ router.post('/delete', async (req, res) => {
                 if(req.body.name == 'Блог'){
                     await BlogShoro.deleteBlogShoro(JSON.parse(req.body.deleted))
                     await res.send(await BlogShoro.getBlogShoro(req.body.search, req.body.sort, req.body.skip))
+                } else if(req.body.name == 'FAQ'){
+                    await FaqShoro.deleteFaqShoro(JSON.parse(req.body.deleted))
+                    await res.send(await FaqShoro.getFaqShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Машина'){
                     await CarShoro.deleteCarShoro(JSON.parse(req.body.deleted))
                     await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
@@ -519,6 +541,13 @@ router.post('/add', async (req, res) => {
                         if(req.body.id!==undefined)
                             await NakladnayaNaVecherniyVozvratShoro.setNakladnayaNaVecherniyVozvratShoro(myNew, req.body.id)
                         await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'FAQ'){
+                        if(req.body.id==undefined)
+                            await FaqShoro.addFaqShoro(myNew)
+                        else
+                            await FaqShoro.setFaqShoro(myNew, req.body.id)
+                        await res.send(await FaqShoro.getFaqShoro(req.body.search, req.body.sort, req.body.skip))
                     }
 
                 }

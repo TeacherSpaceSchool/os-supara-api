@@ -1,11 +1,11 @@
-const BlogShoro = require('../models/blogShoro');
+const FaqShoro = require('../models/faqShoro');
 const format = require('./const').stringifyDateTime
 const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
-const getBlogShoro1 = async (skip) => {
+const getFaqShoro1 = async (skip) => {
     try{
-       return await BlogShoro
+       return await FaqShoro
                 .find()
                 .sort('-createdAt')
                 .skip(parseInt(skip))
@@ -15,11 +15,10 @@ const getBlogShoro1 = async (skip) => {
     }
 }
 
-const getBlogShoro = async (search, sort, skip) => {
+const getFaqShoro = async (search, sort, skip) => {
     try{
         let findResult = [], data = [], count;
         const row = [
-            'изображение',
             'название',
             'текст',
             'создан',
@@ -39,21 +38,21 @@ const getBlogShoro = async (search, sort, skip) => {
         else if(sort[0]=='создан'&&sort[1]=='ascending')
             sort = 'updatedAt';
         if(search == ''){
-            count = await BlogShoro.count();
-            findResult = await BlogShoro
+            count = await FaqShoro.count();
+            findResult = await FaqShoro
                 .find()
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
-            count = await BlogShoro.count({
+            count = await FaqShoro.count({
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
                     {text: {'$regex': search, '$options': 'i'}},
                 ]
             });
-            findResult = await BlogShoro.find({
+            findResult = await FaqShoro.find({
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
@@ -64,13 +63,13 @@ const getBlogShoro = async (search, sort, skip) => {
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else {
-            count = await BlogShoro.count({
+            count = await FaqShoro.count({
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {text: {'$regex': search, '$options': 'i'}},
                 ]
             });
-            findResult = await BlogShoro.find({
+            findResult = await FaqShoro.find({
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {text: {'$regex': search, '$options': 'i'}},
@@ -81,13 +80,7 @@ const getBlogShoro = async (search, sort, skip) => {
                 .limit(skip1)
         }
         for (let i=0; i<findResult.length; i++){
-            let image = ''
-            if(findResult[i].image!=undefined){
-                image=findResult[i].image.toString();
-            }
-            while(image.includes(',http://'))
-                image = image.replace(',http://', '\nhttp://');
-            data.push([image, findResult[i].name, findResult[i].text, format(findResult[i].updatedAt)]);
+            data.push([findResult[i].name, findResult[i].text, format(findResult[i].updatedAt)]);
         }
         return {data: data, count: count, row: row}
     } catch(error) {
@@ -95,33 +88,33 @@ const getBlogShoro = async (search, sort, skip) => {
     }
 }
 
-const addBlogShoro = async (object) => {
+const addFaqShoro = async (object) => {
     try{
-        let _object = new BlogShoro(object);
-        await BlogShoro.create(_object);
+        let _object = new FaqShoro(object);
+        await FaqShoro.create(_object);
     } catch(error) {
         console.error(error)
     }
 }
 
-const setBlogShoro = async (object, id) => {
+const setFaqShoro = async (object, id) => {
     try{
-        await BlogShoro.findOneAndUpdate({name: id}, {$set: object});
+        await FaqShoro.findOneAndUpdate({name: id}, {$set: object});
     } catch(error) {
         console.error(error)
     }
 }
 
-const deleteBlogShoro = async (id) => {
+const deleteFaqShoro = async (id) => {
     try{
-        await BlogShoro.deleteMany({name: {$in: id}});
+        await FaqShoro.deleteMany({name: {$in: id}});
     } catch(error) {
         console.error(error)
     }
 }
 
-module.exports.deleteBlogShoro = deleteBlogShoro;
-module.exports.getBlogShoro = getBlogShoro;
-module.exports.setBlogShoro = setBlogShoro;
-module.exports.addBlogShoro = addBlogShoro;
-module.exports.getBlogShoro1 = getBlogShoro1;
+module.exports.deleteFaqShoro = deleteFaqShoro;
+module.exports.getFaqShoro = getFaqShoro;
+module.exports.setFaqShoro = setFaqShoro;
+module.exports.addFaqShoro = addFaqShoro;
+module.exports.getFaqShoro1 = getFaqShoro1;

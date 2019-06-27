@@ -751,12 +751,9 @@ const getReiting1 = async (date) => {
     try{
         let dataPlan = await PlanShoro.findOne({date: await checkMonth(date)})
         dataPlan = JSON.parse(dataPlan.regions)
-        console.log(dataPlan)
         let reiting = []
         for(let i = 0; i < dataPlan.length; i++){
-            console.log(dataPlan[i])
             for(let i1 = 0; i1 < dataPlan[i].points.length; i1++) {
-                console.log(dataPlan[i].points[i1])
                 reiting.push({name: dataPlan[i].points[i1].name, score: dataPlan[i].points[i1].plan!==0&&dataPlan[i].points[i1].plan!==''?Math.round(dataPlan[i].points[i1].current*100/dataPlan[i].points[i1].plan)+'%':dataPlan[i].points[i1].current})
             }
         }
@@ -770,6 +767,55 @@ const getReiting1 = async (date) => {
     }
 }
 
+const getReitingMyOrganizator = async (id) => {
+    try{
+        let dataPlan = await PlanShoro.findOne({date: await checkMonth(new Date())})
+        dataPlan = JSON.parse(dataPlan.regions)
+        let organizator = await OrganizatorShoro.findOne({user: id})
+        let region = organizator.region
+        let reiting = []
+        let reitingN = ''
+        for(let i = 0; i < dataPlan.length; i++){
+            reiting[i] = {name: dataPlan[i].name, score: dataPlan[i].plan!==0&&dataPlan[i].plan!==''?Math.round(dataPlan[i].current*100/dataPlan[i].plan)+'%':dataPlan[i].current}
+        }
+        reiting.sort((a, b) => (b.score - a.score))
+        for(let i = 0; i < reiting.length; i++){
+            if(reiting[i].name === region)
+                reitingN = {number: i+1, name: reiting[i].name, score: reiting[i].score+'%'}
+        }
+        return(reitingN)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+const getReitingMyRealizator = async (id) => {
+    try{
+        let dataPlan = await PlanShoro.findOne({date: await checkMonth(new Date())})
+        dataPlan = JSON.parse(dataPlan.regions)
+        let realizator = await RealizatorShoro.findOne({user: id})
+        let region = realizator.region
+        let point = realizator.point
+        let reiting = []
+        let reitingN = ''
+        for(let i = 0; i < dataPlan.length; i++){
+            for(let i1 = 0; i1 < dataPlan[i].points.length; i1++) {
+                reiting.push({name: dataPlan[i].name+': '+dataPlan[i].points[i1].name, score: dataPlan[i].points[i1].plan!==0&&dataPlan[i].points[i1].plan!==''?Math.round(dataPlan[i].points[i1].current*100/dataPlan[i].points[i1].plan)+'%':dataPlan[i].points[i1].current})
+            }
+        }
+        reiting.sort((a, b) => (b.score - a.score))
+        for(let i = 0; i < reiting.length; i++){
+            if(reiting[i].name === region+': '+point)
+                reitingN = {number: i+1, name: reiting[i].name, score: reiting[i].score+'%'}
+        }
+        return(reitingN)
+    } catch(error) {
+        console.error(error)
+    }
+}
+
+module.exports.getReitingMyOrganizator = getReitingMyOrganizator;
+module.exports.getReitingMyRealizator = getReitingMyRealizator;
 module.exports.getReiting1 = getReiting1;
 module.exports.getReiting = getReiting;
 module.exports.calculateAll = calculateAll;
