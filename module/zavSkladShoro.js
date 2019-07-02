@@ -4,8 +4,6 @@ const UserShoro = require('../models/userShoro');
 const skip1 = require('../module/const').skip;
 
 const getZavSkladShoro = async (search, sort, skip) => {
-    try{
-        //await ZavSkladShoro.deleteMany()
         let findResult = [], data = [], count;
         const row = [
             'имя'
@@ -98,13 +96,10 @@ const getZavSkladShoro = async (search, sort, skip) => {
             data.push([findResult[i].name, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addZavSkladShoro = async (object) => {
-    try{
         let _user = new UserShoro({
             email: object.phone,
             role: 'завсклада',
@@ -118,13 +113,10 @@ const addZavSkladShoro = async (object) => {
             user: user._id
         });
         await ZavSkladShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getZavSkladShoroByName = async (phone) => {
-    try{
         let object = await ZavSkladShoro.findOne({phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -135,9 +127,7 @@ const getZavSkladShoroByName = async (phone) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setZavSkladShoro = async (object, id) => {
@@ -155,15 +145,11 @@ const setZavSkladShoro = async (object, id) => {
 }
 
 const deleteZavSkladShoro = async (id) => {
-    try{
         for(let i=0; i<id.length; i++){
             let object = await ZavSkladShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
             await ZavSkladShoro.deleteMany({phone: id[i]});
         }
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deleteZavSkladShoro = deleteZavSkladShoro;

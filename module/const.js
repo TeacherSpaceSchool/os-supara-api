@@ -103,6 +103,13 @@ const getYesterday = (day) =>
     }
     return day[0]+' '+day[1]+' '+day[2]
 }
+const getToday = () =>
+{
+    let date = new Date()
+    date = JSON.stringify(date).split('-')
+    date = date[2].split('T')[0]+' '+month1[parseInt(date[1])-1]+' '+date[0].replace('"', '')
+    return date
+}
 const getTomorrow = (day) =>
 {
     day = day.split(' ')
@@ -128,6 +135,7 @@ const checkMonth= (date1) => {
     return date
 }
 
+module.exports.getToday = getToday;
 module.exports.checkMonth = checkMonth;
 module.exports.checkInt = checkInt;
 module.exports.skip = skip;

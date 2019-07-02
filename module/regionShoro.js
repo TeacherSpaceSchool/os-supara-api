@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
 const getRegionShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'название',
@@ -65,45 +64,31 @@ const getRegionShoro = async (search, sort, skip) => {
             data.push([ findResult[i].name, format(findResult[i].updatedAt)]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const addRegionShoro = async (object) => {
-    try{
         let _object = new RegionShoro(object);
         await RegionShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setRegionShoro = async (object, id) => {
-    try{
         await OrganizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
         await RealizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
         await PointShoro.updateMany({region: id}, {$set: {region: object.name}});
         await RegionShoro.updateMany({name: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const deleteRegionShoro = async (id) => {
-    try{
         await RegionShoro.deleteMany({name: {$in: id}});
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getRegionShoroName = async () => {
-    try{
-        return await RegionShoro.find().distinct('name');
-    } catch(error) {
-        console.error(error)
-    }
+    let a = await RegionShoro.find().distinct('name');
+    return a.sort()
+
 }
 
 module.exports.deleteRegionShoro = deleteRegionShoro;

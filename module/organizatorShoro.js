@@ -4,15 +4,12 @@ const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getOrganizatorShoroName = async () => {
-    try{
-        return await OrganizatorShoro.find().distinct('name');
-    } catch(error) {
-        console.error(error)
-    }
+    let a = await OrganizatorShoro.find().distinct('name');
+    return a.sort()
+
 }
 
 const getOrganizatorShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'имя',
@@ -86,13 +83,10 @@ const getOrganizatorShoro = async (search, sort, skip) => {
             data.push([findResult[i].name, findResult[i].region, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addOrganizatorShoro = async (object) => {
-    try{
         if(object.region==='Резерв'||await OrganizatorShoro.count({region: object.region})===0){
             let _user = new UserShoro({
                 email: object.phone,
@@ -109,13 +103,10 @@ const addOrganizatorShoro = async (object) => {
             });
             await OrganizatorShoro.create(_object);
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setOrganizatorShoro = async (object, id) => {
-    try{
         if(object.password!==undefined&&object.password.length>0) {
             let user = await UserShoro.findById({_id: object.user});
             user.email = object.phone;
@@ -127,13 +118,10 @@ const setOrganizatorShoro = async (object, id) => {
             await UserShoro.findOneAndUpdate({_id: object.user}, {$set: { email: object.phone, status: object.status}});
             await OrganizatorShoro.findOneAndUpdate({_id: id}, {$set: object});
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getOrganizatorShoroById = async (id) => {
-    try{
         let object = await OrganizatorShoro.findOne({user: id});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -145,13 +133,10 @@ const getOrganizatorShoroById = async (id) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getOrganizatorShoroByName = async (phone) => {
-    try{
         let object = await OrganizatorShoro.findOne({phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -163,25 +148,19 @@ const getOrganizatorShoroByName = async (phone) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const deleteOrganizatorShoro = async (id) => {
-    try{
         for(let i=0; i<id.length; i++){
             let object = await OrganizatorShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
             await OrganizatorShoro.deleteMany({phone: id[i]});
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getProfileOrganizatorShoro = async (id) => {
-    try{
         let object = await OrganizatorShoro.findOne({user: id});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -193,9 +172,7 @@ const getProfileOrganizatorShoro = async (id) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 module.exports.deleteOrganizatorShoro = deleteOrganizatorShoro;

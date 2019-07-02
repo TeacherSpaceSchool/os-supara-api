@@ -6,7 +6,6 @@ const skip1 = require('../module/const').skip;
 const checkInt = require('../module/const').checkInt;
 
 const getPlanShoroOrganizator = async (search, sort, skip, id) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'дата',
@@ -95,13 +94,10 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             }
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getPlanShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'дата',
@@ -182,13 +178,10 @@ const getPlanShoro = async (search, sort, skip) => {
             data.push([ findResult[i].date, findResult[i].norma, findResult[i].norma!==0&&findResult[i].norma!==''?Math.round(findResult[i].current*100/findResult[i].norma)+'%':findResult[i].current]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addPlanShoro = async (object) => {
-    try{
         object.current = 0
         let findPlanRegions = JSON.parse(object.regions)
         for (let i = 0; i < findPlanRegions.length; i++) {
@@ -206,34 +199,21 @@ const addPlanShoro = async (object) => {
         object.regions = JSON.stringify(findPlanRegions)
         let _object = new PlanShoro(object);
         await PlanShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setPlanShoro = async (object, id) => {
-    try{
         await PlanShoro.findOneAndUpdate({_id: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getPlanShoroByDate = async (date) => {
-    try{
         let object = await PlanShoro.findOne({date: date});
         return object
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const deletePlanShoro = async (id) => {
-    try{
         await PlanShoro.deleteMany({date: {$in: id}});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deletePlanShoro = deletePlanShoro;

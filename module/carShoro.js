@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
 const getCarShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'номер',
@@ -63,42 +62,25 @@ const getCarShoro = async (search, sort, skip) => {
         }
         console.log({data: data, count: count, row: row})
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const getCarNumber = async () => {
-    try{
-       return await CarShoro.find().distinct('number');
-    } catch(error) {
-        console.error(error)
-    }
+    let a = await CarShoro.find().distinct('number').sort();
+    return a.sort()
 }
 
 const addCarShoro = async (object) => {
-    try{
+
         let _object = new CarShoro(object);
         await CarShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const setCarShoro = async (object, id) => {
-    try{
         await CarShoro.findOneAndUpdate({number: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const deleteCarShoro = async (id) => {
-    try{
         await CarShoro.deleteMany({number: {$in: id}});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deleteCarShoro = deleteCarShoro;

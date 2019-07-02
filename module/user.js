@@ -13,7 +13,6 @@ let checkAdmin = async (role, status) => {
 }
 
 let createAdmin = async () => {
-    try{
         let findAdmin = await UserShoro.findOne({email: adminLogin});
         if(findAdmin==null){
             const _user = new UserShoro({
@@ -25,9 +24,6 @@ let createAdmin = async () => {
             findAdmin = await UserShoro.create(_user);
         }
         adminId = findAdmin._id.toString();
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 

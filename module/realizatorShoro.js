@@ -5,15 +5,12 @@ const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
 const getRealizatorShoroName = async () => {
-    try{
-        return await RealizatorShoro.find().distinct('name');
-    } catch(error) {
-        console.error(error)
-    }
+    let a = await RealizatorShoro.find().distinct('name');
+    return a.sort()
+
 }
 
 const getRealizatorShoroByPoint = async (point, id) => {
-    try{
         let organizator = await OrganizatorShoro.findOne({user: id})
         let region = organizator.region
         let data = await RealizatorShoro.findOne({point: point, region: region})
@@ -24,13 +21,10 @@ const getRealizatorShoroByPoint = async (point, id) => {
             organizator: (await OrganizatorShoro.findOne({region: data.region})).name
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getRealizatorShoro1 = async (search, sort, skip, id) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'имя',
@@ -119,13 +113,10 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
             data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
-const getRealizatorShoro = async (search, sort, skip) => {
-    try{
+const getRealizatorShoro = async (search, sort, skip, region) => {
         let findResult = [], data = [], count;
         const row = [
             'имя',
@@ -151,33 +142,35 @@ const getRealizatorShoro = async (search, sort, skip) => {
         else if(sort[0]=='статус'&&sort[1]=='ascending')
             sort = 'status';
         if(search == ''){
-            count = await RealizatorShoro.count();
+            count = await RealizatorShoro.count({
+                region: region,});
             findResult = await RealizatorShoro
-                .find()
+                .find({
+                    region: region,})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await RealizatorShoro.count({
+                region: region,
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}},
-                    {region: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}}
                 ]
             });
             findResult = await RealizatorShoro.find({
+                region: region,
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}},
-                    {region: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}}
                 ]
             })
                 .sort(sort)
@@ -185,23 +178,23 @@ const getRealizatorShoro = async (search, sort, skip) => {
                 .limit(skip1);
         } else {
             count = await RealizatorShoro.count({
+                region: region,
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}},
-                    {region: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}}
                 ]
             });
             findResult = await RealizatorShoro.find({
+                region: region,
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
                     {inn: {'$regex': search, '$options': 'i'}},
                     {address: {'$regex': search, '$options': 'i'}},
-                    {point: {'$regex': search, '$options': 'i'}},
-                    {region: {'$regex': search, '$options': 'i'}}
+                    {point: {'$regex': search, '$options': 'i'}}
                 ]
             })
                 .sort(sort)
@@ -212,13 +205,9 @@ const getRealizatorShoro = async (search, sort, skip) => {
             data.push([findResult[i].name, findResult[i].point, findResult[i].region, findResult[i].phone]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const getRealizatorShoroById = async (id) => {
-    try{
         let object = await RealizatorShoro.findOne({user: id});
         let user = await UserShoro.findOne({_id: object.user})
         let organizator = await OrganizatorShoro.findOne({region: object.region});
@@ -233,13 +222,10 @@ const getRealizatorShoroById = async (id) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addRealizatorShoro = async (object) => {
-    try{
         if(object.point==='Резерв'||await RealizatorShoro.count({region: object.region, point: object.point})===0){
             let _user = new UserShoro({
                 email: object.phone,
@@ -257,13 +243,10 @@ const addRealizatorShoro = async (object) => {
             });
             await RealizatorShoro.create(_object);
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getProfileRealizatorShoro = async (id) => {
-    try{
         let object = await RealizatorShoro.findOne({user: id});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -276,13 +259,10 @@ const getProfileRealizatorShoro = async (id) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getRealizatorShoroByName = async (name, point, region, phone) => {
-    try{
         let object = await RealizatorShoro.findOne({name: name, region: region, point: point, phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
@@ -295,13 +275,10 @@ const getRealizatorShoroByName = async (name, point, region, phone) => {
             user: object.user,
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setRealizatorShoro = async (object, id) => {
-    try{
         if(object.password!==undefined&&object.password.length>0) {
             let user = await UserShoro.findById({_id: object.user});
             user.email = object.phone;
@@ -313,21 +290,15 @@ const setRealizatorShoro = async (object, id) => {
             await UserShoro.findOneAndUpdate({_id: object.user}, {$set: { email: object.phone, status: object.status}});
             await RealizatorShoro.findOneAndUpdate({_id: id}, {$set: object});
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const deleteRealizatorShoro = async (id) => {
-    try{
         for(let i=0; i<id.length; i++){
             let object = await RealizatorShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
             await RealizatorShoro.deleteMany({phone: id[i]});
         }
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deleteRealizatorShoro = deleteRealizatorShoro;

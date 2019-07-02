@@ -4,19 +4,14 @@ const mongoose = require('mongoose');
 const skip1 = require('../module/const').skip;
 
 const getFaqShoro1 = async (skip) => {
-    try{
        return await FaqShoro
                 .find()
                 .sort('-createdAt')
                 .skip(parseInt(skip))
                 .limit(skip1)
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const getFaqShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'название',
@@ -83,34 +78,20 @@ const getFaqShoro = async (search, sort, skip) => {
             data.push([findResult[i].name, findResult[i].text, format(findResult[i].updatedAt)]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addFaqShoro = async (object) => {
-    try{
         let _object = new FaqShoro(object);
         await FaqShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const setFaqShoro = async (object, id) => {
-    try{
         await FaqShoro.findOneAndUpdate({name: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 const deleteFaqShoro = async (id) => {
-    try{
         await FaqShoro.deleteMany({name: {$in: id}});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deleteFaqShoro = deleteFaqShoro;

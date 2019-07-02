@@ -3,7 +3,6 @@ const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getPriceShoroAll = async () => {
-    try{
         let res = {}
         let find1 = await PriceShoro
                 .find()
@@ -11,13 +10,10 @@ const getPriceShoroAll = async () => {
             res[find1[i].name] = find1[i].price
         }
         return res
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getPriceShoro = async (search, sort, skip) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'название',
@@ -83,34 +79,22 @@ const getPriceShoro = async (search, sort, skip) => {
             data.push([ findResult[i].name, findResult[i].price]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const addPriceShoro = async (object) => {
-    try{
         let _object = new PriceShoro(object);
         await PriceShoro.create(_object);
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setPriceShoro = async (object, id) => {
-    try{
         await PriceShoro.findOneAndUpdate({name: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const deletePriceShoro = async (id) => {
-    try{
         await PriceShoro.deleteMany({name: {$in: id}});
-    } catch(error) {
-        console.error(error)
-    }
 }
 
 module.exports.deletePriceShoro = deletePriceShoro;

@@ -77,7 +77,7 @@ const verifydadmin = async (req, res, func) => {
         } catch (err) {
             console.error(err)
             res.status(401);
-            res.end('err')
+            res.end(JSON.stringify(err.message))
         }
     } )(req, res)
 }
@@ -91,7 +91,7 @@ const verifydorganizator = async (req, res, func) => {
         } catch (err) {
             console.error(err)
             res.status(401);
-            res.end('err')
+            res.end(JSON.stringify(err.message))
         }
     } )(req, res)
 }
@@ -105,7 +105,7 @@ const verifydrealizator = async (req, res, func) => {
         } catch (err) {
             console.error(err)
             res.status(401);
-            res.end('err')
+            res.end(JSON.stringify(err.message))
         }
     } )(req, res)
 }
@@ -119,7 +119,7 @@ const verifydzavsklad = async (req, res, func) => {
         } catch (err) {
             console.error(err)
             res.status(401);
-            res.end('err')
+            res.end(JSON.stringify(err.message))
         }
     } )(req, res)
 }

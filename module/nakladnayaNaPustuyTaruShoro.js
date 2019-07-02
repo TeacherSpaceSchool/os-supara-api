@@ -2,9 +2,9 @@ const NakladnayaNaPustuyTaruShoro = require('../models/nakladnayaNaPustuyTaruSho
 const OrganizatorShoro = require('../models/organizatorShoro');
 const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
+const getToday = require('../module/const').getToday;
 
 const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id) => {
-    try{
         let findResult = [], data = [], count;
         const row = [
             'организатор',
@@ -66,13 +66,10 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
         }
         console.log(data)
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
-const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
-    try{
+const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip, region) => {
         let findResult = [], data = [], count;
         const row = [
             'организатор',
@@ -89,25 +86,28 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await NakladnayaNaPustuyTaruShoro.count();
+            count = await NakladnayaNaPustuyTaruShoro.count({
+                region: region,
+            });
             findResult = await NakladnayaNaPustuyTaruShoro
-                .find()
+                .find({
+                    region: region,})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaNaPustuyTaruShoro.count({
+                region: region,
                 $or: [
                     {_id: search},
-                    {region: {'$regex': search, '$options': 'i'}},
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
+                region: region,
                 $or: [
                     {_id: search},
-                    {region: {'$regex': search, '$options': 'i'}},
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
@@ -117,15 +117,15 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
                 .limit(skip1);
         } else {
             count = await NakladnayaNaPustuyTaruShoro.count({
+                region: region,
                 $or: [
-                    {region: {'$regex': search, '$options': 'i'}},
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
+                region: region,
                 $or: [
-                    {region: {'$regex': search, '$options': 'i'}},
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
@@ -138,40 +138,101 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip) => {
             data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
         }
         return {data: data, count: count, row: row}
-    } catch(error) {
-        console.error(error)
-    }
+
+}
+
+const getNakladnayaNaPustuyTaruShoroToday = async (search, sort, skip) => {
+        let findResult = [], data = [], count;
+        const row = [
+            'организатор',
+            'дата',
+        ];
+        if(sort == undefined||sort=='')
+            sort = '-updatedAt';
+        else if(sort[0]=='организатор'&&sort[1]=='descending')
+            sort = '-organizator';
+        else if(sort[0]=='организатор'&&sort[1]=='ascending')
+            sort = 'organizator';
+        else if(sort[0]=='дата'&&sort[1]=='descending')
+            sort = '-data';
+        else if(sort[0]=='дата'&&sort[1]=='ascending')
+            sort = 'data';
+        let date = await getToday()
+        if(search == ''){
+            count = await NakladnayaNaPustuyTaruShoro.count({
+                data: date,
+            });
+            findResult = await NakladnayaNaPustuyTaruShoro
+                .find({
+                    data: date,})
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(skip1)
+        } else if (mongoose.Types.ObjectId.isValid(search)) {
+            count = await NakladnayaNaPustuyTaruShoro.count({
+                data: date,
+                $or: [
+                    {_id: search},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
+                ]
+            });
+            findResult = await NakladnayaNaPustuyTaruShoro.find({
+                data: date,
+                $or: [
+                    {_id: search},
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
+                ]
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(skip1);
+        } else {
+            count = await NakladnayaNaPustuyTaruShoro.count({
+                data: date,
+                $or: [
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
+                ]
+            });
+            findResult = await NakladnayaNaPustuyTaruShoro.find({
+                data: date,
+                $or: [
+                    {organizator: {'$regex': search, '$options': 'i'}},
+                    {region: {'$regex': search, '$options': 'i'}},
+                ]
+            })
+                .sort(sort)
+                .skip(parseInt(skip))
+                .limit(skip1);
+        }
+        for (let i=0; i<findResult.length; i++){
+            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
+        }
+        return {data: data, count: count, row: row}
+
 }
 
 const addNakladnayaNaPustuyTaruShoro = async (object) => {
-    try{
         if(await NakladnayaNaPustuyTaruShoro.findOne({data: object.data, organizator: object.organizator, region: object.region})===null){
             let _object = new NakladnayaNaPustuyTaruShoro(object);
             await NakladnayaNaPustuyTaruShoro.create(_object);
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const getNakladnayaNaPustuyTaruShoroByData = async (data, organizator, region) => {
-    try{
         return(await NakladnayaNaPustuyTaruShoro.findOne({data: data, organizator: organizator, region: region}))
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const setNakladnayaNaPustuyTaruShoro = async (object, id) => {
-    try{
         await NakladnayaNaPustuyTaruShoro.findOneAndUpdate({_id: id}, {$set: object});
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 const deleteNakladnayaNaPustuyTaruShoro = async (id) => {
-    try{
         for(let i=0; i<id.length; i++){
             let id1 = id[i].split('|')
             id1[0] = id1[1].split(': ')[0]
@@ -181,12 +242,11 @@ const deleteNakladnayaNaPustuyTaruShoro = async (id) => {
                 region: id1[1]})
 
         }
-    } catch(error) {
-        console.error(error)
-    }
+
 }
 
 module.exports.deleteNakladnayaNaPustuyTaruShoro = deleteNakladnayaNaPustuyTaruShoro;
+module.exports.getNakladnayaNaPustuyTaruShoroToday = getNakladnayaNaPustuyTaruShoroToday;
 module.exports.getNakladnayaNaPustuyTaruShoro = getNakladnayaNaPustuyTaruShoro;
 module.exports.setNakladnayaNaPustuyTaruShoro = setNakladnayaNaPustuyTaruShoro;
 module.exports.addNakladnayaNaPustuyTaruShoro = addNakladnayaNaPustuyTaruShoro;
