@@ -125,7 +125,7 @@ const getTomorrow = (day) =>
 }
 
 const checkInt = (int) => {
-    return int===''||int===undefined?0:int
+    return isNaN(parseInt(int))?0:parseInt(int)
 }
 
 const checkMonth= (date1) => {

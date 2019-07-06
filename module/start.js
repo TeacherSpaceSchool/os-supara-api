@@ -127,12 +127,12 @@ let addPoint = async () => {
 }
 
 let start = async () => {
-    /*await deleteAll()
+    await deleteAll()
     await addPoint()
     await addRegion()
     await addOrganizator()
     await addRealizator()
-    console.log('lol')*/
+    console.log('lol')
 }
 
 module.exports.start = start;
