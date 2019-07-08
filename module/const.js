@@ -143,6 +143,7 @@ module.exports.stringifyDateTime = stringifyDateTime;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;
 module.exports.month = month;
+module.exports.month1 = month1;
 module.exports.adminPass = adminPass;
 module.exports.adminLogin = adminLogin;
 module.exports.url = url;

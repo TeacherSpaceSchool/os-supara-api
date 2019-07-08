@@ -13,7 +13,7 @@ const getRealizatorShoroName = async () => {
 const getRealizatorShoroByPoint = async (point, id) => {
         let organizator = await OrganizatorShoro.findOne({user: id})
         let region = organizator.region
-        let data = await RealizatorShoro.findOne({point: point, region: region})
+        let data = await RealizatorShoro.findOne({point: point, region: {'$regex': region, '$options': 'i'}})
         let res = {
             name: data.name,
             region: data.region,
@@ -52,9 +52,9 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
         else if(sort[0]=='статус'&&sort[1]=='ascending')
             sort = 'status';
         if(search == ''){
-            count = await RealizatorShoro.count({region: region});
+            count = await RealizatorShoro.count({region: {'$regex': region, '$options': 'i'}});
             findResult = await RealizatorShoro
-                .find({region: region})
+                .find({region: {'$regex': region, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
@@ -68,7 +68,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
                     {address: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}}
                 ],
-                region: region
+                region: {'$regex': region, '$options': 'i'}
             });
             findResult = await RealizatorShoro.find({
                 $or: [
@@ -79,7 +79,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
                     {address: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}}
                 ],
-                region: region
+                region: {'$regex': region, '$options': 'i'}
             })
                 .sort(sort)
                 .skip(parseInt(skip))
@@ -93,7 +93,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
                     {address: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}}
                 ],
-                region: region
+                region: {'$regex': region, '$options': 'i'}
             });
             findResult = await RealizatorShoro.find({
                 $or: [
@@ -103,7 +103,7 @@ const getRealizatorShoro1 = async (search, sort, skip, id) => {
                     {address: {'$regex': search, '$options': 'i'}},
                     {point: {'$regex': search, '$options': 'i'}}
                 ],
-                region: region
+                region: {'$regex': region, '$options': 'i'}
             })
                 .sort(sort)
                 .skip(parseInt(skip))
@@ -143,16 +143,16 @@ const getRealizatorShoro = async (search, sort, skip, region) => {
             sort = 'status';
         if(search == ''){
             count = await RealizatorShoro.count({
-                region: region,});
+                region: {'$regex': region, '$options': 'i'},});
             findResult = await RealizatorShoro
                 .find({
-                    region: region,})
+                    region: {'$regex': region, '$options': 'i'},})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await RealizatorShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
@@ -163,7 +163,7 @@ const getRealizatorShoro = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await RealizatorShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
@@ -178,7 +178,7 @@ const getRealizatorShoro = async (search, sort, skip, region) => {
                 .limit(skip1);
         } else {
             count = await RealizatorShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
@@ -188,7 +188,7 @@ const getRealizatorShoro = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await RealizatorShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {phone: {'$regex': search, '$options': 'i'}},
@@ -263,7 +263,7 @@ const getProfileRealizatorShoro = async (id) => {
 }
 
 const getRealizatorShoroByName = async (name, point, region, phone) => {
-        let object = await RealizatorShoro.findOne({name: name, region: region, point: point, phone: phone});
+        let object = await RealizatorShoro.findOne({name: name, region: {'$regex': region, '$options': 'i'}, point: point, phone: phone});
         let user = await UserShoro.findOne({_id: object.user})
         let res = {
             status: user.status,

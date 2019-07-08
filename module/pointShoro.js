@@ -10,7 +10,7 @@ const getPointShoroAll = async (id) => {
         let organizator = await OrganizatorShoro.findOne({user: id})
         let region = organizator.region
         let a = await PointShoro
-            .find({region: region})
+            .find({region: {'$regex': region, '$options': 'i'}})
             .distinct('name')
         return a.sort();
 
@@ -41,25 +41,25 @@ const getPointShoro1 = async (search, sort, skip, id) => {
             sort = 'updatedAt';
         if(search == ''){
             count = await PointShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
             });
             findResult = await PointShoro
                 .find({
-                    region: region,
+                    region: {'$regex': region, '$options': 'i'},
                 })
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PointShoro.count({
-            region: region,
+            region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await PointShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
@@ -70,13 +70,13 @@ const getPointShoro1 = async (search, sort, skip, id) => {
                 .limit(skip1)
         } else {
             count = await PointShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await PointShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                  ]
@@ -113,22 +113,22 @@ const getPointShoro = async (search, sort, skip, region) => {
         else if(sort[0]=='создан'&&sort[1]=='ascending')
             sort = 'updatedAt';
         if(search == ''){
-            count = await PointShoro.count({region: region});
+            count = await PointShoro.count({region: {'$regex': region, '$options': 'i'}});
             findResult = await PointShoro
-                .find({region: region})
+                .find({region: {'$regex': region, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await PointShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await PointShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {name: {'$regex': search, '$options': 'i'}},
@@ -139,13 +139,13 @@ const getPointShoro = async (search, sort, skip, region) => {
                 .limit(skip1)
         } else {
             count = await PointShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await PointShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                 ]
@@ -194,7 +194,7 @@ const getPointShoroName = async () => {
 }
 
 const getPointShoroRegion = async (region) => {
-    let a = await PointShoro.find({region: region}).distinct('name');
+    let a = await PointShoro.find({region: {'$regex': region, '$options': 'i'}}).distinct('name');
     return a.sort()
 }
 

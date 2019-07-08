@@ -20,22 +20,22 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await NakladnayaNaPustuyTaruShoro.count({organizator: organizator, region: region});
+            count = await NakladnayaNaPustuyTaruShoro.count({organizator: organizator, region: {'$regex': region, '$options': 'i'}});
             findResult = await NakladnayaNaPustuyTaruShoro
-                .find({organizator: organizator, region: region})
+                .find({organizator: organizator, region: {'$regex': region, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaNaPustuyTaruShoro.count({
-                organizator: organizator, region: region,
+                organizator: organizator, region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
-                organizator: organizator, region: region,
+                organizator: organizator, region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -46,13 +46,13 @@ const getNakladnayaNaPustuyTaruShoroOrganizator = async (search, sort, skip, id)
                 .limit(skip1);
         } else {
             count = await NakladnayaNaPustuyTaruShoro.count({
-                organizator: organizator, region: region,
+                organizator: organizator, region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
-                organizator: organizator, region: region,
+                organizator: organizator, region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
@@ -87,17 +87,17 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip, region) => {
             sort = 'data';
         if(search == ''){
             count = await NakladnayaNaPustuyTaruShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
             });
             findResult = await NakladnayaNaPustuyTaruShoro
                 .find({
-                    region: region,})
+                    region: {'$regex': region, '$options': 'i'},})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaNaPustuyTaruShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -105,7 +105,7 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -117,14 +117,14 @@ const getNakladnayaNaPustuyTaruShoro = async (search, sort, skip, region) => {
                 .limit(skip1);
         } else {
             count = await NakladnayaNaPustuyTaruShoro.count({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaNaPustuyTaruShoro.find({
-                region: region,
+                region: {'$regex': region, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -223,7 +223,7 @@ const addNakladnayaNaPustuyTaruShoro = async (object) => {
 }
 
 const getNakladnayaNaPustuyTaruShoroByData = async (data, organizator, region) => {
-        return(await NakladnayaNaPustuyTaruShoro.findOne({data: data, organizator: organizator, region: region}))
+        return(await NakladnayaNaPustuyTaruShoro.findOne({data: data, organizator: organizator, region: {'$regex': region, '$options': 'i'}}))
 
 }
 

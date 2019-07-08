@@ -105,10 +105,12 @@ router.post('/get', async (req, res) => {
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroToday(req.body.search, req.body.sort, req.body.skip, req.body.region))
                 } else if(req.body.name == 'Отчет реализатора по данным'){
                     await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroByData(data.data, data.realizator, data.region, data.point))
+                } else if(req.body.name == 'Отчет реализатора'){
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip, req.body.region, req.body.point))
                 } else if(req.body.name == 'Номера авто'){
                     await res.send(await CarShoro.getCarNumber())
                 } else if(req.body.name == 'Статистика'){
-                    await res.send(await StatisticShoro.getStatistic(data.type, data.what, data.date))
+                    await res.send(await StatisticShoro.getStatistic(data.type, data.what, data.date, data.status))
                 } else if(req.body.name == 'Рейтинг организаторов'){
                     await res.send(await OtchetRealizatoraShoro.getReiting(data.date))
                 } else if(req.body.name == 'Рейтинг реализаторов'){
