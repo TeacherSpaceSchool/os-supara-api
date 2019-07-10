@@ -41,7 +41,6 @@ router.post('/get', async (req, res) => {
                 } else if(req.body.name == 'План'){
                     await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Точка'){
-                    console.log(req.body.region)
                     await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
                 }  else if(req.body.name == 'Цена'){
                     await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
