@@ -31,7 +31,7 @@ app1.set('port', port1);
  */
 
 let server = http.createServer(app);
-let server1 = https.createServer(options, app1);
+let server1 = http.createServer(app1);
 
 /**
  * Listen on provided port, on all network interfaces.

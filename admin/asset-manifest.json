@@ -60,8 +60,8 @@
   "runtime~main.js": "/static/js/runtime~main.114e3187.js",
   "runtime~main.js.map": "/static/js/runtime~main.114e3187.js.map",
   "static/media/logo.png": "/static/media/logo.587aa57a.png",
-  "static/css/24.ff972f29.chunk.css.map": "/static/css/24.ff972f29.chunk.css.map",
   "static/css/main.ec62e9b2.chunk.css.map": "/static/css/main.ec62e9b2.chunk.css.map",
+  "static/css/24.ff972f29.chunk.css.map": "/static/css/24.ff972f29.chunk.css.map",
   "index.html": "/index.html",
   "precache-manifest.8952f915b1f69b958bb5510dd379e6cc.js": "/precache-manifest.8952f915b1f69b958bb5510dd379e6cc.js",
   "service-worker.js": "/service-worker.js"

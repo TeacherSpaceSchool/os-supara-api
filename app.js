@@ -15,7 +15,6 @@ const start = require('./module/start');
 const formData = require('express-form-data');
 const os = require('os');
 const compression = require('compression');
-const nocache = require('nocache')
 const bodyParser = require('body-parser');
 require('body-parser-xml-json')(bodyParser);
 module.exports.dirname = __dirname;
@@ -39,8 +38,24 @@ app.use(function(req, res, next){
     if (req.is('text/*')) {
         req.text = '';
         req.setEncoding('utf8');
-        req.on('data', function(chunk){ req.text += chunk });
-        req.on('end', function(){ req.body = JSON.parse(req.text); next() });
+        req.on('data', function(chunk){
+            try{
+                req.text += chunk
+            } catch (err) {
+                console.error(err)
+                res.status(401);
+                res.end(JSON.stringify(err.message))
+            }
+        });
+        req.on('end', function(){
+            try{
+                req.body = JSON.parse(req.text); next()
+            } catch (err) {
+                console.error(err)
+                res.status(401);
+                res.end(JSON.stringify(err.message))
+            }
+        });
     } else {
         next();
     }
@@ -52,7 +67,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'admin')));
 app.use(cors());
 app.use(compression());
-app.use(nocache())
 // parse data with connect-multiparty.
 app.use(formData.parse(options));
 // clear from the request and delete all empty files (size == 0)
