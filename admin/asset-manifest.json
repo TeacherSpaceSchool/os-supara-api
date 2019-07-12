@@ -61,8 +61,8 @@
   "runtime~main.js.map": "/static/js/runtime~main.ba8f5ab9.js.map",
   "static/media/logo.png": "/static/media/logo.587aa57a.png",
   "static/media/gora.jpg": "/static/media/gora.7c2a4ce2.jpg",
-  "static/css/main.ec62e9b2.chunk.css.map": "/static/css/main.ec62e9b2.chunk.css.map",
   "static/css/24.ff972f29.chunk.css.map": "/static/css/24.ff972f29.chunk.css.map",
+  "static/css/main.ec62e9b2.chunk.css.map": "/static/css/main.ec62e9b2.chunk.css.map",
   "index.html": "/index.html",
   "precache-manifest.80d28d48f7824b0d16e22ab7b15a57df.js": "/precache-manifest.80d28d48f7824b0d16e22ab7b15a57df.js",
   "service-worker.js": "/service-worker.js"
