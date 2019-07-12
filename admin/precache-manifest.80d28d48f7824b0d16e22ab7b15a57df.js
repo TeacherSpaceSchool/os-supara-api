@@ -132,7 +132,7 @@ self.__precacheManifest = [
     "url": "/static/media/gora.7c2a4ce2.jpg"
   },
   {
-    "revision": "af63d4a0957728cc18db2e0b480f11ba",
+    "revision": "633b61e8c74b52b5eeec08900ef59013",
     "url": "/index.html"
   }
 ];
