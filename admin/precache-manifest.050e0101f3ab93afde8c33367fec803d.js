@@ -12,12 +12,12 @@ self.__precacheManifest = [
     "url": "/static/js/2.c15fc04e.chunk.js"
   },
   {
-    "revision": "bf7ae9ab5904cab17374",
+    "revision": "483c637c90bc2ca31967",
     "url": "/static/css/main.4bf9f461.chunk.css"
   },
   {
-    "revision": "bf7ae9ab5904cab17374",
-    "url": "/static/js/main.bf7ae9ab.chunk.js"
+    "revision": "483c637c90bc2ca31967",
+    "url": "/static/js/main.483c637c.chunk.js"
   },
   {
     "revision": "a96e86ea778674ad8a3a",
@@ -132,7 +132,7 @@ self.__precacheManifest = [
     "url": "/static/media/gora.7c2a4ce2.jpg"
   },
   {
-    "revision": "4f5cf507431a914120039ef9ea638259",
+    "revision": "e39e0af3ff334ca23dd885fb22bf005b",
     "url": "/index.html"
   }
 ];
