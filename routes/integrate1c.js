@@ -5,9 +5,11 @@ const RegionShoro = require('../models/regionShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
 const UserShoro = require('../models/userShoro');
+var logger = require('logger').createLogger('integrate1C.log');
 
 /* GET home page. */
 router.post('/put', async (req, res, next) => {
+    logger.info(req.body);
     if(req.body.elements[0].attributes.mode==='manager'){
         for(let i = 0; i<req.body.elements[0].elements.length; i++) {
             //guid   req.body.elements[0].elements[i].attributes.guid
