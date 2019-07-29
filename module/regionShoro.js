@@ -67,27 +67,32 @@ const getRegionShoro = async (search, sort, skip) => {
 }
 
 const addRegionShoro = async (object) => {
-        let _object = new RegionShoro(object);
+        /*let _object = new RegionShoro(object);
         await RegionShoro.create(_object);
-
+*/
 }
 
 const setRegionShoro = async (object, id) => {
+       /*
         await OrganizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
         await RealizatorShoro.updateMany({region: id}, {$set: {region: object.name}});
         await PointShoro.updateMany({region: id}, {$set: {region: object.name}});
         await RegionShoro.updateMany({name: id}, {$set: object});
-
+*/
 }
 
 const deleteRegionShoro = async (id) => {
-        await RegionShoro.deleteMany({name: {$in: id}});
+        //await RegionShoro.deleteMany({name: {$in: id}});
 
 }
 
 const getRegionShoroName = async () => {
-    let a = await RegionShoro.find().distinct('name');
-    return a.sort()
+    let names = []
+    let finds = await RegionShoro.find()
+    for(let i=0; i<finds.length; i++){
+        names.push({name: finds[i].name, guid: finds[i].guid})
+    }
+    return names.sort()
 
 }
 

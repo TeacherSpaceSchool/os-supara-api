@@ -21,6 +21,18 @@ const RealizatorShoroSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserShoro'
     },
+    guidRegion: {
+        type: String,
+        required: true,
+    },
+    guidPoint: {
+        type: String,
+        required: true,
+    },
+    guid: {
+        type: String,
+        required: true,
+    }
 }, {
     timestamps: true
 });

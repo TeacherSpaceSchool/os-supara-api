@@ -20,26 +20,24 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id, poin
             'дата',
         ];
         let organizator = await OrganizatorShoro.findOne({user: id})
-        let region = organizator.region
-        organizator = organizator.name
-        if(sort == undefined||sort=='')
+        let guidRegion = organizator.guidRegion
+        let guidOrganizator = organizator.guid
+    if(sort == undefined||sort=='')
             sort = '-updatedAt';
         else if(sort[0]=='дата'&&sort[1]=='descending')
             sort = '-data';
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await OtchetRealizatoraShoro.count({organizator: organizator,region: {'$regex': region, '$options': 'i'},point: {'$regex': point, '$options': 'i'}});
+            count = await OtchetRealizatoraShoro.count({guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'}});
             findResult = await OtchetRealizatoraShoro
-                .find({organizator: organizator,region: {'$regex': region, '$options': 'i'},point: {'$regex': point, '$options': 'i'}})
+                .find({guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
-                organizator: organizator,
-                region: {'$regex': region, '$options': 'i'},
-                point: {'$regex': point, '$options': 'i'},
+                guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -48,7 +46,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id, poin
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},point: {'$regex': point, '$options': 'i'},
+                guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -61,7 +59,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id, poin
                 .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},point: {'$regex': point, '$options': 'i'},
+                guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -69,7 +67,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id, poin
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},point: {'$regex': point, '$options': 'i'},
+                guidOrganizator: guidOrganizator,guidRegion: {'$regex': guidRegion, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -81,7 +79,7 @@ const getOtchetRealizatoraShoroOrganizator = async (search, sort, skip, id, poin
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data, findResult[i].guidRegion, findResult[i].guidPoint, findResult[i].guidRealizator]);
         }
         return {data: data, count: count, row: row}
 
@@ -94,8 +92,8 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
             'дата',
         ];
         let realizator = await RealizatorShoro.findOne({user: id})
-        let region = realizator.region
-        let point = realizator.point
+        let guidPoint = realizator.guidPoint
+        let guidRealizator = realizator.guid
         realizator = realizator.name
         if(sort == undefined||sort=='')
             sort = '-updatedAt';
@@ -104,22 +102,22 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await OtchetRealizatoraShoro.count({realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'}});
+            count = await OtchetRealizatoraShoro.count({guidRealizator: guidRealizator, guidPoint: guidPoint});
             findResult = await OtchetRealizatoraShoro
-                .find({realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'}})
+                .find({guidRealizator: guidRealizator, guidPoint: guidPoint})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
-                realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRealizator: guidRealizator, guidPoint: guidPoint,
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRealizator: guidRealizator, guidPoint: guidPoint,
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -130,13 +128,13 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
                 .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
-                realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRealizator: guidRealizator, guidPoint: guidPoint,
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRealizator: guidRealizator, guidPoint: guidPoint,
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
@@ -146,7 +144,7 @@ const getOtchetRealizatoraShoroRealizator = async (search, sort, skip, id) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data, findResult[i].guidRegion, findResult[i].guidPoint, findResult[i].guidRealizator]);
         }
         return {data: data, count: count, row: row}
 
@@ -169,15 +167,15 @@ const getOtchetRealizatoraShoro = async (search, sort, skip, region, point) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await OtchetRealizatoraShoro.count({region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'}});
+            count = await OtchetRealizatoraShoro.count({guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'}});
             findResult = await OtchetRealizatoraShoro
-                .find({region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'}})
+                .find({guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
-                region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -186,7 +184,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip, region, point) => {
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -199,7 +197,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip, region, point) => {
                 .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
-                region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -207,7 +205,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip, region, point) => {
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},guidPoint: {'$regex': point, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -219,8 +217,7 @@ const getOtchetRealizatoraShoro = async (search, sort, skip, region, point) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data, findResult[i].guidRegion, findResult[i].guidPoint, findResult[i].guidRealizator]);
         }
         return {data: data, count: count, row: row}
 
@@ -244,15 +241,15 @@ const getOtchetRealizatoraShoroToday = async (search, sort, skip, region) => {
             sort = 'data';
         let date = await getToday()
         if(search == ''){
-            count = await OtchetRealizatoraShoro.count({region: {'$regex': region, '$options': 'i'}, data: date});
+            count = await OtchetRealizatoraShoro.count({guidRegion: {'$regex': region, '$options': 'i'}, data: date});
             findResult = await OtchetRealizatoraShoro
-                .find({region: {'$regex': region, '$options': 'i'}, data: date})
+                .find({guidRegion: {'$regex': region, '$options': 'i'}, data: date})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await OtchetRealizatoraShoro.count({
-                region: {'$regex': region, '$options': 'i'}, data: date,
+                guidRegion: {'$regex': region, '$options': 'i'}, data: date,
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -261,7 +258,7 @@ const getOtchetRealizatoraShoroToday = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                region: {'$regex': region, '$options': 'i'}, data: date,
+                guidRegion: {'$regex': region, '$options': 'i'}, data: date,
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -274,7 +271,7 @@ const getOtchetRealizatoraShoroToday = async (search, sort, skip, region) => {
                 .limit(skip1);
         } else {
             count = await OtchetRealizatoraShoro.count({
-                region: {'$regex': region, '$options': 'i'}, data: date,
+                guidRegion: {'$regex': region, '$options': 'i'}, data: date,
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -282,7 +279,7 @@ const getOtchetRealizatoraShoroToday = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await OtchetRealizatoraShoro.find({
-                region: {'$regex': region, '$options': 'i'}, data: date,
+                guidRegion: {'$regex': region, '$options': 'i'}, data: date,
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {realizator: {'$regex': search, '$options': 'i'}},
@@ -294,33 +291,30 @@ const getOtchetRealizatoraShoroToday = async (search, sort, skip, region) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-
-            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data]);
-        }
+            data.push([findResult[i].realizator + ': ' + findResult[i].region + ' - ' + findResult[i].point, findResult[i].data, findResult[i].guidRegion, findResult[i].guidPoint, findResult[i].guidRealizator]);
+         }
         return {data: data, count: count, row: row}
 
 }
 
 const addOtchetRealizatoraShoro = async (object) => {
-        if(await OtchetRealizatoraShoro.findOne({data: object.data, realizator: object.realizator, region: object.region, point: object.point})===null){
+        if(await OtchetRealizatoraShoro.findOne({data: object.data, guidRealizator: object.guidRealizator, guidPoint: object.guidPoint})===null){
             let _object = new OtchetRealizatoraShoro(object);
             await OtchetRealizatoraShoro.create(_object)
             calculateAll(object)
-
-
-
-
-
         }
-
 }
 
 const getOtchetRealizatoraShoroByDate = async (data, organizator, region) => {
-        return(await OtchetRealizatoraShoro.find({data: data, organizator: organizator, region: {'$regex': region, '$options': 'i'}}))
+        return(await OtchetRealizatoraShoro.find({data: data, guidOrganizator: organizator, guidRegion: {'$regex': region, '$options': 'i'}}))
 }
 
 const getOtchetRealizatoraShoroByData = async (data, realizator, region, point) => {
-        return(await OtchetRealizatoraShoro.findOne({data: data, realizator: realizator, region: {'$regex': region, '$options': 'i'}, point: {'$regex': point, '$options': 'i'}}))
+        return(await OtchetRealizatoraShoro.findOne({
+            data: data,
+            guidRealizator: realizator,
+            guidRegion: {'$regex': region, '$options': 'i'},
+            guidPoint: {'$regex': point, '$options': 'i'}}))
 }
 
 const setOtchetRealizatoraShoro = async (object, id) => {
@@ -336,16 +330,16 @@ const deleteOtchetRealizatoraShoro = async (id) => {
             id1[2] = id1[2].split(': ')[1].split(' - ')[1]
 
             let object = await OtchetRealizatoraShoro.findOne({
-                realizator: id1[0],
-                region: id1[1],
-                point: id1[2],
+                guidRealizator: id1[0],
+                guidRegion: id1[1],
+                guidPoint: id1[2],
                 data: id1[3],
             })
 
             await OtchetRealizatoraShoro.deleteMany({
-                realizator: id1[0],
-                region: id1[1],
-                point: id1[2],
+                guidRealizator: id1[0],
+                guidRegion: id1[1],
+                guidPoint: id1[2],
                 data: id1[3],
                 })
 
@@ -356,13 +350,13 @@ const deleteOtchetRealizatoraShoro = async (id) => {
 }
 
 const calculateAll = async (object) => {
-        let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        let findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
         if(findOrganizator===null) {
-            await OtchetOrganizatoraShoroModule.createOtchetOrganizatoraShoro(object.data, object.organizator, object.region)
-            findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+            await OtchetOrganizatoraShoroModule.createOtchetOrganizatoraShoro(object.data, object.organizator, object.region, object.guidOrganizator, object.guidRegion)
+            findOrganizator = await OtchetOrganizatoraShoro.findOne({data: object.data, guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
         }
-        let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, region: object.region, organizator: object.organizator})
-        let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        let findRealizators = await OtchetRealizatoraShoro.find({data: object.data, guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
+        let findNakladnayaNaVecherniyVozvratShoro = await NakladnayaNaVecherniyVozvratShoro.findOne({data: object.data, guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
         let findDataNakladnayaNaVecherniyVozvratShoro
         if(findNakladnayaNaVecherniyVozvratShoro!==null){
             findDataNakladnayaNaVecherniyVozvratShoro = JSON.parse(findNakladnayaNaVecherniyVozvratShoro.dataTable)
@@ -407,7 +401,7 @@ const calculateAll = async (object) => {
             await NakladnayaNaVecherniyVozvratShoro.findOneAndUpdate({_id: findNakladnayaNaVecherniyVozvratShoro._id}, {$set: {dataTable: findDataNakladnayaNaVecherniyVozvratShoro}});
         }
 
-        let findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: getTomorrow(object.data), region: object.region, organizator: object.organizator})
+        let findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: getTomorrow(object.data), guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
         let findDataNakladnayaSklad1Shoro
         if(findNakladnayaSklad1Shoro!==null){
             findDataNakladnayaSklad1Shoro = JSON.parse(findNakladnayaSklad1Shoro.dataTable)
@@ -446,7 +440,7 @@ const calculateAll = async (object) => {
             await NakladnayaSklad1Shoro.findOneAndUpdate({_id: findNakladnayaSklad1Shoro._id}, {$set: {dataTable: findDataNakladnayaSklad1Shoro}});
         }
 
-        findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: object.data, region: object.region, organizator: object.organizator})
+        findNakladnayaSklad1Shoro = await NakladnayaSklad1Shoro.findOne({data: object.data, guidRegion: object.guidRegion, guidOrganizator: object.guidOrganizator})
         findDataNakladnayaSklad1Shoro
         if(findNakladnayaSklad1Shoro!==null){
             findDataNakladnayaSklad1Shoro = JSON.parse(findNakladnayaSklad1Shoro.dataTable)
@@ -494,7 +488,7 @@ const calculateAll = async (object) => {
                     findPlanRegions[i]['current'] = 0
                     for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
                         if (findPlanRegions[i]['points'][i1]['name'] == object.point) {
-                            let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                            let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': (object.data).substring(3), '$options': 'i'}, region: findPlanRegions[i]['guidRegion'], point: findPlanRegions[i]['points'][i1]['guidPoint']});
                             findPlanRegions[i]['points'][i1]['current'] = 0
                             for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
                                 findPlanRegions[i]['points'][i1]['current'] += checkInt(JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv'])
@@ -772,6 +766,7 @@ const getReiting = async (date) => {
         for (let i = 0; i < dataPlan.length; i++) {
             reiting[i] = {
                 name: dataPlan[i].name,
+                guidRegion: dataPlan[i].guidRegion,
                 score: dataPlan[i].plan !== 0 && dataPlan[i].plan !== '' ? Math.round(dataPlan[i].current * 100 / dataPlan[i].plan) + '%' : dataPlan[i].current
             }
         }
@@ -790,7 +785,10 @@ const getReiting1 = async (date) => {
         let reiting = []
         for(let i = 0; i < dataPlan.length; i++){
             for(let i1 = 0; i1 < dataPlan[i].points.length; i1++) {
-                reiting.push({name: dataPlan[i].points[i1].name, score: dataPlan[i].points[i1].plan!==0&&dataPlan[i].points[i1].plan!==''?Math.round(dataPlan[i].points[i1].current*100/dataPlan[i].points[i1].plan)+'%':dataPlan[i].points[i1].current})
+                reiting.push({
+                    name:  dataPlan[i].name+ ' - ' + dataPlan[i].points[i1].name,
+                    guidPoint: dataPlan[i].guidPoint,
+                    score: dataPlan[i].points[i1].plan!==0&&dataPlan[i].points[i1].plan!==''?Math.round(dataPlan[i].points[i1].current*100/dataPlan[i].points[i1].plan)+'%':dataPlan[i].points[i1].current})
             }
         }
         reiting.sort((a, b) => (b.score - a.score))
@@ -808,17 +806,18 @@ const getReitingMyOrganizator = async (id) => {
     if(dataPlan!=null) {
             dataPlan = JSON.parse(dataPlan.regions)
             let organizator = await OrganizatorShoro.findOne({user: id})
-            let region = organizator.region
+            let guidRegion = organizator.guidRegion
             let reiting = []
             for (let i = 0; i < dataPlan.length; i++) {
                 reiting[i] = {
                     name: dataPlan[i].name,
+                    guidRegion: dataPlan[i].guidRegion,
                     score: dataPlan[i].plan !== 0 && dataPlan[i].plan !== '' ? Math.round(dataPlan[i].current * 100 / dataPlan[i].plan) + '%' : dataPlan[i].current
                 }
             }
             reiting.sort((a, b) => (b.score - a.score))
             for (let i = 0; i < reiting.length; i++) {
-                if (reiting[i].name === region)
+                if (reiting[i].guidRegion === guidRegion)
                     reitingN = {number: i + 1, name: reiting[i].name, score: reiting[i].score}
             }
             return (reitingN)
@@ -831,21 +830,23 @@ const getReitingMyRealizator = async (id) => {
     if(dataPlan!=null) {
         dataPlan = JSON.parse(dataPlan.regions)
         let realizator = await RealizatorShoro.findOne({user: id})
-        let region = realizator.region
-        let point = realizator.point
+        let guidRegion = realizator.guidRegion
+        let guidPoint = realizator.guidPoint
         let reiting = []
         let reitingN = ''
         for (let i = 0; i < dataPlan.length; i++) {
             for (let i1 = 0; i1 < dataPlan[i].points.length; i1++) {
                 reiting.push({
                     name: dataPlan[i].name + ': ' + dataPlan[i].points[i1].name,
+                    guidRegion: dataPlan[i].guidRegion,
+                    guidPoint: dataPlan[i].points[i1].guidPoint,
                     score: dataPlan[i].points[i1].plan !== 0 && dataPlan[i].points[i1].plan !== '' ? Math.round(dataPlan[i].points[i1].current * 100 / dataPlan[i].points[i1].plan) + '%' : dataPlan[i].points[i1].current
                 })
             }
         }
         reiting.sort((a, b) => (b.score - a.score))
         for (let i = 0; i < reiting.length; i++) {
-            if (reiting[i].name === region + ': ' + point)
+            if (reiting[i].guidRegion == guidRegion, reiting[i].guidPoint == guidPoint)
                 reitingN = {number: i + 1, name: reiting[i].name, score: reiting[i].score + '%'}
         }
         return (reitingN)

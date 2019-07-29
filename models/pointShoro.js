@@ -8,6 +8,14 @@ const PointShoroSchema = mongoose.Schema({
     region: {
         type: String,
         required: true,
+    },
+    guid: {
+        type: String,
+        required: true,
+    },
+    guidRegion: {
+        type: String,
+        required: true,
     }
 }, {
     timestamps: true

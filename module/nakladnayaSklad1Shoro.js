@@ -11,8 +11,8 @@ const getNakladnayaSklad1ShoroOrganizator = async (search, sort, skip, id) => {
             'дата',
         ];
         let organizator = await OrganizatorShoro.findOne({user: id})
-        let region = organizator.region
-        organizator = organizator.name
+        let guidRegion = organizator.guidRegion
+        let guidOrganizator = organizator.guid
         if(sort == undefined||sort=='')
             sort = '-updatedAt';
         else if(sort[0]=='дата'&&sort[1]=='descending')
@@ -20,22 +20,22 @@ const getNakladnayaSklad1ShoroOrganizator = async (search, sort, skip, id) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await NakladnayaSklad1Shoro.count({organizator: organizator, region: {'$regex': region, '$options': 'i'}});
+            count = await NakladnayaSklad1Shoro.count({guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'}});
             findResult = await NakladnayaSklad1Shoro
-                .find({organizator: organizator, region: {'$regex': region, '$options': 'i'}})
+                .find({guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaSklad1Shoro.count({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},
+                guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaSklad1Shoro.find({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},
+                guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -46,13 +46,13 @@ const getNakladnayaSklad1ShoroOrganizator = async (search, sort, skip, id) => {
                 .limit(skip1);
         } else {
             count = await NakladnayaSklad1Shoro.count({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},
+                guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaSklad1Shoro.find({
-                organizator: organizator, region: {'$regex': region, '$options': 'i'},
+                guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion, '$options': 'i'},
                 $or: [
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
@@ -62,9 +62,8 @@ const getNakladnayaSklad1ShoroOrganizator = async (search, sort, skip, id) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
+            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data, findResult[i].guidOrganizator, findResult[i].guidRegion]);
         }
-        console.log(data)
         return {data: data, count: count, row: row}
 
 }
@@ -86,15 +85,15 @@ const getNakladnayaSklad1Shoro = async (search, sort, skip, region) => {
         else if(sort[0]=='дата'&&sort[1]=='ascending')
             sort = 'data';
         if(search == ''){
-            count = await NakladnayaSklad1Shoro.count({region: {'$regex': region, '$options': 'i'}});
+            count = await NakladnayaSklad1Shoro.count({guidRegion: {'$regex': region, '$options': 'i'}});
             findResult = await NakladnayaSklad1Shoro
-                .find({region: {'$regex': region, '$options': 'i'}})
+                .find({guidRegion: {'$regex': region, '$options': 'i'}})
                 .sort(sort)
                 .skip(parseInt(skip))
                 .limit(skip1)
         } else if (mongoose.Types.ObjectId.isValid(search)) {
             count = await NakladnayaSklad1Shoro.count({
-                region: {'$regex': region, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -102,7 +101,7 @@ const getNakladnayaSklad1Shoro = async (search, sort, skip, region) => {
                 ]
             });
             findResult = await NakladnayaSklad1Shoro.find({
-                region: {'$regex': region, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},
                 $or: [
                     {_id: search},
                     {organizator: {'$regex': search, '$options': 'i'}},
@@ -114,14 +113,14 @@ const getNakladnayaSklad1Shoro = async (search, sort, skip, region) => {
                 .limit(skip1);
         } else {
             count = await NakladnayaSklad1Shoro.count({
-                region: {'$regex': region, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
                 ]
             });
             findResult = await NakladnayaSklad1Shoro.find({
-                region: {'$regex': region, '$options': 'i'},
+                guidRegion: {'$regex': region, '$options': 'i'},
                 $or: [
                     {organizator: {'$regex': search, '$options': 'i'}},
                     {data: {'$regex': search, '$options': 'i'}},
@@ -132,7 +131,7 @@ const getNakladnayaSklad1Shoro = async (search, sort, skip, region) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
+            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data, findResult[i].guidOrganizator, findResult[i].guidRegion]);
         }
         return {data: data, count: count, row: row}
 
@@ -202,14 +201,14 @@ const getNakladnayaSklad1ShoroToday = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data]);
+            data.push([findResult[i].organizator + ': ' + findResult[i].region, findResult[i].data, findResult[i].guidOrganizator, findResult[i].guidRegion]);
         }
         return {data: data, count: count, row: row}
 
 }
 
 const addNakladnayaSklad1Shoro = async (object) => {
-        if(await NakladnayaSklad1Shoro.findOne({data: object.data, organizator: object.organizator, region: object.region})===null){
+        if(await NakladnayaSklad1Shoro.findOne({data: object.data, guidOrganizator: object.guidOrganizator, guidRegion: object.guidRegion})===null){
             let _object = new NakladnayaSklad1Shoro(object);
             await NakladnayaSklad1Shoro.create(_object);
         }
@@ -217,7 +216,7 @@ const addNakladnayaSklad1Shoro = async (object) => {
 }
 
 const getNakladnayaSklad1ShoroByData = async (data, organizator, region) => {
-        return(await NakladnayaSklad1Shoro.findOne({data: data, organizator: organizator, region: {'$regex': region, '$options': 'i'}}))
+        return(await NakladnayaSklad1Shoro.findOne({data: data, guidOrganizator: organizator, guidRegion: {'$regex': region, '$options': 'i'}}))
 
 }
 
@@ -227,16 +226,14 @@ const setNakladnayaSklad1Shoro = async (object, id) => {
 }
 
 const deleteNakladnayaSklad1Shoro = async (id) => {
-        for(let i=0; i<id.length; i++){
-            let id1 = id[i].split('|')
-            id1[0] = id1[1].split(': ')[0]
-            id1[1] = id1[1].split(': ')[1]
-            await NakladnayaSklad1Shoro.deleteMany({data: id1[2],
-                organizator: id1[0],
-                region: id1[1]})
-
-        }
-    
+    for(let i=0; i<id.length; i++){
+        let id1 = id[i].split('|')
+        id1[0] = id1[1].split(': ')[0]
+        id1[1] = id1[1].split(': ')[1]
+        await NakladnayaSklad1Shoro.deleteMany({data: id1[2],
+            guidOrganizator: id1[0],
+            guidRegion: id1[1]})
+    }
 }
 
 module.exports.deleteNakladnayaSklad1Shoro = deleteNakladnayaSklad1Shoro;

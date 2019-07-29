@@ -9,12 +9,16 @@ const app = require('../app');
 
 let deleteAll = async () => {
     try{
-        await PointShoro.deleteMany()
-        await RegionShoro.deleteMany()
-        await OrganizatorShoro.deleteMany()
-        await RealizatorShoro.deleteMany()
-        await UserShoro.deleteMany()
-
+        let res = await PointShoro.deleteMany()
+        console.log(res)
+        res = await RegionShoro.deleteMany()
+        console.log(res)
+        res = await OrganizatorShoro.deleteMany()
+        console.log(res)
+        res = await RealizatorShoro.deleteMany()
+        console.log(res)
+        res = await UserShoro.deleteMany()
+        console.log(res)
     } catch(error) {
         console.error(error)
     }
@@ -126,9 +130,32 @@ let addPoint = async () => {
     }
 }
 
+let addReserv = async () => {
+    try{
+        let find = await RegionShoro.findOne({name: 'Резерв'});
+        if(find==null){
+            find = new RegionShoro({
+                name: 'Резерв',
+                guid: 'lol'
+            });
+            await RegionShoro.create(find);
+            find = new PointShoro({
+                name: 'Резерв',
+                guid: 'lol',
+                region: 'Резерв',
+                guidRegion: 'lol'
+            });
+            await PointShoro.create(find);
+        }
+    } catch(error) {
+        console.error(error)
+    }
+}
+
 let start = async () => {
-    /*await deleteAll()
-    await addPoint()
+    await addReserv()
+    //await deleteAll()
+    /*await addPoint()
     await addRegion()
     await addOrganizator()
     await addRealizator()

@@ -293,22 +293,22 @@ router.post('/delete', async (req, res) => {
                     await CarShoro.deleteCarShoro(JSON.parse(req.body.deleted))
                     await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Организатор'){
-                    await OrganizatorShoro.deleteOrganizatorShoro(JSON.parse(req.body.deleted))
+                    //await OrganizatorShoro.deleteOrganizatorShoro(JSON.parse(req.body.deleted))
                     await res.send(await OrganizatorShoro.getOrganizatorShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'План'){
                     await PlanShoro.deletePlanShoro(JSON.parse(req.body.deleted))
                     await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Точка'){
-                    await PointShoro.deletePointShoro(JSON.parse(req.body.deleted))
+                    //await PointShoro.deletePointShoro(JSON.parse(req.body.deleted))
                     await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
                 }  else if(req.body.name == 'Цена'){
                     await PriceShoro.deletePriceShoro(JSON.parse(req.body.deleted))
                     await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Реализатор'){
-                    await RealizatorShoro.deleteRealizatorShoro(JSON.parse(req.body.deleted))
+                    //await RealizatorShoro.deleteRealizatorShoro(JSON.parse(req.body.deleted))
                     await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
                 } else if(req.body.name == 'Регион'){
-                    await RegionShoro.deleteRegionShoro(JSON.parse(req.body.deleted))
+                    //await RegionShoro.deleteRegionShoro(JSON.parse(req.body.deleted))
                     await res.send(await RegionShoro.getRegionShoro(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Завсклада'){
                     await ZavSkladShoro.deleteZavSkladShoro(JSON.parse(req.body.deleted))
@@ -334,22 +334,22 @@ router.post('/delete', async (req, res) => {
                 }
                 else if(req.body.name == 'Накладная на пустую тару сегодня'){
                     await NakladnayaNaPustuyTaruShoro.deleteNakladnayaNaPustuyTaruShoro(JSON.parse(req.body.deleted))
-                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
+                    await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroToday(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Накладная склад №1 сегодня'){
                     await NakladnayaSklad1Shoro.deleteNakladnayaSklad1Shoro(JSON.parse(req.body.deleted))
-                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1Shoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
+                    await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1ShoroToday(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Накладная склад №2 сегодня'){
                     await NakladnayaSklad2Shoro.deleteNakladnayaSklad2Shoro(JSON.parse(req.body.deleted))
-                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
+                    await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2ShoroToday(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Накладная на вечерний возврат сегодня'){
                     await NakladnayaNaVecherniyVozvratShoro.deleteNakladnayaNaVecherniyVozvratShoro(JSON.parse(req.body.deleted))
-                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
+                    await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoroToday(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Отчет организатора сегодня'){
                     await OtchetOrganizatoraShoro.deleteOtchetOrganizatoraShoro(JSON.parse(req.body.deleted))
-                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
+                    await res.send(await OtchetOrganizatoraShoro.getOtchetOrganizatoraShoroToday(req.body.search, req.body.sort, req.body.skip))
                 } else if(req.body.name == 'Отчет реализатора сегодня'){
                     await OtchetRealizatoraShoro.deleteOtchetRealizatoraShoro(JSON.parse(req.body.deleted))
-                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoro(req.body.search, req.body.sort, req.body.skip, req.body.region, req.body.point))
+                    await res.send(await OtchetRealizatoraShoro.getOtchetRealizatoraShoroToday(req.body.search, req.body.sort, req.body.skip, req.body.region))
                 }
             });
         }
@@ -358,10 +358,10 @@ router.post('/delete', async (req, res) => {
                 if(req.body.name == 'План'){
                     await res.send(await PlanShoro.getPlanShoroOrganizator(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Точка'){
-                    await PointShoro.deletePointShoro(JSON.parse(req.body.deleted))
+                    //await PointShoro.deletePointShoro(JSON.parse(req.body.deleted))
                     await res.send(await PointShoro.getPointShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Реализатор'){
-                    await RealizatorShoro.deleteRealizatorShoro(JSON.parse(req.body.deleted))
+                    //await RealizatorShoro.deleteRealizatorShoro(JSON.parse(req.body.deleted))
                     await res.send(await RealizatorShoro.getRealizatorShoro1(req.body.search, req.body.sort, req.body.skip, user._id))
                 } else if(req.body.name == 'Накладная на пустую тару'){
                     await NakladnayaNaPustuyTaruShoro.deleteNakladnayaNaPustuyTaruShoro(JSON.parse(req.body.deleted))
@@ -471,54 +471,6 @@ router.post('/add', async (req, res) => {
                                     else
                                         await BlogShoro.setBlogShoro(myNew, req.body.id)
                                     await res.send(await BlogShoro.getBlogShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'Машина'){
-                                    if(req.body.id==undefined)
-                                        await CarShoro.addCarShoro(myNew)
-                                    else
-                                        await CarShoro.setCarShoro(myNew, req.body.id)
-                                    await res.send(await CarShoro.getCarShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'Организатор'){
-                                    if(req.body.id==undefined)
-                                        await OrganizatorShoro.addOrganizatorShoro(myNew)
-                                    else
-                                        await OrganizatorShoro.setOrganizatorShoro(myNew, req.body.id)
-                                    await res.send(await OrganizatorShoro.getOrganizatorShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'План'){
-                                    if(req.body.id==undefined)
-                                        await PlanShoro.addPlanShoro(myNew)
-                                    else
-                                        await PlanShoro.setPlanShoro(myNew, req.body.id)
-                                    await res.send(await PlanShoro.getPlanShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'Точка'){
-                                    if(req.body.id==undefined)
-                                        await PointShoro.addPointShoro(myNew)
-                                    else
-                                        await PointShoro.setPointShoro(myNew, req.body.id)
-                                    await res.send(await PointShoro.getPointShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
-                                }  else if(req.body.name == 'Цена'){
-                                    if(req.body.id==undefined)
-                                        await PriceShoro.addPriceShoro(myNew)
-                                    else
-                                        await PriceShoro.setPriceShoro(myNew, req.body.id)
-                                    await res.send(await PriceShoro.getPriceShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'Реализатор'){
-                                    if(req.body.id==undefined)
-                                        await RealizatorShoro.addRealizatorShoro(myNew)
-                                    else
-                                        await RealizatorShoro.setRealizatorShoro(myNew, req.body.id)
-                                    await res.send(await RealizatorShoro.getRealizatorShoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
-                                } else if(req.body.name == 'Регион'){
-                                    if(req.body.id==undefined)
-                                        await RegionShoro.addRegionShoro(myNew)
-                                    else
-                                        await RegionShoro.setRealizatorShoro(myNew, req.body.id)
-                                    await res.send(await RegionShoro.getRegionShoro(req.body.search, req.body.sort, req.body.skip))
-                                } else if(req.body.name == 'Завсклада'){
-                                    if(req.body.id==undefined)
-                                        await ZavSkladShoro.addZavSkladShoro(myNew)
-                                    else
-                                        await ZavSkladShoro.setZavSkladShoro(myNew, req.body.id)
-                                    await res.send(await ZavSkladShoro.getZavSkladShoro(req.body.search, req.body.sort, req.body.skip))
                                 }
                             }
                         })
@@ -604,6 +556,7 @@ router.post('/add', async (req, res) => {
                     else if(req.body.name == 'Накладная склад №2'){
                         if(req.body.id!==undefined)
                             await NakladnayaSklad2Shoro.setNakladnayaSklad2Shoro(myNew, req.body.id)
+                        console.log(req.body.region)
                         await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2Shoro(req.body.search, req.body.sort, req.body.skip, req.body.region))
                     }
                     else if(req.body.name == 'Накладная на вечерний возврат'){
@@ -618,7 +571,27 @@ router.post('/add', async (req, res) => {
                             await FaqShoro.setFaqShoro(myNew, req.body.id)
                         await res.send(await FaqShoro.getFaqShoro(req.body.search, req.body.sort, req.body.skip))
                     }
-
+                    else  if(req.body.name == 'Накладная на пустую тару сегодня'){
+                        console.log(req.body.region)
+                        if(req.body.id!==undefined)
+                            await NakladnayaNaPustuyTaruShoro.setNakladnayaNaPustuyTaruShoro(myNew, req.body.id)
+                        await res.send(await NakladnayaNaPustuyTaruShoro.getNakladnayaNaPustuyTaruShoroToday(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'Накладная склад №1 сегодня'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaSklad1Shoro.setNakladnayaSklad1Shoro(myNew, req.body.id)
+                        await res.send(await NakladnayaSklad1Shoro.getNakladnayaSklad1ShoroToday(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'Накладная склад №2 сегодня'){
+                        if(req.body.id!==undefined)
+                            await NakladnayaSklad2Shoro.setNakladnayaSklad2Shoro(myNew, req.body.id)
+                        await res.send(await NakladnayaSklad2Shoro.getNakladnayaSklad2ShoroToday(req.body.search, req.body.sort, req.body.skip))
+                    }
+                    else if(req.body.name == 'Накладная на вечерний возврат сегодня' ){
+                        if(req.body.id!==undefined)
+                            await NakladnayaNaVecherniyVozvratShoro.setNakladnayaNaVecherniyVozvratShoro(myNew, req.body.id)
+                        await res.send(await NakladnayaNaVecherniyVozvratShoro.getNakladnayaNaVecherniyVozvratShoroToday(req.body.search, req.body.sort, req.body.skip))
+                    }
                 }
             });
         }

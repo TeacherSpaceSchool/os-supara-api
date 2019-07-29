@@ -13,7 +13,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
             'текущее'
         ];
         let organizator = await OrganizatorShoro.findOne({user: id})
-        let region = organizator.region
+        let guidRegion = organizator.guidRegion
         if(sort == undefined||sort=='')
             sort = '-updatedAt';
         else if(sort[0]=='норма'&&sort[1]=='descending')
@@ -87,7 +87,7 @@ const getPlanShoroOrganizator = async (search, sort, skip, id) => {
         for (let i=0; i<findResult.length; i++){
             let findPlanRegions = JSON.parse(findResult[i].regions)
             for (let i1 = 0; i1 < findPlanRegions.length; i1++) {
-                if (findPlanRegions[i1]['name'] == region) {
+                if (findPlanRegions[i1]['guidRegion'] == guidRegion) {
                     data.push([ findResult[i].date, findPlanRegions[i1]['plan'], findPlanRegions[i1]['plan']!==0&&findPlanRegions[i1]['plan']!==''?Math.round(findPlanRegions[i1]['current']*100/findPlanRegions[i1]['plan'])+'%':findPlanRegions[i1]['current']]);
                     break
                 }
@@ -187,7 +187,7 @@ const addPlanShoro = async (object) => {
         for (let i = 0; i < findPlanRegions.length; i++) {
             findPlanRegions[i]['current'] = 0
             for (let i1 = 0; i1 < findPlanRegions[i]['points'].length; i1++) {
-                let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': object.date, '$options': 'i'}, region: findPlanRegions[i]['name'], point: findPlanRegions[i]['points'][i1]['name']});
+                let findOtchetRealizatoraShoro = await OtchetRealizatoraShoro.find({data: {'$regex': object.date, '$options': 'i'}, guidRegion: findPlanRegions[i]['guidRegion'], guidPoint: findPlanRegions[i]['points'][i1]['guidPoint']});
                 findPlanRegions[i]['points'][i1]['current'] = 0
                 for (let i2 = 0; i2 < findOtchetRealizatoraShoro.length; i2++) {
                     findPlanRegions[i]['points'][i1]['current'] += checkInt(JSON.parse(findOtchetRealizatoraShoro[i2].dataTable)['i']['iv'])

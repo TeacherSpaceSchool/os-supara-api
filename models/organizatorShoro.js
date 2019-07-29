@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
 
 const OrganizatorShoroSchema = mongoose.Schema({
     name: {
@@ -18,12 +17,24 @@ const OrganizatorShoroSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserShoro'
     },
+    guidRegion: {
+        type: String,
+        required: true,
+    },
+    guid: {
+        type: String,
+        required: true,
+    }
 }, {
     timestamps: true
 });
 
-OrganizatorShoroSchema.plugin(uniqueValidator);
-
 const OrganizatorShoro = mongoose.model('OrganizatorShoro', OrganizatorShoroSchema);
+
+/*OrganizatorShoro.collection.dropIndex('name_1', function(err, result) {
+    if (err) {
+        console.log('Error in dropping index!', err);
+    }
+});*/
 
 module.exports = OrganizatorShoro;

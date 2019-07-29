@@ -8,6 +8,10 @@ const OtchetRealizatoraShoroSchema = mongoose.Schema({
     organizator: String,
     region: String,
     point: String,
+    guidRegion: String,
+    guidOrganizator: String,
+    guidPoint: String,
+    guidRealizator: String,
     disabled: Boolean,
 }, {
     timestamps: true

@@ -555,7 +555,7 @@ const getStatistic = async (type, what, date, status) => {
     if(what==='все')
         what = ''
     if(type==='регион'){
-        let statistic = await OtchetRealizatoraShoro.find({region: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
+        let statistic = await OtchetRealizatoraShoro.find({guidRegion: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
         if(status === 'по годам')
             return calculateYear(statistic, date)
         else if(status === 'по месяцам')
@@ -564,7 +564,7 @@ const getStatistic = async (type, what, date, status) => {
             return calculateDay(statistic, date)
     }
     else if(type==='точка'){
-        let statistic = await OtchetRealizatoraShoro.find({point: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
+        let statistic = await OtchetRealizatoraShoro.find({guidPoint: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
         if(status === 'по годам')
             return calculateYear(statistic, date)
         else if(status === 'по месяцам')
@@ -573,7 +573,7 @@ const getStatistic = async (type, what, date, status) => {
             return calculateDay(statistic, date)
     }
     else if(type==='организатор'){
-        let statistic = await OtchetRealizatoraShoro.find({organizator: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
+        let statistic = await OtchetRealizatoraShoro.find({guidOrganizator: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
         if(status === 'по годам')
             return calculateYear(statistic, date)
         else if(status === 'по месяцам')
@@ -582,7 +582,7 @@ const getStatistic = async (type, what, date, status) => {
             return calculateDay(statistic, date)
     }
     else if(type==='реализатор'){
-        let statistic = await OtchetRealizatoraShoro.find({realizator: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
+        let statistic = await OtchetRealizatoraShoro.find({guidRealizator: {'$regex': what, '$options': 'i'}, data: {'$regex': date, '$options': 'i'}})
         if(status === 'по годам')
             return calculateYear(statistic, date)
         else if(status === 'по месяцам')

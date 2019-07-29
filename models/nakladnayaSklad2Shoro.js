@@ -7,6 +7,8 @@ const NakladnayaSklad2ShoroSchema = mongoose.Schema({
     organizator: String,
     region: String,
     disabled: Boolean,
+    guidRegion: String,
+    guidOrganizator: String,
 }, {
     timestamps: true
 });

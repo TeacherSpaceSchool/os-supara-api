@@ -4,9 +4,13 @@ const skip1 = require('../module/const').skip;
 const mongoose = require('mongoose');
 
 const getOrganizatorShoroName = async () => {
-    let a = await OrganizatorShoro.find().distinct('name');
-    return a.sort()
-
+    let names = []
+    let finds = await OrganizatorShoro
+        .find()
+    for(let i=0; i<finds.length; i++){
+        names.push({name: finds[i].name, guid: finds[i].guid})
+    }
+    return names.sort();
 }
 
 const getOrganizatorShoro = async (search, sort, skip) => {
@@ -80,14 +84,14 @@ const getOrganizatorShoro = async (search, sort, skip) => {
                 .limit(skip1);
         }
         for (let i=0; i<findResult.length; i++){
-            data.push([findResult[i].name, findResult[i].region, findResult[i].phone]);
+            data.push([findResult[i].name, findResult[i].region, findResult[i].phone, findResult[i].guid, findResult[i].guidRegion]);
         }
         return {data: data, count: count, row: row}
 
 }
 
 const addOrganizatorShoro = async (object) => {
-        if(object.region==='Резерв'||await OrganizatorShoro.count({region: object.region})===0){
+        /*if(object.region==='Резерв'||await OrganizatorShoro.count({region: object.region})===0){
             let _user = new UserShoro({
                 email: object.phone,
                 role: 'организатор',
@@ -102,12 +106,16 @@ const addOrganizatorShoro = async (object) => {
                 user: user._id
             });
             await OrganizatorShoro.create(_object);
-        }
+        }*/
 
 }
 
 const setOrganizatorShoro = async (object, id) => {
-        if(object.password!==undefined&&object.password.length>0) {
+    let  aprove = false;
+    let find = await OrganizatorShoro.find({guidRegion: object.guidRegion});
+    aprove = object.region==='Резерв'||find.length===0||(find.length==1&&find[0]._id==id)
+    if(aprove) {
+        if (object.password !== undefined && object.password.length > 0) {
             let user = await UserShoro.findById({_id: object.user});
             user.email = object.phone;
             user.status = object.status;
@@ -115,10 +123,10 @@ const setOrganizatorShoro = async (object, id) => {
             await user.save();
             await OrganizatorShoro.findOneAndUpdate({_id: id}, {$set: object});
         } else {
-            await UserShoro.findOneAndUpdate({_id: object.user}, {$set: { email: object.phone, status: object.status}});
+            await UserShoro.findOneAndUpdate({_id: object.user}, {$set: {email: object.phone, status: object.status}});
             await OrganizatorShoro.findOneAndUpdate({_id: id}, {$set: object});
         }
-
+    }
 }
 
 const getOrganizatorShoroById = async (id) => {
@@ -129,6 +137,8 @@ const getOrganizatorShoroById = async (id) => {
             name: object.name,
             phone: object.phone,
             region: object.region,
+            guidRegion: object.guidRegion,
+            guid: object.guid,
             _id: object._id,
             user: object.user,
         }
@@ -144,6 +154,7 @@ const getOrganizatorShoroByName = async (phone) => {
             name: object.name,
             phone: object.phone,
             region: object.region,
+            guidRegion: object.guidRegion,
             _id: object._id,
             user: object.user,
         }
@@ -152,12 +163,12 @@ const getOrganizatorShoroByName = async (phone) => {
 }
 
 const deleteOrganizatorShoro = async (id) => {
-        for(let i=0; i<id.length; i++){
+       /* for(let i=0; i<id.length; i++){
             let object = await OrganizatorShoro.findOne({phone: id[i]})
             await UserShoro.deleteMany({_id: {$in: object.user}});
             await OrganizatorShoro.deleteMany({phone: id[i]});
         }
-
+*/
 }
 
 const getProfileOrganizatorShoro = async (id) => {
@@ -168,6 +179,8 @@ const getProfileOrganizatorShoro = async (id) => {
             name: object.name,
             phone: object.phone,
             region: object.region,
+            guidRegion: object.guidRegion,
+            guid: object.guid,
             _id: object._id,
             user: object.user,
         }

@@ -6,6 +6,8 @@ const NakladnayaNaVecherniyVozvratShoroSchema = mongoose.Schema({
     data: String,
     organizator: String,
     region: String,
+    guidRegion: String,
+    guidOrganizator: String,
     disabled: Boolean,
 }, {
     timestamps: true

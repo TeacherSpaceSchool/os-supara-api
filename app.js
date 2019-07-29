@@ -7,6 +7,7 @@ const connectDB = require('./models/index');
 const app = express();
 const usersRouter = require('./routes/users');
 const dataRouter = require('./routes/data');
+const integrate1cRouter = require('./routes/integrate1c');
 const passportEngine = require('./module/passport');
 const cors = require('cors');
 const adminRouter = require('./routes/admin');
@@ -79,6 +80,7 @@ app.set('trust proxy', true)
 app.use('/', adminRouter);
 app.use('/users', usersRouter);
 app.use('/data', dataRouter);
+app.use('/integrate', integrate1cRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
