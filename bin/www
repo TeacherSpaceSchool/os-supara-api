@@ -13,7 +13,11 @@ const fs = require('fs');
 const path = require('path');
 const options = {
     key: fs.readFileSync(path.join(__dirname, 'private.key')),
-    cert: fs.readFileSync(path.join(__dirname, 'certificate.crt'))
+    cert: fs.readFileSync(path.join(__dirname, 'certificate.crt')),
+    ca: [
+        fs.readFileSync(path.join(__dirname, 's1.crt')),
+        fs.readFileSync(path.join(__dirname, 's2.crt'))
+    ],
 };
 
 /**
