@@ -173,7 +173,7 @@ let addReserv = async () => {
 
 let start = async () => {
     await addReserv()
-    await deleteAll()
+    //await deleteAll()
     /*await addPoint()
     await addRegion()
     await addOrganizator()
