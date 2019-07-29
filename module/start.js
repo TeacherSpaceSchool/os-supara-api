@@ -3,22 +3,41 @@ const PointShoro = require('../models/pointShoro');
 const OrganizatorShoro = require('../models/organizatorShoro');
 const RealizatorShoro = require('../models/realizatorShoro');
 const UserShoro = require('../models/userShoro');
+const BlogShoro = require('../models/blogShoro');
+const CarShoro = require('../models/carShoro');
+const FaqShoro = require('../models/faqShoro');
+const NakladnayaNaPustuyTaruShoro = require('../models/nakladnayaNaPustuyTaruShoro');
+const NakladnayaNaVecherniyVozvratShoro = require('../models/nakladnayaNaVecherniyVozvratShoro');
+const NakladnayaSklad1Shoro = require('../models/nakladnayaSklad1Shoro');
+const NakladnayaSklad2Shoro = require('../models/nakladnayaSklad2Shoro');
+const OtchetOrganizatoraShoro = require('../models/otchetOrganizatoraShoro');
+const OtchetRealizatoraShoro = require('../models/otchetRealizatoraShoro');
+const PlanShoro = require('../models/planShoro');
+const PriceShoro = require('../models/priceShoro');
+const ZavSkladShoro = require('../models/zavSkladShoro');
 const path = require('path');
 const fs = require('fs');
 const app = require('../app');
 
 let deleteAll = async () => {
     try{
-        let res = await PointShoro.deleteMany()
-        console.log(res)
-        res = await RegionShoro.deleteMany()
-        console.log(res)
-        res = await OrganizatorShoro.deleteMany()
-        console.log(res)
-        res = await RealizatorShoro.deleteMany()
-        console.log(res)
-        res = await UserShoro.deleteMany()
-        console.log(res)
+        await PointShoro.deleteMany()
+        await OrganizatorShoro.deleteMany()
+        await RegionShoro.deleteMany()
+        await RealizatorShoro.deleteMany()
+        await UserShoro.deleteMany()
+        await BlogShoro.deleteMany()
+        await CarShoro.deleteMany()
+        await FaqShoro.deleteMany()
+        await NakladnayaNaPustuyTaruShoro.deleteMany()
+        await NakladnayaNaVecherniyVozvratShoro.deleteMany()
+        await NakladnayaSklad1Shoro.deleteMany()
+        await NakladnayaSklad2Shoro.deleteMany()
+        await OtchetOrganizatoraShoro.deleteMany()
+        await OtchetRealizatoraShoro.deleteMany()
+        await PlanShoro.deleteMany()
+        await PriceShoro.deleteMany()
+        await ZavSkladShoro.deleteMany()
     } catch(error) {
         console.error(error)
     }
@@ -154,7 +173,7 @@ let addReserv = async () => {
 
 let start = async () => {
     await addReserv()
-    //await deleteAll()
+    await deleteAll()
     /*await addPoint()
     await addRegion()
     await addOrganizator()

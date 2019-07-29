@@ -3,31 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="aef3c9e9-2922-42a5-aaa5-79ce22b59d1a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js" afterPath="$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js" afterPath="$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js" afterPath="$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js" afterPath="$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/organizatorShoro.js" afterPath="$PROJECT_DIR$/models/organizatorShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/otchetOrganizatoraShoro.js" afterPath="$PROJECT_DIR$/models/otchetOrganizatoraShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/otchetRealizatoraShoro.js" afterPath="$PROJECT_DIR$/models/otchetRealizatoraShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/pointShoro.js" afterPath="$PROJECT_DIR$/models/pointShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/realizatorShoro.js" afterPath="$PROJECT_DIR$/models/realizatorShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/regionShoro.js" afterPath="$PROJECT_DIR$/models/regionShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" afterPath="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" afterPath="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" afterPath="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" afterPath="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/organizatorShoro.js" afterPath="$PROJECT_DIR$/module/organizatorShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" afterPath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/planShoro.js" afterPath="$PROJECT_DIR$/module/planShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/pointShoro.js" afterPath="$PROJECT_DIR$/module/pointShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/realizatorShoro.js" afterPath="$PROJECT_DIR$/module/realizatorShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/regionShoro.js" afterPath="$PROJECT_DIR$/module/regionShoro.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/start.js" afterPath="$PROJECT_DIR$/module/start.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/statisticShoro.js" afterPath="$PROJECT_DIR$/module/statisticShoro.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="$PROJECT_DIR$/routes/data.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -44,112 +20,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="statisticShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/statisticShoro.js">
+      <file leaf-file-name="start.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/module/start.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="584" column="64" lean-forward="false" selection-start-line="584" selection-start-column="64" selection-end-line="584" selection-end-column="64" />
-              <folding>
-                <element signature="e#286#7451#0" expanded="false" />
-                <element signature="e#7498#14614#0" expanded="false" />
-                <element signature="e#14654#21794#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="data.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/routes/data.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3825">
-              <caret line="225" column="78" lean-forward="false" selection-start-line="225" selection-start-column="78" selection-end-line="225" selection-end-column="78" />
-              <folding>
-                <element signature="e#22246#22828#0" expanded="false" />
-                <element signature="e#36903#39290#0" expanded="false" />
-                <element signature="e#47882#52261#0" expanded="false" />
-                <element signature="e#52298#52947#0" expanded="false" />
-                <element signature="e#52983#54740#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="otchetRealizatoraShoro.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="847" column="0" lean-forward="false" selection-start-line="847" selection-start-column="0" selection-end-line="847" selection-end-column="0" />
-              <folding>
-                <element signature="e#4669#7276#0" expanded="false" />
-                <element signature="e#7357#10779#0" expanded="false" />
-                <element signature="e#14171#14482#0" expanded="false" />
-                <element signature="e#14792#15035#0" expanded="false" />
-                <element signature="e#15093#15207#0" expanded="false" />
-                <element signature="e#15260#15985#0" expanded="false" />
-                <element signature="e#16026#38995#0" expanded="false" />
-                <element signature="e#39032#39828#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="realizatorShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/realizatorShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="8" column="37" lean-forward="false" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
-              <folding>
-                <element signature="e#571#1098#0" expanded="false" />
-                <element signature="e#1162#5196#0" expanded="false" />
-                <element signature="e#5263#9195#0" expanded="false" />
-                <element signature="e#9242#9941#0" expanded="false" />
-                <element signature="e#9988#10683#0" expanded="false" />
-                <element signature="e#10733#11306#0" expanded="false" />
-                <element signature="e#11994#12814#0" expanded="false" />
-                <element signature="e#12860#13117#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/const.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="23" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="23" />
+            <state relative-caret-position="-2139">
+              <caret line="38" column="37" lean-forward="false" selection-start-line="38" selection-start-column="37" selection-end-line="38" selection-end-column="37" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="organizatorShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/organizatorShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="45" lean-forward="false" selection-start-line="5" selection-start-column="45" selection-end-line="12" selection-end-column="24" />
-              <folding>
-                <element signature="e#514#3648#0" expanded="false" />
-                <element signature="e#3696#4338#0" expanded="false" />
-                <element signature="e#4390#5215#0" expanded="false" />
-                <element signature="e#5763#6183#0" expanded="false" />
-                <element signature="e#6230#6490#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pointShoro.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/pointShoro.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="816">
-              <caret line="198" column="39" lean-forward="false" selection-start-line="198" selection-start-column="39" selection-end-line="205" selection-end-column="24" />
-              <folding>
-                <element signature="e#774#3566#0" expanded="false" />
-                <element signature="e#3628#6208#0" expanded="false" />
-                <element signature="e#6250#6345#0" expanded="false" />
-                <element signature="e#6391#6606#0" expanded="false" />
-                <element signature="e#6647#6817#0" expanded="false" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -262,7 +138,6 @@
         <option value="$PROJECT_DIR$/public/manifest.json" />
         <option value="$PROJECT_DIR$/admin/service-worker.js" />
         <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/module/start.js" />
         <option value="$PROJECT_DIR$/models/pointShoro.js" />
         <option value="$PROJECT_DIR$/models/realizatorShoro.js" />
         <option value="$PROJECT_DIR$/models/organizatorShoro.js" />
@@ -287,6 +162,7 @@
         <option value="$PROJECT_DIR$/module/organizatorShoro.js" />
         <option value="$PROJECT_DIR$/module/realizatorShoro.js" />
         <option value="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
+        <option value="$PROJECT_DIR$/module/start.js" />
       </list>
     </option>
   </component>
@@ -636,12 +512,12 @@
       <workItem from="1564028472054" duration="17014000" />
       <workItem from="1564152855894" duration="12086000" />
       <workItem from="1564226958355" duration="10043000" />
-      <workItem from="1564375409207" duration="444000" />
+      <workItem from="1564375409207" duration="1607000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1387199000" />
+    <option name="totallyTimeSpent" value="1388362000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -654,13 +530,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.76177657" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.85557586" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26379544" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26379544" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.23822342" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.14442413" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -857,13 +734,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/start.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="42" column="34" lean-forward="true" selection-start-line="42" selection-start-column="34" selection-end-line="48" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/routes/integrate1c.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -896,6 +766,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="22" lean-forward="false" selection-start-line="8" selection-start-column="22" selection-end-line="10" selection-end-column="28" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1083,6 +954,14 @@
             <element signature="e#16026#38995#0" expanded="false" />
             <element signature="e#39032#39828#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/start.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2139">
+          <caret line="38" column="37" lean-forward="false" selection-start-line="38" selection-start-column="37" selection-end-line="38" selection-end-column="37" />
+          <folding />
         </state>
       </provider>
     </entry>
