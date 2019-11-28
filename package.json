@@ -5,6 +5,7 @@
   "scripts": {
     "develop": "set URL=localhost&& nodemon ./bin/develop",
     "start": "set URL=37.143.13.163&& node ./bin/www",
+    "start-on-server": "URL=37.143.13.163 node ./bin/www",
     "test": "mocha --timeout 10000"
   },
   "dependencies": {
