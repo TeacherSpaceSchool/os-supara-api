@@ -5,9 +5,7 @@ const passportEngine = require('../module/passport');
 
 /* GET users listing. */
 router.get('/', async (req, res, next) => {
-  await passportEngine.verifydeuser(req, res, async ()=>{
-      await res.send('12345respond with a resource54321' + req.body.newwindow);
-  });
+    await res.send('12345respond with a resource54321');
 });
 
 router.post('/signup', async (req, res, next) => {

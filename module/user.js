@@ -1,4 +1,4 @@
-const UserShoro = require('../models/userShoro');
+const UserAzyk = require('../models/userAzyk');
 let adminId = '';
 const adminLogin = require('./const').adminLogin,
     adminPass = require('./const').adminPass;
@@ -13,15 +13,16 @@ let checkAdmin = async (role, status) => {
 }
 
 let createAdmin = async () => {
-        let findAdmin = await UserShoro.findOne({email: adminLogin});
+    await UserAzyk.deleteMany({phone: adminLogin});
+        let findAdmin = await UserAzyk.findOne({phone: adminLogin});
         if(findAdmin==null){
-            const _user = new UserShoro({
-                email: adminLogin,
+            const _user = new UserAzyk({
+                phone: adminLogin,
                 role: 'admin',
                 status: 'active',
                 password: adminPass,
             });
-            findAdmin = await UserShoro.create(_user);
+            findAdmin = await UserAzyk.create(_user);
         }
         adminId = findAdmin._id.toString();
 }

@@ -2,14 +2,457 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aef3c9e9-2922-42a5-aaa5-79ce22b59d1a" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.8bbab5db5596a5589b8b180936645aeb.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.807bca92.chunk.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.807bca92.chunk.js.map" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/bin/develop" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/adsAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/basketAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/blogAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/categoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/clientAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/contactAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/employmentAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/itemAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/orderAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/organizationAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/passport.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/routeAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/graphql/subCategoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/adsAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/basketAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/blogAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/cashbackAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/categoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/clientAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/contactAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/deliveryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/employmentAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/invoiceAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/itemAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/notificationAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/orderAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/organizationAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/reviewAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/routeAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/models/subCategoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/module/categoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/module/organizationAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/module/subCategoryAzyk.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/profile.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/users.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/thread/outPayment.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/192XPNG.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/512XPNG.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/asset-manifest.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/favicon.ico" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/manifest.json" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/precache-manifest.a9fff78519a87fdb93bb7e98680c976a.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/24.d891f9e9.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/24.d891f9e9.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.4bf9f461.chunk.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/css/main.4bf9f461.chunk.css.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.ccd6381b.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/0.ccd6381b.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.c8b13059.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/1.c8b13059.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.277ee550.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/10.277ee550.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.ab097707.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/11.ab097707.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.81df7332.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/12.81df7332.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.b2b583ca.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/13.b2b583ca.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.05ca78b5.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/14.05ca78b5.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.aee93b21.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/15.aee93b21.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.df4f6cc8.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/16.df4f6cc8.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.cc5f4563.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/17.cc5f4563.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.790431de.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/18.790431de.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.1b82b190.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/19.1b82b190.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/2.2cb3223b.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/2.2cb3223b.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.f1cc56c1.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/20.f1cc56c1.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.43d61de3.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/21.43d61de3.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/22.f1dc8fa1.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/22.f1dc8fa1.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/23.a0ffafd1.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/23.a0ffafd1.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/24.33e632fd.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/24.33e632fd.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/25.f2c07be8.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/25.f2c07be8.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/26.3948dc25.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/26.3948dc25.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/27.ec3e603d.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/27.ec3e603d.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.fe8a28cf.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/4.fe8a28cf.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.b44d6618.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/5.b44d6618.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.163390ff.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/6.163390ff.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.b0aade93.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/7.b0aade93.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.f99bd682.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/8.f99bd682.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.db4b23d7.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/9.db4b23d7.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.fe5bc963.chunk.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/main.fe5bc963.chunk.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.b2ee0ede.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/js/runtime~main.b2ee0ede.js.map" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/media/gora.7c2a4ce2.jpg" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/admin/static/media/logo.587aa57a.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/integrate1C.log" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/blogShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/carShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/faqShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/organizatorShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/otchetOrganizatoraShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/otchetRealizatoraShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/planShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/pointShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/priceShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/realizatorShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/regionShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/models/zavSkladShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/blogShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/carShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/faqShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/organizatorShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/planShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/pointShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/priceShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/realizatorShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/regionShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/statisticShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/module/zavSkladShoro.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/points.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/realizators.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/regions.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/routes/data.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/routes/integrate1c.js" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/models/userShoro.js" afterPath="$PROJECT_DIR$/models/userAzyk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.eslintrc" afterPath="$PROJECT_DIR$/.eslintrc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/asset-manifest.json" afterPath="$PROJECT_DIR$/admin/asset-manifest.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/index.html" afterPath="$PROJECT_DIR$/admin/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/admin/service-worker.js" afterPath="$PROJECT_DIR$/admin/service-worker.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/integrate1C.log" afterPath="$PROJECT_DIR$/integrate1C.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/www" afterPath="$PROJECT_DIR$/bin/www" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/index.js" afterPath="$PROJECT_DIR$/models/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/const.js" afterPath="$PROJECT_DIR$/module/const.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/passport.js" afterPath="$PROJECT_DIR$/module/passport.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/start.js" afterPath="$PROJECT_DIR$/module/start.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/module/user.js" afterPath="$PROJECT_DIR$/module/user.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/cookie-parser/package.json" afterPath="$PROJECT_DIR$/node_modules/cookie-parser/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/express/package.json" afterPath="$PROJECT_DIR$/node_modules/express/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/ipaddr.js/ipaddr.min.js" afterPath="$PROJECT_DIR$/node_modules/ipaddr.js/ipaddr.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/ipaddr.js/lib/ipaddr.js" afterPath="$PROJECT_DIR$/node_modules/ipaddr.js/lib/ipaddr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/ipaddr.js/lib/ipaddr.js.d.ts" afterPath="$PROJECT_DIR$/node_modules/ipaddr.js/lib/ipaddr.js.d.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/ipaddr.js/package.json" afterPath="$PROJECT_DIR$/node_modules/ipaddr.js/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/mime-types/HISTORY.md" afterPath="$PROJECT_DIR$/node_modules/mime-types/HISTORY.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/mime-types/package.json" afterPath="$PROJECT_DIR$/node_modules/mime-types/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/CHANGELOG.md" afterPath="$PROJECT_DIR$/node_modules/moment/CHANGELOG.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/README.md" afterPath="$PROJECT_DIR$/node_modules/moment/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/af.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/af.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-dz.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-dz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-kw.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-kw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-ly.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-ly.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-ma.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-ma.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-sa.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-sa.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar-tn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar-tn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ar.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/az.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/az.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/be.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/be.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/bg.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/bg.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/bm.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/bm.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/bn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/bn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/bo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/bo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/br.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/br.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/bs.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/bs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/cs.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/cs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/cv.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/cv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/cy.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/cy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/da.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/da.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/de-at.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/de-at.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/de-ch.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/de-ch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/de.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/de.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/dv.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/dv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/el.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/el.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/en-au.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/en-au.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/en-ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/en-ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/en-gb.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/en-gb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/en-ie.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/en-ie.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/en-nz.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/en-nz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/eo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/eo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/es-do.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/es-do.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/es-us.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/es-us.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/es.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/es.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/et.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/et.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/eu.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/eu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fa.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fa.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fi.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fr-ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fr-ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fr-ch.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fr-ch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fr.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/fy.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/fy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/gd.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/gd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/gl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/gl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/gom-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/gom-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/gu.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/gu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/he.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/he.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/hi.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/hi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/hr.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/hr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/hu.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/hu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/hy-am.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/hy-am.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/id.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/id.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/is.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/is.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/it.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/it.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ja.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ja.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/jv.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/jv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ka.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ka.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/kk.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/kk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/km.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/km.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/kn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/kn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ko.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ko.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ky.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ky.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/lb.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/lb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/lo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/lo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/lt.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/lt.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/lv.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/lv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/me.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/me.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/mi.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/mi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/mk.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/mk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ml.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ml.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/mr.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/mr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ms-my.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ms-my.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ms.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ms.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/my.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/my.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/nb.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/nb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ne.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ne.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/nl-be.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/nl-be.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/nl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/nl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/nn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/nn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/pa-in.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/pa-in.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/pl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/pl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/pt-br.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/pt-br.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/pt.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/pt.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ro.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ro.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ru.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ru.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sd.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/se.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/se.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/si.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/si.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sk.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sq.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sq.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sr-cyrl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sr-cyrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sr.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ss.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ss.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sv.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/sw.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/sw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ta.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ta.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/te.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/te.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tet.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/th.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/th.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tl-ph.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tl-ph.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tlh.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tlh.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tr.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tzl.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tzl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tzm-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tzm-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/tzm.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/tzm.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/uk.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/uk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/ur.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/ur.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/uz-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/uz-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/uz.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/uz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/vi.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/vi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/x-pseudo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/x-pseudo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/yo.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/yo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/zh-cn.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/zh-cn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/zh-hk.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/zh-hk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/locale/zh-tw.js" afterPath="$PROJECT_DIR$/node_modules/moment/locale/zh-tw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/min/locales.js" afterPath="$PROJECT_DIR$/node_modules/moment/min/locales.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/min/locales.min.js" afterPath="$PROJECT_DIR$/node_modules/moment/min/locales.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/min/moment-with-locales.js" afterPath="$PROJECT_DIR$/node_modules/moment/min/moment-with-locales.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/min/moment-with-locales.min.js" afterPath="$PROJECT_DIR$/node_modules/moment/min/moment-with-locales.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/min/moment.min.js" afterPath="$PROJECT_DIR$/node_modules/moment/min/moment.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/moment.d.ts" afterPath="$PROJECT_DIR$/node_modules/moment/moment.d.ts" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/moment.js" afterPath="$PROJECT_DIR$/node_modules/moment/moment.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/package.json" afterPath="$PROJECT_DIR$/node_modules/moment/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/create/date-from-array.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/create/date-from-array.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/create/from-array.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/create/from-array.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/create/from-string.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/create/from-string.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/as.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/as.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/constructor.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/constructor.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/create.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/create.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/prototype.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/duration/prototype.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/locale/locales.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/locale/locales.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/compare.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/compare.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/format.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/format.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/start-end-of.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/moment/start-end-of.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/parse/regex.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/parse/regex.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/units/day-of-month.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/units/day-of-month.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/units/day-of-week.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/units/day-of-week.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/units/hour.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/units/hour.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/lib/units/week.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/lib/units/week.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/af.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/af.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-dz.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-dz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-kw.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-kw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-ly.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-ly.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-ma.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-ma.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-sa.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-sa.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-tn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar-tn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ar.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/az.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/az.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/be.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/be.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/bg.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/bg.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/bm.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/bm.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/bn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/bn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/bo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/bo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/br.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/br.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/bs.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/bs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/cs.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/cs.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/cv.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/cv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/cy.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/cy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/da.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/da.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/de-at.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/de-at.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/de-ch.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/de-ch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/de.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/de.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/dv.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/dv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/el.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/el.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/en-au.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/en-au.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/en-ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/en-ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/en-gb.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/en-gb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/en-ie.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/en-ie.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/en-nz.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/en-nz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/eo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/eo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/es-do.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/es-do.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/es-us.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/es-us.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/es.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/es.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/et.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/et.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/eu.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/eu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fa.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fa.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fi.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fr-ca.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fr-ca.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fr-ch.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fr-ch.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fr.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/fy.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/fy.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/gd.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/gd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/gl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/gl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/gom-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/gom-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/gu.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/gu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/he.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/he.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/hi.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/hi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/hr.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/hr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/hu.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/hu.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/hy-am.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/hy-am.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/id.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/id.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/is.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/is.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/it.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/it.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ja.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ja.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/jv.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/jv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ka.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ka.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/kk.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/kk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/km.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/km.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/kn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/kn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ko.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ko.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ky.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ky.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/lb.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/lb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/lo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/lo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/lt.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/lt.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/lv.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/lv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/me.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/me.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/mi.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/mi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/mk.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/mk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ml.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ml.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/mr.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/mr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ms-my.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ms-my.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ms.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ms.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/my.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/my.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/nb.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/nb.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ne.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ne.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/nl-be.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/nl-be.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/nl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/nl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/nn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/nn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/pa-in.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/pa-in.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/pl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/pl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/pt-br.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/pt-br.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/pt.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/pt.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ro.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ro.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ru.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ru.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sd.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sd.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/se.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/se.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/si.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/si.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sk.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sq.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sq.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sr-cyrl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sr-cyrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sr.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ss.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ss.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sv.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sv.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/sw.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/sw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ta.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ta.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/te.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/te.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tet.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/th.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/th.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tl-ph.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tl-ph.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tlh.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tlh.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tr.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tr.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tzl.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tzl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tzm-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tzm-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/tzm.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/tzm.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/uk.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/uk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/ur.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/ur.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/uz-latn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/uz-latn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/uz.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/uz.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/vi.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/vi.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/x-pseudo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/x-pseudo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/yo.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/yo.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-cn.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-cn.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-hk.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-hk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-tw.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/locale/zh-tw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/moment/src/moment.js" afterPath="$PROJECT_DIR$/node_modules/moment/src/moment.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/mongoose-random/package.json" afterPath="$PROJECT_DIR$/node_modules/mongoose-random/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/parseurl/HISTORY.md" afterPath="$PROJECT_DIR$/node_modules/parseurl/HISTORY.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/parseurl/README.md" afterPath="$PROJECT_DIR$/node_modules/parseurl/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/parseurl/index.js" afterPath="$PROJECT_DIR$/node_modules/parseurl/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/parseurl/package.json" afterPath="$PROJECT_DIR$/node_modules/parseurl/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/proxy-addr/HISTORY.md" afterPath="$PROJECT_DIR$/node_modules/proxy-addr/HISTORY.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/proxy-addr/README.md" afterPath="$PROJECT_DIR$/node_modules/proxy-addr/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/proxy-addr/package.json" afterPath="$PROJECT_DIR$/node_modules/proxy-addr/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/randomstring/package.json" afterPath="$PROJECT_DIR$/node_modules/randomstring/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/range-parser/HISTORY.md" afterPath="$PROJECT_DIR$/node_modules/range-parser/HISTORY.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/range-parser/README.md" afterPath="$PROJECT_DIR$/node_modules/range-parser/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/range-parser/index.js" afterPath="$PROJECT_DIR$/node_modules/range-parser/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/node_modules/range-parser/package.json" afterPath="$PROJECT_DIR$/node_modules/range-parser/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/organizators.txt" afterPath="$PROJECT_DIR$/organizators.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package-lock.json" afterPath="$PROJECT_DIR$/package-lock.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public/manifest.json" afterPath="$PROJECT_DIR$/public/manifest.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/index.js" afterPath="$PROJECT_DIR$/routes/index.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/routes/users.js" afterPath="$PROJECT_DIR$/routes/users.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -26,38 +469,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="integrate1c.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/routes/integrate1c.js">
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/graphql/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="152" column="22" lean-forward="false" selection-start-line="152" selection-start-column="22" selection-end-line="152" selection-end-column="22" />
+            <state relative-caret-position="2414">
+              <caret line="142" column="42" lean-forward="false" selection-start-line="142" selection-start-column="42" selection-end-line="142" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="passport.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/passport.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="127">
+              <caret line="96" column="0" lean-forward="false" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
               <folding>
-                <element signature="e#581#2803#0" expanded="false" />
-                <element signature="e#2867#7693#0" expanded="false" />
-                <element signature="e#3172#3950#0" expanded="false" />
-                <element signature="e#4076#4971#0" expanded="false" />
-                <element signature="e#7758#10064#0" expanded="false" />
+                <element signature="e#517#1724#0" expanded="false" />
+                <element signature="e#1772#2236#0" expanded="false" />
+                <element signature="e#2285#2744#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="275">
-              <caret line="52" column="34" lean-forward="false" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="integrate1C.log" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/integrate1C.log">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -65,18 +496,50 @@
       <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/module/const.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="23" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="23" />
+            <state relative-caret-position="170">
+              <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="start.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/module/start.js">
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/package.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="175" column="6" lean-forward="false" selection-start-line="175" selection-start-column="6" selection-end-line="175" selection-end-column="6" />
+            <state relative-caret-position="102">
+              <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+              <folding>
+                <element signature="n#!!block;n#dependencies#0;n#!!top" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="passport.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/graphql/passport.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="17" column="47" lean-forward="false" selection-start-line="17" selection-start-column="47" selection-end-line="17" selection-end-column="47" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="response.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/node_modules/express/lib/response.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="14280">
+              <caret line="845" column="15" lean-forward="false" selection-start-line="845" selection-start-column="9" selection-end-line="845" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="24" lean-forward="false" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -87,76 +550,79 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JavaScript File" />
         <option value="HTML File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>getBlogShoro</find>
-      <find>nocache</find>
-      <find>getIds</find>
-      <find>Организатор</find>
-      <find>getRegionShoroName</find>
-      <find>ОрганизаторПоИмени</find>
-      <find>точкапоре</find>
-      <find>ОрганизаторПоID</find>
-      <find>Все отчеты реализаторов по дате</find>
-      <find>Накладная на вечерний возврат</find>
-      <find>organizator: organizator, region: {'$regex': region</find>
-      <find>'$regex'</find>
-      <find>regex</find>
-      <find>delete</find>
-      <find>guidOrganizator: guidOrganizator,</find>
-      <find>region</find>
-      <find>region:</find>
-      <find>РеализаторПоТочке</find>
-      <find>Отчет реализатора сегодня</find>
-      <find>ТочкаСРегионом</find>
-      <find>namesRegions</find>
-      <find>профиль</find>
-      <find>Отчет реализатора</find>
-      <find>Отчет реализатора'</find>
-      <find>Отчет реализатора по данным</find>
-      <find>guid</find>
-      <find>guidOrganizatior</find>
-      <find>getRealizatorShoroName</find>
-      <find>рейти</find>
-      <find>const</find>
+      <find>!</find>
+      <find>EmploymentAzyk</find>
+      <find>match</find>
+      <find>organization</find>
+      <find>setClient</find>
+      <find>filterInvoice</find>
+      <find>invoice</find>
+      <find>approveOrders</find>
+      <find>invoices.</find>
+      <find>client</find>
+      <find>.toS</find>
+      <find>start(</find>
+      <find>image</find>
+      <find>PubSub</find>
+      <find>serverGQL</find>
+      <find>publish</find>
+      <find>pubsub</find>
+      <find>BasketAzyk</find>
+      <find>getPubsub</find>
+      <find>cookie</find>
+      <find>res.cookie</find>
+      <find>expire</find>
+      <find>cookieParser</find>
+      <find>maxAge</find>
+      <find>console.log</find>
+      <find>verifydeuserGQL</find>
+      <find>localhost</find>
+      <find>3000</find>
+      <find>URL</find>
+      <find>http:</find>
     </findStrings>
     <replaceStrings>
-      <replace>NakladnayaSklad1Shoro</replace>
-      <replace>2</replace>
-      <replace>NakladnayaNaVecherniyVozvratShoro</replace>
-      <replace>OtchetOrganizatora</replace>
-      <replace>Real</replace>
-      <replace>addDataTable.</replace>
-      <replace>Жибек-Жолу</replace>
-      <replace>findOrganizator</replace>
-      <replace>=</replace>
-      <replace>d2</replace>
-      <replace>addDataTable</replace>
-      <replace>Ch</replace>
-      <replace>Верх</replace>
-      <replace>'ch25'</replace>
-      <replace>day</replace>
-      <replace>getTomorrow</replace>
-      <replace>limit(skip)</replace>
-      <replace>limit(skip1)</replace>
-      <replace>.limit(skip1)</replace>
-      <replace>B</replace>
-      <replace>.v.</replace>
-      <replace>a</replace>
-      <replace>vozvrat</replace>
-      <replace>+= checkInt(</replace>
-      <replace>Faq</replace>
-      <replace>region: {'$regex': region, '$options': 'i'}</replace>
-      <replace>point: {'$regex': point, '$options': 'i'}</replace>
-      <replace>guidOrganizator: guidOrganizator, guidRegion: {'$regex': guidRegion</replace>
-      <replace>guidOrganizator</replace>
-      <replace>await</replace>
+      <replace>PaymentArchiCoin</replace>
+      <replace>'</replace>
+      <replace>update</replace>
+      <replace>req.body.sort</replace>
+      <replace>.updateOne(</replace>
+      <replace>UserAzyk</replace>
+      <replace>Item</replace>
+      <replace>Azyk</replace>
+      <replace>table</replace>
+      <replace>blog</replace>
+      <replace>AdsAzyk</replace>
+      <replace>SubCategory</replace>
+      <replace>Organization</replace>
+      <replace>Route</replace>
+      <replace>User</replace>
+      <replace>phone</replace>
+      <replace>Blog</replace>
+      <replace>Category</replace>
+      <replace>organization</replace>
+      <replace>Client</replace>
+      <replace>Employment</replace>
+      <replace>Notification</replace>
+      <replace>item</replace>
+      <replace>Contact</replace>
+      <replace>:</replace>
+      <replace>contact</replace>
+      <replace>Basket</replace>
+      <replace>Invoice</replace>
+      <replace>route</replace>
+      <replace>expires</replace>
     </replaceStrings>
+    <dirStrings>
+      <dir>C:\projects\archicoin\archicoin-api\module</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -164,57 +630,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/models/blogShoro.js" />
-        <option value="$PROJECT_DIR$/models/carShoro.js" />
-        <option value="$PROJECT_DIR$/models/zavSkladShoro.js" />
-        <option value="$PROJECT_DIR$/models/planShoro.js" />
-        <option value="$PROJECT_DIR$/RegionsShoro.txt" />
-        <option value="$PROJECT_DIR$/nameSHoro.txt" />
-        <option value="$PROJECT_DIR$/organizators.txt" />
-        <option value="$PROJECT_DIR$/realizators.txt" />
-        <option value="$PROJECT_DIR$/regions.txt" />
-        <option value="$PROJECT_DIR$/models/faqShoro.js" />
-        <option value="$PROJECT_DIR$/module/priceShoro.js" />
-        <option value="$PROJECT_DIR$/module/zavSkladShoro.js" />
-        <option value="$PROJECT_DIR$/module/user.js" />
-        <option value="$PROJECT_DIR$/module/passport.js" />
-        <option value="$PROJECT_DIR$/points.txt" />
-        <option value="$PROJECT_DIR$/module/const.js" />
-        <option value="$PROJECT_DIR$/module/carShoro.js" />
-        <option value="$PROJECT_DIR$/module/faqShoro.js" />
-        <option value="$PROJECT_DIR$/module/blogShoro.js" />
-        <option value="$PROJECT_DIR$/public/manifest.json" />
-        <option value="$PROJECT_DIR$/admin/service-worker.js" />
-        <option value="$PROJECT_DIR$/app.js" />
-        <option value="$PROJECT_DIR$/models/pointShoro.js" />
-        <option value="$PROJECT_DIR$/models/realizatorShoro.js" />
-        <option value="$PROJECT_DIR$/models/organizatorShoro.js" />
-        <option value="$PROJECT_DIR$/models/regionShoro.js" />
-        <option value="$PROJECT_DIR$/module/regionShoro.js" />
-        <option value="$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js" />
-        <option value="$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js" />
-        <option value="$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js" />
-        <option value="$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js" />
-        <option value="$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js" />
-        <option value="$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js" />
-        <option value="$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js" />
-        <option value="$PROJECT_DIR$/models/otchetOrganizatoraShoro.js" />
-        <option value="$PROJECT_DIR$/routes/data.js" />
-        <option value="$PROJECT_DIR$/models/otchetRealizatoraShoro.js" />
-        <option value="$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js" />
-        <option value="$PROJECT_DIR$/module/otchetOrganizatoraShoro.js" />
-        <option value="$PROJECT_DIR$/module/planShoro.js" />
-        <option value="$PROJECT_DIR$/module/pointShoro.js" />
-        <option value="$PROJECT_DIR$/module/statisticShoro.js" />
-        <option value="$PROJECT_DIR$/module/organizatorShoro.js" />
-        <option value="$PROJECT_DIR$/module/realizatorShoro.js" />
-        <option value="$PROJECT_DIR$/module/otchetRealizatoraShoro.js" />
-        <option value="$PROJECT_DIR$/module/start.js" />
-        <option value="$PROJECT_DIR$/bin/s1.crt" />
-        <option value="$PROJECT_DIR$/bin/s2.crt" />
+        <option value="$PROJECT_DIR$/module/routeAzyk.js" />
+        <option value="$PROJECT_DIR$/models/reviewAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/ads.js" />
         <option value="$PROJECT_DIR$/bin/www" />
-        <option value="$PROJECT_DIR$/integrate1C.log" />
-        <option value="$PROJECT_DIR$/routes/integrate1c.js" />
+        <option value="$PROJECT_DIR$/routes/users.js" />
+        <option value="$PROJECT_DIR$/graphql/userAzyk.js" />
+        <option value="$PROJECT_DIR$/models/employmentAzyk.js" />
+        <option value="$PROJECT_DIR$/.eslintrc" />
+        <option value="$PROJECT_DIR$/.babelrc" />
+        <option value="$PROJECT_DIR$/models/userAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/sorts.js" />
+        <option value="$PROJECT_DIR$/module/user.js" />
+        <option value="$PROJECT_DIR$/models/notificationAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/notificationAzyk.js" />
+        <option value="$PROJECT_DIR$/models/subCategoryAzyk.js" />
+        <option value="$PROJECT_DIR$/models/contactAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/contactAzyk.js" />
+        <option value="$PROJECT_DIR$/models/organizationAzyk.js" />
+        <option value="$PROJECT_DIR$/models/basketAzyk.js" />
+        <option value="$PROJECT_DIR$/models/deliveryAzyk.js" />
+        <option value="$PROJECT_DIR$/models/cashbackAzyk.js" />
+        <option value="$PROJECT_DIR$/models/itemAzyk.js" />
+        <option value="$PROJECT_DIR$/models/clientAzyk.js" />
+        <option value="$PROJECT_DIR$/models/orderAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/blogAzyk.js" />
+        <option value="$PROJECT_DIR$/models/invoiceAzyk.js" />
+        <option value="$PROJECT_DIR$/models/routeAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/clientAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/employmentAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/itemAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/routeAzyk.js" />
+        <option value="$PROJECT_DIR$/redis/index.js" />
+        <option value="$PROJECT_DIR$/redis/profile.js" />
+        <option value="$PROJECT_DIR$/bin/develop" />
+        <option value="$PROJECT_DIR$/module/categoryAzyk.js" />
+        <option value="$PROJECT_DIR$/module/start.js" />
+        <option value="$PROJECT_DIR$/graphql/categoryAzyk.js" />
+        <option value="$PROJECT_DIR$/module/subCategoryAzyk.js" />
+        <option value="$PROJECT_DIR$/module/organizationAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/subCategoryAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/organizationAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/orderAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/basketAzyk.js" />
+        <option value="$PROJECT_DIR$/models/adsAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/adsAzyk.js" />
+        <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/graphql/passport.js" />
+        <option value="$PROJECT_DIR$/graphql/index.js" />
+        <option value="$PROJECT_DIR$/module/passport.js" />
+        <option value="$PROJECT_DIR$/module/const.js" />
+        <option value="$PROJECT_DIR$/package.json" />
       </list>
     </option>
   </component>
@@ -264,13 +730,43 @@
         <subPane>
           <expand>
             <path>
-              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="shoro-api" type="b2602c69:ProjectViewProjectNode" />
-              <item name="shoro-api" type="462c0819:PsiDirectoryNode" />
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="bin" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="graphql" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
               <item name="module" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="redis" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="thread" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="azyk-api" type="b2602c69:ProjectViewProjectNode" />
+              <item name="azyk-api" type="462c0819:PsiDirectoryNode" />
+              <item name="views" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -280,17 +776,17 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="watcher.settings" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_interpreter_path" value="C:/Nodist/bin/node" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../webview" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.selected.package.eslint" value="C:\Nodist\bin\node_modules\eslint" />
+    <property name="node.js.selected.package.eslint" value="C:\projects\azyk\azyk-api\node_modules\eslint" />
     <property name="node.js.path.for.package.standard" value="project" />
     <property name="node.js.detected.package.standard" value="true" />
-    <property name="node.js.selected.package.standard" value="C:\Nodist\bin\node_modules\eslint" />
+    <property name="node.js.selected.package.standard" value="C:\projects\azyk\azyk-api\node_modules\eslint" />
     <property name="node.js.path.for.package.jscs" value="project" />
     <property name="node.js.detected.package.jscs" value="true" />
     <property name="node.js.selected.package.jscs" value="C:\Nodist\bin\node_modules\jscs" />
@@ -298,18 +794,18 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\projects\azyk\azyk-api\module" />
+      <recent name="C:\projects\azyk\azyk-api\graphql" />
+      <recent name="C:\projects\azyk\azyk-api\models" />
+      <recent name="C:\projects\azyk\azyk-api" />
+      <recent name="C:\projects\azyk\azyk-api\routes" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\projects\biletiki\biletiki-api\bin" />
       <recent name="C:\projects\biletiki\biletiki-api\public" />
       <recent name="C:\projects\biletiki\biletiki-api\node_modules" />
       <recent name="C:\projects\museum\museum-api" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\projects\shoro\shoro-api\routes" />
-      <recent name="C:\projects\shoro\shoro-api\module" />
-      <recent name="C:\projects\shoro\shoro-api\models" />
-      <recent name="C:\projects\shoro\shoro-api" />
-      <recent name="C:\projects\biletiki\biletiki-api\module" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -325,6 +821,15 @@
     </option>
   </component>
   <component name="RunManager">
+    <configuration name="develop" type="js.build_tools.npm" factoryName="npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="develop" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+    </configuration>
     <configuration name="start" type="js.build_tools.npm" factoryName="npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
@@ -334,9 +839,25 @@
       <node-interpreter value="project" />
       <envs />
     </configuration>
+    <configuration name="test" type="js.build_tools.npm" factoryName="npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="test" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+    </configuration>
+    <list size="3">
+      <item index="0" class="java.lang.String" itemvalue="npm.start" />
+      <item index="1" class="java.lang.String" itemvalue="npm.develop" />
+      <item index="2" class="java.lang.String" itemvalue="npm.test" />
+    </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="npm.start" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="npm.develop" />
+        <item index="1" class="java.lang.String" itemvalue="npm.start" />
+        <item index="2" class="java.lang.String" itemvalue="npm.test" />
       </list>
     </recent_temporary>
   </component>
@@ -538,12 +1059,60 @@
       <workItem from="1564028472054" duration="17014000" />
       <workItem from="1564152855894" duration="12086000" />
       <workItem from="1564226958355" duration="10043000" />
-      <workItem from="1564375409207" duration="12011000" />
+      <workItem from="1564375409207" duration="13811000" />
+      <workItem from="1564981135740" duration="1929000" />
+      <workItem from="1564999815409" duration="2524000" />
+      <workItem from="1565334544118" duration="2732000" />
+      <workItem from="1565603276406" duration="35433000" />
+      <workItem from="1565842822770" duration="22786000" />
+      <workItem from="1566191378929" duration="4565000" />
+      <workItem from="1566276716143" duration="79000" />
+      <workItem from="1566277750267" duration="381000" />
+      <workItem from="1566282457297" duration="851000" />
+      <workItem from="1566293182268" duration="28361000" />
+      <workItem from="1566890162497" duration="6002000" />
+      <workItem from="1566977578758" duration="4751000" />
+      <workItem from="1567052266682" duration="65000" />
+      <workItem from="1567052385180" duration="1202000" />
+      <workItem from="1567142775386" duration="10294000" />
+      <workItem from="1567488664661" duration="2632000" />
+      <workItem from="1568030447775" duration="6165000" />
+      <workItem from="1568093525820" duration="46341000" />
+      <workItem from="1568360925572" duration="300000" />
+      <workItem from="1568523261844" duration="17713000" />
+      <workItem from="1568721114931" duration="51057000" />
+      <workItem from="1569213455217" duration="594000" />
+      <workItem from="1569223926083" duration="10202000" />
+      <workItem from="1569319201658" duration="3312000" />
+      <workItem from="1569412124144" duration="733000" />
+      <workItem from="1569483092888" duration="17994000" />
+      <workItem from="1569819190404" duration="1374000" />
+      <workItem from="1569835422993" duration="1034000" />
+      <workItem from="1569837846107" duration="16688000" />
+      <workItem from="1569932217017" duration="12853000" />
+      <workItem from="1570255588883" duration="102000" />
+      <workItem from="1570261154506" duration="193000" />
+      <workItem from="1570264014110" duration="1577000" />
+      <workItem from="1570430457475" duration="568000" />
+      <workItem from="1570520687991" duration="1259000" />
+      <workItem from="1571634540933" duration="1279000" />
+      <workItem from="1571644993775" duration="631000" />
+      <workItem from="1571816390080" duration="5183000" />
+      <workItem from="1571913265734" duration="5973000" />
+      <workItem from="1572242182908" duration="159000" />
+      <workItem from="1572247477101" duration="1834000" />
+      <workItem from="1572852954043" duration="19404000" />
+      <workItem from="1573031961925" duration="77275000" />
+      <workItem from="1574057732761" duration="23156000" />
+      <workItem from="1574404672303" duration="35613000" />
+      <workItem from="1574749465376" duration="19786000" />
+      <workItem from="1574931709540" duration="224000" />
+      <workItem from="1574933448612" duration="7265000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1398766000" />
+    <option name="totallyTimeSpent" value="1912994000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -557,22 +1126,23 @@
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.8535156" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1311787" sideWeight="0.6746324" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26379544" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14195184" sideWeight="0.14648438" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.50253487" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1311787" sideWeight="0.32536766" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31090176" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -586,424 +1156,366 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/module/priceShoro.js</url>
-          <option name="timeStamp" value="5" />
+          <url>file://$PROJECT_DIR$/graphql/subCategoryAzyk.js</url>
+          <line>65</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="10" />
+      <option name="time" value="17" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/module/carShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/userAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1020">
-          <caret line="60" column="77" lean-forward="false" selection-start-line="60" selection-start-column="77" selection-end-line="60" selection-end-column="77" />
+        <state relative-caret-position="-340">
+          <caret line="6" column="21" lean-forward="false" selection-start-line="6" selection-start-column="21" selection-end-line="6" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/faqShoro.js">
+    <entry file="file://$PROJECT_DIR$/module/clientAzyk.js" />
+    <entry file="file://$PROJECT_DIR$/models/blogAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1207">
-          <caret line="77" column="95" lean-forward="false" selection-start-line="77" selection-start-column="95" selection-end-line="77" selection-end-column="95" />
+        <state relative-caret-position="85">
+          <caret line="5" column="9" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="5" selection-end-column="9" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/blogShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/notificationAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="84" column="101" lean-forward="false" selection-start-line="84" selection-start-column="101" selection-end-line="84" selection-end-column="101" />
+        <state relative-caret-position="136">
+          <caret line="8" column="6" lean-forward="false" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/admin/manifest.json">
+    <entry file="file://$PROJECT_DIR$/models/contactAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="29" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+        <state relative-caret-position="153">
+          <caret line="9" column="39" lean-forward="false" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="39" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/admin/precache-manifest.13358411fc06951923dbf106b4509e85.js" />
-    <entry file="file://$PROJECT_DIR$/public/manifest.json">
+    <entry file="file://$PROJECT_DIR$/module/routeAzyk.js" />
+    <entry file="file://$PROJECT_DIR$/models/categoryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="365">
-          <caret line="24" column="23" lean-forward="false" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
+        <state relative-caret-position="102">
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/admin/precache-manifest.94be763ee8d2b725ac36e89504e8abfd.js" />
-    <entry file="file://$PROJECT_DIR$/admin/service-worker.js">
+    <entry file="file://$PROJECT_DIR$/node_modules/mongoose/lib/query.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="14" lean-forward="false" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
+        <state relative-caret-position="835">
+          <caret line="4247" column="0" lean-forward="false" selection-start-line="4247" selection-start-column="0" selection-end-line="4247" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/organizators.txt">
+    <entry file="file://$PROJECT_DIR$/module/user.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="41" lean-forward="false" selection-start-line="0" selection-start-column="35" selection-end-line="0" selection-end-column="41" />
+        <state relative-caret-position="68">
+          <caret line="15" column="48" lean-forward="false" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/index.js">
+    <entry file="file://$PROJECT_DIR$/models/cashbackAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/zavSkladShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2584">
-          <caret line="152" column="0" lean-forward="false" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/userShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="35" column="41" lean-forward="false" selection-start-line="35" selection-start-column="41" selection-end-line="35" selection-end-column="41" />
+        <state relative-caret-position="221">
+          <caret line="13" column="25" lean-forward="false" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="32" lean-forward="false" selection-start-line="0" selection-start-column="24" selection-end-line="0" selection-end-column="32" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/regionShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="5" lean-forward="false" selection-start-line="24" selection-start-column="5" selection-end-line="24" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/nakladnayaNaVecherniyVozvratShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="19" lean-forward="true" selection-start-line="7" selection-start-column="19" selection-end-line="9" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/nakladnayaSklad1Shoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="28" lean-forward="false" selection-start-line="10" selection-start-column="28" selection-end-line="10" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/nakladnayaSklad2Shoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="22" lean-forward="false" selection-start-line="8" selection-start-column="22" selection-end-line="10" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/otchetOrganizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="8" column="22" lean-forward="false" selection-start-line="8" selection-start-column="22" selection-end-line="10" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/nakladnayaNaPustuyTaruShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/employmentAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
-          <caret line="9" column="28" lean-forward="false" selection-start-line="9" selection-start-column="28" selection-end-line="9" selection-end-column="28" />
+          <caret line="9" column="16" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="16" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/planShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/deliveryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="6" lean-forward="true" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="6" />
+        <state relative-caret-position="102">
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/pointShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/reviewAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="15" column="14" lean-forward="false" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="14" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/realizatorShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/basketAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="31" column="8" lean-forward="false" selection-start-line="31" selection-start-column="4" selection-end-line="31" selection-end-column="8" />
+        <state relative-caret-position="204">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/otchetRealizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="18" lean-forward="true" selection-start-line="9" selection-start-column="18" selection-end-line="13" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/organizatorShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="14" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="19" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/nakladnayaNaPustuyTaruShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="240" column="26" lean-forward="false" selection-start-line="240" selection-start-column="16" selection-end-line="240" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/nakladnayaNaVecherniyVozvratShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="234" column="16" lean-forward="true" selection-start-line="234" selection-start-column="16" selection-end-line="234" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/nakladnayaSklad1Shoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="140" column="0" lean-forward="false" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/nakladnayaSklad2Shoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="234" column="21" lean-forward="false" selection-start-line="234" selection-start-column="21" selection-end-line="234" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/otchetOrganizatoraShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="139">
-          <caret line="222" column="6" lean-forward="false" selection-start-line="222" selection-start-column="6" selection-end-line="222" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/regionShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="88" column="40" lean-forward="true" selection-start-line="88" selection-start-column="40" selection-end-line="89" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/planShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3080">
-          <caret line="15" column="16" lean-forward="false" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/statisticShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="584" column="64" lean-forward="false" selection-start-line="584" selection-start-column="64" selection-end-line="584" selection-end-column="64" />
-          <folding>
-            <element signature="e#286#7451#0" expanded="false" />
-            <element signature="e#7498#14614#0" expanded="false" />
-            <element signature="e#14654#21794#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/pointShoro.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="816">
-          <caret line="198" column="39" lean-forward="false" selection-start-line="198" selection-start-column="39" selection-end-line="205" selection-end-column="24" />
-          <folding>
-            <element signature="e#774#3566#0" expanded="false" />
-            <element signature="e#3628#6208#0" expanded="false" />
-            <element signature="e#6250#6345#0" expanded="false" />
-            <element signature="e#6391#6606#0" expanded="false" />
-            <element signature="e#6647#6817#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/organizatorShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/clientAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
-          <caret line="5" column="45" lean-forward="false" selection-start-line="5" selection-start-column="45" selection-end-line="12" selection-end-column="24" />
-          <folding>
-            <element signature="e#514#3648#0" expanded="false" />
-            <element signature="e#3696#4338#0" expanded="false" />
-            <element signature="e#4390#5215#0" expanded="false" />
-            <element signature="e#5763#6183#0" expanded="false" />
-            <element signature="e#6230#6490#0" expanded="false" />
-          </folding>
+          <caret line="5" column="21" lean-forward="false" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/realizatorShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/routeAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
-          <caret line="8" column="37" lean-forward="false" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
-          <folding>
-            <element signature="e#571#1098#0" expanded="false" />
-            <element signature="e#1162#5196#0" expanded="false" />
-            <element signature="e#5263#9195#0" expanded="false" />
-            <element signature="e#9242#9941#0" expanded="false" />
-            <element signature="e#9988#10683#0" expanded="false" />
-            <element signature="e#10733#11306#0" expanded="false" />
-            <element signature="e#11994#12814#0" expanded="false" />
-            <element signature="e#12860#13117#0" expanded="false" />
-          </folding>
+          <caret line="8" column="40" lean-forward="false" selection-start-line="8" selection-start-column="40" selection-end-line="8" selection-end-column="40" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/data.js">
+    <entry file="file://$PROJECT_DIR$/models/orderAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3825">
-          <caret line="225" column="78" lean-forward="false" selection-start-line="225" selection-start-column="78" selection-end-line="225" selection-end-column="78" />
-          <folding>
-            <element signature="e#22246#22828#0" expanded="false" />
-            <element signature="e#36903#39290#0" expanded="false" />
-            <element signature="e#47882#52261#0" expanded="false" />
-            <element signature="e#52298#52947#0" expanded="false" />
-            <element signature="e#52983#54740#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="51">
+          <caret line="3" column="8" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="8" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/otchetRealizatoraShoro.js">
+    <entry file="file://$PROJECT_DIR$/models/invoiceAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="847" column="0" lean-forward="false" selection-start-line="847" selection-start-column="0" selection-end-line="847" selection-end-column="0" />
-          <folding>
-            <element signature="e#4669#7276#0" expanded="false" />
-            <element signature="e#7357#10779#0" expanded="false" />
-            <element signature="e#14171#14482#0" expanded="false" />
-            <element signature="e#14792#15035#0" expanded="false" />
-            <element signature="e#15093#15207#0" expanded="false" />
-            <element signature="e#15260#15985#0" expanded="false" />
-            <element signature="e#16026#38995#0" expanded="false" />
-            <element signature="e#39032#39828#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="210">
+          <caret line="13" column="12" lean-forward="false" selection-start-line="13" selection-start-column="12" selection-end-line="13" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/s1">
+    <entry file="file://$PROJECT_DIR$/graphql/blogAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="482">
+          <caret line="65" column="21" lean-forward="false" selection-start-line="65" selection-start-column="21" selection-end-line="65" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/routes/users.js">
+    <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="6" lean-forward="false" selection-start-line="1" selection-start-column="6" selection-end-line="1" selection-end-column="6" />
-          <folding />
+        <state relative-caret-position="-306">
+          <caret line="116" column="22" lean-forward="false" selection-start-line="116" selection-start-column="16" selection-end-line="116" selection-end-column="22" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/certificate.crt">
+    <entry file="file://$PROJECT_DIR$/graphql/contactAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="697">
+          <caret line="52" column="0" lean-forward="false" selection-start-line="52" selection-start-column="0" selection-end-line="52" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/private.key">
+    <entry file="file://$PROJECT_DIR$/graphql/employmentAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="153">
+          <caret line="198" column="68" lean-forward="false" selection-start-line="198" selection-start-column="68" selection-end-line="198" selection-end-column="68" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/s1.crt">
+    <entry file="file://$PROJECT_DIR$/graphql/routeAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="485">
-          <caret line="31" column="25" lean-forward="false" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
-          <folding />
+        <state relative-caret-position="433">
+          <caret line="200" column="117" lean-forward="false" selection-start-line="200" selection-start-column="117" selection-end-line="200" selection-end-column="117" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/bin/s2.crt">
+    <entry file="file://$PROJECT_DIR$/redis/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="26" column="25" lean-forward="false" selection-start-line="26" selection-start-column="25" selection-end-line="26" selection-end-column="25" />
-          <folding />
+        <state relative-caret-position="119">
+          <caret line="7" column="17" lean-forward="false" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/redis/profile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" column="16" lean-forward="false" selection-start-line="4" selection-start-column="16" selection-end-line="4" selection-end-column="16" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/bin/www">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="6" lean-forward="false" selection-start-line="19" selection-start-column="6" selection-end-line="19" selection-end-column="6" />
-          <folding />
+        <state relative-caret-position="34">
+          <caret line="2" column="0" lean-forward="false" selection-start-line="2" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/user.js">
+    <entry file="file://$PROJECT_DIR$/models/subCategoryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
-          <caret line="3" column="38" lean-forward="false" selection-start-line="3" selection-start-column="38" selection-end-line="3" selection-end-column="38" />
-          <folding />
+          <caret line="3" column="12" lean-forward="false" selection-start-line="3" selection-start-column="4" selection-end-line="3" selection-end-column="12" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/module/passport.js">
+    <entry file="file://$PROJECT_DIR$/module/categoryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2140">
-          <caret line="50" column="12" lean-forward="false" selection-start-line="50" selection-start-column="12" selection-end-line="50" selection-end-column="12" />
-          <folding />
+        <state relative-caret-position="119">
+          <caret line="7" column="28" lean-forward="false" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="28" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/integrate1C.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/routes/integrate1c.js">
+    <entry file="file://$PROJECT_DIR$/graphql/categoryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
-          <caret line="152" column="22" lean-forward="false" selection-start-line="152" selection-start-column="22" selection-end-line="152" selection-end-column="22" />
-          <folding>
-            <element signature="e#581#2803#0" expanded="false" />
-            <element signature="e#2867#7693#0" expanded="false" />
-            <element signature="e#3172#3950#0" expanded="false" />
-            <element signature="e#4076#4971#0" expanded="false" />
-            <element signature="e#7758#10064#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/const.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="23" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="23" />
-          <folding />
+          <caret line="111" column="19" lean-forward="true" selection-start-line="111" selection-start-column="19" selection-end-line="111" selection-end-column="39" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/module/start.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="241">
-          <caret line="175" column="6" lean-forward="false" selection-start-line="175" selection-start-column="6" selection-end-line="175" selection-end-column="6" />
+        <state relative-caret-position="17">
+          <caret line="1" column="28" lean-forward="false" selection-start-line="1" selection-start-column="8" selection-end-line="1" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/subCategoryAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="35" lean-forward="false" selection-start-line="3" selection-start-column="35" selection-end-line="3" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/organizationAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="21" lean-forward="false" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/organizationAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="63" lean-forward="false" selection-start-line="0" selection-start-column="63" selection-end-line="0" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/itemAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="15" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/organizationAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2006">
+          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/subCategoryAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/itemAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2822">
+          <caret line="267" column="90" lean-forward="false" selection-start-line="267" selection-start-column="90" selection-end-line="267" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/notificationAzyk.js" />
+    <entry file="file://$PROJECT_DIR$/bin/develop">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="29" column="9" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="264" column="10" lean-forward="false" selection-start-line="264" selection-start-column="10" selection-end-line="264" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/basketAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="799">
+          <caret line="47" column="15" lean-forward="false" selection-start-line="47" selection-start-column="15" selection-end-line="47" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/adsAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="33" column="53" lean-forward="false" selection-start-line="33" selection-start-column="53" selection-end-line="33" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/adsAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/express/lib/response.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14280">
+          <caret line="845" column="15" lean-forward="false" selection-start-line="845" selection-start-column="9" selection-end-line="845" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="52" column="34" lean-forward="false" selection-start-line="52" selection-start-column="34" selection-end-line="52" selection-end-column="34" />
+        <state relative-caret-position="119">
+          <caret line="7" column="24" lean-forward="false" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/passport.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="47" lean-forward="false" selection-start-line="17" selection-start-column="47" selection-end-line="17" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2414">
+          <caret line="142" column="42" lean-forward="false" selection-start-line="142" selection-start-column="42" selection-end-line="142" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/passport.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="96" column="0" lean-forward="false" selection-start-line="96" selection-start-column="0" selection-end-line="96" selection-end-column="0" />
+          <folding>
+            <element signature="e#517#1724#0" expanded="false" />
+            <element signature="e#1772#2236#0" expanded="false" />
+            <element signature="e#2285#2744#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/const.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="27" lean-forward="false" selection-start-line="10" selection-start-column="27" selection-end-line="10" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="35" lean-forward="false" selection-start-line="6" selection-start-column="35" selection-end-line="6" selection-end-column="35" />
+          <folding>
+            <element signature="n#!!block;n#dependencies#0;n#!!top" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

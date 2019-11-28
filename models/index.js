@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
 var connect = function() {
-        mongoose.connect('mongodb://localhost:27017/',
-        //{user: 'newmed', pass: 'nKzJDb3sFqvbxfCcqUB0pw6LwJAKIpKLkMzZ0SEx4TGGnbb2rhFlPPF82qd4eIvR996ZbSu1w8XvMN2SG4ntXw=='},
+        mongoose.connect('mongodb://localhost:27017/admin', {
+                useCreateIndex: true,
+                useNewUrlParser: true
+            },
         function (err) {
 
             if (err) {
