@@ -4,7 +4,7 @@ const app = require('../app');
 const fs = require('fs');
 const path = require('path');
 
-const urlMain = 'http://'+process.env.URL.trim(),
+const urlMain = 'http://'+process.env.URL.trim()+':3000',
     adminLogin = 'admin',
     skip = 10,
     adminPass = 'hGNSKtmSBG'

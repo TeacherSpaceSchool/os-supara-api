@@ -34,10 +34,10 @@ if (cluster.isMaster) {
      * Get port from environment and store in Express.
      */
 
-    let port = normalizePort(process.env.PORT || '80');
+    let port = normalizePort(process.env.PORT || '3000');
     app.set('port', port);
 
-    let port1 = normalizePort(process.env.PORT || '443');
+    let port1 = normalizePort(process.env.PORT || '4000');
     app1.set('port', port1);
 
     /**

@@ -20,7 +20,7 @@ const options = {
 
 start.start();
 
-let port = normalizePort(process.env.PORT || '80');
+let port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /*let port1 = normalizePort(process.env.PORT || '443');
