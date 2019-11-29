@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ClientAzykSchema = mongoose.Schema({
     name: String,
     email: String,
-    address: [String],
+    address: [[String]],
     info: String,
     reiting: Number,
     image: String,

@@ -13,7 +13,7 @@ const type = `
     name: String
     updatedAt: Date
     email: String
-    address: [String]
+    address: [[String]]
     info: String,
     reiting: Int,
     user: Status,
@@ -28,7 +28,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, image: Upload, name: String, phone: String, email: String, address: [String], info: String, newPass: String): Data
+    setClient(_id: ID!, image: Upload, name: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
