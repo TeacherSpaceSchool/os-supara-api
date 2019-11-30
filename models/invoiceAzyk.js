@@ -12,7 +12,7 @@ const InvoiceAzykSchema = mongoose.Schema({
     allPrice: Number,
     number: String,
     info: String,
-    address: String,
+    address: [String],
     paymentMethod: String,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean,

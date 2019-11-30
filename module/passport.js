@@ -133,8 +133,9 @@ const signinuser = (req, res) => {
                     role: user.role
                 };
                 const token = await jwt.sign(payload, jwtsecret); //здесь создается JWT
-                res.status(200);
-                res.cookie('jwt', token, {maxAge: 500*24*60*60*1000}).end(token);
+                await res.status(200);
+                await res.clearCookie('jwt');
+                await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000}).end(token);
             } else {
                 res.status(401);
                 res.end('Login failed',401)
@@ -183,8 +184,9 @@ const signupuser = async (req, res) => {
             role: user.role
         };
         const token = jwt.sign(payload, jwtsecret); //здесь создается JWT*/
-        res.status(200);
-        res.cookie('jwt', token, {maxAge: 500*24*60*60*1000}).end(token)
+        await res.status(200);
+        await res.clearCookie('jwt');
+        await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000}).end(token)
     } catch (err) {
         console.error(err)
         res.status(401);
@@ -219,11 +221,18 @@ const signupuserGQL = async ({password, phone}, res) => {
             role: user.role
         };
         const token = jwt.sign(payload, jwtsecret); //здесь создается JWT*/
-        res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 })
-        return {data: token}
+        await res.clearCookie('jwt');
+        await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 })
+        return {
+            role: user.role,
+            status: user.status,
+            phone: user.phone,
+            organization: user.organization,
+            _id: user._id
+        }
     } catch (err) {
         console.error(err)
-        return {data: 'Проверьте данные'}
+        return {role: 'Проверьте данные'}
     }
 }
 
@@ -239,14 +248,25 @@ const signinuserGQL = (req, res) => {
                         role: user.role
                     };
                     const token = await jwt.sign(payload, jwtsecret); //здесь создается JWT
-                    res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
-                    resolve({data: token})
+                    await res.clearCookie('jwt');
+                    await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
+                    if(!['admin', 'client'].includes(user.role)) {
+                        let employment = await EmploymentAzyk.findOne({user: user._id})
+                        user.organization = employment.organization
+                    }
+                    resolve({
+                        role: user.role,
+                        status: user.status,
+                        phone: user.phone,
+                        organization: user.organization,
+                        _id: user._id
+                    })
                 } else {
-                    resolve({data: 'Проверьте данные'})
+                    resolve({role: 'Проверьте данные'})
                 }
             } catch (err) {
                 console.error(err)
-                resolve({data: 'Проверьте данные'})
+                resolve({role: 'Проверьте данные'})
             }
         })(req, res);
     })
@@ -260,7 +280,8 @@ const createJwtGQL = async (res, user) => {
         role: user.role
     };
     const token = await jwt.sign(payload, jwtsecret); //здесь создается JWT
-    res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
+    await res.clearCookie('jwt');
+    await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
 }
 
 module.exports.createJwtGQL = createJwtGQL;

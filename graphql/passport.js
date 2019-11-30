@@ -16,6 +16,7 @@ const query = `
 
 const resolvers = {
     getStatus: async(parent, args, {user}) => {
+        console.log(user.role)
         return {
             role: user.role,
             status: user.status,
@@ -27,8 +28,8 @@ const resolvers = {
 };
 
 const mutation = `
-    signupuser(phone: String, password: String): Data
-    signinuser(phone: String!, password: String!): Data
+    signupuser(phone: String, password: String): Status
+    signinuser(phone: String!, password: String!): Status
 `;
 
 const resolversMutation = {

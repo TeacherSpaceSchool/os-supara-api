@@ -23,7 +23,7 @@ const type = `
     client: Client,
     allPrice: Int ,
     info: String,
-    address: String,
+    address: [String],
     paymentMethod: String,
     number: String,
     confirmationForwarder: Boolean,
@@ -39,7 +39,7 @@ const query = `
 `;
 
 const mutation = `
-    addOrders(info: String, paymentMethod: String, address: [String]): Data
+    addOrders(info: String, paymentMethod: String, address: [[String]]): Data
     cancelOrders(_id: [ID]!): Data
     approveOrders(invoices: [ID]!, route: ID): Data
 `;
