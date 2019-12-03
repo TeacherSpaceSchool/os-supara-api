@@ -15,7 +15,6 @@ let checkAdmin = async (role, status) => {
 let createAdmin = async () => {
     await UserAzyk.deleteMany({phone: adminLogin});
         let findAdmin = await UserAzyk.findOne({phone: adminLogin});
-        console.log(await UserAzyk.find({role: 'admin'}))
         if(!findAdmin){
             const _user = new UserAzyk({
                 phone: adminLogin,

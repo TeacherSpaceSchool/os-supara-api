@@ -48,7 +48,8 @@ const resolvers = {
                     subCategory: subCategory
                 })
                     .populate('subCategory')
-                    .populate({ path: 'organization', match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
+                    .populate({ path: 'organization',
+                        match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -113,7 +114,9 @@ const resolvers = {
                     subCategory: subCategory,
                 })
                     .populate('subCategory')
-                    .populate({ path: 'organization', match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter, status: 'active'} })
+                    .populate({ path: 'organization',
+                        match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter,
+                            status: 'active'} })
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -128,7 +131,8 @@ const resolvers = {
                     status: 'active',
                 })
                     .populate('subCategory')
-                    .populate({ path: 'organization', match: {status: 'active', name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
+                    .populate({ path: 'organization', match: {status: 'active',
+                        name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
                     .sort(sort)
                 items = items.filter(
                     item => (
