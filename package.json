@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "develop": "set URL=localhost&& nodemon ./bin/develop",
-    "start": "set URL=localhost&& node ./bin/www",
-    "start-on-server": "URL=azyk.store node ./bin/www",
+    "develop": "set URL=http://localhost&& nodemon ./bin/develop",
+    "start": "set URL=http://localhost&& node ./bin/www",
+    "start-on-server": "URL=https://azyk.store node ./bin/www",
     "test": "mocha --timeout 10000"
   },
   "dependencies": {

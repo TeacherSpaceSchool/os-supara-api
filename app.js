@@ -72,7 +72,7 @@ app.use(formData.stream());
 app.use(formData.union());*/
 app.set('trust proxy', true)
 const corsOptions = {
-    origin: `http://${process.env.URL.trim()}`,
+    origin: process.env.URL.trim(),
     credentials: true
 };
 app.use(cors(corsOptions));
