@@ -44,7 +44,7 @@ const resolvers = {
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
-                        ((client.address.filter(address=>address.toLowerCase()).includes(search.toLowerCase())).length>0)||
+                        ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
             )
@@ -61,7 +61,7 @@ const resolvers = {
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
-                        ((client.address.filter(address=>address.toLowerCase()).includes(search.toLowerCase())).length>0)||
+                        ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
             )

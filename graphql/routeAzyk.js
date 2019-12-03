@@ -197,7 +197,7 @@ const resolvers = {
         if(route&&
             (
                 user.role==='admin'||
-                (user.role==='client'&&route.employment.user._id.toString()===user._id.toString())||
+                (user.role==='экспедитор'&&route.employment.user._id.toString()===user._id.toString())||
                 (['организация', 'менеджер'].includes(user.role)&&route.employment.organization._id.toString()===user.organization.toString())
             )
         )
@@ -295,21 +295,25 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 if(objects[i].status==='создан'){
                     for(let ii=0; ii<objects[i].invoices.length; ii++){
-                        let cancelInvoice = await InvoiceAzyk.find(objects[i].invoices[ii]);
-                        await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка'});
+                        await OrderAzyk.updateMany({_id: {$in: objects[i].invoices[ii].orders}}, {status: 'обработка'});
                     }
                     await RouteAzyk.deleteMany({_id: objects[i]._id})
                 }
             }
         }
         else if(['организация', 'менеджер'].includes(user.role)){
-            let employment = await EmploymentAzyk.findOne({user: user._id})
-            let objects = await RouteAzyk.find({_id: {$in: _id}, organization: employment.organization})
+            let objects = await RouteAzyk.find({_id: {$in: _id}})
+                .populate('invoices')
+                .populate({
+                    path: 'employment',
+                    match: {
+                        organization: user.organization
+                    }
+                })
             for(let i=0; i<objects.length; i++){
                 if(objects[i].status==='создан') {
                     for(let ii=0; ii<objects[i].invoices.length; ii++){
-                        let cancelInvoice = await InvoiceAzyk.find(objects[i].invoices[ii]);
-                        await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка'});
+                        await OrderAzyk.updateMany({_id: {$in: objects[i].invoices[ii].orders}}, {status: 'обработка'});
                     }
                     await RouteAzyk.deleteMany({_id: objects[i]._id})
                 }

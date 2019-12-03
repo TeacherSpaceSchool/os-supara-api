@@ -188,22 +188,24 @@ const resolvers = {
         }
         return sort
     },
-    filterItem: async() => {
+    filterItem: async(parent, ctx, {user}) => {
         let filter = [
             {
                 name: 'Все',
                 value: ''
             }
         ]
-        let organizations = await OrganizationAzyk.find().sort('name')
-        for(let i = 0; i<organizations.length; i++){
-            filter = [
-                ... filter,
-                {
-                    name: organizations[i].name,
-                    value: organizations[i].name
-                }
-            ]
+        if(!['экспедитор', 'организация', 'менеджер'].includes(user.role)){
+            let organizations = await OrganizationAzyk.find().sort('name')
+            for(let i = 0; i<organizations.length; i++){
+                filter = [
+                    ... filter,
+                    {
+                        name: organizations[i].name,
+                        value: organizations[i].name
+                    }
+                ]
+            }
         }
         return filter
     },
@@ -256,9 +258,9 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     onoffItem: async(parent, { _id }, {user}) => {
-        if(user.role==='admin'){
-            let objects = await ItemAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
+        let objects = await ItemAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(user.role==='admin'|| (['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
                 objects[i].save()
             }

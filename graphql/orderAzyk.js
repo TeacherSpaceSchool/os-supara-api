@@ -75,7 +75,7 @@ const resolvers = {
                         invoice.orders.length>0&&
                         ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
@@ -107,7 +107,7 @@ const resolvers = {
                     invoice.orders.length>0&&(
                         (invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
@@ -139,7 +139,7 @@ const resolvers = {
                     (
                         (invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
