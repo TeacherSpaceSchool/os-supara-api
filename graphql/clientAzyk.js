@@ -20,6 +20,9 @@ const type = `
     reiting: Int
     user: Status
     type: String
+    patent: String
+    passport: String
+    certificate: String
   }
 `;
 
@@ -31,7 +34,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, birthday: Date, image: Upload, name: String, type: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -122,7 +125,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, birthday, city}, {user, res}) => {
+    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, birthday, city, patent, passport, certificate}, {user, res}) => {
         if(user.role==='admin'||_id.toString()===user._id.toString()) {
             let object = await ClientAzyk.findOne({user: _id})
             if (image) {
@@ -130,6 +133,27 @@ const resolversMutation = {
                 await deleteFile(object.image)
                 filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
+            }
+            if (patent) {
+                let {stream, filename} = await patent;
+                if(object.patent)
+                    await deleteFile(object.patent)
+                filename = await saveFile(stream, filename)
+                object.patent = urlMain + filename
+            }
+            if (passport) {
+                let {stream, filename} = await passport;
+                if(object.passport)
+                    await deleteFile(object.passport)
+                filename = await saveFile(stream, filename)
+                object.passport = urlMain + filename
+            }
+            if (certificate) {
+                let {stream, filename} = await certificate;
+                if(object.certificate)
+                    await deleteFile(object.certificate)
+                filename = await saveFile(stream, filename)
+                object.certificate = urlMain + filename
             }
             if(name) object.name = name
             if(email) object.email = email
