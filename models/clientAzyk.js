@@ -7,6 +7,7 @@ const ClientAzykSchema = mongoose.Schema({
     info: String,
     reiting: Number,
     image: String,
+    city: String,
     birthday: Date,
     user: {
         type: mongoose.Schema.Types.ObjectId,

@@ -14,6 +14,7 @@ const type = `
     updatedAt: Date
     birthday: Date
     email: String
+    city: String
     address: [[String]]
     info: String,
     reiting: Int,
@@ -29,7 +30,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, birthday: Date, image: Upload, name: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, image: Upload, name: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -45,6 +46,7 @@ const resolvers = {
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
+                        (client.city.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -62,6 +64,7 @@ const resolvers = {
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
+                        (client.city.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -113,7 +116,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, birthday}, {user, res}) => {
+    setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, birthday, city}, {user, res}) => {
         if(user.role==='admin'||_id.toString()===user._id.toString()) {
             let object = await ClientAzyk.findOne({user: _id})
             if (image) {
@@ -127,6 +130,7 @@ const resolversMutation = {
             if(address) object.address = address
             if(info) object.info = info
             if(birthday) object.birthday = birthday
+            if(city) object.city = city
 
 
             if(newPass||phone){
