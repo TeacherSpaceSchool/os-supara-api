@@ -12,6 +12,7 @@ const type = `
     image: String
     name: String
     updatedAt: Date
+    birthday: Date
     email: String
     address: [[String]]
     info: String,
@@ -28,7 +29,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, image: Upload, name: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, image: Upload, name: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -112,7 +113,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    setClient: async(parent, {_id, image, name, email, address, info, newPass, phone}, {user, res}) => {
+    setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, birthday}, {user, res}) => {
         if(user.role==='admin'||_id.toString()===user._id.toString()) {
             let object = await ClientAzyk.findOne({user: _id})
             if (image) {
@@ -125,6 +126,8 @@ const resolversMutation = {
             if(email) object.email = email
             if(address) object.address = address
             if(info) object.info = info
+            if(birthday) object.birthday = birthday
+
 
             if(newPass||phone){
                 let objectUser = await UserAzyk.findById(object.user)
