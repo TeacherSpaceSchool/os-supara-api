@@ -9,7 +9,7 @@ const type = `
     category: Category
     name: String
     status: String
-    updatedAt: Date
+    createdAt: Date
   }
 `;
 

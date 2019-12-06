@@ -14,6 +14,7 @@ const InvoiceAzykSchema = mongoose.Schema({
     info: String,
     address: [String],
     paymentMethod: String,
+    dateDelivery: Date,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean,
 }, {

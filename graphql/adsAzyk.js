@@ -7,7 +7,7 @@ const type = `
     image: String
     url: String
     title: String
-    updatedAt: Date
+    createdAt: Date
   }
 `;
 
@@ -42,7 +42,7 @@ const resolvers = {
             },
             {
                 name: 'Дата',
-                field: '-updatedAt'
+                field: '-createdAt'
             },
         ]
     },

@@ -7,7 +7,7 @@ const indexGQL = require('./index');
 const type = `
   type Basket {
     _id: ID
-    updatedAt: Date
+    createdAt: Date
     item: Item
     count: Int,
     client: Client

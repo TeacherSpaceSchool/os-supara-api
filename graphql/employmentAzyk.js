@@ -7,7 +7,7 @@ const type = `
   type Employment {
     _id: ID
     name: String
-    updatedAt: Date
+    createdAt: Date
     email: String
     user: Status,
     organization: Organization,
@@ -109,7 +109,7 @@ const resolvers = {
                 },
                 {
                     name: 'Дата',
-                    field: 'updatedAt'
+                    field: 'createdAt'
                 }
             ]
         }

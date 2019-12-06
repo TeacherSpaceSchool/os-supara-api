@@ -11,14 +11,15 @@ const type = `
     _id: ID
     image: String
     name: String
-    updatedAt: Date
+    createdAt: Date
     birthday: Date
     email: String
     city: String
     address: [[String]]
-    info: String,
-    reiting: Int,
-    user: Status,
+    info: String
+    reiting: Int
+    user: Status
+    type: String
   }
 `;
 
@@ -30,7 +31,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, birthday: Date, image: Upload, name: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, image: Upload, name: String, type: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -47,6 +48,7 @@ const resolvers = {
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
                         (client.city.toLowerCase()).includes(search.toLowerCase())||
+                        (client.type.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -66,6 +68,7 @@ const resolvers = {
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
                         (client.city.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
+                        (client.type.toLowerCase()).includes(search.toLowerCase())||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
             )
@@ -73,6 +76,9 @@ const resolvers = {
         }
     },
     client: async(parent, {_id}) => {
+        console.log(await ClientAzyk.findOne({
+            user: _id
+        }))
         return await ClientAzyk.findOne({
                 user: _id
             }).populate({ path: 'user'})
@@ -88,7 +94,7 @@ const resolvers = {
                 },
                 {
                     name: 'Дата',
-                    field: 'updatedAt'
+                    field: 'createdAt'
                 }
             ]
         }
@@ -116,7 +122,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, birthday, city}, {user, res}) => {
+    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, birthday, city}, {user, res}) => {
         if(user.role==='admin'||_id.toString()===user._id.toString()) {
             let object = await ClientAzyk.findOne({user: _id})
             if (image) {
@@ -131,6 +137,7 @@ const resolversMutation = {
             if(info) object.info = info
             if(birthday) object.birthday = birthday
             if(city) object.city = city
+            if(type) object.type = type
 
 
             if(newPass||phone){

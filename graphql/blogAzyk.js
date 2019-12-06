@@ -7,7 +7,7 @@ const type = `
     image: String
     text: String
     title: String
-    updatedAt: Date
+    createdAt: Date
   }
 `;
 
@@ -37,7 +37,7 @@ const resolvers = {
             },
             {
                 name: 'Дата',
-                field: '-updatedAt'
+                field: '-createdAt'
             },
         ]
     },

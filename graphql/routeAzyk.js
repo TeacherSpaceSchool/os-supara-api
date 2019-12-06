@@ -8,7 +8,7 @@ const randomstring = require('randomstring');
 const type = `
   type Route {
     _id: ID
-    updatedAt: Date
+    createdAt: Date
     invoices: [Invoice]
     employment: Employment
     status: String
@@ -208,7 +208,7 @@ const resolvers = {
         let sort = [
             {
                 name: 'Дата',
-                field: 'updatedAt'
+                field: 'createdAt'
             },
             {
                 name: 'Статус',

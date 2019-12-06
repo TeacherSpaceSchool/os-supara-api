@@ -9,7 +9,7 @@ const type = `
     image: String
     name: String
     status: String
-    updatedAt: Date
+    createdAt: Date
   }
 `;
 

@@ -8,7 +8,7 @@ const { getSubCategoryUndefinedId } = require('../module/subCategoryAzyk');
 const type = `
   type Organization {
     _id: ID
-    updatedAt: Date
+    createdAt: Date
     name: String
     address: [String]
     email: [String]

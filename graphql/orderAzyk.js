@@ -9,7 +9,7 @@ const randomstring = require('randomstring');
 const type = `
   type Order {
     _id: ID
-    updatedAt: Date
+    createdAt: Date
     item: Item,
     client: Client,
     count: Int,
@@ -18,7 +18,7 @@ const type = `
   }
   type Invoice {
     _id: ID
-    updatedAt: Date
+    createdAt: Date
     orders: [Order],
     client: Client,
     allPrice: Int ,
@@ -28,6 +28,7 @@ const type = `
     number: String,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean
+    dateDelivery: Date
   }
 `;
 
@@ -172,7 +173,7 @@ const resolvers = {
         let sort = [
             {
                 name: 'Дата',
-                field: 'updatedAt'
+                field: 'createdAt'
             },
             {
                 name: 'Статус',
@@ -288,6 +289,7 @@ const resolversMutation = {
                 if(invoices[i].confirmationForwarder) {
                     invoices[i].orders = invoices[i].orders.map(element=>element._id)
                     await OrderAzyk.updateMany({_id: {$in: invoices[i].orders}}, {status: 'выполнен'})
+                    await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
                 }
             }
             else if(['менеджер', 'организация'].includes(user.role)){
@@ -296,6 +298,7 @@ const resolversMutation = {
                     if(invoices[i].confirmationClient) {
                         invoices[i].orders = invoices[i].orders.map(element=>element._id)
                         await OrderAzyk.updateMany({_id: {$in: invoices[i].orders}}, {status: 'выполнен'})
+                        await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
                     }
                 }
             }
@@ -304,6 +307,7 @@ const resolversMutation = {
                 invoices[i].confirmationClient = true
                 invoices[i].orders = invoices[i].orders.map(element=>element._id)
                 await OrderAzyk.updateMany({_id: {$in: invoices[i].orders}}, {status: 'выполнен'})
+                await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
             }
             invoices[i].save();
         }

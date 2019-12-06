@@ -8,7 +8,7 @@ const type = `
     _id: ID
     favorite: [ID]
     basket: [ID]
-    updatedAt: Date
+    createdAt: Date
     stock: Int
     name: String
     info: String
@@ -154,7 +154,7 @@ const resolvers = {
        })
            .populate('subCategory')
            .populate({ path: 'organization', match: {name: {'$regex': search, '$options': 'i'}} })
-           .sort('-updatedAt')
+           .sort('-createdAt')
         items = items.filter(item => (item.organization))
         return items
     },
