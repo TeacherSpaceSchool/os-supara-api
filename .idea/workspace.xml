@@ -3,19 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="aef3c9e9-2922-42a5-aaa5-79ce22b59d1a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/adsAzyk.js" afterPath="$PROJECT_DIR$/graphql/adsAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/basketAzyk.js" afterPath="$PROJECT_DIR$/graphql/basketAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/blogAzyk.js" afterPath="$PROJECT_DIR$/graphql/blogAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/categoryAzyk.js" afterPath="$PROJECT_DIR$/graphql/categoryAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/clientAzyk.js" afterPath="$PROJECT_DIR$/graphql/clientAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/employmentAzyk.js" afterPath="$PROJECT_DIR$/graphql/employmentAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/itemAzyk.js" afterPath="$PROJECT_DIR$/graphql/itemAzyk.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/orderAzyk.js" afterPath="$PROJECT_DIR$/graphql/orderAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/organizationAzyk.js" afterPath="$PROJECT_DIR$/graphql/organizationAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/routeAzyk.js" afterPath="$PROJECT_DIR$/graphql/routeAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/subCategoryAzyk.js" afterPath="$PROJECT_DIR$/graphql/subCategoryAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/clientAzyk.js" afterPath="$PROJECT_DIR$/models/clientAzyk.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/invoiceAzyk.js" afterPath="$PROJECT_DIR$/models/invoiceAzyk.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -32,16 +20,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="itemAzyk.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/graphql/itemAzyk.js">
+      <file leaf-file-name="orderAzyk.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="190" column="41" lean-forward="false" selection-start-line="190" selection-start-column="41" selection-end-line="190" selection-end-column="41" />
+            <state relative-caret-position="138">
+              <caret line="286" column="0" lean-forward="false" selection-start-line="286" selection-start-column="0" selection-end-line="286" selection-end-column="0" />
               <folding>
-                <element signature="e#1352#5816#0" expanded="false" />
-                <element signature="e#5868#6339#0" expanded="false" />
-                <element signature="e#6375#6554#0" expanded="false" />
-                <element signature="e#6600#7047#0" expanded="false" />
+                <element signature="e#1370#7519#0" expanded="false" />
+                <element signature="e#7622#10250#0" expanded="false" />
+                <element signature="e#10302#10760#0" expanded="false" />
+                <element signature="e#11376#13801#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -52,46 +40,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="272">
               <caret line="16" column="16" lean-forward="false" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="orderAzyk.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="155">
-              <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="adsAzyk.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/graphql/adsAzyk.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="132">
-              <caret line="8" column="17" lean-forward="false" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="basketAzyk.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/graphql/basketAzyk.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="46" lean-forward="false" selection-start-line="0" selection-start-column="46" selection-end-line="0" selection-end-column="46" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="blogAzyk.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/graphql/blogAzyk.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="65" column="21" lean-forward="false" selection-start-line="65" selection-start-column="21" selection-end-line="65" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -109,8 +57,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>publish</find>
-      <find>pubsub</find>
       <find>BasketAzyk</find>
       <find>getPubsub</find>
       <find>cookie</find>
@@ -138,7 +84,9 @@
       <find>address.toLowerCase</find>
       <find>type</find>
       <find>update</find>
+      <find>addBasket</find>
       <find>updatedAt</find>
+      <find>OrderAzyk</find>
     </findStrings>
     <replaceStrings>
       <replace>'</replace>
@@ -231,8 +179,8 @@
         <option value="$PROJECT_DIR$/models/clientAzyk.js" />
         <option value="$PROJECT_DIR$/graphql/clientAzyk.js" />
         <option value="$PROJECT_DIR$/models/invoiceAzyk.js" />
-        <option value="$PROJECT_DIR$/graphql/orderAzyk.js" />
         <option value="$PROJECT_DIR$/graphql/adsAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/orderAzyk.js" />
       </list>
     </option>
   </component>
@@ -676,12 +624,12 @@
       <workItem from="1575453325404" duration="103000" />
       <workItem from="1575454610889" duration="105000" />
       <workItem from="1575456518629" duration="8431000" />
-      <workItem from="1575621397444" duration="5538000" />
+      <workItem from="1575621397444" duration="9911000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1974725000" />
+    <option name="totallyTimeSpent" value="1979098000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -694,16 +642,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10836502" sideWeight="0.68301225" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10836502" sideWeight="0.6819853" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.50253487" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10836502" sideWeight="0.31698775" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10836502" sideWeight="0.3180147" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23149395" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23149395" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -913,13 +862,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/graphql/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2414">
-          <caret line="142" column="42" lean-forward="false" selection-start-line="142" selection-start-column="42" selection-end-line="142" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/graphql/passport.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
@@ -1029,33 +971,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="80" column="10" lean-forward="false" selection-start-line="80" selection-start-column="10" selection-end-line="80" selection-end-column="10" />
-          <folding>
-            <element signature="e#3931#4318#0" expanded="false" />
-            <element signature="e#4368#4851#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/invoiceAzyk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="16" lean-forward="false" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="155">
-          <caret line="20" column="13" lean-forward="false" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/graphql/itemAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="799">
@@ -1093,5 +1008,45 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="21" column="10" lean-forward="false" selection-start-line="20" selection-start-column="10" selection-end-line="21" selection-end-column="10" />
+          <folding>
+            <element signature="e#3931#4318#0" expanded="false" />
+            <element signature="e#4368#4851#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1965">
+          <caret line="129" column="20" lean-forward="false" selection-start-line="129" selection-start-column="11" selection-end-line="129" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/invoiceAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="16" lean-forward="false" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="286" column="0" lean-forward="false" selection-start-line="286" selection-start-column="0" selection-end-line="286" selection-end-column="0" />
+          <folding>
+            <element signature="e#1370#7519#0" expanded="false" />
+            <element signature="e#7622#10250#0" expanded="false" />
+            <element signature="e#10302#10760#0" expanded="false" />
+            <element signature="e#11376#13801#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
-</project
+</project>

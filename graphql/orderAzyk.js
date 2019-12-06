@@ -30,6 +30,12 @@ const type = `
     confirmationClient: Boolean
     dateDelivery: Date
   }
+  input OrderInput {
+    _id: ID
+    count: Int,
+    allPrice: Int,
+    status: String
+  }
 `;
 
 const query = `
@@ -41,6 +47,7 @@ const query = `
 
 const mutation = `
     addOrders(info: String, paymentMethod: String, address: [[String]]): Data
+    setOrder(orders: [OrderInput], invoice: ID): Data
     cancelOrders(_id: [ID]!): Data
     approveOrders(invoices: [ID]!, route: ID): Data
 `;
@@ -273,6 +280,17 @@ const resolversMutation = {
                 ||['менеджер', 'организация'].includes(user.role)&&['обработка', 'принят'].includes(orders[0].status)
                 ||user.role==='admin')
                 await OrderAzyk.update({_id: {$in: _id}}, {status: 'отмена'});
+        }
+        return {data: 'OK'};
+    },
+    setOrder: async(parent, {orders, invoice}, {user}) => {
+        if(orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client'].includes(user.role))){
+            let allPrice = 0
+            for(let i=0; i<orders.length;i++){
+                await OrderAzyk.update({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});
+                allPrice += orders[i].allPrice
+            }
+            await InvoiceAzyk.update({_id: invoice}, {allPrice: allPrice});
         }
         return {data: 'OK'};
     },
