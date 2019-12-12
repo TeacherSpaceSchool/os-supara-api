@@ -37,6 +37,5 @@ module.exports.reductionToUser = async() => {
 }
 
 module.exports.createAdmin = createAdmin;
-module.exports.createAdmin = createAdmin;
 module.exports.getAdminId = getAdminId;
 module.exports.checkAdmin = checkAdmin;
