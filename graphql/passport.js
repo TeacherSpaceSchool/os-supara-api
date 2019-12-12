@@ -4,7 +4,7 @@ const type = `
   type Status {
     role: String
     status: String
-    phone: String
+    login: String
     organization: ID
     _id: ID
   }
@@ -19,7 +19,7 @@ const resolvers = {
         return {
             role: user.role,
             status: user.status,
-            phone: user.phone,
+            login: user.login,
             organization: user.organization,
             _id: user._id
         }
@@ -27,16 +27,16 @@ const resolvers = {
 };
 
 const mutation = `
-    signupuser(phone: String, password: String): Status
-    signinuser(phone: String!, password: String!): Status
+    signupuser(login: String, password: String): Status
+    signinuser(login: String!, password: String!): Status
 `;
 
 const resolversMutation = {
-    signupuser: async(parent, { phone, password}, {res}) => {
-        return await signupuserGQL({ phone: phone, password: password }, res);
+    signupuser: async(parent, { login, password}, {res}) => {
+        return await signupuserGQL({ login: login, password: password }, res);
     },
-    signinuser: async(parent, { phone, password}, {req, res}) => {
-        return await signinuserGQL({ ...req, query: {phone: phone, password: password}}, res);
+    signinuser: async(parent, { login, password}, {req, res}) => {
+        return await signinuserGQL({ ...req, query: {login: login, password: password}}, res);
     },
 };
 

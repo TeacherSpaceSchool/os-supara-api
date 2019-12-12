@@ -38,11 +38,13 @@ const resolvers = {
             })
             .populate({
                 path: 'item',
-                match: {status: 'active'}
+                match: {status: 'active'},
+                populate : [
+                    { path : 'organization'}
+                ]
             })
             .sort('-createdAt')
-        baskets = baskets.filter(basket => (basket.client))
-        baskets = baskets.filter(basket => (basket.item))
+        baskets = baskets.filter(basket => (basket.client&&basket.item))
         return baskets
     },
     countBasket: async(parent, ctx, {user}) => {

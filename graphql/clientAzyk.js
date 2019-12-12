@@ -16,6 +16,7 @@ const type = `
     email: String
     city: String
     address: [[String]]
+    phone: [String]
     info: String
     reiting: Int
     user: Status
@@ -34,7 +35,7 @@ const query = `
 `;
 
 const mutation = `
-    setClient(_id: ID!, birthday: Date, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: [String], login: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -46,11 +47,11 @@ const resolvers = {
             clients = clients.filter(
                 client =>
                     client.user&&(
-                        (client.user.phone.toLowerCase()).includes(search.toLowerCase())||
+                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
-                        (client.city.toLowerCase()).includes(search.toLowerCase())||
+                        (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
                         (client.type.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
@@ -61,20 +62,20 @@ const resolvers = {
             let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
             clients = await ClientAzyk.find().populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).sort(sort)
-            clients = clients.filter(client => client.user)
+           clients = clients.filter(client => client.user)
             clients = clients.filter(
-                client =>
-                    client.user&&(
-                        (client.user.phone.toLowerCase()).includes(search.toLowerCase())||
-                        (client.user.status.toLowerCase()).includes(search.toLowerCase())||
-                        (client.name.toLowerCase()).includes(search.toLowerCase())||
-                        (client.email.toLowerCase()).includes(search.toLowerCase())||
-                        (client.city.toLowerCase()).includes(search.toLowerCase())||
-                        ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
-                        (client.type.toLowerCase()).includes(search.toLowerCase())||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
+                    client =>
+                        client.user && (
+                            ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                            (client.user.status.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.email.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase())) ||
+                            ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                            (client.type.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.info.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
             return clients
         }
     },
@@ -125,7 +126,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, birthday, city, patent, passport, certificate}, {user, res}) => {
+    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
         if(user.role==='admin'||_id.toString()===user._id.toString()) {
             let object = await ClientAzyk.findOne({user: _id})
             if (image) {
@@ -162,12 +163,12 @@ const resolversMutation = {
             if(birthday) object.birthday = birthday
             if(city) object.city = city
             if(type) object.type = type
+            if(phone) object.phone = phone
 
-
-            if(newPass||phone){
+            if(newPass||login){
                 let objectUser = await UserAzyk.findById(object.user)
                 if(newPass)objectUser.password = newPass
-                if(phone)objectUser.phone = phone
+                if(login)objectUser.login = login
                 objectUser.save()
                 if(objectUser._id.toString()===user._id.toString())
                     await createJwtGQL(res, objectUser)

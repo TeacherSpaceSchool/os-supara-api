@@ -10,6 +10,7 @@ const InvoiceAzykSchema = mongoose.Schema({
         ref: 'ClientAzyk'
     },
     allPrice: Number,
+    usedBonus: Number,
     number: String,
     info: String,
     address: [String],

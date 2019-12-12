@@ -11,6 +11,8 @@ const EmploymentAzyk = require('./employmentAzyk');
 const ItemAzyk = require('./itemAzyk');
 const BasketAzyk = require('./basketAzyk');
 const OrderAzyk = require('./orderAzyk');
+const BonusAzyk = require('./bonusAzyk');
+const BonusClientAzyk = require('./bonusClientAzyk');
 const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
 const { verifydeuserGQL } = require('../module/passport');
@@ -47,6 +49,8 @@ const typeDefs = gql`
     ${BasketAzyk.type}
     ${OrderAzyk.type}
     ${RouteAzyk.type}
+    ${BonusAzyk.type}
+    ${BonusClientAzyk.type}
     type Mutation {
         ${AdsAzyk.mutation}
         ${ClientAzyk.mutation}
@@ -61,6 +65,8 @@ const typeDefs = gql`
         ${BasketAzyk.mutation}
         ${OrderAzyk.mutation}
         ${RouteAzyk.mutation}
+        ${BonusAzyk.mutation}
+        ${BonusClientAzyk.mutation}
     }
     type Query {
         ${ClientAzyk.query}
@@ -76,6 +82,8 @@ const typeDefs = gql`
         ${BasketAzyk.query}
         ${OrderAzyk.query}
         ${RouteAzyk.query}
+        ${BonusAzyk.query}
+        ${BonusClientAzyk.query}
     }
     type Subscription {
         ${OrderAzyk.subscription}
@@ -114,6 +122,8 @@ const resolvers = {
         ...BasketAzyk.resolvers,
         ...OrderAzyk.resolvers,
         ...RouteAzyk.resolvers,
+        ...BonusAzyk.resolvers,
+        ...BonusClientAzyk.resolvers,
     },
     Mutation: {
         ...ClientAzyk.resolversMutation,
@@ -129,6 +139,8 @@ const resolvers = {
         ...BasketAzyk.resolversMutation,
         ...OrderAzyk.resolversMutation,
         ...RouteAzyk.resolversMutation,
+        ...BonusAzyk.resolversMutation,
+        ...BonusClientAzyk.resolversMutation,
     },
     Subscription: {
         ...OrderAzyk.resolversSubscription,

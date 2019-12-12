@@ -12,12 +12,12 @@ const jwt = require('jsonwebtoken');
 let start = () => {
 //настройка паспорта
     passport.use(new LocalStrategy({
-            usernameField: 'phone',
+            usernameField: 'login',
             passwordField: 'password',
             session: false
         },
-        function (phone, password, done) {
-            UserAzyk.findOne({phone: phone}, (err, user) => {
+        function (login, password, done) {
+            UserAzyk.findOne({login: login}, (err, user) => {
                 if (err) {
                     return done(err);
                 }
@@ -34,7 +34,7 @@ let start = () => {
     jwtOptions.jwtFromRequest= ExtractJwt.fromAuthHeaderAsBearerToken();
     jwtOptions.secretOrKey=jwtsecret;
     passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
-        UserAzyk.findOne({phone:payload.phone}, (err, user) => {
+        UserAzyk.findOne({login:payload.login}, (err, user) => {
                 if (err) {
                     return done(err)
                 }
@@ -97,8 +97,6 @@ const verifydeuserGQL = async (req, res) => {
 
                 }
                 else {
-
-
                     let employment = await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'organization' })
                     if(employment.organization.status==='active') {
                         user.organization = employment.organization._id
@@ -128,7 +126,7 @@ const signinuser = (req, res) => {
             if (user&&user.status==='active') {
                 const payload = {
                     id: user._id,
-                    phone: user.phone,
+                    login: user.login,
                     status: user.status,
                     role: user.role
                 };
@@ -143,7 +141,7 @@ const signinuser = (req, res) => {
         } catch (err) {
             console.error(err)
             res.status(401);
-            res.end('phone not be unique')
+            res.end('login not be unique')
         }
     })(req, res);
 }
@@ -171,7 +169,7 @@ const getstatus = async (req, res) => {
 const signupuser = async (req, res) => {
     try{
         let _user = new UserAzyk({
-            phone: req.query.phone,
+            login: req.query.login,
             role: 'client',
             status: 'active',
             password: req.query.password,
@@ -179,7 +177,7 @@ const signupuser = async (req, res) => {
         const user = await UserAzyk.create(_user);
         const payload = {
             id: user._id,
-            phone: user.phone,
+            login: user.login,
             status: user.status,
             role: user.role
         };
@@ -190,15 +188,15 @@ const signupuser = async (req, res) => {
     } catch (err) {
         console.error(err)
         res.status(401);
-        res.end('phone not be unique')
+        res.end('login not be unique')
     }
 }
 
-const signupuserGQL = async ({password, phone}, res) => {
+const signupuserGQL = async ({password, login}, res) => {
     try{
         //await UserAzyk.deleteMany()
         let user = new UserAzyk({
-            phone: phone,
+            login: login,
             role: 'client',
             status: 'active',
             password: password,
@@ -216,7 +214,7 @@ const signupuserGQL = async ({password, phone}, res) => {
         await ClientAzyk.create(client);
         const payload = {
             id: user._id,
-            phone: user.phone,
+            login: user.login,
             status: user.status,
             role: user.role
         };
@@ -226,7 +224,7 @@ const signupuserGQL = async ({password, phone}, res) => {
         return {
             role: user.role,
             status: user.status,
-            phone: user.phone,
+            login: user.login,
             organization: user.organization,
             _id: user._id
         }
@@ -243,7 +241,7 @@ const signinuserGQL = (req, res) => {
                 if (user&&user.status==='active') {
                     const payload = {
                         id: user._id,
-                        phone: user.phone,
+                        login: user.login,
                         status: user.status,
                         role: user.role
                     };
@@ -257,7 +255,7 @@ const signinuserGQL = (req, res) => {
                     resolve({
                         role: user.role,
                         status: user.status,
-                        phone: user.phone,
+                        login: user.login,
                         organization: user.organization,
                         _id: user._id
                     })
@@ -275,7 +273,7 @@ const signinuserGQL = (req, res) => {
 const createJwtGQL = async (res, user) => {
     const payload = {
         id: user._id,
-        phone: user.phone,
+        login: user.login,
         status: user.status,
         role: user.role
     };

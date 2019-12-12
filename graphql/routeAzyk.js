@@ -19,7 +19,7 @@ const type = `
 `;
 
 const query = `
-    routes(search: String!, sort: String!, filter: String!): [Route]
+    routes(search: String!, sort: String!, filter: String!, date: String!): [Route]
     route(_id: ID!): Route
     sortRoute: [Sort]
     filterRoute: [Filter]
@@ -32,9 +32,16 @@ const mutation = `
 `;
 
 const resolvers = {
-    routes: async(parent, {search, sort, filter}, {user}) => {
+    routes: async(parent, {search, sort, filter, date}, {user}) => {
+        let dateStart;
+        let dateEnd;
+        if(date!==''){
+            dateStart = new Date(date)
+            dateEnd = new Date(dateStart)
+            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+        }
         if(user.role==='экспедитор'){
-            let routes = await RouteAzyk.find({status: {'$regex': filter, '$options': 'i'},})
+            let routes = await RouteAzyk.find(date===''?{status: {'$regex': filter, '$options': 'i'}}:{status: {'$regex': filter, '$options': 'i'}, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'invoices',
                     populate: [
@@ -67,17 +74,17 @@ const resolvers = {
                 .sort(sort)
             routes = routes.filter(route => (route.employment))
             routes = routes.filter(
-                route =>
-                    route.employment&&
-                    (
-                        (route.number.toLowerCase()).includes(search.toLowerCase())||
-                        (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
+                    route =>
+                        route.employment &&
+                        (
+                            (route.number.toLowerCase()).includes(search.toLowerCase()) ||
+                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
             return routes
         }
         else if(user.role==='admin') {
-            let routes = await RouteAzyk.find({status: {'$regex': filter, '$options': 'i'},})
+            let routes = await RouteAzyk.find(date===''?{status: {'$regex': filter, '$options': 'i'}}:{status: {'$regex': filter, '$options': 'i'}, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'invoices',
                     populate: [
@@ -109,17 +116,18 @@ const resolvers = {
                 .sort(sort)
             routes = routes.filter(route => (route.employment))
             routes = routes.filter(
-                route =>
-                    route.employment&&
-                    (
-                        (route.number.toLowerCase()).includes(search.toLowerCase())||
-                        (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
+                    route =>
+                        route.employment &&
+                        (
+                            (route.number.toLowerCase()).includes(search.toLowerCase()) ||
+                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
+
             return routes
         }
         else if(['организация', 'менеджер'].includes(user.role)) {
-            let routes = await RouteAzyk.find({status: {'$regex': filter, '$options': 'i'}})
+            let routes = await RouteAzyk.find(date===''?{status: {'$regex': filter, '$options': 'i'}}:{status: {'$regex': filter, '$options': 'i'}, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'invoices',
                     populate: [
@@ -154,13 +162,13 @@ const resolvers = {
                 .sort(sort)
             routes = routes.filter(route => (route.employment))
             routes = routes.filter(
-                route =>
-                    route.employment&&
-                    (
-                        (route.number.toLowerCase()).includes(search.toLowerCase())||
-                        (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
+                    route =>
+                        route.employment &&
+                        (
+                            (route.number.toLowerCase()).includes(search.toLowerCase()) ||
+                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
             return routes
         }
     },

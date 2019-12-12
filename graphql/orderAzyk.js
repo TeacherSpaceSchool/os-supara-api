@@ -3,8 +3,11 @@ const InvoiceAzyk = require('../models/invoiceAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const RouteAzyk = require('../models/routeAzyk');
 const ItemAzyk = require('../models/itemAzyk');
+const { addBonusToClient } = require('../module/bonusClientAzyk');
 const { pubsub } = require('./index');
 const randomstring = require('randomstring');
+const BonusClientAzyk = require('../models/bonusClientAzyk');
+const BonusAzyk = require('../models/bonusAzyk');
 
 const type = `
   type Order {
@@ -29,6 +32,7 @@ const type = `
     confirmationForwarder: Boolean,
     confirmationClient: Boolean
     dateDelivery: Date
+    usedBonus: Int
   }
   input OrderInput {
     _id: ID
@@ -39,16 +43,16 @@ const type = `
 `;
 
 const query = `
-    invoices(search: String!, sort: String!, filter: String!): [Invoice]
+    invoices(search: String!, sort: String!, filter: String!, date: String!): [Invoice]
     invoice(_id: ID!): Invoice
     sortInvoice: [Sort]
     filterInvoice: [Filter]
 `;
 
 const mutation = `
-    addOrders(info: String, paymentMethod: String, address: [[String]]): Data
+    addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!): Data
     setOrder(orders: [OrderInput], invoice: ID): Data
-    cancelOrders(_id: [ID]!): Data
+    cancelOrders(_id: [ID]!, invoice: ID): Data
     approveOrders(invoices: [ID]!, route: ID): Data
 `;
 
@@ -57,9 +61,16 @@ const subscription  = `
 `;
 
 const resolvers = {
-    invoices: async(parent, {search, sort, filter}, {user}) => {
+    invoices: async(parent, {search, sort, filter, date}, {user}) => {
+        let dateStart;
+        let dateEnd;
+        if(date!==''){
+            dateStart = new Date(date)
+            dateEnd = new Date(dateStart)
+            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+        }
         if(user.role==='client'){
-            let invoices =  await InvoiceAzyk.find({client: user.client})
+            let invoices =  await InvoiceAzyk.find(date===''?{client: user.client}:{client: user.client, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'orders',
                     match: { status: {'$regex': filter, '$options': 'i'},  },
@@ -79,19 +90,20 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                invoice =>
-                        invoice.orders.length>0&&
-                        ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
+                    invoice =>
+                            invoice.orders.length>0&&
+                            ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
 
-            )
+                )
             return invoices
-        } else if(user.role==='admin') {
-            let invoices =  await InvoiceAzyk.find()
+        }
+        else if(user.role==='admin') {
+            let invoices =  await InvoiceAzyk.find(date===''?{}:{$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'orders',
                     match: { status: {'$regex': filter, '$options': 'i'},  },
@@ -111,19 +123,19 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&(
-                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
+                    invoice =>
+                        invoice.orders.length>0&&(
+                            (invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
             return invoices
         } else if(['организация', 'менеджер'].includes(user.role)) {
-            let invoices =  await InvoiceAzyk.find()
+            let invoices =  await InvoiceAzyk.find(date===''?{}:{$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'orders',
                     match: { status: {'$regex': filter, '$options': 'i'},  },
@@ -143,15 +155,16 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                invoice => invoice.orders.length>0&&invoice.orders[0].item&&
-                    (
-                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    ))
+                    invoice => invoice.orders.length>0&&invoice.orders[0].item&&
+                        (
+                            (invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
             return invoices
         }
     },
@@ -217,14 +230,22 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrders: async(parent, {info, paymentMethod, address}, {user}) => {
+    addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus}, {user}) => {
         let baskets = await BasketAzyk.find({client: user.client})
             .populate({
                 path: 'item',
-                match: {status: 'active'}
+                match: {status: 'active', organization: organization}
             });
         baskets = baskets.filter(basket => (basket.item))
         if(baskets.length>0){
+            if(usedBonus){
+                let bonus = await BonusAzyk.findOne({organization: organization});
+                let bonusClient = await BonusClientAzyk.findOne({client: user.client, bonus: bonus._id})
+                usedBonus = bonusClient.addedBonus;
+                bonusClient.addedBonus = 0
+                bonusClient.save();
+            } else
+                usedBonus=0
             for(let i=0; i<address.length;i++){
                 let invoices = {};
                 for(let ii=0; ii<baskets.length;ii++){
@@ -259,6 +280,11 @@ const resolversMutation = {
                         paymentMethod: paymentMethod,
                         number: number
                     });
+                    if(usedBonus>0) {
+                        objectInvoice.allPrice -= usedBonus
+                        objectInvoice.usedBonus = usedBonus
+                        usedBonus = 0
+                    }
                     objectInvoice = await InvoiceAzyk.create(objectInvoice);
                 }
             }
@@ -268,18 +294,27 @@ const resolversMutation = {
                 object.basket.splice(index, 1)
                 object.save()
             }
-            await BasketAzyk.deleteMany()
+            await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
         }
         //pubsub.publish('ORDER_ADDED', { postAdded: {data: 'OK'} });
         return {data: 'OK'};
     },
-    cancelOrders: async(parent, {_id}, {user}) => {
-        let orders = await OrderAzyk.find({_id: {$in: _id}});
+    cancelOrders: async(parent, {_id, invoice}, {user}) => {
+        let orders = await OrderAzyk.find({_id: {$in: _id}}).populate('item');
         for(let i = 0; i<orders.length; i++){
-            if(user.role==='client'&&orders[0].status==='обработка'
-                ||['менеджер', 'организация'].includes(user.role)&&['обработка', 'принят'].includes(orders[0].status)
-                ||user.role==='admin')
-                await OrderAzyk.update({_id: {$in: _id}}, {status: 'отмена'});
+            if(user.role==='client'&&orders[i].status==='обработка'
+                ||['менеджер', 'организация'].includes(user.role)&&['обработка', 'принят'].includes(orders[i].status)
+                ||user.role==='admin'){
+                orders[i].status = 'отмена'
+                orders[i].save()
+            }
+        }
+        let object = await InvoiceAzyk.findOne({_id: invoice})
+        if(object.usedBonus&&object.usedBonus>0) {
+            let bonus = await BonusAzyk.findOne({organization: orders[0].item.organization});
+            let bonusClient = await BonusClientAzyk.findOne({client: user.client, bonus: bonus._id})
+            bonusClient.addedBonus += object.usedBonus
+            await bonusClient.save();
         }
         return {data: 'OK'};
     },
@@ -290,7 +325,12 @@ const resolversMutation = {
                 await OrderAzyk.update({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});
                 allPrice += orders[i].allPrice
             }
-            await InvoiceAzyk.update({_id: invoice}, {allPrice: allPrice});
+            let object = await InvoiceAzyk.findOne({_id: invoice})
+            if(object.usedBonus&&object.usedBonus>0)
+                object.allPrice = allPrice - object.usedBonus
+            else
+                object.allPrice = allPrice
+            await object.save();
         }
         return {data: 'OK'};
     },
@@ -305,6 +345,7 @@ const resolversMutation = {
             if(user.role==='client'){
                 invoices[i].confirmationClient = true
                 if(invoices[i].confirmationForwarder) {
+                    await addBonusToClient(invoices[i].client, invoices[i].orders[0].item.organization, invoices[i].allPrice)
                     invoices[i].orders = invoices[i].orders.map(element=>element._id)
                     await OrderAzyk.updateMany({_id: {$in: invoices[i].orders}}, {status: 'выполнен'})
                     await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
@@ -314,6 +355,7 @@ const resolversMutation = {
                 if(user.organization.toString()===invoices[i].orders[0].item.organization.toString()){
                     invoices[i].confirmationForwarder = true
                     if(invoices[i].confirmationClient) {
+                        await addBonusToClient(invoices[i].client, invoices[i].orders[0].item.organization, invoices[i].allPrice)
                         invoices[i].orders = invoices[i].orders.map(element=>element._id)
                         await OrderAzyk.updateMany({_id: {$in: invoices[i].orders}}, {status: 'выполнен'})
                         await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
@@ -321,6 +363,7 @@ const resolversMutation = {
                 }
             }
             else if('admin'===user.role){
+                await addBonusToClient(invoices[i].client, invoices[i].orders[0].item.organization, invoices[i].allPrice)
                 invoices[i].confirmationForwarder = true
                 invoices[i].confirmationClient = true
                 invoices[i].orders = invoices[i].orders.map(element=>element._id)

@@ -9,8 +9,9 @@ const type = `
     name: String
     createdAt: Date
     email: String
-    user: Status,
-    organization: Organization,
+    phone: [String]
+    user: Status
+    organization: Organization
   }
 `;
 
@@ -23,8 +24,8 @@ const query = `
 `;
 
 const mutation = `
-    addEmployment(name: String!, email: String!, phone: String!, password: String!, role: String!, organization: ID): Data
-    setEmployment(_id: ID!, name: String, email: String, newPass: String, role: String, phone: String): Data
+    addEmployment(name: String!, email: String!, phone: [String]!, login: String!, password: String!, role: String!, organization: ID): Data
+    setEmployment(_id: ID!, name: String, email: String, newPass: String, role: String, phone: [String], login: String, ): Data
     deleteEmployment(_id: [ID]!): Data
     onoffEmployment(_id: [ID]!): Data
 `;
@@ -37,13 +38,13 @@ const resolvers = {
                 .populate({ path: 'organization', match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter } })
                 .sort(sort)
             employments = employments.filter(
-                employment => (
-                    (employment.user.phone.toLowerCase()).includes(search.toLowerCase())||
-                    (employment.name.toLowerCase()).includes(search.toLowerCase())||
-                    (employment.email.toLowerCase()).includes(search.toLowerCase())||
-                    (employment.user.role.toLowerCase()).includes(search.toLowerCase())
-                    )
-                    &&employment.organization)
+                    employment => (
+                        ((employment.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        (employment.name.toLowerCase()).includes(search.toLowerCase())||
+                        (employment.email.toLowerCase()).includes(search.toLowerCase())||
+                        (employment.user.role.toLowerCase()).includes(search.toLowerCase())
+                        )
+                        &&employment.organization)
             return employments
         } else if(user.role==='организация'){
             let employments = await EmploymentAzyk.find({
@@ -53,13 +54,13 @@ const resolvers = {
                 .populate({ path: 'organization' })
                 .sort(sort)
             employments = employments.filter(
-                employment => (
-                        (employment.user.phone.toLowerCase()).includes(search.toLowerCase())||
-                        (employment.name.toLowerCase()).includes(search.toLowerCase())||
-                        (employment.email.toLowerCase()).includes(search.toLowerCase())||
-                        (employment.user.role.toLowerCase()).includes(search.toLowerCase())
-                    )
-                    &&employment.organization)
+                    employment => (
+                            ((employment.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                            (employment.name.toLowerCase()).includes(search.toLowerCase())||
+                            (employment.email.toLowerCase()).includes(search.toLowerCase())||
+                            (employment.user.role.toLowerCase()).includes(search.toLowerCase())
+                        )
+                        &&employment.organization)
             return employments
         }
     },
@@ -141,10 +142,10 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addEmployment: async(parent, {name, email, phone, password, role, organization}, {user}) => {
+    addEmployment: async(parent, {name, email, phone, login, password, role, organization}, {user}) => {
         if(user.role==='admin'||user.role==='организация') {
             let newUser = new UserAzyk({
-                phone: phone,
+                login: login,
                 role: role,
                 status: 'active',
                 password: password,
@@ -153,6 +154,7 @@ const resolversMutation = {
             const client = new EmploymentAzyk({
                 name: name,
                 email: email,
+                phone: phone,
                 organization: organization,
                 user: newUser._id,
             });
@@ -161,15 +163,15 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
-    setEmployment: async(parent, {_id, name, email, newPass, role, phone}, {user, res}) => {
+    setEmployment: async(parent, {_id, name, email, newPass, role, login, phone}, {user, res}) => {
         let object = await EmploymentAzyk.findById(_id)
         if(
             user.role==='admin'||
             (user.role==='организация'&&user.organization.toString()===object.organization.toString())||
             user._id.toString()===object.user.toString()) {
-            if (role || newPass || phone) {
+            if (role || newPass || login) {
                 let objectUser = await UserAzyk.findById(object.user)
-                if(phone)objectUser.phone = phone
+                if(login)objectUser.login = login
                 if(newPass)objectUser.password = newPass
                 if(user.role==='admin' ||user.role==='организация'&&(user.organization.toString()===object.organization.toString()))
                     if(role)objectUser.role = role
@@ -179,6 +181,7 @@ const resolversMutation = {
             }
             if(name)object.name = name
             if(email)object.email = email
+            if(phone)object.phone = phone
             object.save();
         }
         return {data: 'OK'}

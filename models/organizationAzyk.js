@@ -9,6 +9,7 @@ const OrganizationAzykSchema = mongoose.Schema({
     info: String,
     reiting: Number,
     status: String,
+    minimumOrder: Number
 }, {
     timestamps: true
 });

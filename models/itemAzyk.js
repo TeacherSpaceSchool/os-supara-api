@@ -7,6 +7,7 @@ const ItemAzykSchema = mongoose.Schema({
     image: String,
     price: Number,
     reiting: Number,
+    deliveryDays: [String],
     subCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SubCategoryAzyk'

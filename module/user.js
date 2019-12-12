@@ -13,11 +13,11 @@ let checkAdmin = async (role, status) => {
 }
 
 let createAdmin = async () => {
-    await UserAzyk.deleteMany({phone: adminLogin});
-        let findAdmin = await UserAzyk.findOne({phone: adminLogin});
+    await UserAzyk.deleteMany({login: adminLogin});
+        let findAdmin = await UserAzyk.findOne({login: adminLogin});
         if(!findAdmin){
             const _user = new UserAzyk({
-                phone: adminLogin,
+                login: adminLogin,
                 role: 'admin',
                 status: 'active',
                 password: adminPass,
@@ -27,6 +27,14 @@ let createAdmin = async () => {
         adminId = findAdmin._id.toString();
 }
 
+module.exports.reductionToUser = async() => {
+    let users = await UserAzyk.find({login: null})
+    console.log(`reductionToUser: ${users.length}`)
+    for(let i = 0; i<users.length;i++){
+        users[i].login = users[i].phone
+        users[i].save();
+    }
+}
 
 module.exports.createAdmin = createAdmin;
 module.exports.createAdmin = createAdmin;

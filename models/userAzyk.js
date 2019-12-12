@@ -3,10 +3,13 @@ const crypto = require('crypto');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const userAzykSchema = mongoose.Schema({
-    phone: {
+    login: {
         type: String,
         required: true,
         unique: true
+    },
+    phone: {
+        type: String,
     },
     role: String,
     status: String,
@@ -41,7 +44,7 @@ userAzykSchema.plugin(uniqueValidator);
 
 const UserAzyk = mongoose.model('UserAzyk', userAzykSchema);
 
-/*UserAzyk.collection.dropIndex('email_1', function(err, result) {
+/*UserAzyk.collection.dropIndex('phone_1', function(err, result) {
     if (err) {
         console.log('Error in dropping index!', err);
     }

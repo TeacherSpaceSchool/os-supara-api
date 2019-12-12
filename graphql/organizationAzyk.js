@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const BonusAzyk = require('../models/bonusAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
@@ -17,6 +18,7 @@ const type = `
     reiting: Int
     status: String
     image: String
+    minimumOrder: Int
   }
 `;
 
@@ -28,8 +30,8 @@ const query = `
 `;
 
 const mutation = `
-    addOrganization(image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!): Data
-    setOrganization(_id: ID!, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String): Data
+    addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!): Data
+    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
 `;
@@ -93,11 +95,11 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrganization: async(parent, {info, phone, email, address, image, name}, {user}) => {
+    addOrganization: async(parent, {info, phone, email, address, image, name, minimumOrder}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
             filename = await saveFile(stream, filename)
-            let _object = new OrganizationAzyk({
+            let objectOrganization = new OrganizationAzyk({
                 image: urlMain+filename,
                 name: name,
                 status: 'active',
@@ -105,13 +107,20 @@ const resolversMutation = {
                 email: email,
                 phone: phone,
                 info: info,
+                minimumOrder: minimumOrder,
                 reiting: 0,
             });
-            await OrganizationAzyk.create(_object)
+            objectOrganization = await OrganizationAzyk.create(objectOrganization)
+            let objectBonus = new BonusAzyk({
+                target: 0,
+                bonus: 0,
+                organization: objectOrganization._id
+            });
+            await BonusAzyk.create(objectBonus)
         }
         return {data: 'OK'};
     },
-    setOrganization: async(parent, {_id, info, phone, email, address, image, name}, {user}) => {
+    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder}, {user}) => {
         if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
@@ -125,6 +134,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
+            if(minimumOrder) object.minimumOrder = minimumOrder
             object.save();
         }
         return {data: 'OK'}
@@ -137,6 +147,7 @@ const resolversMutation = {
             }
             await ItemAzyk.updateMany({subCategory: {$in: _id}}, {subCategory: getSubCategoryUndefinedId(), status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
+            await BonusAzyk.deleteMany({organization: {$in: _id}})
             await OrganizationAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

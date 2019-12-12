@@ -8,6 +8,7 @@ const type = `
     _id: ID
     favorite: [ID]
     basket: [ID]
+    deliveryDays: [String]
     createdAt: Date
     stock: Int
     name: String
@@ -25,6 +26,7 @@ const type = `
 
 const query = `
     items(subCategory: ID!, search: String!, sort: String!, filter: String!): [Item]
+    brands(organization: ID!, search: String!, sort: String!): [Item]
     item(_id: ID!): Item
     sortItem: [Sort]
     filterItem: [Filter]
@@ -32,8 +34,8 @@ const query = `
 `;
 
 const mutation = `
-    addItem(stock: Int!, name: String!, info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
-    setItem(_id: ID!, stock: Int, name: String, info: String, image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
+    addItem(stock: Int!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
+    setItem(_id: ID!, stock: Int, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
     deleteItem(_id: [ID]!): Data
     onoffItem(_id: [ID]!): Data
     favoriteItem(_id: [ID]!): Data
@@ -53,10 +55,10 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
+                            (item.name.toLowerCase()).includes(search.toLowerCase()) ||
                             (item.info.toLowerCase()).includes(search.toLowerCase())
                         )
-                        &&item.organization)
+                        && item.organization)
                 return items
             }
             else {
@@ -66,10 +68,10 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
+                            (item.name.toLowerCase()).includes(search.toLowerCase()) ||
                             (item.info.toLowerCase()).includes(search.toLowerCase())
                         )
-                        &&item.organization)
+                        && item.organization)
                 return items
             }
         }
@@ -85,9 +87,9 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
-                            (item.info.toLowerCase()).includes(search.toLowerCase())
-                        )
+                        (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (item.info.toLowerCase()).includes(search.toLowerCase())
+                    )
                 )
                 return items
             }
@@ -100,9 +102,9 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
-                            (item.info.toLowerCase()).includes(search.toLowerCase())
-                        )
+                        (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (item.info.toLowerCase()).includes(search.toLowerCase())
+                    )
                 )
                 return items
             }
@@ -120,10 +122,10 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
+                            (item.name.toLowerCase()).includes(search.toLowerCase()) ||
                             (item.info.toLowerCase()).includes(search.toLowerCase())
                         )
-                        &&item.organization)
+                        && item.organization)
                 return items
             }
             else {
@@ -136,14 +138,33 @@ const resolvers = {
                     .sort(sort)
                 items = items.filter(
                     item => (
-                            (item.name.toLowerCase()).includes(search.toLowerCase())||
+                            (item.name.toLowerCase()).includes(search.toLowerCase()) ||
                             (item.info.toLowerCase()).includes(search.toLowerCase())
                         )
-                        &&item.organization)
+                        && item.organization)
                 return items
             }
 
         }
+    },
+    brands: async(parent, {organization, search, sort}) => {
+        let items =  await ItemAzyk.find({
+            status: 'active',
+            organization: organization,
+        })
+           .populate('subCategory')
+           .populate({ path: 'organization',
+               match: {status: 'active'} })
+           .sort(sort)
+        items = items.filter(
+            item => (
+                    (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (item.info.toLowerCase()).includes(search.toLowerCase())
+                )
+                && item.organization)
+
+        return items
+
     },
     favorites: async(parent, {search}, {user}) => {
        let items =  await ItemAzyk.find({
@@ -162,7 +183,7 @@ const resolvers = {
         let item =  await ItemAzyk.findOne({
             _id: _id
         })
-            .populate('subCategory')
+            .populate({path: 'subCategory', populate: [{path: 'category'}]})
             .populate('organization')
         return item
     },
@@ -212,7 +233,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addItem: async(parent, {stock, name, image, info, price, subCategory, organization, hit, latest}, {user}) => {
+    addItem: async(parent, {stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays}, {user}) => {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveFile(stream, filename)
@@ -228,13 +249,14 @@ const resolversMutation = {
                 hit: hit,
                 latest: latest,
                 status: 'active',
+                deliveryDays: deliveryDays
             });
             if(['организация', 'менеджер'].includes(user.role)) _object.organization = user.organization
             _object = await ItemAzyk.create(_object)
         }
         return {data: 'OK'};
     },
-    setItem: async(parent, {_id, stock, name, image, info, price, subCategory, organization, hit, latest}, {user}) => {
+    setItem: async(parent, {_id, stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays}, {user}) => {
         let object = await ItemAzyk.findById(_id)
         if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.organization.toString())) {
             if (image) {
@@ -250,6 +272,7 @@ const resolversMutation = {
             if(hit)object.hit = hit
             if(latest)object.latest = latest
             if(subCategory)object.subCategory = subCategory
+            if(deliveryDays)object.deliveryDays = deliveryDays
             if(user.role==='admin'){
                 object.organization = organization === undefined ? object.organization : organization;
             }

@@ -77,8 +77,6 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 let serverGQL = graphql.run(app)
-app.use('/', adminRouter);
-app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
