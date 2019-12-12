@@ -2,7 +2,7 @@ const { startCategoryAzyk } = require('../module/categoryAzyk');
 const { startSubCategoryAzyk } = require('../module/subCategoryAzyk');
 const { reductionToBonus } = require('../module/bonusAzyk');
 const { reductionToClient } = require('../module/clientAzyk');
-const { reductionToUser } = require('../module/user');
+const { reductionToUser, createAdmin } = require('../module/user');
 const { Worker, isMainThread,  workerData, parentPort } = require('worker_threads');
 
 let startResetBonusesClient = async () => {
@@ -27,6 +27,7 @@ let start = async () => {
     await reductionToClient()
     await reductionToUser()
     await startResetBonusesClient()
+    await createAdmin();
 }
 
 module.exports.start = start;

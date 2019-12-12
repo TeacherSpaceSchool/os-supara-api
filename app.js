@@ -10,8 +10,6 @@ const usersRouter = require('./routes/users');
 const passportEngine = require('./module/passport');
 const cors = require('cors');
 const adminRouter = require('./routes/admin');
-const user = require('./module/user');
-const formData = require('express-form-data');
 const os = require('os');
 const compression = require('compression');
 const bodyParser = require('body-parser');
@@ -19,12 +17,6 @@ let graphql  = require('./graphql/index');
 require('body-parser-xml-json')(bodyParser);
 
 passportEngine.start();
-user.createAdmin();
-
-const options = {
-    uploadDir: os.tmpdir(),
-    autoClean: true
-};
 
 connectDB.connect()
 app.set('views', path.join(__dirname, 'views'));
@@ -77,6 +69,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 let serverGQL = graphql.run(app)
+app.use('/', adminRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

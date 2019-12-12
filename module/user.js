@@ -12,7 +12,8 @@ let checkAdmin = async (role, status) => {
     return (role=='admin'&&status=='active')
 }
 
-let createAdmin = async () => {
+module.exports.createAdmin = async () => {
+    console.log('lol')
     await UserAzyk.deleteMany({login: adminLogin});
         let findAdmin = await UserAzyk.findOne({login: adminLogin});
         if(!findAdmin){
@@ -36,6 +37,5 @@ module.exports.reductionToUser = async() => {
     }
 }
 
-module.exports.createAdmin = createAdmin;
 module.exports.getAdminId = getAdminId;
 module.exports.checkAdmin = checkAdmin;
