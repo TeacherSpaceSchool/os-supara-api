@@ -8,9 +8,7 @@ const userAzykSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    phone: {
-        type: String,
-    },
+   // phone: String,
     role: String,
     status: String,
     passwordHash: String,
@@ -44,10 +42,10 @@ userAzykSchema.plugin(uniqueValidator);
 
 const UserAzyk = mongoose.model('UserAzyk', userAzykSchema);
 
-/*UserAzyk.collection.dropIndex('phone_1', function(err, result) {
+UserAzyk.collection.dropIndex('phone_1', function(err, result) {
     if (err) {
         console.log('Error in dropping index!', err);
     }
-});*/
+});
 
 module.exports = UserAzyk;

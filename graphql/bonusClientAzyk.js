@@ -59,7 +59,7 @@ const resolvers = {
                 }
             )
         }
-        else if(['организация', 'менеджер'].includes(user.role)){
+        else if(['организация', 'менеджер', 'агент'].includes(user.role)){
             bonuses =  await BonusClientAzyk.find({organization: user.organization})
                 .populate({
                     path: 'client',
@@ -144,7 +144,7 @@ const resolvers = {
                     ]
                 })
         }
-        else if(['организация', 'менеджер', 'экспедитор'].includes(user.role)){
+        else if(['организация', 'менеджер', 'агент'].includes(user.role)){
             bonus =  await BonusClientAzyk.findOne()
                 .populate({
                     path: 'client',

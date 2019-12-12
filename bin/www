@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 const cluster = require('cluster');
-const start = require('../module/start');
 const os = require('os');
+let app = require('../app').app;
+let debug = require('debug')('azyk-api:server');
+let http = require('http');
+const start = require('../module/start');
+
 if (cluster.isMaster) {
     start.start();
     let cpuCount = os.cpus().length
@@ -14,9 +18,6 @@ if (cluster.isMaster) {
  * Module dependencies.
  */
 
-    let app = require('../app').app;
-    let debug = require('debug')('azyk-api:server');
-    let http = require('http');
 
     /**
      * Get port from environment and store in Express.

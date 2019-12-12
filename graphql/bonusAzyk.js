@@ -32,8 +32,8 @@ const resolvers = {
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)
         }
-        else if(['организация', 'менеджер', 'экспедитор'].includes(user.role)){
-            bonuses =  await BonusAzyk.find()
+        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
+            bonuses =  await BonusAzyk.find({organization: user.organization})
                 .populate({
                     path: 'organization',
                     match: {status: 'active'}
@@ -57,7 +57,7 @@ const resolvers = {
         if(user.role==='admin'){
             bonus =  await BonusAzyk.findOne({_id: _id})
         }
-        else if(['организация', 'менеджер', 'экспедитор'].includes(user.role)){
+        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
             bonus =  await BonusAzyk.findOne({organization: user.organization})
                 .populate({
                     path: 'organization',

@@ -120,7 +120,8 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)
             }
-            await SubCategoryAzyk.updateMany({category: {$in: _id}}, {category: getCategoryUndefinedId()})
+            let categoryUndefined = await CategoryAzyk.findOne({name: 'Не задано'});
+            await SubCategoryAzyk.updateMany({category: {$in: _id}}, {category: categoryUndefined._id})
             await CategoryAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

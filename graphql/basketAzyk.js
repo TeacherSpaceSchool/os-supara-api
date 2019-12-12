@@ -31,10 +31,12 @@ const subscription  = `
 
 const resolvers = {
     baskets: async(parent, ctx, {user}) => {
-        let baskets =  await BasketAzyk.find()
+        let baskets =  await BasketAzyk.find({$or: [{client: user.client}, {agent: user.employment}]})
             .populate({
-                path: 'client',
-                match: {user: user._id}
+                path: 'client'
+            })
+            .populate({
+                path: 'agent'
             })
             .populate({
                 path: 'item',
@@ -44,57 +46,58 @@ const resolvers = {
                 ]
             })
             .sort('-createdAt')
-        baskets = baskets.filter(basket => (basket.client&&basket.item))
+        baskets = baskets.filter(basket => ((basket.client||basket.agent)&&basket.item))
         return baskets
     },
     countBasket: async(parent, ctx, {user}) => {
-        return await BasketAzyk.count({client: user.client})
+        return await BasketAzyk.count({$or: [{client: user.client}, {agent: user.employment}]})
     }
 };
 
 const resolversMutation = {
     addBasket: async(parent, {item, count}, {user}) => {
-        let client = await ClientAzyk.findOne({user: user._id})
-        let basket = await BasketAzyk.findOne({item: item, client: client._id});
-        if(basket===null){
-            let _object = new BasketAzyk({
-                item: item,
-                count: count,
-                client: client._id,
-            });
-            await BasketAzyk.create(_object)
-        } else {
-            basket.count = count;
-            basket.save();
-        }
+        if(['агент', 'client'].includes(user.role)){
+            let basket = await BasketAzyk.findOne({item: item, $or: [{client: user.client}, {agent: user.employment}]});
+            if(basket===null){
+                let _object = new BasketAzyk({
+                    item: item,
+                    count: count,
+                    client: user.client,
+                    agent: user.employment
+                });
+                await BasketAzyk.create(_object)
+            } else {
+                basket.count = count;
+                basket.save();
+            }
 
-        let object = await ItemAzyk.findOne({_id: item})
-        /*if(object.basket===undefined){
-            object.basket = []
-        }*/
-        let index = object.basket.indexOf(user._id)
-        if(index===-1){
-            object.basket.push(user._id)
-            object.save()
+            let object = await ItemAzyk.findOne({_id: item})
+            let index = object.basket.indexOf(user._id)
+            if(index===-1){
+                object.basket.push(user._id)
+                object.save()
+            }
+            indexGQL.pubsub.publish(BASKET_ADDED, { postAdded: {data: 'OK'} });
         }
-        indexGQL.pubsub.publish(BASKET_ADDED, { postAdded: {data: 'OK'} });
         return {data: 'OK'};
     },
-    setBasket: async(parent, {_id, count}) => {
-        let object = await BasketAzyk.findById(_id);
-        object.count = count;
-        object.save();
+    setBasket: async(parent, {_id, count}, { user }) => {
+        let object = await BasketAzyk.findOne({_id: _id, $or: [{client: user.client}, {agent: user.employment}]});
+        if(object) {
+            object.count = count;
+            object.save();
+        }
         return {data: 'OK'}
     },
     deleteBasket: async(parent, { _id }, { user }) => {
-        let basket = await BasketAzyk.findOne({_id: _id});
-
-        let object = await ItemAzyk.findOne({_id: basket.item})
-        let index = object.basket.indexOf(user._id)
-        object.basket.splice(index, 1)
-        object.save()
-
-        await BasketAzyk.deleteMany({_id: {$in: _id}})
+        let basket = await BasketAzyk.findOne({_id: _id, $or: [{client: user.client}, {agent: user.employment}]});
+        if(basket){
+            let object = await ItemAzyk.findOne({_id: basket.item})
+            let index = object.basket.indexOf(user._id)
+            object.basket.splice(index, 1)
+            object.save()
+            await BasketAzyk.deleteMany({_id: {$in: _id}})
+        }
         return {data: 'OK'}
     }
 };

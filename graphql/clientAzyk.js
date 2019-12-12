@@ -43,7 +43,11 @@ const mutation = `
 const resolvers = {
     clients: async(parent, {search, sort, filter}, {user}) => {
         if(user.role==='admin'){
-            let clients = await ClientAzyk.find({}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).sort(sort)
+            let clients = await ClientAzyk
+                .find({})
+                .populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} })
+                .populate({ path: 'organization' })
+                .sort(sort)
             clients = clients.filter(
                 client =>
                     client.user&&(
@@ -58,7 +62,7 @@ const resolvers = {
                     )
             )
             return clients
-        } else if(['организация', 'менеджер'].includes(user.role)) {
+        } else if(['организация', 'менеджер', 'агент'].includes(user.role)) {
             let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
             clients = await ClientAzyk.find().populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).sort(sort)

@@ -75,7 +75,7 @@ const resolvers = {
                 return items
             }
         }
-        else if(['экспедитор', 'организация', 'менеджер'].includes(user.role)){
+        else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
             let employment = await EmploymentAzyk.findOne({user: user._id})
             if(subCategory!=='all'){
                 let items =  await ItemAzyk.find({

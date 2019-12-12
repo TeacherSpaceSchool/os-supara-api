@@ -17,7 +17,11 @@ const ClientAzykSchema = mongoose.Schema({
     },
     patent: String,
     passport: String,
-    certificate: String
+    certificate: String,
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk'
+    },
 }, {
     timestamps: true
 });

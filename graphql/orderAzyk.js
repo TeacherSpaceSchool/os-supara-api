@@ -90,16 +90,49 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                    invoice =>
-                            invoice.orders.length>0&&
-                            ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
+                invoice =>
+                    invoice.orders.length>0&&
+                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
 
-                )
+            )
+            return invoices
+        }
+        if(user.role==='агент'){
+            let invoices =  await InvoiceAzyk.find(date===''?{agent: user.employment}:{agent: user.employment, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
+                .populate({
+                    path: 'orders',
+                    match: { status: {'$regex': filter, '$options': 'i'},  },
+                    populate : {
+                        path : 'item',
+                        populate : [
+                            { path : 'organization'}
+                        ]
+
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate : [
+                        { path : 'user'}
+                    ]
+                })
+                .sort(sort)
+            invoices = invoices.filter(
+                invoice =>
+                    invoice.orders.length>0&&
+                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
+
+            )
             return invoices
         }
         else if(user.role==='admin') {
