@@ -31,18 +31,28 @@ const resolvers = {
     subCategorys: async(parent, {category, search, sort, filter}, {user}) => {
         if(category==='all'||mongoose.Types.ObjectId.isValid(category)){
             if(user.role==='admin'){
+                let subCategoryUndefined = await SubCategoryAzyk.findOne({name: 'Не задано'})
                 if(category!=='all'){
-                    return await SubCategoryAzyk.find({
-                        name: {'$regex': search, '$options': 'i'},
-                        category: category,
-                        status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
-                    }).populate('category').sort(sort)
+                    return [
+                        subCategoryUndefined,
+                        ...(await SubCategoryAzyk.find({
+                            $and: [
+                                {name: {$ne: 'Не задано'}},
+                                {name: {'$regex': search, '$options': 'i'}}
+                            ],
+                            category: category,
+                            status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                        }).populate('category').sort(sort))
+                    ]
                 }
                 else {
-                    return await SubCategoryAzyk.find({
-                        name: {'$regex': search, '$options': 'i'},
-                        status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
-                    }).populate('category').sort(sort)
+                    return [
+                        subCategoryUndefined,
+                        ...(await SubCategoryAzyk.find({
+                            name: {'$regex': search, '$options': 'i'},
+                            status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                        }).populate('category').sort(sort))
+                    ]
                 }
             }
             else {
@@ -142,7 +152,8 @@ const resolversMutation = {
     },
     deleteSubCategory: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
-            await ItemAzyk.updateMany({subCategory: {$in: _id}}, {subCategory: getSubCategoryUndefinedId(), status: 'deactive'})
+            let subCategoryUndefined = await SubCategoryAzyk.findOne({name: 'Не задано'});
+            await ItemAzyk.updateMany({subCategory: {$in: _id}}, {subCategory: subCategoryUndefined._id, status: 'deactive'})
             await SubCategoryAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

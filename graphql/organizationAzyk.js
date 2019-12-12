@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
+const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
+const SubCategoryAzyk = require('../models/subCategoryAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
-const { getSubCategoryUndefinedId } = require('../module/subCategoryAzyk');
 
 const type = `
   type Organization {
@@ -145,8 +146,12 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)
             }
-            await ItemAzyk.updateMany({subCategory: {$in: _id}}, {subCategory: getSubCategoryUndefinedId(), status: 'deactive'})
+            let subCategoryUndefined = await SubCategoryAzyk.findOne({name: 'Не задано'});
+            await ItemAzyk.updateMany({organization: {$in: _id}}, {subCategory: subCategoryUndefined._id, status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
+            let bonus = await BonusAzyk.find({organization: {$in: _id}});
+            bonus = bonus.map(element=>element._id)
+            await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
             await BonusAzyk.deleteMany({organization: {$in: _id}})
             await OrganizationAzyk.deleteMany({_id: {$in: _id}})
         }

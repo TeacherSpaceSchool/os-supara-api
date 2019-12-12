@@ -30,10 +30,17 @@ const mutation = `
 const resolvers = {
     categorys: async(parent, {search, sort, filter}, {user}) => {
         if(user.role==='admin'){
-            return await CategoryAzyk.find({
-                name: {'$regex': search, '$options': 'i'},
-                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter
-            }).sort(sort)
+            let categoryUndefined = await CategoryAzyk.findOne({name: 'Не задано'})
+            return [
+                categoryUndefined,
+                ...(await CategoryAzyk.find({
+                        $and: [
+                            {name: {$ne: 'Не задано'}},
+                            {name: {'$regex': search, '$options': 'i'}}
+                        ],
+                        status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                    }).sort(sort)
+                )]
         } else
             return await CategoryAzyk.find({
                 name: {'$regex': search, '$options': 'i'},
