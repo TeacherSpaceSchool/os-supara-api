@@ -18,6 +18,7 @@ const ItemAzykSchema = mongoose.Schema({
     },
     hit: Boolean,
     latest: Boolean,
+    del: String,
     status: String,
     info: String,
     favorite: [mongoose.Schema.Types.ObjectId],

@@ -1,6 +1,7 @@
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
+const BasketAzyk = require('../models/basketAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -47,7 +48,8 @@ const resolvers = {
         if(user.role==='admin'){
             if(subCategory!=='all'){
                 let items =  await ItemAzyk.find({
-                    subCategory: subCategory
+                    subCategory: subCategory,
+                    del: {$ne: 'deleted'}
                 })
                     .populate('subCategory')
                     .populate({ path: 'organization',
@@ -62,7 +64,9 @@ const resolvers = {
                 return items
             }
             else {
-                let items =  await ItemAzyk.find()
+                let items =  await ItemAzyk.find({
+                    del: {$ne: 'deleted'}
+                })
                     .populate('subCategory')
                     .populate({ path: 'organization', match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
                     .sort(sort)
@@ -80,7 +84,8 @@ const resolvers = {
             if(subCategory!=='all'){
                 let items =  await ItemAzyk.find({
                     subCategory: subCategory,
-                    organization: employment.organization
+                    organization: employment.organization,
+                    del: {$ne: 'deleted'}
                 })
                     .populate('subCategory')
                     .populate('organization')
@@ -95,7 +100,8 @@ const resolvers = {
             }
             else {
                 let items =  await ItemAzyk.find({
-                    organization: employment.organization
+                    organization: employment.organization,
+                    del: {$ne: 'deleted'}
                 })
                     .populate('subCategory')
                     .populate('organization')
@@ -114,6 +120,7 @@ const resolvers = {
                 let items =  await ItemAzyk.find({
                     status: 'active',
                     subCategory: subCategory,
+                    del: {$ne: 'deleted'}
                 })
                     .populate('subCategory')
                     .populate({ path: 'organization',
@@ -131,6 +138,7 @@ const resolvers = {
             else {
                 let items =  await ItemAzyk.find({
                     status: 'active',
+                    del: {$ne: 'deleted'}
                 })
                     .populate('subCategory')
                     .populate({ path: 'organization', match: {status: 'active',
@@ -151,6 +159,7 @@ const resolvers = {
         let items =  await ItemAzyk.find({
             status: 'active',
             organization: organization,
+            del: {$ne: 'deleted'}
         })
            .populate('subCategory')
            .populate({ path: 'organization',
@@ -171,7 +180,8 @@ const resolvers = {
            name: {'$regex': search, '$options': 'i'},
            info: {'$regex': search, '$options': 'i'},
            status: 'active',
-           favorite: user._id
+           favorite: user._id,
+           del: {$ne: 'deleted'}
        })
            .populate('subCategory')
            .populate({ path: 'organization', match: {name: {'$regex': search, '$options': 'i'}} })
@@ -181,7 +191,7 @@ const resolvers = {
     },
     item: async(parent, {_id}) => {
         let item =  await ItemAzyk.findOne({
-            _id: _id
+            _id: _id,
         })
             .populate({path: 'subCategory', populate: [{path: 'category'}]})
             .populate('organization')
@@ -294,10 +304,9 @@ const resolversMutation = {
         let objects = await ItemAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
             if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
-                for(let i1=0; i1<objects[i].image.length; i1++) {
-                    await deleteFile(objects[i].image[i1])
-                }
-                await ItemAzyk.deleteMany({_id: {$in: objects[i]._id}})
+                objects[i].del = 'deleted'
+                objects[i].save()
+                await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
             }
         }
         return {data: 'OK'}

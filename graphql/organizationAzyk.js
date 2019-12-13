@@ -4,7 +4,7 @@ const BonusAzyk = require('../models/bonusAzyk');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const SubCategoryAzyk = require('../models/subCategoryAzyk');
+const BasketAzyk = require('../models/basketAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -42,12 +42,14 @@ const resolvers = {
         if(user.role==='admin'){
             return await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'},
-                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                del: {$ne: 'deleted'}
             }).sort(sort)
         } else
             return await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'},
-                status: 'active'
+                status: 'active',
+                del: {$ne: 'deleted'}
             }).sort(sort)
     },
     organization: async(parent, {_id}) => {
@@ -142,18 +144,16 @@ const resolversMutation = {
     },
     deleteOrganization: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
-            let objects = await OrganizationAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
-                await deleteFile(objects[i].image)
-            }
-            let subCategoryUndefined = await SubCategoryAzyk.findOne({name: 'Не задано'});
-            await ItemAzyk.updateMany({organization: {$in: _id}}, {subCategory: subCategoryUndefined._id, status: 'deactive'})
+            let items = await ItemAzyk.find({organization: {$in: _id}})
+            items = items.map(element=>element._id)
+            await BasketAzyk.deleteMany({item: {$in: items}})
+            await ItemAzyk.updateMany({organization: {$in: _id}}, {status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
             await BonusAzyk.deleteMany({organization: {$in: _id}})
-            await OrganizationAzyk.deleteMany({_id: {$in: _id}})
+            await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted'})
         }
         return {data: 'OK'}
     },
