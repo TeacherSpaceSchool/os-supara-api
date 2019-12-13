@@ -318,6 +318,7 @@ const resolversMutation = {
                         organization: user.organization
                     }
                 })
+            objects = objects.filter(object => (object.employment))
             for(let i=0; i<objects.length; i++){
                 if(objects[i].status==='создан') {
                     for(let ii=0; ii<objects[i].invoices.length; ii++){

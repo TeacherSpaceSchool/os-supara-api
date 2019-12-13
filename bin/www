@@ -24,7 +24,6 @@ if (cluster.isMaster) {
      */
 
     let port = normalizePort(process.env.URL.trim()==='https://azyk.store'?'4000':'3000');
-    console.log(process.env.URL.trim(), port)
     app.set('port', port);
 
     /**

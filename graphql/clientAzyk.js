@@ -84,9 +84,6 @@ const resolvers = {
         }
     },
     client: async(parent, {_id}) => {
-        console.log(await ClientAzyk.findOne({
-            user: _id
-        }))
         return await ClientAzyk.findOne({
                 user: _id
             }).populate({ path: 'user'})

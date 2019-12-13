@@ -13,7 +13,6 @@ let checkAdmin = async (role, status) => {
 }
 
 module.exports.createAdmin = async () => {
-    console.log('lol')
     await UserAzyk.deleteMany({login: adminLogin});
         let findAdmin = await UserAzyk.findOne({login: adminLogin});
         if(!findAdmin){

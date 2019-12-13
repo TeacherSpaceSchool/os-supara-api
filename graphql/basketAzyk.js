@@ -50,7 +50,10 @@ const resolvers = {
         return baskets
     },
     countBasket: async(parent, ctx, {user}) => {
-        return await BasketAzyk.count({$or: [{client: user.client}, {agent: user.employment}]})
+        let count = 0;
+        if(['client', 'агент'].includes(user.role))
+            count = await BasketAzyk.count({$or: [{client: user.client}, {agent: user.employment}]})
+        return count
     }
 };
 
