@@ -91,7 +91,7 @@ const resolvers = {
                 .sort(sort)
             invoices = invoices.filter(
                 invoice =>
-                    invoice.orders.length>0&&
+                    invoice.orders.length>0&&invoice.orders[0].item&&
                     ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
@@ -124,7 +124,7 @@ const resolvers = {
                 .sort(sort)
             invoices = invoices.filter(
                 invoice =>
-                    invoice.orders.length>0&&
+                    invoice.orders.length>0&&invoice.orders[0].item&&
                     ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
@@ -157,7 +157,7 @@ const resolvers = {
                 .sort(sort)
             invoices = invoices.filter(
                     invoice =>
-                        invoice.orders.length>0&&(
+                        invoice.orders.length>0&&invoice.orders[0].item&&(
                             (invoice.number.toLowerCase()).includes(search.toLowerCase())||
                             (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                             (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
