@@ -33,6 +33,7 @@ const type = `
     confirmationClient: Boolean
     dateDelivery: Date
     usedBonus: Int
+    agent: Employment
   }
   input OrderInput {
     _id: ID
@@ -50,7 +51,7 @@ const query = `
 `;
 
 const mutation = `
-    addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!): Data
+    addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!, client: ID!): Data
     setOrder(orders: [OrderInput], invoice: ID): Data
     cancelOrders(_id: [ID]!, invoice: ID): Data
     approveOrders(invoices: [ID]!, route: ID): Data
@@ -121,6 +122,9 @@ const resolvers = {
                         { path : 'user'}
                     ]
                 })
+                .populate({
+                    path: 'agent'
+                })
                 .sort(sort)
             invoices = invoices.filter(
                 invoice =>
@@ -133,6 +137,7 @@ const resolvers = {
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
 
             )
+            console.log(invoices)
             return invoices
         }
         else if(user.role==='admin') {
@@ -153,6 +158,9 @@ const resolvers = {
                     populate : [
                         { path : 'user'}
                     ]
+                })
+                .populate({
+                    path: 'agent'
                 })
                 .sort(sort)
             invoices = invoices.filter(
@@ -185,6 +193,9 @@ const resolvers = {
                     populate : [
                         { path : 'user'}
                     ]
+                })
+                .populate({
+                    path: 'agent'
                 })
                 .sort(sort)
             invoices = invoices.filter(
@@ -263,8 +274,8 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus}, {user}) => {
-        let baskets = await BasketAzyk.find({client: user.client})
+    addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
+        let baskets = await BasketAzyk.find({ $or: [{client: client}, {agent: user.employment}]})
             .populate({
                 path: 'item',
                 match: {status: 'active', organization: organization}
@@ -273,7 +284,7 @@ const resolversMutation = {
         if(baskets.length>0){
             if(usedBonus){
                 let bonus = await BonusAzyk.findOne({organization: organization});
-                let bonusClient = await BonusClientAzyk.findOne({client: user.client, bonus: bonus._id})
+                let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
                 usedBonus = bonusClient.addedBonus;
                 bonusClient.addedBonus = 0
                 bonusClient.save();
@@ -284,10 +295,11 @@ const resolversMutation = {
                 for(let ii=0; ii<baskets.length;ii++){
                     let objectOrder = new OrderAzyk({
                         item: baskets[ii].item._id,
-                        client: user.client,
+                        client: client,
                         count: baskets[ii].count,
                         allPrice: baskets[ii].count*baskets[ii].item.price,
-                        status: 'обработка'
+                        status: 'обработка',
+                        agent: user.employment
                     });
                     objectOrder = await OrderAzyk.create(objectOrder);
                     if(invoices[baskets[ii].item.organization]===undefined)invoices[baskets[ii].item.organization]=[];
@@ -306,12 +318,13 @@ const resolversMutation = {
                     }
                     let objectInvoice = new InvoiceAzyk({
                         orders: orders,
-                        client: user.client,
+                        client: client,
                         allPrice: allPrice,
                         info: info,
                         address: address[i],
                         paymentMethod: paymentMethod,
-                        number: number
+                        number: number,
+                        agent: user.employment
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus
@@ -336,7 +349,7 @@ const resolversMutation = {
         let orders = await OrderAzyk.find({_id: {$in: _id}}).populate('item');
         for(let i = 0; i<orders.length; i++){
             if(user.role==='client'&&orders[i].status==='обработка'
-                ||['менеджер', 'организация'].includes(user.role)&&['обработка', 'принят'].includes(orders[i].status)
+                ||['менеджер', 'организация', 'агент'].includes(user.role)&&['обработка', 'принят'].includes(orders[i].status)
                 ||user.role==='admin'){
                 orders[i].status = 'отмена'
                 orders[i].save()
@@ -352,7 +365,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setOrder: async(parent, {orders, invoice}, {user}) => {
-        if(orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client'].includes(user.role))){
+        if(orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
             let allPrice = 0
             for(let i=0; i<orders.length;i++){
                 await OrderAzyk.update({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});

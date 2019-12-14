@@ -1,7 +1,6 @@
 const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
-const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
@@ -24,6 +23,7 @@ const type = `
     patent: String
     passport: String
     certificate: String
+    organization: Organization
   }
 `;
 
@@ -35,6 +35,7 @@ const query = `
 `;
 
 const mutation = `
+    addClient(image: Upload, name: String!, birthday: Date, email: String, city: String!, address: [[String]]!, phone: [String]!, info: String, type: String, patent: Upload, passport: Upload, certificate: Upload): Data
     setClient(_id: ID!, birthday: Date, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: [String], login: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
@@ -50,7 +51,7 @@ const resolvers = {
                 .sort(sort)
             clients = clients.filter(
                 client =>
-                    client.user&&(
+                    (client.user||client.organization)&&(
                         ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
                         (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
@@ -65,13 +66,11 @@ const resolvers = {
         } else if(['организация', 'менеджер', 'агент'].includes(user.role)) {
             let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-            clients = await ClientAzyk.find().populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).sort(sort)
-           clients = clients.filter(client => client.user)
+            clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}]}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
             clients = clients.filter(
                     client =>
-                        client.user && (
+                        (client.user||client.organization) && (
                             ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                            (client.user.status.toLowerCase()).includes(search.toLowerCase()) ||
                             (client.name.toLowerCase()).includes(search.toLowerCase()) ||
                             (client.email.toLowerCase()).includes(search.toLowerCase()) ||
                             (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase())) ||
@@ -85,7 +84,7 @@ const resolvers = {
     },
     client: async(parent, {_id}) => {
         return await ClientAzyk.findOne({
-                user: _id
+                _id: _id
             }).populate({ path: 'user'})
     },
     sortClient: async(parent, ctx, {user}) => {
@@ -127,9 +126,45 @@ const resolvers = {
 };
 
 const resolversMutation = {
+    addClient: async(parent, {image, name, birthday, email, city, address, phone, info, type, patent, passport, certificate}, {user}) => {
+        if(['организация', 'менеджер', 'агент'].includes(user.role)) {
+            let client = {organization: user.organization}
+            if(name)client.name = name
+            if(birthday)client.birthday = birthday
+            if(email)client.email = email
+            if(city)client.city = city
+            if(address)client.address = address
+            if(phone)client.phone = phone
+            if(info)client.info = info
+            if(type)client.type = type
+            if (image) {
+                let {stream, filename} = await image;
+                filename = await saveFile(stream, filename)
+                client.image = urlMain + filename
+            }
+            if (patent) {
+                let {stream, filename} = await patent;
+                filename = await saveFile(stream, filename)
+                client.patent = urlMain + filename
+            }
+            if (passport) {
+                let {stream, filename} = await passport;
+                filename = await saveFile(stream, filename)
+                client.passport = urlMain + filename
+            }
+            if (certificate) {
+                let {stream, filename} = await certificate;
+                filename = await saveFile(stream, filename)
+                client.certificate = urlMain + filename
+            }
+            client = new ClientAzyk(client);
+            client = await ClientAzyk.create(client);
+        }
+        return {data: 'OK'}
+    },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
-        if(user.role==='admin'||_id.toString()===user._id.toString()) {
-            let object = await ClientAzyk.findOne({user: _id})
+        let object = await ClientAzyk.findOne({_id: _id})
+        if(user.role==='admin'||_id.toString()===user._id.toString()||((user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)

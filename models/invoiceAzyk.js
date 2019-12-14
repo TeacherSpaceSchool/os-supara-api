@@ -18,6 +18,10 @@ const InvoiceAzykSchema = mongoose.Schema({
     dateDelivery: Date,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean,
+    agent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
 }, {
     timestamps: true
 });

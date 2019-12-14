@@ -12,6 +12,10 @@ const OrderAzykSchema = mongoose.Schema({
     count: Number,
     allPrice: Number,
     status: String,
+    agent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
 }, {
     timestamps: true
 });
