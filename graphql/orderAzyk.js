@@ -31,8 +31,8 @@ const type = `
     number: String,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean
-    cancelClient: Boolean
-    cancelForwarder: Boolean
+    cancelClient: Date
+    cancelForwarder: Date
     taken: Boolean
     dateDelivery: Date
     usedBonus: Int
@@ -409,7 +409,7 @@ const resolversMutation = {
             await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'выполнен'})
             object.dateDelivery = new Date()
         }
-        if(cancelClient!=undefined&&!object.cancelForwarder&&(admin||client)){
+        if(cancelClient!=undefined&&(cancelClient||object.cancelClient!=undefined)&&!object.cancelForwarder&&(admin||client)){
             if(cancelClient&&object.cancelClient){
                 object.cancelClient = new Date()
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'отмена'})
@@ -438,8 +438,8 @@ const resolversMutation = {
                 }
             }
         }
-        if(cancelForwarder!=undefined&&!object.cancelClient&&(admin||employment)){
-            console.log(cancelForwarder, object.cancelForwarder)
+        if(cancelForwarder!=undefined&&(cancelForwarder||object.cancelForwarder!=undefined)&&!object.cancelClient&&(admin||employment)){
+            console.log(cancelForwarder)
             if(cancelForwarder){
                 object.cancelForwarder = new Date()
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'отмена'})
@@ -454,6 +454,7 @@ const resolversMutation = {
                 let differenceMinutes = Math.round(difference / 60000);
                 if (differenceMinutes < 10||user.role==='admin') {
                     object.cancelForwarder = undefined
+                    object.cancelClient = undefined
                     await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка'})
                     object.dateDelivery = undefined
                     object.taken = undefined

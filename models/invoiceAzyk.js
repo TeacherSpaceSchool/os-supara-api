@@ -18,8 +18,8 @@ const InvoiceAzykSchema = mongoose.Schema({
     dateDelivery: Date,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean,
-    cancelClient: Boolean,
-    cancelForwarder: Boolean,
+    cancelClient: Date,
+    cancelForwarder: Date,
     taken: Boolean,
     agent: {
         type: mongoose.Schema.Types.ObjectId,
