@@ -1,7 +1,7 @@
 const OrderAzyk = require('../models/orderAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const RouteAzyk = require('../models/routeAzyk');
-const BasketAzyk = require('../models/basketAzyk');
+const mongoose = require('mongoose');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const randomstring = require('randomstring');
 
@@ -173,44 +173,46 @@ const resolvers = {
         }
     },
     route: async(parent, {_id}, {user}) => {
-        let route = await RouteAzyk.findOne({_id: _id})
-            .populate({
-                path: 'invoices',
-                populate: [
-                    {
-                        path: 'orders',
-                        populate : {
-                            path : 'item',
-                            populate : [
-                                { path : 'organization'}
-                            ]
+        if(mongoose.Types.ObjectId.isValid(_id)) {
+            let route = await RouteAzyk.findOne({_id: _id})
+                .populate({
+                    path: 'invoices',
+                    populate: [
+                        {
+                            path: 'orders',
+                            populate: {
+                                path: 'item',
+                                populate: [
+                                    {path: 'organization'}
+                                ]
 
+                            }
+                        },
+                        {
+                            path: 'client',
+                            populate: [
+                                {path: 'user'}
+                            ]
                         }
-                    },
-                    {
-                        path: 'client',
-                        populate : [
-                            { path : 'user'}
-                        ]
-                    }
-                ]
-            })
-            .populate({
-                path: 'employment',
-                populate : [
-                    { path : 'user' },
-                    {path : 'organization'}
-                ]
-            })
-        if(route&&
-            (
-                user.role==='admin'||
-                (user.role==='экспедитор'&&route.employment.user._id.toString()===user._id.toString())||
-                (['организация', 'менеджер'].includes(user.role)&&route.employment.organization._id.toString()===user.organization.toString())
+                    ]
+                })
+                .populate({
+                    path: 'employment',
+                    populate: [
+                        {path: 'user'},
+                        {path: 'organization'}
+                    ]
+                })
+            if (route &&
+                (
+                    user.role === 'admin' ||
+                    (user.role === 'экспедитор' && route.employment.user._id.toString() === user._id.toString()) ||
+                    (['организация', 'менеджер'].includes(user.role) && route.employment.organization._id.toString() === user.organization.toString())
+                )
             )
-        )
-            return route
-        else return null
+                return route
+            else return null
+        } else return null
     },
     sortRoute: async(parent, ctx, {user}) => {
         let sort = [

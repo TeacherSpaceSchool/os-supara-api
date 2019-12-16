@@ -2,6 +2,7 @@ const EmploymentAzyk = require('../models/employmentAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const { createJwtGQL } = require('../module/passport');
+const mongoose = require('mongoose')
 
 const type = `
   type Employment {
@@ -65,26 +66,28 @@ const resolvers = {
         }
     },
     ecspeditors: async(parent, {_id}, {user}) => {
-        if(user.role==='admin'){
-            let employments = await EmploymentAzyk.find({
-                organization: _id
-            })
-                .populate({path: 'user', match: { role: 'экспедитор', status: 'active' }})
-                .populate({path: 'organization'})
-            employments = employments.filter(employment => (employment.user))
-            return employments
-        } else if(['организация', 'менеджер'].includes(user.role)){
-            let employments = await EmploymentAzyk.find({
-                organization: user.organization
-            })
-                .populate({ path: 'user', match: {role: 'экспедитор', status: 'active'} })
-                .populate({ path: 'organization' })
-            employments = employments.filter(employment => (employment.user))
-            return employments
-        }
+        if(mongoose.Types.ObjectId.isValid(_id)) {
+            if (user.role === 'admin') {
+                let employments = await EmploymentAzyk.find({
+                    organization: _id
+                })
+                    .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+                    .populate({path: 'organization'})
+                employments = employments.filter(employment => (employment.user))
+                return employments
+            } else if (['организация', 'менеджер'].includes(user.role)) {
+                let employments = await EmploymentAzyk.find({
+                    organization: user.organization
+                })
+                    .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+                    .populate({path: 'organization'})
+                employments = employments.filter(employment => (employment.user))
+                return employments
+            }
+        } else return []
     },
     employment: async(parent, {_id}, {user}) => {
-        if(user.role&&user.role!=='client') {
+        if(user.role&&user.role!=='client'&&mongoose.Types.ObjectId.isValid(_id)) {
             let result = await EmploymentAzyk.findOne({
                 user: _id
             }).populate({ path: 'user'}).populate({ path: 'organization' })

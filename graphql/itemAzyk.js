@@ -2,6 +2,7 @@ const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const BasketAzyk = require('../models/basketAzyk');
+const mongoose = require('mongoose');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -46,7 +47,7 @@ const mutation = `
 const resolvers = {
     items: async(parent, {subCategory, search, sort, filter}, {user}) => {
         if(user.role==='admin'){
-            if(subCategory!=='all'){
+            if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
                 let items =  await ItemAzyk.find({
                     subCategory: subCategory,
                     del: {$ne: 'deleted'}
@@ -81,7 +82,7 @@ const resolvers = {
         }
         else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
             let employment = await EmploymentAzyk.findOne({user: user._id})
-            if(subCategory!=='all'){
+            if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
                 let items =  await ItemAzyk.find({
                     subCategory: subCategory,
                     organization: employment.organization,
@@ -116,7 +117,7 @@ const resolvers = {
             }
         }
         else  if(user.role==='client'||user.role===undefined){
-            if(subCategory!=='all'){
+            if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
                 let items =  await ItemAzyk.find({
                     status: 'active',
                     subCategory: subCategory,
@@ -156,23 +157,28 @@ const resolvers = {
         }
     },
     brands: async(parent, {organization, search, sort}) => {
-        let items =  await ItemAzyk.find({
-            status: 'active',
-            organization: organization,
-            del: {$ne: 'deleted'}
-        })
-           .populate('subCategory')
-           .populate({ path: 'organization',
-               match: {status: 'active'} })
-           .sort(sort)
-        items = items.filter(
-            item => (
-                    (item.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (item.info.toLowerCase()).includes(search.toLowerCase())
-                )
-                && item.organization)
+        if(mongoose.Types.ObjectId.isValid(organization)) {
+            let items = await ItemAzyk.find({
+                status: 'active',
+                organization: organization,
+                del: {$ne: 'deleted'}
+            })
+                .populate('subCategory')
+                .populate({
+                    path: 'organization',
+                    match: {status: 'active'}
+                })
+                .sort(sort)
+            items = items.filter(
+                item => (
+                        (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (item.info.toLowerCase()).includes(search.toLowerCase())
+                    )
+                    && item.organization)
 
-        return items
+            return items
+        }
+        else return []
 
     },
     favorites: async(parent, {search}, {user}) => {
@@ -190,12 +196,13 @@ const resolvers = {
         return items
     },
     item: async(parent, {_id}) => {
-        let item =  await ItemAzyk.findOne({
-            _id: _id,
-        })
-            .populate({path: 'subCategory', populate: [{path: 'category'}]})
-            .populate('organization')
-        return item
+        if(mongoose.Types.ObjectId.isValid(_id)) {
+            return await ItemAzyk.findOne({
+                _id: _id,
+            })
+                .populate({path: 'subCategory', populate: [{path: 'category'}]})
+                .populate('organization')
+        } else return null
     },
     sortItem: async(parent, ctx, {user}) => {
         let sort = [

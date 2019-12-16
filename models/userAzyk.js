@@ -41,11 +41,11 @@ userAzykSchema.methods.checkPassword = function (password) {
 userAzykSchema.plugin(uniqueValidator);
 
 const UserAzyk = mongoose.model('UserAzyk', userAzykSchema);
-
+/*
 UserAzyk.collection.dropIndex('phone_1', function(err, result) {
     if (err) {
         console.log('Error in dropping index!', err);
     }
-});
+});*/
 
 module.exports = UserAzyk;

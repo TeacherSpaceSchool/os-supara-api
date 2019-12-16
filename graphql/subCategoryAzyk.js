@@ -1,7 +1,6 @@
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const mongoose = require('mongoose');
-const { getSubCategoryUndefinedId } = require('../module/subCategoryAzyk');
 
 const type = `
   type SubCategory {
@@ -74,7 +73,7 @@ const resolvers = {
         else return []
     },
     subCategory: async(parent, {_id}) => {
-        if(_id!=='all')
+        if(mongoose.Types.ObjectId.isValid(_id))
             return await SubCategoryAzyk.findOne({
                 _id: _id
             }).populate('category')

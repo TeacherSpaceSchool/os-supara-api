@@ -18,6 +18,9 @@ const InvoiceAzykSchema = mongoose.Schema({
     dateDelivery: Date,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean,
+    cancelClient: Boolean,
+    cancelForwarder: Boolean,
+    taken: Boolean,
     agent: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EmploymentAzyk'

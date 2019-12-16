@@ -4,6 +4,7 @@ const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
+const mongoose = require('mongoose')
 
 const type = `
   type Client {
@@ -53,7 +54,6 @@ const resolvers = {
                 client =>
                     (client.user||client.organization)&&(
                         ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                        (client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
                         (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
@@ -83,9 +83,15 @@ const resolvers = {
         }
     },
     client: async(parent, {_id}) => {
-        return await ClientAzyk.findOne({
-                _id: _id
-            }).populate({ path: 'user'})
+        console.log(_id, mongoose.Types.ObjectId.isValid(_id))
+        if(mongoose.Types.ObjectId.isValid(_id))
+            return await ClientAzyk.findOne({
+                $or:[
+                    {_id: _id},
+                    {user: _id}
+                    ]
+                }).populate({ path: 'user'})
+        else return null
     },
     sortClient: async(parent, ctx, {user}) => {
         let sort = [
