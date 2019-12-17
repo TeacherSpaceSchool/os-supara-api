@@ -1,6 +1,5 @@
 const CategoryAzyk = require('../models/categoryAzyk');
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
-const {getCategoryUndefinedId} = require('../module/categoryAzyk');
 const { saveFile, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -108,7 +107,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setCategory: async(parent, {_id, image, name}, {user}) => {
-        if(user.role==='admin') {
+        if(user.role==='admin'&&name!=='Не задано') {
             let object = await CategoryAzyk.findById(_id)
             if (image) {
                 let {stream, filename} = await image;
@@ -127,8 +126,10 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)
             }
+
             let categoryUndefined = await CategoryAzyk.findOne({name: 'Не задано'});
             await SubCategoryAzyk.updateMany({category: {$in: _id}}, {category: categoryUndefined._id})
+
             await CategoryAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

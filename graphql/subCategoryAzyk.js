@@ -1,5 +1,6 @@
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
 const ItemAzyk = require('../models/itemAzyk');
+const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
 
 const type = `
@@ -131,7 +132,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setSubCategory: async(parent, {_id, name, category}, {user}) => {
-        if(user.role==='admin') {
+        if(user.role==='admin'&&name!=='Не задано') {
             let object = await SubCategoryAzyk.findById(_id)
             if(name&&name!=='Не задано')object.name = name
             if(category)object.category = category
@@ -152,7 +153,10 @@ const resolversMutation = {
     deleteSubCategory: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
             let subCategoryUndefined = await SubCategoryAzyk.findOne({name: 'Не задано'});
-            await ItemAzyk.updateMany({subCategory: {$in: _id}}, {subCategory: subCategoryUndefined._id, status: 'deactive'})
+            let items = await ItemAzyk.find({subCategory: {$in: _id}})
+            items = items.map(element=>element._id)
+            await ItemAzyk.updateMany({_id: {$in: items}}, {subCategory: subCategoryUndefined._id, status: 'deactive'})
+            await BasketAzyk.deleteMany({item: {$in: items}})
             await SubCategoryAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

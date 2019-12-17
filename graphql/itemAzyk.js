@@ -303,6 +303,7 @@ const resolversMutation = {
             if(user.role==='admin'|| (['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
                 objects[i].save()
+                await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
             }
         }
         return {data: 'OK'}
@@ -312,6 +313,7 @@ const resolversMutation = {
         for(let i=0; i<objects.length; i++){
             if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
                 objects[i].del = 'deleted'
+                objects[i].status = 'deactive'
                 objects[i].save()
                 await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
             }
