@@ -390,7 +390,7 @@ const resolversMutation = {
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = user.role==='admin'
         let client = 'client'===user.role&&user.client.toString()===object.client.toString()
-        let employment = ['менеджер', 'организация', 'агент'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
+        let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
         if(taken!=undefined&&(admin||employment)){
             object.taken = taken
             if(taken)

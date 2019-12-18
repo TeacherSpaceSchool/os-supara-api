@@ -273,6 +273,8 @@ const resolversMutation = {
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]);
                 await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят'});
+                invoice.taken = true
+                invoice.save()
             }
             return {data: 'OK'};
         }
@@ -285,11 +287,15 @@ const resolversMutation = {
             if(cancelInvoices)
                 for(let i=0; i<cancelInvoices.length; i++){
                     let cancelInvoice = await InvoiceAzyk.findById(cancelInvoices[i]);
+                    cancelInvoice.taken = false
+                    cancelInvoice.save()
                     await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка'});
                 }
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]).populate('orders');
                 if(['обработка', 'принят'].includes(invoice.orders[0].status)){
+                    invoice.taken = true
+                    invoice.save()
                     invoice.orders = invoice.orders.map(element=>element._id)
                     await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят'});
                 }
