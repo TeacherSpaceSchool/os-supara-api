@@ -162,6 +162,8 @@ const resolversMutation = {
             let objects = await OrganizationAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
+                await EmploymentAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
+                await ItemAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
                 objects[i].save()
             }
         }

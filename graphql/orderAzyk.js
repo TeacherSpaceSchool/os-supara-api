@@ -373,7 +373,7 @@ const resolversMutation = {
         if(orders.length>0&&orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
             let allPrice = 0
             for(let i=0; i<orders.length;i++){
-                await OrderAzyk.update({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});
+                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});
                 allPrice += orders[i].allPrice
             }
             let object = await InvoiceAzyk.findOne({_id: invoice})
