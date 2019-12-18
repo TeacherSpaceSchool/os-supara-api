@@ -390,7 +390,7 @@ const resolversMutation = {
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = user.role==='admin'
         let client = 'client'===user.role&&user.client.toString()===object.client.toString()
-        let employment = ['менеджер', 'организация'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
+        let employment = ['менеджер', 'организация', 'агент'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
         if(taken!=undefined&&(admin||employment)){
             object.taken = taken
             if(taken)
@@ -409,8 +409,9 @@ const resolversMutation = {
             await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'выполнен'})
             object.dateDelivery = new Date()
         }
+
         if(cancelClient!=undefined&&(cancelClient||object.cancelClient!=undefined)&&!object.cancelForwarder&&(admin||client)){
-            if(cancelClient&&object.cancelClient){
+            if(cancelClient){
                 object.cancelClient = new Date()
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'отмена'})
                 if(object.usedBonus&&object.usedBonus>0) {
@@ -438,8 +439,8 @@ const resolversMutation = {
                 }
             }
         }
+
         if(cancelForwarder!=undefined&&(cancelForwarder||object.cancelForwarder!=undefined)&&!object.cancelClient&&(admin||employment)){
-            console.log(cancelForwarder)
             if(cancelForwarder){
                 object.cancelForwarder = new Date()
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'отмена'})

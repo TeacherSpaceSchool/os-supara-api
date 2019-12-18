@@ -137,7 +137,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
-            if(minimumOrder) object.minimumOrder = minimumOrder
+            if(minimumOrder!=undefined) object.minimumOrder = minimumOrder
             object.save();
         }
         return {data: 'OK'}

@@ -169,7 +169,11 @@ const resolversMutation = {
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
-        if(user.role==='admin'||object.user.toString()===user._id.toString()||((user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
+        console.log(user.organization, object.organization)
+        if(
+            user.role==='admin'||
+            object.user&&object.user.toString()===user._id.toString()||
+            (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
