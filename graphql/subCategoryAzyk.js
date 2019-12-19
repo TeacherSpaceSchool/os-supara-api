@@ -49,7 +49,10 @@ const resolvers = {
                     return [
                         subCategoryUndefined,
                         ...(await SubCategoryAzyk.find({
-                            name: {'$regex': search, '$options': 'i'},
+                            $and: [
+                                {name: {'$regex': search, '$options': 'i'}},
+                                {name: {$ne: 'Не задано'},}
+                            ],
                             status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
                         }).populate('category').sort(sort))
                     ]
@@ -58,13 +61,19 @@ const resolvers = {
             else {
                 if(category!=='all')
                     return await SubCategoryAzyk.find({
-                        name: {'$regex': search, '$options': 'i'},
+                        $and: [
+                            {name: {'$regex': search, '$options': 'i'}},
+                            {name: {$ne: 'Не задано'},}
+                        ],
                         category: category,
                         status: 'active'
                     }).populate('category').sort(sort)
                 else
                     return await SubCategoryAzyk.find({
-                        name: {'$regex': search, '$options': 'i'},
+                        $and: [
+                            {name: {'$regex': search, '$options': 'i'}},
+                            {name: {$ne: 'Не задано'},}
+                        ],
                         status: 'active'
                     }).populate('category').sort(sort)
 

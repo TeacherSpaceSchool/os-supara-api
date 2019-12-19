@@ -42,7 +42,10 @@ const resolvers = {
                 )]
         } else
             return await CategoryAzyk.find({
-                name: {'$regex': search, '$options': 'i'},
+                $and: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {name: {$ne: 'Не задано'},}
+                ],
                 status: 'active'
             }).sort(sort)
     },

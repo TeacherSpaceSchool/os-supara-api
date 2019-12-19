@@ -272,7 +272,7 @@ const resolversMutation = {
             await RouteAzyk.create(_object);
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]);
-                await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят'});
+                await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
                 invoice.taken = true
                 invoice.save()
             }
@@ -289,7 +289,7 @@ const resolversMutation = {
                     let cancelInvoice = await InvoiceAzyk.findById(cancelInvoices[i]);
                     cancelInvoice.taken = false
                     cancelInvoice.save()
-                    await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка'});
+                    await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка', setRoute: false});
                 }
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]).populate('orders');
@@ -297,7 +297,7 @@ const resolversMutation = {
                     invoice.taken = true
                     invoice.save()
                     invoice.orders = invoice.orders.map(element=>element._id)
-                    await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят'});
+                    await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
                 }
             }
             object.invoices = invoices;

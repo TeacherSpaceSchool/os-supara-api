@@ -1,5 +1,6 @@
 const OrderAzyk = require('../models/orderAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
+const RouteAzyk = require('../models/routeAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
 const ItemAzyk = require('../models/itemAzyk');
@@ -48,6 +49,7 @@ const type = `
 
 const query = `
     invoices(search: String!, sort: String!, filter: String!, date: String!): [Invoice]
+    invoicesForRouting: [Invoice]
     invoice(_id: ID!): Invoice
     sortInvoice: [Sort]
     filterInvoice: [Filter]
@@ -167,16 +169,16 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                    invoice =>
-                        invoice.orders.length>0&&invoice.orders[0].item&&(
-                            (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                        )
-                )
+                invoice =>
+                    invoice.orders.length>0&&invoice.orders[0].item&&(
+                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                    )
+            )
             return invoices
         } else if(['организация', 'менеджер'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find(date===''?{}:{$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
@@ -202,18 +204,48 @@ const resolvers = {
                 })
                 .sort(sort)
             invoices = invoices.filter(
-                    invoice => invoice.orders.length>0&&invoice.orders[0].item&&
-                        (
-                            (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                            (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                        )
-                )
+                invoice => invoice.orders.length>0&&invoice.orders[0].item&&
+                    (
+                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                    )
+            )
             return invoices
         }
+    },
+    invoicesForRouting: async(parent, ctx, {user}) => {
+        if(['организация', 'менеджер'].includes(user.role)) {
+            let invoices =  await InvoiceAzyk.find()
+                .populate({
+                    path: 'orders',
+                    match: {setRoute: false, status: {$nin: ['выполнен', 'отмена']}},
+                    populate : {
+                        path : 'item',
+                        match: { organization: user.organization },
+                        populate : [
+                            { path : 'organization'}
+                        ]
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate : [
+                        { path : 'user'}
+                    ]
+                })
+                .populate({
+                    path: 'agent'
+                })
+                .sort('createdAt')
+            invoices = invoices.filter(
+                invoice => invoice.orders.length>0&&invoice.orders[0].item
+            )
+            return invoices
+        } else return []
     },
     invoice: async(parent, {_id}, {user}) => {
         if(mongoose.Types.ObjectId.isValid(_id)) {
@@ -302,7 +334,7 @@ const resolversMutation = {
                         item: baskets[ii].item._id,
                         client: client,
                         count: baskets[ii].count,
-                        allPrice: baskets[ii].count*baskets[ii].item.price,
+                        allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         status: 'обработка',
                         agent: user.employment
                     });
@@ -386,10 +418,11 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder}, {user}) => {
-        let object = await InvoiceAzyk.findOne({_id: invoice})
+        let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = user.role==='admin'
-        let client = 'client'===user.role&&user.client.toString()===object.client.toString()
+        let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
+        let undefinedClient = ['менеджер', 'организация', 'экспедитор'].includes(user.role)&&!object.client.user
         let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
         if(taken!=undefined&&(admin||employment)){
             object.taken = taken
@@ -398,16 +431,37 @@ const resolversMutation = {
             else
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка'})
         }
-        if(confirmationClient!=undefined&&(admin||client)){
+        if(confirmationClient!=undefined&&(admin||undefinedClient||client)){
             object.confirmationClient = confirmationClient
         }
         if(confirmationForwarder!=undefined&&(admin||employment)){
             object.confirmationForwarder = confirmationForwarder
         }
-        if(object.confirmationForwarder&&object.confirmationClient){
+        if(object.confirmationForwarder!=undefined&&object.confirmationClient!=undefined){
             await addBonusToClient(object.client, order.item.organization, object.allPrice)
             await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'выполнен'})
             object.dateDelivery = new Date()
+        }
+
+        if(object.confirmationForwarder||object.confirmationClient){
+            let route = await RouteAzyk.findOne({invoices: invoice}).populate({
+                path: 'invoices',
+                populate : {
+                    path : 'orders',
+                }
+            });
+            if(route){
+                let completedRoute = true;
+                for(let i = 0; i<route.invoices.length; i++) {
+                    if(!route.invoices[i].cancelClient&&!route.invoices[i].cancelForwarder)
+                        completedRoute = route.invoices[i].confirmationForwarder;
+                }
+                if(completedRoute)
+                    route.status = 'выполнен';
+                else
+                    route.status = 'выполняется';
+                route.save();
+            }
         }
 
         if(cancelClient!=undefined&&(cancelClient||object.cancelClient!=undefined)&&!object.cancelForwarder&&(admin||client)){
@@ -420,7 +474,8 @@ const resolversMutation = {
                     bonusClient.addedBonus += object.usedBonus
                     await bonusClient.save();
                 }
-            } else if(!cancelClient) {
+            }
+            else if(!cancelClient) {
                 let difference = (new Date()).getTime() - (object.cancelClient).getTime();
                 let differenceMinutes = Math.round(difference / 60000);
                 if (differenceMinutes < 10||user.role==='admin') {
@@ -450,7 +505,8 @@ const resolversMutation = {
                     bonusClient.addedBonus += object.usedBonus
                     await bonusClient.save();
                 }
-            } else if(!cancelForwarder) {
+            }
+            else if(!cancelForwarder) {
                 let difference = (new Date()).getTime() - (object.cancelForwarder).getTime();
                 let differenceMinutes = Math.round(difference / 60000);
                 if (differenceMinutes < 10||user.role==='admin') {
@@ -470,6 +526,7 @@ const resolversMutation = {
                 }
             }
         }
+
         await object.save();
         return {data: 'OK'};
     },

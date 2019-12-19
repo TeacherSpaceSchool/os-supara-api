@@ -16,6 +16,10 @@ const OrderAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EmploymentAzyk'
     },
+    setRoute: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });
