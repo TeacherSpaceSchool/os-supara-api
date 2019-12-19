@@ -37,7 +37,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="itemAzyk.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="itemAzyk.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/graphql/itemAzyk.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="305">
@@ -47,6 +47,21 @@
                 <element signature="e#3239#4694#0" expanded="false" />
                 <element signature="e#8248#8695#0" expanded="false" />
                 <element signature="e#8743#9347#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="organizationAzyk.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/graphql/organizationAzyk.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="163" column="48" lean-forward="false" selection-start-line="163" selection-start-column="48" selection-end-line="163" selection-end-column="48" />
+              <folding>
+                <element signature="e#1320#3025#0" expanded="false" />
+                <element signature="e#3160#4019#0" expanded="false" />
+                <element signature="e#4130#4914#0" expanded="false" />
+                <element signature="e#4974#5742#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -223,8 +238,7 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="835" />
-    <option name="y" value="124" />
+    <option name="y" value="172" />
     <option name="width" value="1346" />
     <option name="height" value="688" />
   </component>
@@ -638,12 +652,12 @@
       <workItem from="1576557526067" duration="3311000" />
       <workItem from="1576647111923" duration="6505000" />
       <workItem from="1576665219968" duration="5193000" />
-      <workItem from="1576747679672" duration="10713000" />
+      <workItem from="1576747679672" duration="11453000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2117383000" />
+    <option name="totallyTimeSpent" value="2118123000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -664,7 +678,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14512041" sideWeight="0.31698775" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23149395" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23149395" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -979,19 +993,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/graphql/organizationAzyk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="163" column="48" lean-forward="false" selection-start-line="163" selection-start-column="48" selection-end-line="163" selection-end-column="48" />
-          <folding>
-            <element signature="e#1320#3025#0" expanded="false" />
-            <element signature="e#3160#4019#0" expanded="false" />
-            <element signature="e#4130#4914#0" expanded="false" />
-            <element signature="e#4974#5742#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/graphql/categoryAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="510">
@@ -1076,6 +1077,19 @@
             <element signature="e#3239#4694#0" expanded="false" />
             <element signature="e#8248#8695#0" expanded="false" />
             <element signature="e#8743#9347#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/organizationAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="163" column="48" lean-forward="false" selection-start-line="163" selection-start-column="48" selection-end-line="163" selection-end-column="48" />
+          <folding>
+            <element signature="e#1320#3025#0" expanded="false" />
+            <element signature="e#3160#4019#0" expanded="false" />
+            <element signature="e#4130#4914#0" expanded="false" />
+            <element signature="e#4974#5742#0" expanded="false" />
           </folding>
         </state>
       </provider>
