@@ -22,8 +22,8 @@
       <file leaf-file-name="orderAzyk.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="206">
-              <caret line="426" column="50" lean-forward="true" selection-start-line="426" selection-start-column="50" selection-end-line="426" selection-end-column="50" />
+            <state relative-caret-position="257">
+              <caret line="426" column="50" lean-forward="false" selection-start-line="426" selection-start-column="50" selection-end-line="426" selection-end-column="50" />
               <folding>
                 <element signature="e#2042#8746#0" expanded="false" />
                 <element signature="e#11797#15271#0" expanded="false" />
@@ -623,12 +623,12 @@
       <workItem from="1576557526067" duration="3311000" />
       <workItem from="1576647111923" duration="6505000" />
       <workItem from="1576665219968" duration="5193000" />
-      <workItem from="1576747679672" duration="7644000" />
+      <workItem from="1576747679672" duration="9568000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2114314000" />
+    <option name="totallyTimeSpent" value="2116238000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1045,8 +1045,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="426" column="50" lean-forward="true" selection-start-line="426" selection-start-column="50" selection-end-line="426" selection-end-column="50" />
+        <state relative-caret-position="257">
+          <caret line="426" column="50" lean-forward="false" selection-start-line="426" selection-start-column="50" selection-end-line="426" selection-end-column="50" />
           <folding>
             <element signature="e#2042#8746#0" expanded="false" />
             <element signature="e#11797#15271#0" expanded="false" />
