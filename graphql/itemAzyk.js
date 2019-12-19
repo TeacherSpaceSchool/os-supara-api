@@ -284,7 +284,7 @@ const resolversMutation = {
             }
             if(name)object.name = name
             if(info)object.info = info
-            if(stock)object.stock = stock
+            if(stock!=undefined)object.stock = stock
             if(price)object.price = price
             if(hit)object.hit = hit
             if(latest)object.latest = latest
