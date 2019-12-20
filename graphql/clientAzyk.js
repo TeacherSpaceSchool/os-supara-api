@@ -168,13 +168,13 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
+       console.log('lol')
+        let object = await ClientAzyk.findOne({_id: _id})
+        console.log(object)
         console.log(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
             (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role)))
-        console.log('lol')
-        let object = await ClientAzyk.findOne({_id: _id})
-        console.log(object)
         if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
