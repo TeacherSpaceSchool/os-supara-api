@@ -168,14 +168,8 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
-       console.log('lol')
         let object = await ClientAzyk.findOne({_id: _id})
-        console.log(object)
-        console.log(
-            user.role==='admin'||
-            object.user&&object.user.toString()===user._id.toString()||
-            (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role)))
-        if(
+       if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
             (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
@@ -185,8 +179,7 @@ const resolversMutation = {
                 filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
             }
-            console.log(type, patent, passport, certificate)
-            if (patent) {
+           if (patent) {
                 let {stream, filename} = await patent;
                 if(object.patent)
                     await deleteFile(object.patent)

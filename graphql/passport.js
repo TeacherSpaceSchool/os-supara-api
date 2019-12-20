@@ -16,13 +16,6 @@ const query = `
 
 const resolvers = {
     getStatus: async(parent, args, {user}) => {
-        console.log({
-            role: user.role,
-            status: user.status,
-            login: user.login,
-            organization: user.organization,
-            _id: user._id
-        })
         return {
             role: user.role,
             status: user.status,
