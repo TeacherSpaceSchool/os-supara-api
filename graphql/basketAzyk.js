@@ -46,7 +46,7 @@ const resolvers = {
                 ]
             })
             .sort('-createdAt')
-        baskets = baskets.filter(basket => ((basket.client||basket.agent)&&basket.item))
+        baskets = baskets.filter(basket => ((user.client?basket.client:basket.agent)&&basket.item))
         return baskets
     },
     countBasket: async(parent, ctx, {user}) => {
@@ -57,7 +57,7 @@ const resolvers = {
                     path: 'item',
                     match: {status: 'active'}
                 })
-            count = count.filter(basket => ((basket.client||basket.agent)&&basket.item))
+            count = count.filter(basket => ((user.client?basket.client:basket.agent)&&basket.item))
             count = count.length
         }
         return count
@@ -67,14 +67,20 @@ const resolvers = {
 const resolversMutation = {
     addBasket: async(parent, {item, count}, {user}) => {
         if(['агент', 'client'].includes(user.role)){
-            let basket = await BasketAzyk.findOne({item: item, $or: [{client: user.client}, {agent: user.employment}]});
+            let basket = await BasketAzyk.findOne(
+                user.client?
+                    {item: item, client: user.client}:
+                    {item: item, agent: user.employment}
+                );
             if(basket===null){
                 let _object = new BasketAzyk({
                     item: item,
-                    count: count,
-                    client: user.client,
-                    agent: user.employment
+                    count: count
                 });
+                if(user.client)
+                    _object.client = user.client
+                else
+                    _object.agent = user.employment
                 await BasketAzyk.create(_object)
             } else {
                 basket.count = count;
@@ -92,7 +98,11 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setBasket: async(parent, {_id, count}, { user }) => {
-        let object = await BasketAzyk.findOne({_id: _id, $or: [{client: user.client}, {agent: user.employment}]});
+        let object = await BasketAzyk.findOne(
+            user.client?
+                {_id: _id, client: user.client}:
+                {_id: _id, agent: user.employment}
+        );
         if(object) {
             object.count = count;
             object.save();
@@ -100,7 +110,11 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteBasket: async(parent, { _id }, { user }) => {
-        let basket = await BasketAzyk.findOne({_id: _id, $or: [{client: user.client}, {agent: user.employment}]});
+        let basket = await BasketAzyk.findOne(
+            user.client?
+                {_id: _id, client: user.client}:
+                {_id: _id, agent: user.employment}
+        );
         if(basket){
             let object = await ItemAzyk.findOne({_id: basket.item})
             let index = object.basket.indexOf(user._id)
