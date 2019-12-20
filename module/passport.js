@@ -210,6 +210,10 @@ const signupuserGQL = async ({password, login}, res) => {
             reiting: 0,
             image: '/static/add.png',
             user: user._id,
+            phone: [],
+            city: '',
+            type: 'торговая точка',
+            birthday: new Date(),
         });
         await ClientAzyk.create(client);
         const payload = {
