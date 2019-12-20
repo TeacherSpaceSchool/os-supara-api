@@ -31,7 +31,7 @@ const subscription  = `
 
 const resolvers = {
     baskets: async(parent, ctx, {user}) => {
-        let baskets =  await BasketAzyk.find({$or: [{client: user.client}, {agent: user.employment}]})
+        let baskets =  await BasketAzyk.find(user.client?{client: user.client}:{agent: user.employment})
             .populate({
                 path: 'client'
             })
@@ -51,8 +51,15 @@ const resolvers = {
     },
     countBasket: async(parent, ctx, {user}) => {
         let count = 0;
-        if(['client', 'агент'].includes(user.role))
-            count = await BasketAzyk.count({$or: [{client: user.client}, {agent: user.employment}]})
+        if(['client', 'агент'].includes(user.role)) {
+            count = await BasketAzyk.find(user.client ? {client: user.client} : {agent: user.employment})
+                .populate({
+                    path: 'item',
+                    match: {status: 'active'}
+                })
+            count = count.filter(basket => ((basket.client||basket.agent)&&basket.item))
+            count = count.length
+        }
         return count
     }
 };
