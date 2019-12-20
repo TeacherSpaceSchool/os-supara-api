@@ -169,17 +169,21 @@ const resolversMutation = {
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
-        console.log(user.organization, object.organization)
+        console.log( user.role==='admin',
+            object.user&&object.user.toString()===user._id.toString(),
+            (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role)))
         if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
             (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
+            console.log(image)
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
                 filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
             }
+            console.log(object.image)
             if (patent) {
                 let {stream, filename} = await patent;
                 if(object.patent)
