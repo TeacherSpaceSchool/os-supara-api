@@ -312,7 +312,11 @@ const resolvers = {
 
 const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
-        let baskets = await BasketAzyk.find({ $or: [{client: client}, {agent: user.employment}]})
+        let baskets = await BasketAzyk.find(
+            user.client?
+                {client: user.client}:
+                {agent: user.employment}
+        )
             .populate({
                 path: 'item',
                 match: {status: 'active', organization: organization}
