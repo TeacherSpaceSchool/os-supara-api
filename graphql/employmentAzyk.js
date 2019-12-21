@@ -66,25 +66,25 @@ const resolvers = {
         }
     },
     ecspeditors: async(parent, {_id}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(_id)) {
-            if (user.role === 'admin') {
-                let employments = await EmploymentAzyk.find({
-                    organization: _id
-                })
-                    .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
-                    .populate({path: 'organization'})
-                employments = employments.filter(employment => (employment.user))
-                return employments
-            } else if (['организация', 'менеджер'].includes(user.role)) {
-                let employments = await EmploymentAzyk.find({
-                    organization: user.organization
-                })
+        if (user.role === 'admin') {
+            if(mongoose.Types.ObjectId.isValid(_id)) {
+                let employments = await EmploymentAzyk.find({organization: _id})
                     .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
                     .populate({path: 'organization'})
                 employments = employments.filter(employment => (employment.user))
                 return employments
             }
-        } else return []
+            else return []
+        }
+        else if (['организация', 'менеджер'].includes(user.role)) {
+            let employments = await EmploymentAzyk.find({
+                organization: user.organization
+            })
+                .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+                .populate({path: 'organization'})
+            employments = employments.filter(employment => (employment.user))
+            return employments
+        }
     },
     employment: async(parent, {_id}, {user}) => {
         if(user.role&&user.role!=='client'&&mongoose.Types.ObjectId.isValid(_id)) {
@@ -127,7 +127,10 @@ const resolvers = {
                     value: ''
                 }
             ]
-            let organizations = await OrganizationAzyk.find().sort('name')
+            let organizations = await OrganizationAzyk.find({
+                status: 'active',
+                del: {$ne: 'deleted'}
+            }).sort('name')
             for(let i = 0; i<organizations.length; i++){
                 filter = [
                     ... filter,

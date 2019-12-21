@@ -234,7 +234,10 @@ const resolvers = {
             }
         ]
         if(!['экспедитор', 'организация', 'менеджер'].includes(user.role)){
-            let organizations = await OrganizationAzyk.find().sort('name')
+            let organizations = await OrganizationAzyk.find({
+                status: 'active',
+                del: {$ne: 'deleted'}
+            }).sort('name')
             for(let i = 0; i<organizations.length; i++){
                 filter = [
                     ... filter,

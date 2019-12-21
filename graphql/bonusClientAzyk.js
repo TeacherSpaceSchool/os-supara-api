@@ -188,7 +188,7 @@ const resolvers = {
         }
         return bonus
     },
-    sortItem: async(parent, ctx, {user}) => {
+    sortBonusClient: async(parent, ctx, {user}) => {
         if(!user.role||['admin', 'client'].includes(user.role))
             return [
                 {
