@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="aef3c9e9-2922-42a5-aaa5-79ce22b59d1a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/orderAzyk.js" afterPath="$PROJECT_DIR$/graphql/orderAzyk.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/graphql/clientAzyk.js" afterPath="$PROJECT_DIR$/graphql/clientAzyk.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -20,29 +20,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="basketAzyk.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/graphql/basketAzyk.js">
+      <file leaf-file-name="clientAzyk.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="178">
-              <caret line="103" column="50" lean-forward="true" selection-start-line="101" selection-start-column="12" selection-end-line="103" selection-end-column="50" />
-              <folding />
+            <state relative-caret-position="615">
+              <caret line="198" column="75" lean-forward="false" selection-start-line="198" selection-start-column="75" selection-end-line="198" selection-end-column="75" />
+              <folding>
+                <element signature="e#1485#5483#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="orderAzyk.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
+      <file leaf-file-name="const.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/module/const.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="89">
-              <caret line="317" column="17" lean-forward="false" selection-start-line="317" selection-start-column="17" selection-end-line="317" selection-end-column="17" />
-              <folding>
-                <element signature="e#2042#8746#0" expanded="false" />
-                <element signature="e#19684#21356#0" expanded="false" />
-                <element signature="e#19714#20263#0" expanded="false" />
-                <element signature="e#21493#23232#0" expanded="false" />
-                <element signature="e#21526#22078#0" expanded="false" />
-                <element signature="e#22117#23222#0" expanded="false" />
-              </folding>
+            <state relative-caret-position="255">
+              <caret line="37" column="31" lean-forward="false" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="31" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -87,8 +82,8 @@
       <find>object.client.toString</find>
       <find>object =</find>
       <find>console.log</find>
-      <find>BasketAzyk.find</find>
       <find>user.client(</find>
+      <find>BasketAzyk.find</find>
     </findStrings>
     <replaceStrings>
       <replace>blog</replace>
@@ -178,11 +173,11 @@
         <option value="$PROJECT_DIR$/models/orderAzyk.js" />
         <option value="$PROJECT_DIR$/graphql/routeAzyk.js" />
         <option value="$PROJECT_DIR$/graphql/itemAzyk.js" />
-        <option value="$PROJECT_DIR$/graphql/clientAzyk.js" />
         <option value="$PROJECT_DIR$/module/passport.js" />
         <option value="$PROJECT_DIR$/graphql/passport.js" />
         <option value="$PROJECT_DIR$/graphql/basketAzyk.js" />
         <option value="$PROJECT_DIR$/graphql/orderAzyk.js" />
+        <option value="$PROJECT_DIR$/graphql/clientAzyk.js" />
       </list>
     </option>
   </component>
@@ -624,12 +619,12 @@
       <workItem from="1576557526067" duration="3311000" />
       <workItem from="1576647111923" duration="6505000" />
       <workItem from="1576665219968" duration="5193000" />
-      <workItem from="1576747679672" duration="28377000" />
+      <workItem from="1576747679672" duration="30013000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2135047000" />
+    <option name="totallyTimeSpent" value="2136683000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -642,14 +637,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1616" height="876" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14512041" sideWeight="0.6838235" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.31090176" sideWeight="0.50253487" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32974428" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2678331" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14512041" sideWeight="0.31617647" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23149395" sideWeight="0.49746513" order="8" side_tool="false" content_ui="tabs" />
@@ -689,7 +683,7 @@
           <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="20" />
+      <option name="time" value="22" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -995,26 +989,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="31" column="56" lean-forward="true" selection-start-line="31" selection-start-column="56" selection-end-line="31" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/clientAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="6" lean-forward="false" selection-start-line="3" selection-start-column="3" selection-end-line="23" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/module/const.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="22" lean-forward="false" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -1054,15 +1032,15 @@
     <entry file="file://$PROJECT_DIR$/graphql/basketAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="178">
-          <caret line="103" column="50" lean-forward="true" selection-start-line="101" selection-start-column="12" selection-end-line="103" selection-end-column="50" />
+          <caret line="103" column="50" lean-forward="false" selection-start-line="101" selection-start-column="12" selection-end-line="103" selection-end-column="50" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/graphql/orderAzyk.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="317" column="17" lean-forward="false" selection-start-line="317" selection-start-column="17" selection-end-line="317" selection-end-column="17" />
+        <state relative-caret-position="-710">
+          <caret line="327" column="99" lean-forward="false" selection-start-line="327" selection-start-column="99" selection-end-line="327" selection-end-column="99" />
           <folding>
             <element signature="e#2042#8746#0" expanded="false" />
             <element signature="e#19684#21356#0" expanded="false" />
@@ -1070,6 +1048,24 @@
             <element signature="e#21493#23232#0" expanded="false" />
             <element signature="e#21526#22078#0" expanded="false" />
             <element signature="e#22117#23222#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/module/const.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="37" column="31" lean-forward="false" selection-start-line="37" selection-start-column="24" selection-end-line="37" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphql/clientAzyk.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="198" column="75" lean-forward="false" selection-start-line="198" selection-start-column="75" selection-end-line="198" selection-end-column="75" />
+          <folding>
+            <element signature="e#1485#5483#0" expanded="false" />
           </folding>
         </state>
       </provider>

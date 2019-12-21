@@ -175,27 +175,28 @@ const resolversMutation = {
             (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
             if (image) {
                 let {stream, filename} = await image;
-                await deleteFile(object.image)
+                if(object.image&&object.image.includes(urlMain))
+                    await deleteFile(object.image)
                 filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
             }
            if (patent) {
                 let {stream, filename} = await patent;
-                if(object.patent)
+                if(object.patent&&object.patent.includes(urlMain))
                     await deleteFile(object.patent)
                 filename = await saveFile(stream, filename)
                 object.patent = urlMain + filename
             }
             if (passport) {
                 let {stream, filename} = await passport;
-                if(object.passport)
+                if(object.passport&&object.passport.includes(urlMain))
                     await deleteFile(object.passport)
                 filename = await saveFile(stream, filename)
                 object.passport = urlMain + filename
             }
             if (certificate) {
                 let {stream, filename} = await certificate;
-                if(object.certificate)
+                if(object.certificate&&object.certificate.includes(urlMain))
                     await deleteFile(object.certificate)
                 filename = await saveFile(stream, filename)
                 object.certificate = urlMain + filename
