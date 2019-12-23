@@ -27,7 +27,7 @@ const resolvers = {
             bonuses =  await BonusAzyk.find()
                 .populate({
                     path: 'organization',
-                    match: {name: {'$regex': search, '$options': 'i'}}
+                    match: {name: {'$regex': search, '$options': 'i'}, del: {$ne: 'deleted'}}
                 })
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)
@@ -36,7 +36,7 @@ const resolvers = {
             bonuses =  await BonusAzyk.find({organization: user.organization})
                 .populate({
                     path: 'organization',
-                    match: {status: 'active'}
+                    match: {status: 'active', del: {$ne: 'deleted'}}
                 })
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)
@@ -45,7 +45,7 @@ const resolvers = {
             bonuses =  await BonusAzyk.find({target: {$gt: 0}})
                 .populate({
                     path: 'organization',
-                    match: {name: {'$regex': search, '$options': 'i'}, status: 'active'}
+                    match: {name: {'$regex': search, '$options': 'i'}, status: 'active', del: {$ne: 'deleted'}}
                 })
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)

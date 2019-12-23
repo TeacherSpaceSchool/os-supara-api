@@ -153,7 +153,7 @@ const resolversMutation = {
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
             await BonusAzyk.deleteMany({organization: {$in: _id}})
-            await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted'})
+            await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted', status: 'deactive'})
         }
         return {data: 'OK'}
     },

@@ -27,9 +27,10 @@ const resolvers = {
             bonuses =  await BonusClientAzyk.find()
                 .populate({
                     path: 'client',
+                    match: {del: {$ne: 'deleted'}},
                     populate : [
                         {
-                            path : 'user'
+                            path : 'user',
                         }
                     ]
                 })
@@ -37,15 +38,16 @@ const resolvers = {
                     path: 'bonus',
                     populate : [
                         {
-                            path : 'organization'
+                            path : 'organization',
+                            match: {del: {$ne: 'deleted'}}
                         }
-                    ]
+                    ],
                 })
                 .sort(sort)
             bonuses = bonuses.filter(
                 bonus =>
                 {
-                    return (
+                    return bonus.bonus.organization&&bonus.client&&(
                         ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
                         (bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
@@ -63,9 +65,10 @@ const resolvers = {
             bonuses =  await BonusClientAzyk.find()
                 .populate({
                     path: 'client',
+                    match: {del: {$ne: 'deleted'}},
                     populate : [
                         {
-                            path : 'user'
+                            path : 'user',
                         }
                     ]
                 })
@@ -74,14 +77,14 @@ const resolvers = {
                     populate : [
                         {
                             path : 'organization',
-                            match: {status: 'active', _id: user.organization}
+                            match: {status: 'active', _id: user.organization, del: {$ne: 'deleted'}}
                         }
                     ]
                 })
                 .sort(sort)
              bonuses = bonuses.filter(
                     bonus =>
-                        bonus.bonus.organization&&(
+                        bonus.bonus.organization&&bonus.client&&(
                             ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
                             (bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
                             (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
@@ -97,6 +100,7 @@ const resolvers = {
             bonuses =  await BonusClientAzyk.find({client: user.client})
                 .populate({
                     path: 'client',
+                    match: {del: {$ne: 'deleted'}},
                     populate : [
                         {
                             path : 'user'
@@ -108,7 +112,7 @@ const resolvers = {
                     populate : [
                         {
                             path : 'organization',
-                            match: {status: 'active'}
+                            match: {status: 'active', del: {$ne: 'deleted'}}
                         }
                     ]
                 })
@@ -116,7 +120,7 @@ const resolvers = {
             bonuses = bonuses.filter(
                     bonus =>
                         (
-                            bonus.bonus.organization&&(bonus.bonus.organization.name.toLowerCase()).includes(search.toLowerCase())
+                            bonus.client&&bonus.bonus.organization&&(bonus.bonus.organization.name.toLowerCase()).includes(search.toLowerCase())
                         )
                 )
         }

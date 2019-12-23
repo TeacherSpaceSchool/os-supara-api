@@ -6,6 +6,7 @@ const ItemAzykSchema = mongoose.Schema({
     name: String,
     image: String,
     price: Number,
+    packaging: Number,
     reiting: Number,
     deliveryDays: [String],
     subCategory: {
