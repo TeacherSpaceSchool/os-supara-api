@@ -46,7 +46,7 @@ const resolvers = {
     clients: async(parent, {search, sort, filter}, {user}) => {
         if(user.role==='admin'){
             let clients = await ClientAzyk
-                .find({})
+                .find({del: {$ne: 'deleted'}})
                 .populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} })
                 .populate({ path: 'organization' })
                 .sort(sort)
@@ -66,7 +66,7 @@ const resolvers = {
         } else if(['организация', 'менеджер', 'агент'].includes(user.role)) {
             let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-            clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}]}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
+            clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}], del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
             clients = clients.filter(
                     client =>
                         (client.user||client.organization) && (
@@ -233,7 +233,8 @@ const resolversMutation = {
             ){
                 if(objects[i].image)
                     await deleteFile(objects[i].image)
-                await ClientAzyk.deleteOne({_id: objects[i]._id})
+                objects[i].del = 'deleted'
+                objects[i].save()
                 //await UserAzyk.delete({_id: objects.user._id})
             }
         }
