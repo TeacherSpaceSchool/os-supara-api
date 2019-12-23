@@ -110,17 +110,22 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteBasket: async(parent, { _id }, { user }) => {
-        let basket = await BasketAzyk.findOne(
-            user.client?
-                {_id: _id, client: user.client}:
-                {_id: _id, agent: user.employment}
-        );
-        if(basket){
-            let object = await ItemAzyk.findOne({_id: basket.item})
-            let index = object.basket.indexOf(user._id)
-            object.basket.splice(index, 1)
-            object.save()
-            await BasketAzyk.deleteMany({_id: {$in: _id}})
+        for(let i=0; i<_id.length; i++) {
+            let basket = await BasketAzyk.findOne(
+                user.client ?
+                    {
+                        $or: [{_id: _id[i]}, {item: _id[i]}],
+                        client: user.client
+                    } :
+                    {$or: [{_id: _id[i]}, {item: _id[i]}], agent: user.employment}
+            );
+            if (basket) {
+                let object = await ItemAzyk.findOne({_id: basket.item})
+                let index = object.basket.indexOf(user._id)
+                object.basket.splice(index, 1)
+                object.save()
+                await BasketAzyk.deleteOne({_id: basket._id})
+            }
         }
         return {data: 'OK'}
     }

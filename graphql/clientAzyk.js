@@ -224,20 +224,29 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteClient: async(parent, { _id }, {user}) => {
-        if(user.role==='admin'){
-            let objects = await ClientAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
-                await deleteFile(objects[i].image)
-                await UserAzyk.delete({_id: objects.user._id})
+        let objects = await ClientAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(
+                user.role==='admin'
+                ||
+                ((objects[i].organization&&user.organization.toString()===objects[i].organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))
+            ){
+                if(objects[i].image)
+                    await deleteFile(objects[i].image)
+                await ClientAzyk.deleteOne({_id: objects[i]._id})
+                //await UserAzyk.delete({_id: objects.user._id})
             }
-            await ClientAzyk.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}
     },
     onoffClient: async(parent, { _id }, {user}) => {
-        if(user.role==='admin'){
-            let objects = await ClientAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
+        let objects = await ClientAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(
+                user.role==='admin'
+                ||
+                ((objects[i].organization&&user.organization.toString()===objects[i].organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))
+            ){
                 let object = await UserAzyk.findOne({_id: objects[i].user})
                 object.status = object.status==='active'?'deactive':'active'
                 await object.save()
