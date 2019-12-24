@@ -19,6 +19,7 @@ const type = `
     count: Int,
     allPrice: Int,
     status: String,
+    allTonnage: Float
   }
   type Invoice {
     _id: ID
@@ -37,19 +38,21 @@ const type = `
     taken: Boolean
     dateDelivery: Date
     usedBonus: Int
-    agent: Employment
+    agent: Employment,
+    allTonnage: Float
   }
   input OrderInput {
     _id: ID
     count: Int,
     allPrice: Int,
+    allTonnage: Float,
     status: String
   }
 `;
 
 const query = `
     invoices(search: String!, sort: String!, filter: String!, date: String!): [Invoice]
-    invoicesForRouting: [Invoice]
+    invoicesForRouting(organization: ID): [Invoice]
     invoice(_id: ID!): Invoice
     sortInvoice: [Sort]
     filterInvoice: [Filter]
@@ -217,7 +220,7 @@ const resolvers = {
             return invoices
         }
     },
-    invoicesForRouting: async(parent, ctx, {user}) => {
+    invoicesForRouting: async(parent, { organization }, {user}) => {
         if(['организация', 'менеджер'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find()
                 .populate({
@@ -245,7 +248,36 @@ const resolvers = {
                 invoice => invoice.orders.length>0&&invoice.orders[0].item
             )
             return invoices
-        } else return []
+        }
+        else if(['admin'].includes(user.role)) {
+            let invoices =  await InvoiceAzyk.find()
+                .populate({
+                    path: 'orders',
+                    match: {setRoute: false, status: {$nin: ['выполнен', 'отмена']}},
+                    populate : {
+                        path : 'item',
+                        match: { organization: organization },
+                        populate : [
+                            { path : 'organization'}
+                        ]
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate : [
+                        { path : 'user'}
+                    ]
+                })
+                .populate({
+                    path: 'agent'
+                })
+                .sort('createdAt')
+            invoices = invoices.filter(
+                invoice => invoice.orders.length>0&&invoice.orders[0].item
+            )
+            return invoices
+        }
+        else  return []
     },
     invoice: async(parent, {_id}, {user}) => {
         if(mongoose.Types.ObjectId.isValid(_id)) {
@@ -338,6 +370,7 @@ const resolversMutation = {
                         item: baskets[ii].item._id,
                         client: client,
                         count: baskets[ii].count,
+                        allTonnage: baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0),
                         allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         status: 'обработка',
                         agent: user.employment
@@ -352,15 +385,18 @@ const resolversMutation = {
                     while (await OrderAzyk.findOne({number: number}))
                         number = randomstring.generate({length: 12, charset: 'numeric'});
                     let allPrice = 0
+                    let allTonnage = 0
                     let orders = invoices[keysInvoices[ii]]
                     for(let iii=0; iii<orders.length;iii++) {
                         allPrice += orders[iii].allPrice
+                        allTonnage += orders[iii].allTonnage
                         orders[iii] = orders[iii]._id
                     }
                     let objectInvoice = new InvoiceAzyk({
                         orders: orders,
                         client: client,
                         allPrice: allPrice,
+                        allTonnage: allTonnage,
                         info: info,
                         address: address[i],
                         paymentMethod: paymentMethod,
@@ -408,15 +444,18 @@ const resolversMutation = {
     setOrder: async(parent, {orders, invoice}, {user}) => {
         if(orders.length>0&&orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
             let allPrice = 0
+            let allTonnage = 0
             for(let i=0; i<orders.length;i++){
-                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice});
+                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, allTonnage: orders[i].allTonnage});
                 allPrice += orders[i].allPrice
+                allTonnage += orders[i].allTonnage
             }
             let object = await InvoiceAzyk.findOne({_id: invoice})
             if(object.usedBonus&&object.usedBonus>0)
                 object.allPrice = allPrice - object.usedBonus
             else
                 object.allPrice = allPrice
+            object.allTonnage = allTonnage
             await object.save();
         }
         return {data: 'OK'};

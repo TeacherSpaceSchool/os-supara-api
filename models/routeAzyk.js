@@ -13,6 +13,7 @@ const RouteAzykSchema = mongoose.Schema({
     number: String,
     dateStart: Date,
     dateEnd: Date,
+    allTonnage: Number
 }, {
     timestamps: true
 });

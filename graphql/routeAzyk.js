@@ -15,6 +15,7 @@ const type = `
     dateStart: Date
     dateEnd: Date
     number: String
+    allTonnage: Float
   }
 `;
 
@@ -261,21 +262,23 @@ const resolversMutation = {
                 if(employmentEcspeditor.organization.toString()!==user.organization.toString())
                     return {data: 'OK'};
             }
+            let allTonnage = 0
+            for(let i=0; i<invoices.length; i++){
+                let invoice = await InvoiceAzyk.findById(invoices[i]);
+                await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
+                allTonnage += invoice.allTonnage
+                invoice.taken = true
+                invoice.save()
+            }
             let _object = new RouteAzyk({
                 invoices: invoices,
                 employment: employment,
                 status: 'создан',
                 number: number,
+                allTonnage: allTonnage,
                 dateStart: dateStart
             });
-
             await RouteAzyk.create(_object);
-            for(let i=0; i<invoices.length; i++){
-                let invoice = await InvoiceAzyk.findById(invoices[i]);
-                await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
-                invoice.taken = true
-                invoice.save()
-            }
             return {data: 'OK'};
         }
     },
@@ -291,16 +294,19 @@ const resolversMutation = {
                     cancelInvoice.save()
                     await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка', setRoute: false});
                 }
+            let allTonnage = 0
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]).populate('orders');
                 if(['обработка', 'принят'].includes(invoice.orders[0].status)){
                     invoice.taken = true
                     invoice.save()
+                    allTonnage += invoice.allTonnage
                     invoice.orders = invoice.orders.map(element=>element._id)
                     await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
                 }
             }
             object.invoices = invoices;
+            object.allTonnage = allTonnage;
             object.save();
         }
         return {data: 'OK'}

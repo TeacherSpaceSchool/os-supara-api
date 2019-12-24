@@ -1,4 +1,5 @@
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
+const CategoryAzyk = require('../models/categoryAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');

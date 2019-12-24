@@ -11,6 +11,10 @@ const OrderAzykSchema = mongoose.Schema({
     },
     count: Number,
     allPrice: Number,
+    allTonnage: {
+        type: Number,
+        default: 0
+    },
     status: String,
     agent: {
         type: mongoose.Schema.Types.ObjectId,

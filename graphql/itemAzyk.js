@@ -24,6 +24,7 @@ const type = `
     latest: Boolean
     status: String
     packaging: Int
+    weight: Float
   }
 `;
 
@@ -37,8 +38,8 @@ const query = `
 `;
 
 const mutation = `
-    addItem(packaging: Int!, stock: Int!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
-    setItem(_id: ID!, packaging: Int, stock: Int, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
+    addItem(packaging: Int!, stock: Int!, weight: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
+    setItem(_id: ID!, packaging: Int, stock: Int, weight: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
     deleteItem(_id: [ID]!): Data
     onoffItem(_id: [ID]!): Data
     favoriteItem(_id: [ID]!): Data
@@ -254,7 +255,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addItem: async(parent, {stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging}, {user}) => {
+    addItem: async(parent, {stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging, weight}, {user}) => {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveFile(stream, filename)
@@ -271,14 +272,15 @@ const resolversMutation = {
                 packaging: packaging,
                 latest: latest,
                 status: 'active',
-                deliveryDays: deliveryDays
+                deliveryDays: deliveryDays,
+                weight: weight
             });
             if(['организация', 'менеджер'].includes(user.role)) _object.organization = user.organization
             _object = await ItemAzyk.create(_object)
         }
         return {data: 'OK'};
     },
-    setItem: async(parent, {_id, stock, name, image, info, price, subCategory, organization, packaging, hit, latest, deliveryDays}, {user}) => {
+    setItem: async(parent, {_id, weight, stock, name, image, info, price, subCategory, organization, packaging, hit, latest, deliveryDays}, {user}) => {
         let object = await ItemAzyk.findById(_id)
         if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.organization.toString())) {
             if (image) {
@@ -288,6 +290,7 @@ const resolversMutation = {
                 object.image = urlMain + filename
             }
             if(name)object.name = name
+            if(weight!=undefined)object.weight = weight
             if(info)object.info = info
             if(stock!=undefined)object.stock = stock
             if(price)object.price = price

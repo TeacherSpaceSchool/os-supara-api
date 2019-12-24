@@ -24,6 +24,10 @@ const ItemAzykSchema = mongoose.Schema({
     info: String,
     favorite: [mongoose.Schema.Types.ObjectId],
     basket: [mongoose.Schema.Types.ObjectId],
+    weight: {
+        type: Number,
+        default: 0
+    }
 }, {
     timestamps: true
 });

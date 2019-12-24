@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const CategoryAzykSchema = mongoose.Schema({
     name: String,
     image: String,
-    status: String,
+    status: String
 }, {
     timestamps: true
 });

@@ -68,17 +68,17 @@ const resolvers = {
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
             clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}], del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
             clients = clients.filter(
-                    client =>
-                        (client.user||client.organization) && (
-                            ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                            (client.name.toLowerCase()).includes(search.toLowerCase()) ||
-                            (client.email.toLowerCase()).includes(search.toLowerCase()) ||
-                            (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                            ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                            (client.type.toLowerCase()).includes(search.toLowerCase()) ||
-                            (client.info.toLowerCase()).includes(search.toLowerCase())
-                        )
-                )
+                client =>
+                    (client.user||client.organization) && (
+                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        (client.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.email.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase())) ||
+                        ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        (client.type.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.info.toLowerCase()).includes(search.toLowerCase())
+                    )
+            )
             return clients
         }
     },
@@ -88,8 +88,8 @@ const resolvers = {
                 $or:[
                     {_id: _id},
                     {user: _id}
-                    ]
-                }).populate({ path: 'user'})
+                ]
+            }).populate({ path: 'user'})
         else return null
     },
     sortClient: async(parent, ctx, {user}) => {
@@ -169,7 +169,7 @@ const resolversMutation = {
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
-       if(
+        if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
             (object.organization&&(user.organization.toString()===object.organization.toString())&&['организация', 'менеджер', 'агент'].includes(user.role))) {
@@ -180,7 +180,7 @@ const resolversMutation = {
                 filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
             }
-           if (patent) {
+            if (patent) {
                 let {stream, filename} = await patent;
                 if(object.patent&&object.patent.includes(urlMain))
                     await deleteFile(object.patent)
@@ -234,7 +234,7 @@ const resolversMutation = {
                 if(objects[i].image)
                     await deleteFile(objects[i].image)
                 objects[i].del = 'deleted'
-                objects[i].save()
+                objects[i].save
                 //await UserAzyk.delete({_id: objects.user._id})
             }
         }
