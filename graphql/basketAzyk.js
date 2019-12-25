@@ -23,6 +23,7 @@ const mutation = `
     addBasket(item: ID!, count: Int!): Data
     setBasket(_id: ID!, count: Int!): Data
     deleteBasket(_id: [ID]!): Data
+    deleteBasketAll: Data
 `;
 
 const subscription  = `
@@ -51,13 +52,13 @@ const resolvers = {
     },
     countBasket: async(parent, ctx, {user}) => {
         let count = 0;
-        if(['client', 'агент'].includes(user.role)) {
-            count = await BasketAzyk.find(user.client ? {client: user.client} : {agent: user.employment})
+        if(['client'].includes(user.role)) {
+            count = await BasketAzyk.find(user.client)
                 .populate({
                     path: 'item',
                     match: {status: 'active'}
                 })
-            count = count.filter(basket => ((user.client?basket.client:basket.agent)&&basket.item))
+            count = count.filter(basket => (basket.item))
             count = count.length
         }
         return count
@@ -86,7 +87,6 @@ const resolversMutation = {
                 basket.count = count;
                 basket.save();
             }
-
             let object = await ItemAzyk.findOne({_id: item})
             let index = object.basket.indexOf(user._id)
             if(index===-1){
@@ -127,6 +127,10 @@ const resolversMutation = {
                 await BasketAzyk.deleteOne({_id: basket._id})
             }
         }
+        return {data: 'OK'}
+    },
+    deleteBasketAll: async(parent, ctx, { user }) => {
+        await BasketAzyk.deleteMany({agent: user.employment})
         return {data: 'OK'}
     }
 };

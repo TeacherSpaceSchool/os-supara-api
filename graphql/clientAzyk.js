@@ -59,7 +59,8 @@ const resolvers = {
                         (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
                         (client.type.toLowerCase()).includes(search.toLowerCase())||
                         ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())
+                        (client.info.toLowerCase()).includes(search.toLowerCase())||
+                        (client.organization&&client.organization.name.toLowerCase()).includes(search.toLowerCase())
                     )
             )
             return clients
