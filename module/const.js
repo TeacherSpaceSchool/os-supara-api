@@ -27,6 +27,7 @@ module.exports.saveFile = (stream, filename) => {
         let filepath = path.join(app.dirname, 'public', 'images', filename)
         let fstream = fs.createWriteStream(filepath);
         stream.pipe(fstream)
+        console.log(`/images/${filename}`)
         fstream.on('finish', async () => {
             resolve(`/images/${filename}`)
         })

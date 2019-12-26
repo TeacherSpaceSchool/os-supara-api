@@ -1,11 +1,20 @@
 const mongoose = require('mongoose');
 
 const ClientAzykSchema = mongoose.Schema({
-    name: String,
-    email: String,
+    name: {
+        type: String,
+        default: ''
+    },
+    email: {
+        type: String,
+        default: ''
+    },
     phone: [String],
     address: [[String]],
-    info: String,
+    info: {
+        type: String,
+        default: ''
+    },
     reiting: Number,
     image: String,
     city: String,
