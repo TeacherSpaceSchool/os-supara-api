@@ -27,7 +27,6 @@ module.exports.saveFile = (stream, filename) => {
         let filepath = path.join(app.dirname, 'public', 'images', filename)
         let fstream = fs.createWriteStream(filepath);
         stream.pipe(fstream)
-        console.log(`/images/${filename}`)
         fstream.on('finish', async () => {
             resolve(`/images/${filename}`)
         })
@@ -36,7 +35,7 @@ module.exports.saveFile = (stream, filename) => {
 
 module.exports.deleteFile = (oldFile) => {
     return new Promise((resolve) => {
-        oldFile.replace(urlMain, '')
+        oldFile = oldFile.replace(urlMain, '')
         oldFile = path.join(app.dirname, 'public', oldFile)
         fs.unlink(oldFile, ()=>{
             resolve()
