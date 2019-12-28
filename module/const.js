@@ -1,4 +1,4 @@
-
+const Jimp = require('jimp');
 const randomstring = require('randomstring');
 const app = require('../app');
 const fs = require('fs');
@@ -29,6 +29,30 @@ module.exports.saveFile = (stream, filename) => {
         stream.pipe(fstream)
         fstream.on('finish', async () => {
             resolve(`/images/${filename}`)
+        })
+    })
+}
+
+module.exports.saveImage = (stream, filename) => {
+    return new Promise(async (resolve) => {
+        let randomfilename = `${randomstring.generate(7)}${filename}`;
+        let filepath = path.join(app.dirname, 'public', 'images', randomfilename)
+        randomfilename = `${randomstring.generate(7)}${filename}`;
+        let filepathResize = path.join(app.dirname, 'public', 'images', randomfilename)
+        let fstream = fs.createWriteStream(filepath);
+        stream.pipe(fstream)
+        fstream.on('finish', async () => {
+            let image = await Jimp.read(filepath)
+            if(image.bitmap.width>800||image.bitmap.height>800) {
+                image.resize(800, Jimp.AUTO)
+                    .quality(80)
+                    .write(filepathResize);
+                fs.unlink(filepath, ()=>{
+                    resolve(`/images/${randomfilename}`)
+                })
+            }
+            else
+                resolve(`/images/${filename}`)
         })
     })
 }

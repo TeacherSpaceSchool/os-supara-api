@@ -1,5 +1,5 @@
 const BlogAzyk = require('../models/blogAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Blog {
@@ -50,7 +50,7 @@ const resolversMutation = {
     addBlog: async(parent, {image, text, title}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
-            filename = await saveFile(stream, filename)
+            filename = await saveImage(stream, filename)
             let _object = new BlogAzyk({
                 image: urlMain+filename,
                 text: text,
@@ -66,7 +66,7 @@ const resolversMutation = {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if(text)object.text = text

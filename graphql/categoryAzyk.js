@@ -1,6 +1,6 @@
 const CategoryAzyk = require('../models/categoryAzyk');
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Category {
@@ -99,7 +99,7 @@ const resolversMutation = {
     addCategory: async(parent, {image, name}, {user}) => {
         if(user.role==='admin'&&name!=='Не задано'){
             let { stream, filename } = await image;
-            filename = await saveFile(stream, filename)
+            filename = await saveImage(stream, filename)
             let _object = new CategoryAzyk({
                 image: urlMain+filename,
                 name: name,
@@ -115,7 +115,7 @@ const resolversMutation = {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if(name&&name!=='Не задано') object.name = name

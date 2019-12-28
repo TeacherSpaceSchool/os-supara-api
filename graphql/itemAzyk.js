@@ -3,7 +3,7 @@ const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Item {
@@ -259,7 +259,7 @@ const resolversMutation = {
     addItem: async(parent, {stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging, weight, size}, {user}) => {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             let { stream, filename } = await image;
-            filename = await saveFile(stream, filename)
+            filename = await saveImage(stream, filename)
             let _object = new ItemAzyk({
                 stock: stock,
                 name: name,
@@ -288,7 +288,7 @@ const resolversMutation = {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if(name)object.name = name

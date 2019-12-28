@@ -1,5 +1,5 @@
 const ContactAzyk = require('../models/contactAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Contact {
@@ -43,7 +43,7 @@ const resolversMutation = {
                 });
                 if(image) {
                     let {stream, filename} = await image;
-                    object.image = urlMain+(await saveFile(stream, filename))
+                    object.image = urlMain+(await saveImage(stream, filename))
                 }
                 else
                     object.image = ''
@@ -54,7 +54,7 @@ const resolversMutation = {
                     let {stream, filename} = await image;
                     if(object.image)
                         await deleteFile(object.image)
-                    filename = await saveFile(stream, filename)
+                    filename = await saveImage(stream, filename)
                     object.image = urlMain + filename
                 }
                 object.name = name

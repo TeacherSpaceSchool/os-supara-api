@@ -5,7 +5,7 @@ const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Organization {
@@ -101,7 +101,7 @@ const resolversMutation = {
     addOrganization: async(parent, {info, phone, email, address, image, name, minimumOrder}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
-            filename = await saveFile(stream, filename)
+            filename = await saveImage(stream, filename)
             let objectOrganization = new OrganizationAzyk({
                 image: urlMain+filename,
                 name: name,
@@ -129,7 +129,7 @@ const resolversMutation = {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if(name) object.name = name

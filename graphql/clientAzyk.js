@@ -2,7 +2,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveFile, saveImage, deleteFile, urlMain } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
 
@@ -146,7 +146,7 @@ const resolversMutation = {
             if(type)client.type = type
             if (image) {
                 let {stream, filename} = await image;
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 client.image = urlMain + filename
             }
             if (patent) {
@@ -179,7 +179,7 @@ const resolversMutation = {
                 let {stream, filename} = await image;
                 if(object.image&&object.image.includes(urlMain))
                     await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if (patent) {

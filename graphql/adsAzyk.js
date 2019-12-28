@@ -1,5 +1,5 @@
 const AdsAzyk = require('../models/adsAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type Ads {
@@ -55,7 +55,7 @@ const resolversMutation = {
     addAds: async(parent, {image, url, title}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
-            filename = await saveFile(stream, filename)
+            filename = await saveImage(stream, filename)
             let _object = new AdsAzyk({
                 image: urlMain+filename,
                 url: url,
@@ -71,7 +71,7 @@ const resolversMutation = {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if(url) object.url = url

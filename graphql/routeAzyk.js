@@ -225,6 +225,14 @@ const resolvers = {
             {
                 name: 'Статус',
                 field: 'status'
+            },
+            {
+                name: 'Кубатура',
+                field: 'allTonnage'
+            },
+            {
+                name: 'Тоннаж',
+                field: 'allSize'
             }
         ]
         return sort
