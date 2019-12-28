@@ -19,7 +19,8 @@ const type = `
     count: Int,
     allPrice: Int,
     status: String,
-    allTonnage: Float
+    allTonnage: Float,
+    allSize: Float
   }
   type Invoice {
     _id: ID
@@ -39,13 +40,15 @@ const type = `
     dateDelivery: Date
     usedBonus: Int
     agent: Employment,
-    allTonnage: Float
+    allTonnage: Float,
+    allSize: Float
   }
   input OrderInput {
     _id: ID
     count: Int,
     allPrice: Int,
     allTonnage: Float,
+    allSize: Float,
     status: String
   }
 `;
@@ -371,6 +374,7 @@ const resolversMutation = {
                         client: client,
                         count: baskets[ii].count,
                         allTonnage: baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0),
+                        allSize: baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0),
                         allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         status: 'обработка',
                         agent: user.employment
@@ -386,10 +390,12 @@ const resolversMutation = {
                         number = randomstring.generate({length: 12, charset: 'numeric'});
                     let allPrice = 0
                     let allTonnage = 0
+                    let allSize = 0
                     let orders = invoices[keysInvoices[ii]]
                     for(let iii=0; iii<orders.length;iii++) {
                         allPrice += orders[iii].allPrice
                         allTonnage += orders[iii].allTonnage
+                        allSize += orders[iii].allSize
                         orders[iii] = orders[iii]._id
                     }
                     let objectInvoice = new InvoiceAzyk({
@@ -397,6 +403,7 @@ const resolversMutation = {
                         client: client,
                         allPrice: allPrice,
                         allTonnage: allTonnage,
+                        allSize: allSize,
                         info: info,
                         address: address[i],
                         paymentMethod: paymentMethod,
@@ -445,10 +452,12 @@ const resolversMutation = {
         if(orders.length>0&&orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
+            let allSize = 0
             for(let i=0; i<orders.length;i++){
-                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, allTonnage: orders[i].allTonnage});
+                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, allSize: orders[i].allSize, allTonnage: orders[i].allTonnage});
                 allPrice += orders[i].allPrice
                 allTonnage += orders[i].allTonnage
+                allSize += orders[i].allSize
             }
             let object = await InvoiceAzyk.findOne({_id: invoice})
             if(object.usedBonus&&object.usedBonus>0)
@@ -456,6 +465,7 @@ const resolversMutation = {
             else
                 object.allPrice = allPrice
             object.allTonnage = allTonnage
+            object.allSize = allSize
             await object.save();
         }
         return {data: 'OK'};

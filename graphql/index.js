@@ -8,11 +8,13 @@ const OrganizationAzyk = require('./organizationAzyk');
 const ContactAzyk = require('./contactAzyk');
 const ClientAzyk = require('./clientAzyk');
 const EmploymentAzyk = require('./employmentAzyk');
+const AutoAzyk = require('./autoAzyk');
 const ItemAzyk = require('./itemAzyk');
 const BasketAzyk = require('./basketAzyk');
 const OrderAzyk = require('./orderAzyk');
 const BonusAzyk = require('./bonusAzyk');
 const BonusClientAzyk = require('./bonusClientAzyk');
+const EquipmentAzyk = require('./equipmentAzyk');
 const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
 const { verifydeuserGQL } = require('../module/passport');
@@ -37,6 +39,8 @@ const typeDefs = gql`
         image: String
     }
     ${AdsAzyk.type}
+    ${AutoAzyk.type}
+    ${EquipmentAzyk.type}
     ${ClientAzyk.type}
     ${OrganizationAzyk.type}
     ${BlogAzyk.type}
@@ -53,6 +57,8 @@ const typeDefs = gql`
     ${BonusClientAzyk.type}
     type Mutation {
         ${AdsAzyk.mutation}
+        ${AutoAzyk.mutation}
+        ${EquipmentAzyk.mutation}
         ${ClientAzyk.mutation}
         ${OrganizationAzyk.mutation}
         ${CategoryAzyk.mutation}
@@ -70,6 +76,8 @@ const typeDefs = gql`
     }
     type Query {
         ${ClientAzyk.query}
+        ${AutoAzyk.query}
+        ${EquipmentAzyk.query}
         ${OrganizationAzyk.query}
         ${AdsAzyk.query}
         ${CategoryAzyk.query}
@@ -109,6 +117,8 @@ const resolvers = {
         },
     }),
     Query: {
+        ...AutoAzyk.resolvers,
+        ...EquipmentAzyk.resolvers,
         ...ClientAzyk.resolvers,
         ...OrganizationAzyk.resolvers,
         ...BlogAzyk.resolvers,
@@ -127,6 +137,8 @@ const resolvers = {
     },
     Mutation: {
         ...ClientAzyk.resolversMutation,
+        ...AutoAzyk.resolversMutation,
+        ...EquipmentAzyk.resolversMutation,
         ...OrganizationAzyk.resolversMutation,
         ...CategoryAzyk.resolversMutation,
         ...SubCategoryAzyk.resolversMutation,

@@ -27,6 +27,10 @@ const ItemAzykSchema = mongoose.Schema({
     weight: {
         type: Number,
         default: 0
+    },
+    size: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true

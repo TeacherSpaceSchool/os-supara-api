@@ -16,6 +16,7 @@ const type = `
     dateEnd: Date
     number: String
     allTonnage: Float
+    allSize: Float
   }
 `;
 
@@ -263,10 +264,12 @@ const resolversMutation = {
                     return {data: 'OK'};
             }
             let allTonnage = 0
+            let allSize = 0
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]);
                 await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
                 allTonnage += invoice.allTonnage
+                allSize += invoice.allSize
                 invoice.taken = true
                 invoice.save()
             }
@@ -276,6 +279,7 @@ const resolversMutation = {
                 status: 'создан',
                 number: number,
                 allTonnage: allTonnage,
+                allSize: allSize,
                 dateStart: dateStart
             });
             await RouteAzyk.create(_object);
@@ -295,18 +299,21 @@ const resolversMutation = {
                     await OrderAzyk.updateMany({_id: {$in: cancelInvoice.orders}}, {status: 'обработка', setRoute: false});
                 }
             let allTonnage = 0
+            let allSize = 0
             for(let i=0; i<invoices.length; i++){
                 let invoice = await InvoiceAzyk.findById(invoices[i]).populate('orders');
                 if(['обработка', 'принят'].includes(invoice.orders[0].status)){
                     invoice.taken = true
                     invoice.save()
                     allTonnage += invoice.allTonnage
+                    allSize += invoice.allSize
                     invoice.orders = invoice.orders.map(element=>element._id)
                     await OrderAzyk.updateMany({_id: {$in: invoice.orders}}, {status: 'принят', setRoute: true});
                 }
             }
             object.invoices = invoices;
             object.allTonnage = allTonnage;
+            object.allSize = allSize
             object.save();
         }
         return {data: 'OK'}

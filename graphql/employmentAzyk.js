@@ -84,7 +84,7 @@ const resolvers = {
                 .populate({path: 'organization'})
             employments = employments.filter(employment => (employment.user))
             return employments
-        }
+}
     },
     employment: async(parent, {_id}, {user}) => {
         if(user.role&&user.role!=='client'&&mongoose.Types.ObjectId.isValid(_id)) {

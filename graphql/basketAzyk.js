@@ -9,7 +9,7 @@ const type = `
     _id: ID
     createdAt: Date
     item: Item
-    count: Int,
+    count: Int
     client: Client
   }
 `;

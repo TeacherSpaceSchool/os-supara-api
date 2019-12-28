@@ -14,6 +14,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    allSize: {
+        type: Number,
+        default: 0
+    },
     usedBonus: Number,
     number: String,
     info: String,
