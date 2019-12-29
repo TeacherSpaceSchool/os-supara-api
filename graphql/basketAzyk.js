@@ -53,7 +53,7 @@ const resolvers = {
     countBasket: async(parent, ctx, {user}) => {
         let count = 0;
         if(['client'].includes(user.role)) {
-            count = await BasketAzyk.find(user.client)
+            count = await BasketAzyk.find({client: user.client})
                 .populate({
                     path: 'item',
                     match: {status: 'active'}

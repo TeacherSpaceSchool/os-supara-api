@@ -1,5 +1,4 @@
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
-const CategoryAzyk = require('../models/categoryAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
@@ -57,6 +56,34 @@ const resolvers = {
                             status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
                         }).populate('category').sort(sort))
                     ]
+                }
+            }
+            else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)) {
+                let subCategorys =  await ItemAzyk.find({organization: user.organization, del: {$ne: 'deleted'}}).distinct('subCategory')
+                if(category!=='all'){
+                    return await SubCategoryAzyk.find({
+                            _id: {$in: subCategorys},
+                            $and: [
+                                {name: {$ne: 'Не задано'}},
+                                {name: {'$regex': search, '$options': 'i'}}
+                            ],
+                            category: category,
+                            status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                        })
+                        .populate('category')
+                        .sort(sort)
+                }
+                else {
+                    return await SubCategoryAzyk.find({
+                            _id: {$in: subCategorys},
+                            $and: [
+                                {name: {'$regex': search, '$options': 'i'}},
+                                {name: {$ne: 'Не задано'},}
+                            ],
+                            status:  filter.length===0?{'$regex': filter, '$options': 'i'}:filter
+                        })
+                        .populate('category')
+                        .sort(sort)
                 }
             }
             else {

@@ -166,7 +166,7 @@ const run = (app)=>{
         resolvers,
         context: async ({ req, res }) => {
             let user = await verifydeuserGQL(req, res)
-             return { req: req, res: res, user: user };
+            return { req: req, res: res, user: user };
         },
         formatError: (err) => {
             console.error(err)

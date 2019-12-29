@@ -22,7 +22,7 @@ const query = `
 `;
 
 const mutation = `
-    addEquipment(number: String!, name: String!, organization: ID, client: ID): Data
+    addEquipment(number: String!, name: String!, organization: ID!, client: ID): Data
     setEquipment(_id: ID!, number: String, name: String, organization: ID, client: ID): Data
     deleteEquipment(_id: [ID]!): Data
 `;
@@ -84,9 +84,8 @@ const resolvers = {
                 .populate('client')
                 .populate('organization')
         if(user.role==='admin'||user.organization.toString()===equipment.organization._id.toString())
-            return equipment
-        else
-            return null
+            return
+
     },
     sortEquipment: async() => {
         return [
@@ -152,10 +151,10 @@ const resolversMutation = {
             let _object = new EquipmentAzyk({
                 number: number,
                 name: name,
+                organization: organization,
             });
             if(client)_object.client = client
-            if(user.role==='admin')
-                _object.organization = organization
+            if(user.role==='admin')_object.organization = organization
             else
                 _object.organization = user.organization
             await EquipmentAzyk.create(_object)

@@ -228,11 +228,11 @@ const resolvers = {
             },
             {
                 name: 'Кубатура',
-                field: 'allTonnage'
+                field: 'allSize'
             },
             {
                 name: 'Тоннаж',
-                field: 'allSize'
+                field: 'allTonnage'
             }
         ]
         return sort

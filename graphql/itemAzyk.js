@@ -1,5 +1,6 @@
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const SubCategoryAzyk = require('../models/subCategoryAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
@@ -84,40 +85,21 @@ const resolvers = {
             }
         }
         else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
-            let employment = await EmploymentAzyk.findOne({user: user._id})
-            if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
-                let items =  await ItemAzyk.find({
-                    subCategory: subCategory,
-                    organization: employment.organization,
-                    del: {$ne: 'deleted'}
-                })
-                    .populate('subCategory')
-                    .populate('organization')
-                    .sort(sort)
-                items = items.filter(
-                    item => (
-                        (item.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (item.info.toLowerCase()).includes(search.toLowerCase())
-                    )
+            let items =  await ItemAzyk.find({
+                ...(filter.length===0?{}:{subCategory: filter}),
+                organization: user.organization,
+                del: {$ne: 'deleted'}
+            })
+                .populate('subCategory')
+                .populate('organization')
+                .sort(sort)
+            items = items.filter(
+                item => (
+                    (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (item.info.toLowerCase()).includes(search.toLowerCase())
                 )
-                return items
-            }
-            else {
-                let items =  await ItemAzyk.find({
-                    organization: employment.organization,
-                    del: {$ne: 'deleted'}
-                })
-                    .populate('subCategory')
-                    .populate('organization')
-                    .sort(sort)
-                items = items.filter(
-                    item => (
-                        (item.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (item.info.toLowerCase()).includes(search.toLowerCase())
-                    )
-                )
-                return items
-            }
+            )
+            return items
         }
         else  if(user.role==='client'||user.role===undefined){
             if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
@@ -230,13 +212,14 @@ const resolvers = {
         return sort
     },
     filterItem: async(parent, ctx, {user}) => {
-        let filter = [
-            {
-                name: 'Все',
-                value: ''
-            }
-        ]
+        let filter = []
         if(!['экспедитор', 'организация', 'менеджер'].includes(user.role)){
+            filter = [
+                {
+                    name: 'Все',
+                    value: ''
+                }
+            ]
             let organizations = await OrganizationAzyk.find({
                 status: 'active',
                 del: {$ne: 'deleted'}
@@ -246,7 +229,31 @@ const resolvers = {
                     ... filter,
                     {
                         name: organizations[i].name,
-                        value: organizations[i].name
+                        value: organizations[i]._id
+                    }
+                ]
+            }
+        }
+        else {
+            filter = [
+                {
+                    name: 'Все',
+                    value: ''
+                }
+            ]
+            let subcategorys = await ItemAzyk.find({
+                organization: user.organization,
+                status: 'active',
+                del: {$ne: 'deleted'}
+            }).distinct('subCategory')
+            console.log(subcategorys)
+            subcategorys = await SubCategoryAzyk.find({_id: {$in: subcategorys}})
+            for(let i = 0; i<subcategorys.length; i++){
+                filter = [
+                    ... filter,
+                    {
+                        name: subcategorys[i].name,
+                        value: subcategorys[i]._id
                     }
                 ]
             }

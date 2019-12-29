@@ -40,7 +40,9 @@ const resolvers = {
                 .sort(sort)
             autos = autos.filter(
                 auto => (
-                    (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.employment&&auto.employment.name.toLowerCase()).includes(search.toLowerCase())
                 )
@@ -56,7 +58,9 @@ const resolvers = {
                 .sort(sort)
             autos = autos.filter(
                 auto => (
-                    (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
@@ -64,40 +68,27 @@ const resolvers = {
         }
     },
     auto: async(parent, {_id}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(_id)) {
-            let auto = await AutoAzyk.findOne({$or: [{_id: _id}, {employment: _id}]})
-                .populate('employment')
-                .populate('organization')
-            if (user.role === 'admin' || user.organization.toString() === auto.organization._id.toString())
-                return auto
-            else
-                return null
-        }
+        let auto = await AutoAzyk.findOne({$or: [{_id: _id}, {employment: _id}]})
+            .populate('employment')
+            .populate('organization')
+        if(user.role==='admin'||user.organization.toString()===auto.organization._id.toString())
+            return auto
         else
             return null
-
     },
-    sortAuto: async() => {
+    sortEquipment: async() => {
         return [
             {
-                name: 'Номер',
-                field: 'number'
+                name: 'Имя',
+                field: 'name'
             },
             {
                 name: 'Дата',
                 field: '-createdAt'
             },
-            {
-                name: 'Грузоподъемность',
-                field: 'tonnage'
-            },
-            {
-                name: 'Кубатура',
-                field: 'size'
-            },
         ]
     },
-    filterAuto: async(parent, ctx, {user}) => {
+    filterEquipment: async(parent, ctx, {user}) => {
         if(['admin'].includes(user.role)){
             let filter = [
                 {
@@ -165,8 +156,8 @@ const resolversMutation = {
             let object = await AutoAzyk.findById(_id)
             if(number)object.number = number
             if(tonnage)object.tonnage = tonnage
-            if(size)object.size = size
-            if(employment)object.employment = employment
+            if(tonnage)object.tonnage = tonnage
+            if(client)object.client = client
             if(organization&&user.role==='admin')object.organization = organization
             object.save();
         }
@@ -174,10 +165,10 @@ const resolversMutation = {
     },
     deleteEquipment: async(parent, { _id }, {user}) => {
         if(['admin', 'организация'].includes(user.role)){
-            let objects = await AutoAzyk.find({_id: {$in: _id}})
+            let objects = await EquipmentAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 if(user.role==='admin'||user.organization.toString()===objects[i].organization.toString())
-                    await AutoAzyk.deleteOne({_id: objects[i]._id})
+                    await EquipmentAzyk.deleteOne({_id: objects[i]._id})
             }
         }
         return {data: 'OK'}

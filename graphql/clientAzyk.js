@@ -2,7 +2,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const { saveFile, saveImage, deleteFile, urlMain } = require('../module/const');
+const { saveFile, deleteFile, urlMain } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
 
@@ -144,11 +144,17 @@ const resolversMutation = {
             if(phone)client.phone = phone
             if(info)client.info = info
             if(type)client.type = type
+            console.log(2)
             if (image) {
+                console.log(3)
                 let {stream, filename} = await image;
-                filename = await saveImage(stream, filename)
+                console.log(4)
+                filename = await saveFile(stream, filename)
+                console.log(5)
                 client.image = urlMain + filename
+                console.log(6)
             }
+            console.log(7)
             if (patent) {
                 let {stream, filename} = await patent;
                 filename = await saveFile(stream, filename)
@@ -179,7 +185,7 @@ const resolversMutation = {
                 let {stream, filename} = await image;
                 if(object.image&&object.image.includes(urlMain))
                     await deleteFile(object.image)
-                filename = await saveImage(stream, filename)
+                filename = await saveFile(stream, filename)
                 object.image = urlMain + filename
             }
             if (patent) {
@@ -236,7 +242,7 @@ const resolversMutation = {
                 if(objects[i].image)
                     await deleteFile(objects[i].image)
                 objects[i].del = 'deleted'
-                objects[i].save()
+                objects[i].save
                 //await UserAzyk.delete({_id: objects.user._id})
             }
         }
