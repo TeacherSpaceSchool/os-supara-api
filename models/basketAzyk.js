@@ -14,6 +14,10 @@ const BasketAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EmploymentAzyk'
     },
+    consignment: {
+        type: Number,
+        default: 0
+    },
 }, {
     timestamps: true
 });

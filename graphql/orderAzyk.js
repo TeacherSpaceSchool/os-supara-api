@@ -14,20 +14,23 @@ const type = `
   type Order {
     _id: ID
     createdAt: Date
-    item: Item,
-    client: Client,
-    count: Int,
-    allPrice: Int,
-    status: String,
-    allTonnage: Float,
+    item: Item
+    client: Client
+    count: Int
+    allPrice: Int
+    status: String
+    allTonnage: Float
     allSize: Float
+    consignment: Int
+    consignmentPrice: Int
   }
   type Invoice {
     _id: ID
     createdAt: Date
     orders: [Order],
     client: Client,
-    allPrice: Int ,
+    allPrice: Int 
+    consignmentPrice: Int
     info: String,
     address: [String],
     paymentMethod: String,
@@ -45,11 +48,13 @@ const type = `
   }
   input OrderInput {
     _id: ID
-    count: Int,
-    allPrice: Int,
-    allTonnage: Float,
-    allSize: Float,
+    count: Int
+    allPrice: Int
+    allTonnage: Float
+    allSize: Float
     status: String
+    consignment: Int
+    consignmentPrice: Int
   }
 `;
 
@@ -326,6 +331,10 @@ const resolvers = {
             {
                 name: 'Тоннаж',
                 field: 'allSize'
+            },
+            {
+                name: 'Консигнации',
+                field: 'consignmentPrice'
             }
         ]
         return sort
@@ -385,6 +394,8 @@ const resolversMutation = {
                         item: baskets[ii].item._id,
                         client: client,
                         count: baskets[ii].count,
+                        consignment: baskets[ii].consignment,
+                        consignmentPrice: baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         allTonnage: baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0),
                         allSize: baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0),
                         allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
@@ -398,14 +409,16 @@ const resolversMutation = {
                 let keysInvoices = Object.keys(invoices)
                 for(let ii=0; ii<keysInvoices.length;ii++) {
                     let number = randomstring.generate({length: 12, charset: 'numeric'});
-                    while (await OrderAzyk.findOne({number: number}))
+                    while (await InvoiceAzyk.findOne({number: number}))
                         number = randomstring.generate({length: 12, charset: 'numeric'});
                     let allPrice = 0
                     let allTonnage = 0
                     let allSize = 0
+                    let consignmentPrice = 0
                     let orders = invoices[keysInvoices[ii]]
                     for(let iii=0; iii<orders.length;iii++) {
                         allPrice += orders[iii].allPrice
+                        consignmentPrice += orders[iii].consignmentPrice
                         allTonnage += orders[iii].allTonnage
                         allSize += orders[iii].allSize
                         orders[iii] = orders[iii]._id
@@ -414,6 +427,7 @@ const resolversMutation = {
                         orders: orders,
                         client: client,
                         allPrice: allPrice,
+                        consignmentPrice: consignmentPrice,
                         allTonnage: allTonnage,
                         allSize: allSize,
                         info: info,
@@ -465,11 +479,13 @@ const resolversMutation = {
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
+            let consignmentPrice = 0
             for(let i=0; i<orders.length;i++){
-                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, allSize: orders[i].allSize, allTonnage: orders[i].allTonnage});
+                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, consignmentPrice: orders[i].consignmentPrice, consignment: orders[i].consignment, allSize: orders[i].allSize, allTonnage: orders[i].allTonnage});
                 allPrice += orders[i].allPrice
                 allTonnage += orders[i].allTonnage
                 allSize += orders[i].allSize
+                consignmentPrice += orders[i].consignmentPrice
             }
             let object = await InvoiceAzyk.findOne({_id: invoice})
             if(object.usedBonus&&object.usedBonus>0)
@@ -477,6 +493,7 @@ const resolversMutation = {
             else
                 object.allPrice = allPrice
             object.allTonnage = allTonnage
+            object.consignmentPrice = consignmentPrice
             object.allSize = allSize
             await object.save();
         }

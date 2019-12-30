@@ -11,6 +11,7 @@ const type = `
     item: Item
     count: Int
     client: Client
+    consignment: Int
   }
 `;
 
@@ -20,8 +21,8 @@ const query = `
 `;
 
 const mutation = `
-    addBasket(item: ID!, count: Int!): Data
-    setBasket(_id: ID!, count: Int!): Data
+    addBasket(item: ID!, count: Int!, consignment: Int): Data
+    setBasket(_id: ID!, count: Int!, consignment: Int): Data
     deleteBasket(_id: [ID]!): Data
     deleteBasketAll: Data
 `;
@@ -66,7 +67,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addBasket: async(parent, {item, count}, {user}) => {
+    addBasket: async(parent, {item, count, consignment}, {user}) => {
         if(['агент', 'client'].includes(user.role)){
             let basket = await BasketAzyk.findOne(
                 user.client?
@@ -78,6 +79,8 @@ const resolversMutation = {
                     item: item,
                     count: count
                 });
+                if(consignment)
+                    _object.consignment = consignment
                 if(user.client)
                     _object.client = user.client
                 else
@@ -85,6 +88,8 @@ const resolversMutation = {
                 await BasketAzyk.create(_object)
             } else {
                 basket.count = count;
+                if(consignment)
+                    basket.consignment = consignment
                 basket.save();
             }
             let object = await ItemAzyk.findOne({_id: item})
@@ -97,7 +102,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setBasket: async(parent, {_id, count}, { user }) => {
+    setBasket: async(parent, {_id, count, consignment}, { user }) => {
         let object = await BasketAzyk.findOne(
             user.client?
                 {_id: _id, client: user.client}:
@@ -105,6 +110,7 @@ const resolversMutation = {
         );
         if(object) {
             object.count = count;
+            if(consignment) object.consignment = consignment
             object.save();
         }
         return {data: 'OK'}

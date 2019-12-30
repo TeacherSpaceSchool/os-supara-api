@@ -10,6 +10,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         ref: 'ClientAzyk'
     },
     allPrice: Number,
+    consignmentPrice: {
+        type: Number,
+        default: 0
+    },
     allTonnage: {
         type: Number,
         default: 0

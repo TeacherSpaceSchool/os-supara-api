@@ -10,6 +10,14 @@ const OrderAzykSchema = mongoose.Schema({
         ref: 'ClientAzyk'
     },
     count: Number,
+    consignment: {
+        type: Number,
+        default: 0
+    },
+    consignmentPrice: {
+        type: Number,
+        default: 0
+    },
     allPrice: Number,
     allTonnage: {
         type: Number,
