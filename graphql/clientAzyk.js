@@ -64,7 +64,23 @@ const resolvers = {
                     )
             )
             return clients
-        } else if(['организация', 'менеджер', 'агент'].includes(user.role)) {
+        } else if('агент'===user.role) {
+            let clients = await ClientAzyk.find({organization: user.organization, del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
+            clients = clients.filter(
+                client => {
+                    return (client.user || client.organization) && (
+                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        (client.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.email.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
+                        ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        (client.type.toLowerCase()).includes(search.toLowerCase()) ||
+                        (client.info.toLowerCase()).includes(search.toLowerCase())
+                    )
+                }
+            )
+            return clients
+        } else if(['организация', 'менеджер'].includes(user.role)) {
             let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
             let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
             clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}], del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
