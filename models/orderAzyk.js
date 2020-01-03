@@ -14,6 +14,10 @@ const OrderAzykSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    returned: {
+        type: Number,
+        default: 0
+    },
     consignmentPrice: {
         type: Number,
         default: 0

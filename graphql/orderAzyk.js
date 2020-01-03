@@ -22,6 +22,7 @@ const type = `
     allTonnage: Float
     allSize: Float
     consignment: Int
+    returned: Int
     consignmentPrice: Int
   }
   type Invoice {
@@ -37,6 +38,7 @@ const type = `
     number: String,
     confirmationForwarder: Boolean,
     confirmationClient: Boolean
+    paymentConsignation: Boolean
     cancelClient: Date
     cancelForwarder: Date
     taken: Boolean
@@ -54,6 +56,7 @@ const type = `
     allSize: Float
     status: String
     consignment: Int
+    returned: Int
     consignmentPrice: Int
   }
 `;
@@ -69,7 +72,7 @@ const query = `
 const mutation = `
     addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!, client: ID!): Data
     setOrder(orders: [OrderInput], invoice: ID): Data
-    setInvoice(taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean): Data
+    setInvoice(taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean, paymentConsignation: Boolean): Data
     cancelOrders(_id: [ID]!, invoice: ID): Data
     approveOrders(invoices: [ID]!, route: ID): Data
 `;
@@ -88,10 +91,16 @@ const resolvers = {
             dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
         }
         if(user.role==='client'){
-            let invoices =  await InvoiceAzyk.find(date===''?{client: user.client}:{client: user.client, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
+            let invoices =  await InvoiceAzyk.find({
+                    client: user.client,
+                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+
+                }
+                )
                 .populate({
                     path: 'orders',
-                    match: { status: {'$regex': filter, '$options': 'i'},  },
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
                     populate : {
                         path : 'item',
                         populate : [
@@ -121,10 +130,14 @@ const resolvers = {
             return invoices
         }
         if(user.role==='агент'){
-            let invoices =  await InvoiceAzyk.find(date===''?{agent: user.employment}:{agent: user.employment, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
+            let invoices =  await InvoiceAzyk.find({
+                agent: user.employment,
+                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+            })
                 .populate({
                     path: 'orders',
-                    match: { status: {'$regex': filter, '$options': 'i'},  },
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
                     populate : {
                         path : 'item',
                         populate : [
@@ -157,10 +170,15 @@ const resolvers = {
             return invoices
         }
         else if(user.role==='admin') {
-            let invoices =  await InvoiceAzyk.find(date===''?{}:{$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
+            let invoices =  await InvoiceAzyk.find(
+                {
+                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+                }
+                )
                 .populate({
                     path: 'orders',
-                    match: { status: {'$regex': filter, '$options': 'i'},  },
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
                     populate : {
                         path : 'item',
                         populate : [
@@ -192,10 +210,14 @@ const resolvers = {
             )
             return invoices
         } else if(['организация', 'менеджер'].includes(user.role)) {
-            let invoices =  await InvoiceAzyk.find(date===''?{}:{$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
+            let invoices =  await InvoiceAzyk.find(
+                {
+                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})}
+                )
                 .populate({
                     path: 'orders',
-                    match: { status: {'$regex': filter, '$options': 'i'},  },
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
                     populate : {
                         path : 'item',
                         match: { organization: user.organization },
@@ -339,7 +361,7 @@ const resolvers = {
         ]
         return sort
     },
-    filterInvoice: async() => {
+    filterInvoice: async(parent, ctx, {user}) => {
         let filter = [
             {
                 name: 'Все',
@@ -362,6 +384,11 @@ const resolvers = {
                 value: 'выполнен'
             }
         ]
+        if(user.role)
+            filter.push({
+                name: 'Консигнации',
+                value: 'консигнации'
+            })
         return filter
     },
 };
@@ -475,13 +502,23 @@ const resolversMutation = {
         return {data: 'OK'};
     },*/
     setOrder: async(parent, {orders, invoice}, {user}) => {
-        if(orders.length>0&&orders[0].status==='обработка'&&(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
+        if(orders.length>0&&/*orders[0].status==='обработка'&&*/(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
             let consignmentPrice = 0
             for(let i=0; i<orders.length;i++){
-                await OrderAzyk.updateMany({_id: orders[i]._id}, {count: orders[i].count, allPrice: orders[i].allPrice, consignmentPrice: orders[i].consignmentPrice, consignment: orders[i].consignment, allSize: orders[i].allSize, allTonnage: orders[i].allTonnage});
+                await OrderAzyk.updateMany(
+                    {_id: orders[i]._id},
+                    {
+                        count: orders[i].count,
+                        allPrice: orders[i].allPrice,
+                        consignmentPrice: orders[i].consignmentPrice,
+                        returned: orders[i].returned,
+                        consignment: orders[i].consignment,
+                        allSize: orders[i].allSize,
+                        allTonnage: orders[i].allTonnage
+                    });
                 allPrice += orders[i].allPrice
                 allTonnage += orders[i].allTonnage
                 allSize += orders[i].allSize
@@ -499,7 +536,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder}, {user}) => {
+    setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
         let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = user.role==='admin'
@@ -511,10 +548,13 @@ const resolversMutation = {
             if(taken)
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'принят'})
             else
-                await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка'})
+                await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка', returned: 0})
         }
         if(confirmationClient!=undefined&&(admin||undefinedClient||client)){
             object.confirmationClient = confirmationClient
+        }
+        if(paymentConsignation!=undefined&&(admin||undefinedClient||employment)){
+            object.paymentConsignation = paymentConsignation
         }
         if(confirmationForwarder!=undefined&&(admin||employment)){
             object.confirmationForwarder = confirmationForwarder
