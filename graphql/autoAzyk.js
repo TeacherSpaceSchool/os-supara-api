@@ -40,7 +40,7 @@ const resolvers = {
                 .sort(sort)
             autos = autos.filter(
                 auto => (
-                    (auto.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
@@ -58,7 +58,7 @@ const resolvers = {
                 .sort(sort)
             autos = autos.filter(
                 auto => (
-                    (auto.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase())
@@ -156,8 +156,8 @@ const resolversMutation = {
             let object = await AutoAzyk.findById(_id)
             if(number)object.number = number
             if(tonnage)object.tonnage = tonnage
-            if(tonnage)object.tonnage = tonnage
-            if(client)object.client = client
+            if(size)object.size = size
+            if(employment)object.employment = employment
             if(organization&&user.role==='admin')object.organization = organization
             object.save();
         }
