@@ -22,7 +22,7 @@ const query = `
 `;
 
 const mutation = `
-    addEquipment(number: String!, name: String!, organization: ID!, client: ID): Data
+    addEquipment(number: String!, name: String!, organization: ID, client: ID): Data
     setEquipment(_id: ID!, number: String, name: String, organization: ID, client: ID): Data
     deleteEquipment(_id: [ID]!): Data
 `;
@@ -40,8 +40,8 @@ const resolvers = {
                 equipment => (
                     (equipment.name.toLowerCase()).includes(search.toLowerCase()) ||
                     (equipment.number.toLowerCase()).includes(search.toLowerCase()) ||
-                    (equipment.organization&&equipment.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (equipment.client&&equipment.client.name.toLowerCase()).includes(search.toLowerCase())
+                    equipment.organization&&(equipment.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    equipment.client&&(equipment.client.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return equipments
@@ -57,7 +57,7 @@ const resolvers = {
                 equipment => (
                     (equipment.name.toLowerCase()).includes(search.toLowerCase()) ||
                     (equipment.number.toLowerCase()).includes(search.toLowerCase()) ||
-                    (equipment.client&&equipment.client.name.toLowerCase()).includes(search.toLowerCase())
+                    equipment.client&&(equipment.client.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return equipments
@@ -73,7 +73,7 @@ const resolvers = {
                 equipment => (
                     (equipment.name.toLowerCase()).includes(search.toLowerCase()) ||
                     (equipment.number.toLowerCase()).includes(search.toLowerCase()) ||
-                    (equipment.organization&&equipment.organization.name.toLowerCase()).includes(search.toLowerCase())
+                    equipment.organization&&(equipment.organization.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return equipments

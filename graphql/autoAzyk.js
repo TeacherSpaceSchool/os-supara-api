@@ -24,7 +24,7 @@ const query = `
 `;
 
 const mutation = `
-    addAuto(number: String!, tonnage: Float!, size: Float!, employment: ID, organization: ID!): Data
+    addAuto(number: String!, tonnage: Float!, size: Float!, employment: ID, organization: ID): Data
     setAuto(_id: ID!, number: String, tonnage: Float, size: Float, organization: ID, employment: ID): Data
     deleteAuto(_id: [ID]!): Data
 `;
@@ -43,8 +43,8 @@ const resolvers = {
                     (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
-                    (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (auto.employment&&auto.employment.name.toLowerCase()).includes(search.toLowerCase())
+                    auto.organization&&(auto.organization.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    auto.employment&&(auto.employment.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return autos
@@ -61,7 +61,7 @@ const resolvers = {
                     (auto.number.toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.size.toString().toLowerCase()).includes(search.toLowerCase()) ||
                     (auto.tonnage.toString().toLowerCase()).includes(search.toLowerCase()) ||
-                    (auto.organization&&auto.organization.name.toLowerCase()).includes(search.toLowerCase())
+                    auto.employment&&(auto.employment.name.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return autos

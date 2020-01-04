@@ -37,13 +37,13 @@ module.exports.saveImage = (stream, filename) => {
     return new Promise(async (resolve) => {
         let randomfilename = `${randomstring.generate(7)}${filename}`;
         let filepath = path.join(app.dirname, 'public', 'images', randomfilename)
-        randomfilename = `${randomstring.generate(7)}${filename}`;
-        let filepathResize = path.join(app.dirname, 'public', 'images', randomfilename)
         let fstream = fs.createWriteStream(filepath);
         stream.pipe(fstream)
         fstream.on('finish', async () => {
             let image = await Jimp.read(filepath)
             if(image.bitmap.width>800||image.bitmap.height>800) {
+                randomfilename = `${randomstring.generate(7)}${filename}`;
+                let filepathResize = path.join(app.dirname, 'public', 'images', randomfilename)
                 image.resize(800, Jimp.AUTO)
                     .quality(80)
                     .write(filepathResize);
@@ -52,7 +52,7 @@ module.exports.saveImage = (stream, filename) => {
                 })
             }
             else
-                resolve(`/images/${filename}`)
+                resolve(`/images/${randomfilename}`)
         })
     })
 }

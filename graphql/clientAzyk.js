@@ -151,7 +151,7 @@ const resolvers = {
 const resolversMutation = {
     addClient: async(parent, {image, name, birthday, email, city, address, phone, info, type, patent, passport, certificate}, {user}) => {
         if(['организация', 'менеджер', 'агент'].includes(user.role)) {
-            let client = {organization: user.organization}
+            let client = {organization: user.organization, status: 'deactive'}
             if(name)client.name = name
             if(birthday)client.birthday = birthday
             if(email)client.email = email
@@ -160,17 +160,11 @@ const resolversMutation = {
             if(phone)client.phone = phone
             if(info)client.info = info
             if(type)client.type = type
-            console.log(2)
             if (image) {
-                console.log(3)
                 let {stream, filename} = await image;
-                console.log(4)
                 filename = await saveFile(stream, filename)
-                console.log(5)
                 client.image = urlMain + filename
-                console.log(6)
             }
-            console.log(7)
             if (patent) {
                 let {stream, filename} = await patent;
                 filename = await saveFile(stream, filename)
