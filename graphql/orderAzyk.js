@@ -124,6 +124,7 @@ const resolvers = {
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
 
             )
@@ -164,6 +165,7 @@ const resolvers = {
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
 
             )
@@ -205,6 +207,7 @@ const resolvers = {
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
                     )
             )
@@ -244,6 +247,7 @@ const resolvers = {
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
                     )
             )
