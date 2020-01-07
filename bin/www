@@ -2,6 +2,7 @@
 const cluster = require('cluster');
 const os = require('os');
 let app = require('../app').app;
+let serverGQL = require('../app').serverGQL;
 let debug = require('debug')('azyk-api:server');
 let http = require('http');
 const start = require('../module/start');
@@ -31,6 +32,7 @@ if (cluster.isMaster) {
      */
 
     let server = http.createServer(app);
+    serverGQL.installSubscriptionHandlers(server)
 
     /**
      * Listen on provided port, on all network interfaces.
