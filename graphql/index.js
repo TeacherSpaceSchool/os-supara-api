@@ -1,5 +1,7 @@
-const { gql, ApolloServer, PubSub } = require('apollo-server-express');
-//const { gql, ApolloServer, PubSub } = require('apollo-server');
+const { gql, ApolloServer,  } = require('apollo-server-express');
+const { RedisPubSub } = require('graphql-redis-subscriptions');
+const pubsub = new RedisPubSub();
+module.exports.pubsub = pubsub;
 const AdsAzyk = require('./adsAzyk');
 const BlogAzyk = require('./blogAzyk');
 const CategoryAzyk = require('./categoryAzyk');
@@ -19,7 +21,6 @@ const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
-module.exports.pubsub = new PubSub();
 
 const typeDefs = gql`
     scalar Date
@@ -95,7 +96,6 @@ const typeDefs = gql`
     }
     type Subscription {
         ${OrderAzyk.subscription}
-        ${BasketAzyk.subscription}
     }
 `;
 
@@ -156,7 +156,6 @@ const resolvers = {
     },
     Subscription: {
         ...OrderAzyk.resolversSubscription,
-        ...BasketAzyk.resolversSubscription,
     }
 };
 
@@ -164,14 +163,34 @@ const run = (app)=>{
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        context: async ({ req, res }) => {
-            let user = await verifydeuserGQL(req, res)
-            return { req: req, res: res, user: user };
+        subscriptions: {
+            keepAlive: 1000,
+            onConnect: async (connectionParams) => {
+                if (connectionParams.authorization) {
+                    let user = await verifydeuserGQL({headers: {authorization: connectionParams.authorization}}, {})
+                    return {
+                        user: user,
+                    }
+                }
+                throw new Error('Missing auth token!');
+            },
+            onDisconnect: (webSocket, context) => {
+                // ...
+            },
+        },
+        context: async (ctx) => {
+            if (ctx.connection) {
+                return ctx.connection.context;
+            }
+            else if(ctx&&ctx.req) {
+                let user = await verifydeuserGQL(ctx.req, ctx.res)
+                return {req: ctx.req, res: ctx.res, user: user};
+            }
         },
         formatError: (err) => {
             console.error(err)
             return err;
-        },
+        }
     })
     server.applyMiddleware({ app, path : '/graphql', cors: false })
     return server

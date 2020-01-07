@@ -5,10 +5,12 @@ const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
 const ItemAzyk = require('../models/itemAzyk');
 const { addBonusToClient } = require('../module/bonusClientAzyk');
-const { pubsub } = require('./index');
 const randomstring = require('randomstring');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
+const { pubsub } = require('./index');
+const { withFilter } = require('graphql-subscriptions');
+const RELOAD_ORDER = 'RELOAD_ORDER';
 
 const type = `
   type Order {
@@ -48,6 +50,12 @@ const type = `
     allTonnage: Float,
     allSize: Float
   }
+  type ReloadOrder {
+    who: ID
+    client: ID
+    agent: ID
+    organization: ID
+  }
   input OrderInput {
     _id: ID
     count: Int
@@ -78,7 +86,7 @@ const mutation = `
 `;
 
 const subscription  = `
-    addedOrder: Data
+    reloadOrder: ReloadOrder
 `;
 
 const resolvers = {
@@ -399,6 +407,8 @@ const resolvers = {
 
 const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
+        if(user.client)
+            client = user.client
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
@@ -416,7 +426,8 @@ const resolversMutation = {
                 usedBonus = bonusClient.addedBonus;
                 bonusClient.addedBonus = 0
                 bonusClient.save();
-            } else
+            }
+            else
                 usedBonus=0
             for(let i=0; i<address.length;i++){
                 let invoices = {};
@@ -431,7 +442,8 @@ const resolversMutation = {
                         allSize: baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0),
                         allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         status: 'обработка',
-                        agent: user.employment
+                        agent: user.employment,
+                        organization: baskets[ii].item.organization
                     });
                     objectOrder = await OrderAzyk.create(objectOrder);
                     if(invoices[baskets[ii].item.organization]===undefined)invoices[baskets[ii].item.organization]=[];
@@ -465,7 +477,8 @@ const resolversMutation = {
                         address: address[i],
                         paymentMethod: paymentMethod,
                         number: number,
-                        agent: user.employment
+                        agent: user.employment,
+                        organization: orders[0].organization
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus
@@ -473,6 +486,7 @@ const resolversMutation = {
                         usedBonus = 0
                     }
                     objectInvoice = await InvoiceAzyk.create(objectInvoice);
+                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, agent: user.employment, client: client, organization: orders[0].organization} });
                 }
             }
             for(let i = 0; i< baskets.length; i++){
@@ -483,7 +497,6 @@ const resolversMutation = {
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
         }
-        //pubsub.publish('ORDER_ADDED', { postAdded: {data: 'OK'} });
         return {data: 'OK'};
     },
     /*cancelOrders: async(parent, {_id, invoice}, {user}) => {
@@ -537,6 +550,7 @@ const resolversMutation = {
             object.consignmentPrice = consignmentPrice
             object.allSize = allSize
             await object.save();
+            pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, client: object.client, agent: object.agent, organization: object.organization} });
         }
         return {data: 'OK'};
     },
@@ -716,14 +730,25 @@ const resolversMutation = {
 };
 
 const resolversSubscription = {
-    addedOrder: {
-        subscribe: () => pubsub.asyncIterator(['ORDER_ADDED']),
+    reloadOrder: {
+        subscribe: withFilter(
+            () => pubsub.asyncIterator(RELOAD_ORDER),
+            (payload, variables, {user} ) => {
+                return (
+                    user.role==='admin'||
+                    (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
+                    (user.employment&&payload.reloadOrder.agent.toString()===user.employment.toString())||
+                    (user.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                )
+            },
+        )
     },
 
 }
 
-module.exports.subscription = subscription;
+module.exports.RELOAD_ORDER = RELOAD_ORDER;
 module.exports.resolversSubscription = resolversSubscription;
+module.exports.subscription = subscription;
 module.exports.resolversMutation = resolversMutation;
 module.exports.mutation = mutation;
 module.exports.type = type;

@@ -263,14 +263,14 @@ const resolvers = {
 const resolversMutation = {
     addRoute: async(parent, {invoices, employment, dateStart}, {user}) => {
         if(['менеджер', 'организация', 'admin'].includes(user.role)){
-            let number = randomstring.generate({length: 12, charset: 'numeric'});
-            while (await RouteAzyk.findOne({number: number}))
-                number = randomstring.generate({length: 12, charset: 'numeric'});
+            let employmentEcspeditor = await EmploymentAzyk.findOne({_id: employment})
             if(['менеджер', 'организация'].includes(user.role)){
-                let employmentEcspeditor = await EmploymentAzyk.findOne({_id: employment})
                 if(employmentEcspeditor.organization.toString()!==user.organization.toString())
                     return {data: 'OK'};
             }
+            let number = randomstring.generate({length: 12, charset: 'numeric'});
+            while (await RouteAzyk.findOne({number: number}))
+                number = randomstring.generate({length: 12, charset: 'numeric'});
             let allTonnage = 0
             let allSize = 0
             for(let i=0; i<invoices.length; i++){
@@ -288,15 +288,18 @@ const resolversMutation = {
                 number: number,
                 allTonnage: allTonnage,
                 allSize: allSize,
-                dateStart: dateStart
+                dateStart: dateStart,
+                organization: employmentEcspeditor.organization
             });
             await RouteAzyk.create(_object);
-            return {data: 'OK'};
         }
+        return {data: 'OK'};
     },
     setRoute: async(parent, {_id, invoices, employment, cancelInvoices, dateStart}, {user}) => {
         let object = await RouteAzyk.findById(_id).populate('employment');
-        if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.employment.organization._id.toString())) {
+        if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.employment.organization.toString())) {
+            let lastEmployment = object.employment._id
+            let newEmployment = employment
             if(employment&&object.status==='создан')object.employment = employment;
             if(dateStart&&object.status==='создан')object.dateStart = dateStart;
             if(cancelInvoices)
@@ -328,7 +331,7 @@ const resolversMutation = {
     },
     deleteRoute: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
-            let objects = await RouteAzyk.find({_id: {$in: _id}}).populate('invoices')
+            let objects = await RouteAzyk.find({_id: {$in: _id}}).populate('invoices').populate('employment')
             for(let i=0; i<objects.length; i++){
                 if(objects[i].status==='создан'){
                     for(let ii=0; ii<objects[i].invoices.length; ii++){

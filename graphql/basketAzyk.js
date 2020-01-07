@@ -1,8 +1,5 @@
 const BasketAzyk = require('../models/basketAzyk');
-const ClientAzyk = require('../models/clientAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const BASKET_ADDED = 'BASKET_ADDED';
-const indexGQL = require('./index');
 
 const type = `
   type Basket {
@@ -25,10 +22,6 @@ const mutation = `
     setBasket(_id: ID!, count: Int!, consignment: Int): Data
     deleteBasket(_id: [ID]!): Data
     deleteBasketAll: Data
-`;
-
-const subscription  = `
-    addedBasket: Data
 `;
 
 const resolvers = {
@@ -98,7 +91,6 @@ const resolversMutation = {
                 object.basket.push(user._id)
                 object.save()
             }
-            indexGQL.pubsub.publish(BASKET_ADDED, { postAdded: {data: 'OK'} });
         }
         return {data: 'OK'};
     },
@@ -141,15 +133,6 @@ const resolversMutation = {
     }
 };
 
-const resolversSubscription = {
-    addedBasket: {
-        subscribe: () => indexGQL.pubsub.asyncIterator([BASKET_ADDED]),
-    },
-
-}
-
-module.exports.subscription = subscription;
-module.exports.resolversSubscription = resolversSubscription;
 module.exports.resolversMutation = resolversMutation;
 module.exports.mutation = mutation;
 module.exports.type = type;

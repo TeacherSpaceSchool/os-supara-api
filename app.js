@@ -13,7 +13,6 @@ const adminRouter = require('./routes/admin');
 const os = require('os');
 const compression = require('compression');
 const bodyParser = require('body-parser');
-
 let graphql  = require('./graphql/index');
 require('body-parser-xml-json')(bodyParser);
 
