@@ -2,7 +2,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const { saveFile, deleteFile, urlMain } = require('../module/const');
+const { saveFile, deleteFile, urlMain, saveImage } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
 
@@ -121,12 +121,12 @@ const resolvers = {
                     field: 'name'
                 },
                 {
-                    name: 'Дата',
+                    name: 'Регистрация',
                     field: 'createdAt'
                 },
                 {
                     name: 'Активность',
-                    value: 'lastActive'
+                    field: 'lastActive'
                 }
             ]
         }
@@ -167,7 +167,7 @@ const resolversMutation = {
             if(type)client.type = type
             if (image) {
                 let {stream, filename} = await image;
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 client.image = urlMain + filename
             }
             if (patent) {
@@ -200,7 +200,7 @@ const resolversMutation = {
                 let {stream, filename} = await image;
                 if(object.image&&object.image.includes(urlMain))
                     await deleteFile(object.image)
-                filename = await saveFile(stream, filename)
+                filename = await saveImage(stream, filename)
                 object.image = urlMain + filename
             }
             if (patent) {

@@ -8,6 +8,7 @@ const CategoryAzyk = require('./categoryAzyk');
 const SubCategoryAzyk = require('./subCategoryAzyk');
 const OrganizationAzyk = require('./organizationAzyk');
 const ContactAzyk = require('./contactAzyk');
+const FaqAzyk = require('./faqAzyk');
 const ClientAzyk = require('./clientAzyk');
 const EmploymentAzyk = require('./employmentAzyk');
 const AutoAzyk = require('./autoAzyk');
@@ -40,6 +41,7 @@ const typeDefs = gql`
         image: String
     }
     ${AdsAzyk.type}
+    ${FaqAzyk.type}
     ${AutoAzyk.type}
     ${EquipmentAzyk.type}
     ${ClientAzyk.type}
@@ -58,6 +60,7 @@ const typeDefs = gql`
     ${BonusClientAzyk.type}
     type Mutation {
         ${AdsAzyk.mutation}
+        ${FaqAzyk.mutation}
         ${AutoAzyk.mutation}
         ${EquipmentAzyk.mutation}
         ${ClientAzyk.mutation}
@@ -77,6 +80,7 @@ const typeDefs = gql`
     }
     type Query {
         ${ClientAzyk.query}
+        ${FaqAzyk.query}
         ${AutoAzyk.query}
         ${EquipmentAzyk.query}
         ${OrganizationAzyk.query}
@@ -117,6 +121,7 @@ const resolvers = {
         },
     }),
     Query: {
+        ...FaqAzyk.resolvers,
         ...AutoAzyk.resolvers,
         ...EquipmentAzyk.resolvers,
         ...ClientAzyk.resolvers,
@@ -136,6 +141,7 @@ const resolvers = {
         ...BonusClientAzyk.resolvers,
     },
     Mutation: {
+        ...FaqAzyk.resolversMutation,
         ...ClientAzyk.resolversMutation,
         ...AutoAzyk.resolversMutation,
         ...EquipmentAzyk.resolversMutation,
@@ -161,6 +167,7 @@ const resolvers = {
 
 const run = (app)=>{
     const server = new ApolloServer({
+        playground: false,
         typeDefs,
         resolvers,
         subscriptions: {
