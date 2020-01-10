@@ -12,6 +12,7 @@ const type = `
     image: String
     name: String
     createdAt: Date
+    lastActive: Date
     birthday: Date
     email: String
     city: String
@@ -122,6 +123,10 @@ const resolvers = {
                 {
                     name: 'Дата',
                     field: 'createdAt'
+                },
+                {
+                    name: 'Активность',
+                    value: 'lastActive'
                 }
             ]
         }
@@ -231,7 +236,7 @@ const resolversMutation = {
             if(newPass||login){
                 let objectUser = await UserAzyk.findById(object.user)
                 if(newPass)objectUser.password = newPass
-                if(login)objectUser.login = login
+                if(login)objectUser.login = login.trim()
                 objectUser.save()
                 if(objectUser._id.toString()===user._id.toString())
                     await createJwtGQL(res, objectUser)
@@ -251,8 +256,13 @@ const resolversMutation = {
             ){
                 if(objects[i].image)
                     await deleteFile(objects[i].image)
+                if(objects[i].user) {
+                    let object = await UserAzyk.findOne({_id: objects[i].user})
+                    object.status = object.status === 'active' ? 'deactive' : 'active'
+                    await object.save()
+                }
                 objects[i].del = 'deleted'
-                objects[i].save
+                objects[i].save()
                 //await UserAzyk.delete({_id: objects.user._id})
             }
         }

@@ -286,8 +286,8 @@ const resolversMutation = {
                 employment: employment,
                 status: 'создан',
                 number: number,
-                allTonnage: allTonnage,
-                allSize: allSize,
+                allTonnage: (allTonnage).toFixed(2),
+                allSize: (allSize).toFixed(2),
                 dateStart: dateStart,
                 organization: employmentEcspeditor.organization
             });
@@ -298,8 +298,6 @@ const resolversMutation = {
     setRoute: async(parent, {_id, invoices, employment, cancelInvoices, dateStart}, {user}) => {
         let object = await RouteAzyk.findById(_id).populate('employment');
         if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.employment.organization.toString())) {
-            let lastEmployment = object.employment._id
-            let newEmployment = employment
             if(employment&&object.status==='создан')object.employment = employment;
             if(dateStart&&object.status==='создан')object.dateStart = dateStart;
             if(cancelInvoices)

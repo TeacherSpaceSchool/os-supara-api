@@ -281,8 +281,8 @@ const resolversMutation = {
                 latest: latest,
                 status: 'active',
                 deliveryDays: deliveryDays,
-                weight: weight,
-                size: size
+                weight: (weight).toFixed(2),
+                size: (size).toFixed(2)
             });
             if(['организация', 'менеджер'].includes(user.role)) _object.organization = user.organization
             _object = await ItemAzyk.create(_object)

@@ -151,7 +151,7 @@ const resolversMutation = {
     addEmployment: async(parent, {name, email, phone, login, password, role, organization}, {user}) => {
         if(user.role==='admin'||user.role==='организация') {
             let newUser = new UserAzyk({
-                login: login,
+                login: login.trim(),
                 role: role,
                 status: 'active',
                 password: password,
@@ -177,7 +177,7 @@ const resolversMutation = {
             user._id.toString()===object.user.toString()) {
             if (role || newPass || login) {
                 let objectUser = await UserAzyk.findById(object.user)
-                if(login)objectUser.login = login
+                if(login)objectUser.login = login.trim()
                 if(newPass)objectUser.password = newPass
                 if(user.role==='admin' ||user.role==='организация'&&(user.organization.toString()===object.organization.toString()))
                     if(role)objectUser.role = role

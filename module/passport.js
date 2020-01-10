@@ -93,6 +93,8 @@ const verifydeuserGQL = async (req, res) => {
                 else if('client'===user.role) {
                     let client = await ClientAzyk.findOne({user: user._id})
                     user.client = client._id
+                    client.lastActive = new Date()
+                    client.save()
                     resolve(user)
 
                 }
@@ -196,7 +198,7 @@ const signupuserGQL = async ({password, login}, res) => {
     try{
         //await UserAzyk.deleteMany()
         let user = new UserAzyk({
-            login: login,
+            login: login.trim(),
             role: 'client',
             status: 'active',
             password: password,

@@ -139,8 +139,8 @@ const resolversMutation = {
         if(['admin', 'организация'].includes(user.role)){
             let _object = new AutoAzyk({
                 number: number,
-                tonnage: tonnage,
-                size: size
+                tonnage: (tonnage).toFixed(2),
+                size: (size).toFixed(2)
             });
             if(employment)_object.employment = employment
             if(user.role==='admin')
@@ -165,10 +165,10 @@ const resolversMutation = {
     },
     deleteEquipment: async(parent, { _id }, {user}) => {
         if(['admin', 'организация'].includes(user.role)){
-            let objects = await EquipmentAzyk.find({_id: {$in: _id}})
+            let objects = await AutoAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 if(user.role==='admin'||user.organization.toString()===objects[i].organization.toString())
-                    await EquipmentAzyk.deleteOne({_id: objects[i]._id})
+                    await AutoAzyk.deleteOne({_id: objects[i]._id})
             }
         }
         return {data: 'OK'}
