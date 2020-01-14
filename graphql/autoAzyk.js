@@ -76,7 +76,7 @@ const resolvers = {
         else
             return null
     },
-    sortEquipment: async() => {
+    sortAuto: async() => {
         return [
             {
                 name: 'Имя',
@@ -88,7 +88,7 @@ const resolvers = {
             },
         ]
     },
-    filterEquipment: async(parent, ctx, {user}) => {
+    filterAuto: async(parent, ctx, {user}) => {
         if(['admin'].includes(user.role)){
             let filter = [
                 {
