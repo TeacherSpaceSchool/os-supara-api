@@ -21,6 +21,21 @@ let startResetBonusesClient = async () => {
     }
 }
 
+let startReminderClient = async () => {
+    if(isMainThread) {
+        let w = new Worker('./thread/reminderClient.js', {workerData: 0});
+        w.on('message', (msg) => {
+            console.log('ResetBonusesClient: '+msg);
+        })
+        w.on('error', console.error);
+        w.on('exit', (code) => {
+            if(code !== 0)
+                console.error(new Error(`ResetBonusesClient stopped with exit code ${code}`))
+        });
+        console.log('ResetBonusesClient '+w.threadId+ ' run')
+    }
+}
+
 let start = async () => {
     //await startClientRedis()
     await startCategoryAzyk()
@@ -29,6 +44,7 @@ let start = async () => {
     await reductionToClient()
     await reductionToUser()
     await startResetBonusesClient()
+    await startReminderClient();
     await createAdmin();
 }
 

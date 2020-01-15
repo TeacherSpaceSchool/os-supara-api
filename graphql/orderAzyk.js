@@ -11,6 +11,8 @@ const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_ORDER = 'RELOAD_ORDER';
+const { sendWebPush } = require('../module/webPush');
+const { getAdminId } = require('../module/user');
 
 const type = `
   type Order {
@@ -497,6 +499,8 @@ const resolversMutation = {
                 object.save()
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
+            /*if(getAdminId())
+                sendWebPush('Добавлен заказ', '', getAdminId())*/
         }
         return {data: 'OK'};
     },
@@ -529,7 +533,7 @@ const resolversMutation = {
                 allSize += orders[i].allSize
                 consignmentPrice += orders[i].consignmentPrice
             }
-            let object = await InvoiceAzyk.findOne({_id: invoice})
+            let object = await InvoiceAzyk.findOne({_id: invoice}).populate({ path: 'user'})
             if(object.usedBonus&&object.usedBonus>0)
                 object.allPrice = allPrice - object.usedBonus
             else
@@ -539,6 +543,13 @@ const resolversMutation = {
             object.allSize = allSize
             await object.save();
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, client: object.client, agent: object.agent, organization: object.organization} });
+
+            /*if(user._id.toString()!==(getAdminId()).toString())
+                sendWebPush('Заказ изменен', '', getAdminId())
+
+            if(user._id.toString()!==(object.client.user).toString())
+                sendWebPush('Заказ изменен', '', object.client.user)*/
+
         }
         return {data: 'OK'};
     },

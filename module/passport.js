@@ -84,6 +84,19 @@ const verifydeuser = async (req, res, func) => {
     } )(req, res)
 }
 
+const getuser = async (req, res, func) => {
+    await passport.authenticate('jwt', async function (err, user) {
+        try{
+            await func(user)
+
+        } catch (err) {
+            console.error(err)
+            res.status(401);
+            res.end('err')
+        }
+    } )(req, res)
+}
+
 const verifydeuserGQL = async (req, res) => {
     return new Promise((resolve) => { passport.authenticate('jwt', async function (err, user) {
         try{
@@ -288,6 +301,7 @@ const createJwtGQL = async (res, user) => {
     await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
 }
 
+module.exports.getuser = getuser;
 module.exports.createJwtGQL = createJwtGQL;
 module.exports.verifydrole = verifydrole;
 module.exports.signupuserGQL = signupuserGQL;

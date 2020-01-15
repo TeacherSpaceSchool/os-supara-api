@@ -1,5 +1,6 @@
 const AdsAzyk = require('../models/adsAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
+const { sendWebPush } = require('../module/webPush');
 
 const type = `
   type Ads {
@@ -63,6 +64,7 @@ const resolversMutation = {
             });
             await AdsAzyk.create(_object)
         }
+        sendWebPush(title, '', 'all')
         return {data: 'OK'};
     },
     setAds: async(parent, {_id, image, url, title}, {user}) => {

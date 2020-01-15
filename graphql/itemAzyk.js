@@ -246,7 +246,6 @@ const resolvers = {
                 status: 'active',
                 del: {$ne: 'deleted'}
             }).distinct('subCategory')
-            console.log(subcategorys)
             subcategorys = await SubCategoryAzyk.find({_id: {$in: subcategorys}})
             for(let i = 0; i<subcategorys.length; i++){
                 filter = [
