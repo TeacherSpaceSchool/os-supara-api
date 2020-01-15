@@ -4,6 +4,7 @@ const { reductionToBonus } = require('../module/bonusAzyk');
 const { reductionToClient } = require('../module/clientAzyk');
 const { startClientRedis } = require('../module/redis');
 const { reductionToUser, createAdmin } = require('../module/user');
+const subscriberAzyk = require('../models/subscriberAzyk');
 const { Worker, isMainThread,  workerData, parentPort } = require('worker_threads');
 
 let startResetBonusesClient = async () => {

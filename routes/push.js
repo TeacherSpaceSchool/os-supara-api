@@ -8,8 +8,7 @@ router.get('/', (req, res) => {
     const payload = {
         title: 'AZYK.STORE',
         message: 'Не забудьте сделать свой заказ',
-        url: 'https://azyl.store',
-        ttl: '36000',
+        url: 'https://azyk.store',
         icon: 'https://azyk.store/static/192x192.png',
         image: undefined,
         badge: undefined,

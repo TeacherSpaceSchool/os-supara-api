@@ -8,11 +8,8 @@ module.exports.sendWebPush = async(title, message, user) => {
         title: title,
         message: message,
         url: 'https://azyl.store',
-        ttl: '36000',
         icon: 'https://azyk.store/static/192x192.png',
-        image: undefined,
-        badge: undefined,
-        tag: undefined
+        tag: 'AZYK.STORE'
     };
     if(user==='all'){
         SubscriberAzyk.find({}, (err, subscriptions) => {
