@@ -3,7 +3,7 @@ const router = express.Router();
 const SubscriberAzyk = require('../models/subscriberAzyk');
 const q = require('q');
 const webPush = require('web-push');
-const keys = require('./../config/keys_dev');
+const keys = require((process.env.URL).trim()==='https://azyk.store'?'./../config/keys_prod':'./../config/keys_dev');
 router.get('/', (req, res) => {
     const payload = {
         title: 'AZYK.STORE',
