@@ -229,6 +229,7 @@ const signupuserGQL = async ({password, login}, res) => {
             city: '',
             type: 'торговая точка',
             birthday: new Date(),
+            notification: false
         });
         await ClientAzyk.create(client);
         const payload = {

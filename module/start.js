@@ -26,14 +26,14 @@ let startReminderClient = async () => {
     if(isMainThread) {
         let w = new Worker('./thread/reminderClient.js', {workerData: 0});
         w.on('message', (msg) => {
-            console.log('ResetBonusesClient: '+msg);
+            console.log('ReminderBonusesClient: '+msg);
         })
         w.on('error', console.error);
         w.on('exit', (code) => {
             if(code !== 0)
-                console.error(new Error(`ResetBonusesClient stopped with exit code ${code}`))
+                console.error(new Error(`ReminderBonusesClient stopped with exit code ${code}`))
         });
-        console.log('ResetBonusesClient '+w.threadId+ ' run')
+        console.log('ReminderBonusesClient '+w.threadId+ ' run')
     }
 }
 

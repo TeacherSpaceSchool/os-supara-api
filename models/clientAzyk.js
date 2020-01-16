@@ -27,6 +27,10 @@ const ClientAzykSchema = mongoose.Schema({
     },
     patent: String,
     passport: String,
+    notification: {
+        type: Boolean,
+        default: null
+    },
     certificate: String,
     organization: {
         type: mongoose.Schema.Types.ObjectId,

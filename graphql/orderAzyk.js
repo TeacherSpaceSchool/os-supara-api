@@ -441,8 +441,8 @@ const resolversMutation = {
                         count: baskets[ii].count,
                         consignment: baskets[ii].consignment,
                         consignmentPrice: baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
-                        allTonnage: (baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0)).toFixed(2),
-                        allSize: (baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0)).toFixed(2),
+                        allTonnage: Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0)),
+                        allSize: Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0)),
                         allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
                         status: 'обработка',
                         agent: user.employment,
@@ -474,8 +474,8 @@ const resolversMutation = {
                         client: client,
                         allPrice: allPrice,
                         consignmentPrice: consignmentPrice,
-                        allTonnage: (allTonnage).toFixed(2),
-                        allSize: (allSize).toFixed(2),
+                        allTonnage: Math.round(allTonnage),
+                        allSize: Math.round(allSize),
                         info: info,
                         address: address[i],
                         paymentMethod: paymentMethod,
@@ -506,7 +506,12 @@ const resolversMutation = {
     },
     deleteOrders: async(parent, {_id}, {user}) => {
         if(user.role==='admin'){
-            await InvoiceAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted'})
+            let objects = await InvoiceAzyk.find({_id: {$in: _id}})
+            for(let i=0; i<objects.length; i++){
+                objects[i].del = 'deleted'
+                objects[i].save()
+                pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, client: objects[i].client, agent: objects[i].agent, organization: objects[i].organization} });
+            }
         }
         return {data: 'OK'};
     },
@@ -525,8 +530,8 @@ const resolversMutation = {
                         consignmentPrice: orders[i].consignmentPrice,
                         returned: orders[i].returned,
                         consignment: orders[i].consignment,
-                        allSize: (orders[i].allSize).toFixed(2),
-                        allTonnage: (orders[i].allTonnage).toFixed(2)
+                        allSize: Math.round(orders[i].allSize),
+                        allTonnage: Math.round(orders[i].allTonnage)
                     });
                 allPrice += orders[i].allPrice
                 allTonnage += orders[i].allTonnage

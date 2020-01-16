@@ -286,8 +286,8 @@ const resolversMutation = {
                 employment: employment,
                 status: 'создан',
                 number: number,
-                allTonnage: (allTonnage).toFixed(2),
-                allSize: (allSize).toFixed(2),
+                allTonnage: Math.round(allTonnage),
+                allSize: Math.round(allSize),
                 dateStart: dateStart,
                 organization: employmentEcspeditor.organization
             });

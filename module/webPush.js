@@ -7,9 +7,9 @@ module.exports.sendWebPush = async(title, message, user) => {
     const payload = {
         title: title,
         message: message,
-        url: 'https://azyl.store',
+        url: 'https://azyk.store',
         icon: 'https://azyk.store/static/192x192.png',
-        tag: 'AZYK.STORE'
+        tag: 'AZYK.STORE',
     };
     if(user==='all'){
         SubscriberAzyk.find({}, (err, subscriptions) => {
@@ -33,7 +33,6 @@ module.exports.sendWebPush = async(title, message, user) => {
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
-                            TTL: payload.ttl,
                             headers: {}
                         };
                         webPush.sendNotification(
@@ -83,7 +82,6 @@ module.exports.sendWebPush = async(title, message, user) => {
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
-                            TTL: payload.ttl,
                             headers: {}
                         };
                         webPush.sendNotification(

@@ -139,8 +139,8 @@ const resolversMutation = {
         if(['admin', 'организация'].includes(user.role)){
             let _object = new AutoAzyk({
                 number: number,
-                tonnage: (tonnage).toFixed(2),
-                size: (size).toFixed(2)
+                tonnage: Math.round(tonnage),
+                size: Math.round(size)
             });
             if(employment)_object.employment = employment
             if(user.role==='admin')

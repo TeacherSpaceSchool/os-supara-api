@@ -26,6 +26,7 @@ const type = `
     passport: String
     certificate: String
     organization: Organization
+    notification: Boolean
   }
 `;
 
@@ -127,6 +128,10 @@ const resolvers = {
                 {
                     name: 'Активность',
                     field: 'lastActive'
+                },
+                {
+                    name: 'Уведомления',
+                    field: 'notification'
                 }
             ]
         }
@@ -185,6 +190,7 @@ const resolversMutation = {
                 filename = await saveFile(stream, filename)
                 client.certificate = urlMain + filename
             }
+            client.notification=false
             client = new ClientAzyk(client);
             await ClientAzyk.create(client);
         }
