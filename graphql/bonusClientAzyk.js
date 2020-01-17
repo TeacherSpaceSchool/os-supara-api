@@ -49,7 +49,7 @@ const resolvers = {
                 {
                     return bonus.bonus.organization&&bonus.client&&(
                         ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                        (bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
+                        bonus.client.user&&(bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.email.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.city&&(bonus.client.city.toLowerCase()).includes(search.toLowerCase()))||
@@ -86,7 +86,7 @@ const resolvers = {
                     bonus =>
                         bonus.bonus.organization&&bonus.client&&(
                             ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                            (bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
+                            bonus.client.user&&(bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
                             (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
                             (bonus.client.email.toLowerCase()).includes(search.toLowerCase())||
                             (bonus.client.city.toLowerCase()).includes(search.toLowerCase())||

@@ -84,8 +84,8 @@ const resolvers = {
                 .populate('client')
                 .populate('organization')
         if(user.role==='admin'||user.organization.toString()===equipment.organization._id.toString())
-            return
-
+            return equipment
+        return null
     },
     sortEquipment: async() => {
         return [

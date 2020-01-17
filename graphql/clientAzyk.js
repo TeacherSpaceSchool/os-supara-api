@@ -202,6 +202,7 @@ const resolversMutation = {
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate, device}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
+        console.log(device?'device':'')
         if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
