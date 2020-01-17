@@ -133,6 +133,7 @@ const resolvers = {
                     ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
@@ -175,6 +176,7 @@ const resolvers = {
                     ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
@@ -216,6 +218,7 @@ const resolvers = {
                         (invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
@@ -256,6 +259,7 @@ const resolvers = {
                         (invoice.number.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.info.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
                         (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
                         (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
                         invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||

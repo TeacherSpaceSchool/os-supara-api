@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { getAdminId } = require('../module/user');
 const { sendWebPush } = require('../module/webPush');
 const UserAzyk = require('../models/userAzyk');
 

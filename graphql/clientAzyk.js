@@ -24,6 +24,7 @@ const type = `
     type: String
     patent: String
     passport: String
+    device: String
     certificate: String
     organization: Organization
     notification: Boolean
@@ -39,7 +40,7 @@ const query = `
 
 const mutation = `
     addClient(image: Upload, name: String!, birthday: Date, email: String, city: String!, address: [[String]]!, phone: [String]!, info: String, type: String, patent: Upload, passport: Upload, certificate: Upload): Data
-    setClient(_id: ID!, birthday: Date, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: [String], login: String, email: String, address: [[String]], info: String, newPass: String): Data
+    setClient(_id: ID!, birthday: Date, device: String, image: Upload, patent: Upload, passport: Upload, certificate: Upload, name: String, type: String, city: String, phone: [String], login: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
@@ -55,12 +56,13 @@ const resolvers = {
             clients = clients.filter(
                 client =>
                     (client.user||client.organization)&&(
-                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((client.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
                         (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
                         (client.type.toLowerCase()).includes(search.toLowerCase())||
-                        ((client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
+                        ((client.address.filter(addres=>addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
+                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())||
                         (client.organization&&client.organization.name.toLowerCase().includes(search.toLowerCase()))
                     )
@@ -71,11 +73,12 @@ const resolvers = {
             clients = clients.filter(
                 client => {
                     return (client.user || client.organization) && (
-                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((client.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (client.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.email.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((client.address.filter(addres => addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.type.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -89,11 +92,12 @@ const resolvers = {
             clients = clients.filter(
                 client => {
                     return (client.user || client.organization) && (
-                        ((client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((client.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (client.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.email.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0].toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((client.address.filter(addres => addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.type.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -196,7 +200,7 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
-    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate}, {user, res}) => {
+    setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate, device}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
         if(
             user.role==='admin'||
@@ -238,6 +242,7 @@ const resolversMutation = {
             if(city) object.city = city
             if(type) object.type = type
             if(phone) object.phone = phone
+            if(device) object.device = device
 
             if(newPass||login){
                 let objectUser = await UserAzyk.findById(object.user)

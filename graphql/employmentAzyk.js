@@ -40,7 +40,7 @@ const resolvers = {
                 .sort(sort)
             employments = employments.filter(
                     employment => (
-                        ((employment.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        ((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (employment.name.toLowerCase()).includes(search.toLowerCase())||
                         (employment.email.toLowerCase()).includes(search.toLowerCase())||
                         (employment.user.role.toLowerCase()).includes(search.toLowerCase())
@@ -56,7 +56,7 @@ const resolvers = {
                 .sort(sort)
             employments = employments.filter(
                     employment => (
-                            ((employment.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                            ((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                             (employment.name.toLowerCase()).includes(search.toLowerCase())||
                             (employment.email.toLowerCase()).includes(search.toLowerCase())||
                             (employment.user.role.toLowerCase()).includes(search.toLowerCase())
