@@ -67,7 +67,7 @@ const resolversMutation = {
                     {item: item, client: user.client}:
                     {item: item, agent: user.employment}
                 );
-            if(basket===null){
+            if(!basket){
                 let _object = new BasketAzyk({
                     item: item,
                     count: count

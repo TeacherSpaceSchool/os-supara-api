@@ -24,7 +24,7 @@ const mutation = `
 const resolvers = {
     contact: async() => {
         let contact = await ContactAzyk.findOne()
-        return contact===null?{name: '', image: '', address: [], email: [], phone: [], info: '', social: ['','','','']}:contact
+        return !contact?{name: '', image: '', address: [], email: [], phone: [], info: '', social: ['','','','']}:contact
     }
 };
 
@@ -32,7 +32,7 @@ const resolversMutation = {
     setContact: async(parent, {name, image, address, email, phone, info, social}, {user}) => {
         if(user.role==='admin') {
             let object = await ContactAzyk.findOne()
-            if(object===null){
+            if(!object){
                 object = new ContactAzyk({
                     name: name,
                     info: info,

@@ -6,6 +6,7 @@ const type = `
     _id: ID
     url: String
     title: String
+    video: String
     createdAt: Date
   }
 `;
@@ -15,8 +16,8 @@ const query = `
 `;
 
 const mutation = `
-    addFaq(file: Upload!, title: String!): Data
-    setFaq(_id: ID!, file: Upload, title: String): Data
+    addFaq(file: Upload!, title: String!, video: String): Data
+    setFaq(_id: ID!, file: Upload, title: String, video: String): Data
     deleteFaq(_id: [ID]!): Data
 `;
 
@@ -29,7 +30,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addFaq: async(parent, {file, title}, {user}) => {
+    addFaq: async(parent, {file, title, video}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await file;
             filename = await saveFile(stream, filename)
@@ -37,20 +38,22 @@ const resolversMutation = {
                 url: urlMain+filename,
                 title: title
             });
+            if(video)_object.video = video
             await FaqAzyk.create(_object)
         }
         return {data: 'OK'};
     },
-    setFaq: async(parent, {_id, file, title}, {user}) => {
+    setFaq: async(parent, {_id, file, title, video}, {user}) => {
         if(user.role==='admin') {
             let object = await FaqAzyk.findById(_id)
             if (file) {
                 let {stream, filename} = await file;
                 if(object.url) await deleteFile(object.url)
-                filename = await saveFile(stream, filename)
+                 filename = await saveFile(stream, filename)
                 object.url = urlMain + filename
             }
             if(title) object.title = title
+            if(video) object.video = video
             object.save();
         }
         return {data: 'OK'}

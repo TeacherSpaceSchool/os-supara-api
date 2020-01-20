@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const FaqAzykSchema = mongoose.Schema({
     url: String,
-    title: String
+    title: String,
+    video: String
 }, {
     timestamps: true
 });
