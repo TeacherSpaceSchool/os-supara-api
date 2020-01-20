@@ -9,6 +9,10 @@ const ItemAzykSchema = mongoose.Schema({
     packaging: Number,
     reiting: Number,
     deliveryDays: [String],
+    apiece: {
+        type: Boolean,
+        default: false
+    },
     subCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SubCategoryAzyk'

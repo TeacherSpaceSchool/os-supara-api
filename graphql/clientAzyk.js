@@ -64,7 +64,8 @@ const resolvers = {
                         ((client.address.filter(addres=>addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())||
-                        (client.organization&&client.organization.name.toLowerCase().includes(search.toLowerCase()))
+                        (client.organization&&client.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                        client.device&&(client.device.toLowerCase()).includes(search.toLowerCase())
                     )
             )
             return clients
@@ -136,6 +137,10 @@ const resolvers = {
                 {
                     name: 'Уведомления',
                     field: 'notification'
+                },
+                {
+                    name: 'Устройства',
+                    field: 'device'
                 }
             ]
         }
@@ -202,7 +207,6 @@ const resolversMutation = {
     },
     setClient: async(parent, {_id, type, image, name, email, address, info, newPass, phone, login, birthday, city, patent, passport, certificate, device}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
-        console.log(device?'device':'')
         if(
             user.role==='admin'||
             object.user&&object.user.toString()===user._id.toString()||
