@@ -100,6 +100,7 @@ const resolvers = {
                             status = 'red'
                         else {
                             let invoice = await InvoiceAzyk.findOne({client: clients[x]._id}).sort('-createdAt')
+
                             differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
                             if (differenceDates > 5)
                                 status = 'yellow'
