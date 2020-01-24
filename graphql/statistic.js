@@ -77,7 +77,7 @@ const resolvers = {
                         ]
                     })
                 }
-            data.sort(function(a, b) {
+            data = data.sort(function(a, b) {
                     return a.data.profit - b.data.profit
                 });
             return {
@@ -100,12 +100,15 @@ const resolvers = {
                             status = 'red'
                         else {
                             let invoice = await InvoiceAzyk.findOne({client: clients[x]._id}).sort('-createdAt')
-
-                            differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
-                            if (differenceDates > 5)
-                                status = 'yellow'
+                            if(invoice) {
+                                differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
+                                if (differenceDates > 5)
+                                    status = 'yellow'
+                                else
+                                    status = 'green'
+                            }
                             else
-                                status = 'green'
+                                status = 'yellow'
                         }
                         address.push({
                             client: clients[x]._id,
