@@ -2,6 +2,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
+const OrganizationAzyk = require('../models/organizationAzyk');
 const { saveFile, deleteFile, urlMain, saveImage } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
@@ -87,9 +88,28 @@ const resolvers = {
             )
             return clients
         } else if(['организация', 'менеджер'].includes(user.role)) {
-            let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
-            let clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-            clients = await ClientAzyk.find({$or: [{_id: {$in: clients}}, {organization: user.organization}], del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
+            let organization = await OrganizationAzyk.findOne({_id: user.organization})
+            let clients;
+            if(organization.accessToClient)
+                clients = await ClientAzyk
+                    .find({del: {$ne: 'deleted'}})
+                    .populate({
+                        path: 'user',
+                        match: {status: 'active'}
+                    })
+                    .populate({ path: 'organization' })
+                    .sort(sort)
+            else {
+                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
+                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await ClientAzyk.find({
+                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                    del: {$ne: 'deleted'}
+                }).populate({
+                    path: 'user',
+                    match: {status: 'active'}
+                }).populate({path: 'organization'}).sort(sort)
+            }
             clients = clients.filter(
                 client => {
                     return (client.user || client.organization) && (

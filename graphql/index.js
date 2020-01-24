@@ -20,6 +20,7 @@ const BonusClientAzyk = require('./bonusClientAzyk');
 const EquipmentAzyk = require('./equipmentAzyk');
 const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
+const StatisticAzyk = require('./statistic');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
 
@@ -58,6 +59,7 @@ const typeDefs = gql`
     ${RouteAzyk.type}
     ${BonusAzyk.type}
     ${BonusClientAzyk.type}
+    ${StatisticAzyk.type}
     type Mutation {
         ${AdsAzyk.mutation}
         ${FaqAzyk.mutation}
@@ -97,6 +99,7 @@ const typeDefs = gql`
         ${RouteAzyk.query}
         ${BonusAzyk.query}
         ${BonusClientAzyk.query}
+        ${StatisticAzyk.query}
     }
     type Subscription {
         ${OrderAzyk.subscription}
@@ -139,6 +142,7 @@ const resolvers = {
         ...RouteAzyk.resolvers,
         ...BonusAzyk.resolvers,
         ...BonusClientAzyk.resolvers,
+        ...StatisticAzyk.resolvers,
     },
     Mutation: {
         ...FaqAzyk.resolversMutation,

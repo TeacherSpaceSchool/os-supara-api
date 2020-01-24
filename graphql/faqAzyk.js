@@ -16,7 +16,7 @@ const query = `
 `;
 
 const mutation = `
-    addFaq(file: Upload!, title: String!, video: String): Data
+    addFaq(file: Upload, title: String!, video: String): Data
     setFaq(_id: ID!, file: Upload, title: String, video: String): Data
     deleteFaq(_id: [ID]!): Data
 `;
@@ -31,13 +31,15 @@ const resolvers = {
 
 const resolversMutation = {
     addFaq: async(parent, {file, title, video}, {user}) => {
-        if(user.role==='admin'){
-            let { stream, filename } = await file;
-            filename = await saveFile(stream, filename)
+        if(user.role==='admin') {
             let _object = new FaqAzyk({
-                url: urlMain+filename,
                 title: title
             });
+            if (file) {
+                let {stream, filename} = await file;
+                filename = await saveFile(stream, filename)
+                _object.url = urlMain+filename
+            }
             if(video)_object.video = video
             await FaqAzyk.create(_object)
         }

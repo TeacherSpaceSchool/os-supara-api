@@ -20,6 +20,7 @@ const type = `
     status: String
     image: String
     minimumOrder: Int
+    accessToClient: Boolean
   }
 `;
 
@@ -32,7 +33,7 @@ const query = `
 
 const mutation = `
     addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!): Data
-    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String): Data
+    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
 `;
@@ -123,7 +124,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder}, {user}) => {
+    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder, accessToClient}, {user}) => {
         if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
@@ -137,6 +138,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
+            if(accessToClient!=undefined) object.accessToClient = accessToClient
             if(minimumOrder!=undefined) object.minimumOrder = minimumOrder
             object.save();
         }

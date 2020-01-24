@@ -493,7 +493,7 @@ const resolversMutation = {
                         usedBonus = 0
                     }
                     objectInvoice = await InvoiceAzyk.create(objectInvoice);
-                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, agent: user.employment, client: client, organization: orders[0].organization} });
+                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, agent: user.employment, client: client, organization: orders[0].organization} });
                 }
             }
             for(let i = 0; i< baskets.length; i++){
@@ -514,7 +514,7 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 objects[i].del = 'deleted'
                 objects[i].save()
-                pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, client: objects[i].client, agent: objects[i].agent, organization: objects[i].organization} });
+                pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, client: objects[i].client, agent: objects[i].agent, organization: objects[i].organization} });
             }
         }
         return {data: 'OK'};
@@ -551,7 +551,7 @@ const resolversMutation = {
             object.consignmentPrice = consignmentPrice
             object.allSize = allSize
             await object.save();
-            pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user._id, client: object.client, agent: object.agent, organization: object.organization} });
+            pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, client: object.client, agent: object.agent, organization: object.organization} });
 
             /*if(user._id.toString()!==(getAdminId()).toString())
                 sendWebPush('Заказ изменен', '', getAdminId())
