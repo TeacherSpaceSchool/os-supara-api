@@ -18,15 +18,20 @@ const type = `
 `;
 
 const query = `
-    statisticClient(company: String, dateStart: Date, dateEnd: Date): Statistic
+    statisticClient(company: String, dateStart: Date): Statistic
     statisticClientGeo: [GeoStatistic]
 `;
 
 const resolvers = {
-    statisticClient: async(parent, { company, dateStart, dateEnd }, {user}) => {
+    statisticClient: async(parent, { company, dateStart }, {user}) => {
         if(user.role==='admin'){
-            if(dateStart) dateStart= new Date(dateStart)
-            if(dateEnd) dateEnd = new Date(dateEnd)
+            let dateEnd
+            if(dateStart){
+                dateStart= new Date(dateStart)
+                dateEnd = new Date(dateStart)
+                dateEnd.setMonth(dateEnd.getMonth() + 1)
+            }
+
             let statistic = {}
             let data = await InvoiceAzyk.find(
                 {
@@ -54,18 +59,29 @@ const resolvers = {
 
             for(let i=0; i<data.length; i++){
                     if(!statistic[data[i].client._id]) statistic[data[i].client._id]={profit: 0, cancel: 0, complet: 0, consignmentPrice: 0, client: data[i].client.name}
-                    if(data.status==='отмена') statistic[data[i].client._id].cancel+=1
+                    if(data.status==='отмена')
+                        statistic[data[i].client._id].cancel+=1
                     else if(data.status!=='обработка'){
                         statistic[data[i].client._id].complet+=1
                         statistic[data[i].client._id].profit+=(data[i].allPrice-data[i].returned*(data[i].item.stock?data[i].item.stock:data[i].item.price))
-                    }
-                    if(data[i].consignmentPrice&&!(await InvoiceAzyk.findOne({orders: data[i]._id})).paymentConsignation){
-                        statistic[data[i].client._id].consignmentPrice+=data[i].consignmentPrice
+                        if(data[i].consignmentPrice&&!data[i].paymentConsignation){
+                            statistic[data[i].client._id].consignmentPrice+=data[i].consignmentPrice
+                        }
                     }
                 }
             const keys = Object.keys(statistic)
             data = []
+
+            let profitAll = 0
+            let consignmentPriceAll = 0
+            let completAll = 0
+            let cancelAll = 0
+
             for(let i=0; i<keys.length; i++){
+                profitAll += statistic[keys[i]].profit,
+                consignmentPriceAll += statistic[keys[i]].consignmentPrice,
+                completAll += statistic[keys[i]].complet,
+                cancelAll += statistic[keys[i]].cancel,
                     data.push({
                         _id: keys[i],
                         data: [
@@ -78,10 +94,23 @@ const resolvers = {
                     })
                 }
             data = data.sort(function(a, b) {
-                    return a.data.profit - b.data.profit
+                    return b.data[1] - a.data[1]
                 });
+            data = [
+                {
+                    _id: null,
+                    data: [
+                        `Всего: ${data.length}`,
+                        profitAll,
+                        consignmentPriceAll,
+                        completAll,
+                        cancelAll,
+                    ]
+                },
+                ...data
+            ]
             return {
-                columns: ['клиент', 'прибыль', 'конс', 'выполнен', 'отмена'],
+                columns: ['клиент', 'прибыль(сом)', 'конс(сом)', 'выполнен(шт)', 'отмена(шт)'],
                 row: data
             };
         }
@@ -99,7 +128,7 @@ const resolvers = {
                         if (!clients[x].lastActive || differenceDates > 5)
                             status = 'red'
                         else {
-                            let invoice = await InvoiceAzyk.findOne({client: clients[x]._id}).sort('-createdAt')
+                            let invoice = await InvoiceAzyk.findOne({client: clients[x]._id, del: {$ne: 'deleted'}, status: {$ne: 'отмена'}}).sort('-createdAt')
                             if(invoice) {
                                 differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
                                 if (differenceDates > 5)
