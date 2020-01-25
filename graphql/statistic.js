@@ -65,7 +65,7 @@ const resolvers = {
 
 
             for(let i=0; i<data.length; i++) {
-                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
+                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].client._id])
                         statistic[data[i].client._id] = {
                             profit: 0,
@@ -172,7 +172,7 @@ const resolvers = {
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
             for(let i=0; i<data.length; i++) {
-                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
+                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
                         cancel: 0,
