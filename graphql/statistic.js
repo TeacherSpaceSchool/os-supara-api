@@ -316,6 +316,9 @@ const resolvers = {
         if(user.role==='admin'){
             let clients = await ClientAzyk.find({del: {$ne: 'deleted'}, organization: null})
             let address = []
+            let good = 0
+            let excellent = 0
+            let bad = 0
             for(let x=0; x<clients.length;x++) {
                 for(let i=0; i<clients[x].address.length;i++){
                     if(clients[x].address[i][1]&&clients[x].address[i][1].length>0&&!(clients[x].name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
@@ -324,6 +327,7 @@ const resolvers = {
                         let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
                         if (!clients[x].lastActive || differenceDates > 5) {
                             status = 'red'
+                            bad+=1
                         }
                         else {
                             let invoice
@@ -386,16 +390,24 @@ const resolvers = {
                             }
                             if(invoice) {
                                 differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
-                                if (differenceDates > 5)
+                                if (differenceDates > 5) {
                                     status = 'yellow'
-                                else
+                                    good+=1
+                                }
+                                else {
                                     status = 'green'
+                                    excellent+=1
+                                }
                             }
                             else {
-                                if(organization||item)
+                                if(organization||item) {
                                     status = 'red'
-                                else
+                                    bad+=1
+                                }
+                                else {
                                     status = 'yellow'
+                                    good+=1
+                                }
                             }
                         }
                         address.push({
@@ -406,6 +418,14 @@ const resolvers = {
                     }
                 }
             }
+            address = [
+                {
+                    client: null,
+                    address: null,
+                    data: [excellent, good, bad]
+                },
+                ...address
+            ]
             return address
         }
     }
