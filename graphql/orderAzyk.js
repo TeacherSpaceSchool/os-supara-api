@@ -226,7 +226,8 @@ const resolvers = {
                     )
             )
             return invoices
-        } else if(['организация', 'менеджер'].includes(user.role)) {
+        }
+        else if(['организация', 'менеджер'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find({
                     del: {$ne: 'deleted'},
                     ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
