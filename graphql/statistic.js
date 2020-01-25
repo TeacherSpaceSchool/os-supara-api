@@ -181,12 +181,11 @@ const resolvers = {
                         item: data[i].item.organization.name+' '+data[i].item.name
                     }
                     if (data[i].status === 'отмена')
-                        statistic[data[i].item._id].cancel += 1
+                        statistic[data[i].item._id].cancel += data[i].count
                     else {
-                        statistic[data[i].item._id].complet += 1
+                        statistic[data[i].item._id].complet += data[i].count
                         statistic[data[i].item._id].profit += (data[i].allPrice - data[i].returned * (data[i].item.stock ? data[i].item.stock : data[i].item.price))
                         if (data[i].consignmentPrice) {
-                            console.log(data[i])
                             statistic[data[i].item._id].consignmentPrice += data[i].consignmentPrice
                         }
                     }
