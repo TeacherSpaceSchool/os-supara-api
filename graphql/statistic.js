@@ -65,7 +65,7 @@ const resolvers = {
 
 
             for(let i=0; i<data.length; i++) {
-                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')) {
+                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].client._id])
                         statistic[data[i].client._id] = {
                             profit: 0,
@@ -172,7 +172,7 @@ const resolvers = {
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
             for(let i=0; i<data.length; i++) {
-                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')) {
+                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
                         cancel: 0,
@@ -318,7 +318,7 @@ const resolvers = {
             let address = []
             for(let x=0; x<clients.length;x++) {
                 for(let i=0; i<clients[x].address.length;i++){
-                    if(clients[x].address[i][1]&&clients[x].address[i][1].length>0&&!(clients[x].name.toLowerCase()).includes('агент')) {
+                    if(clients[x].address[i][1]&&clients[x].address[i][1].length>0&&!(clients[x].name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
                         let status
                         let now = new Date()
                         let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
