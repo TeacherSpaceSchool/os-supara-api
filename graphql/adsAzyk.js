@@ -72,7 +72,6 @@ const resolversMutation = {
             }
             if(url) object.url = url
             if(title) object.title = title
-            if('admin'===user.role, organization) object.organization = organization
             object.save();
         }
         return {data: 'OK'}
