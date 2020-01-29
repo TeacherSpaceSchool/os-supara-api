@@ -1,6 +1,4 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
-const ItemAzyk = require('../models/itemAzyk');
-const OrderAzyk = require('../models/orderAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 
 const type = `
@@ -20,21 +18,28 @@ const type = `
 `;
 
 const query = `
-    statisticClient(company: String, dateStart: Date): Statistic
-    statisticItem(company: String, dateStart: Date): Statistic
+    statisticClient(company: String, dateStart: Date, dateType: String): Statistic
+    statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
 `;
 
 const resolvers = {
-    statisticClient: async(parent, { company, dateStart }, {user}) => {
+    statisticClient: async(parent, { company, dateStart, dateType }, {user}) => {
         if(user.role==='admin'){
             let dateEnd
             if(dateStart){
                 dateStart= new Date(dateStart)
                 dateEnd = new Date(dateStart)
-                dateEnd.setMonth(dateEnd.getMonth() + 1)
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
             }
 
             let statistic = {}
@@ -60,7 +65,12 @@ const resolvers = {
                         }
                     ]
                 })
-            data = data.filter(data =>data.orders.length>0&&data.orders[0].item&&data.orders[0].client)
+            data = data.filter(data =>data.orders.length>0&&data.orders[0].item&&data.orders[0].client&&data.orders[0].status !== 'обработка')
+            for(let i=0; i<data.length; i++) {
+                for(let ii=0; ii<data[i].orders.length; ii++) {
+                    data[i].orders[ii].invoice = data[i]._id
+                }
+            }
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
 
@@ -69,15 +79,19 @@ const resolvers = {
                     if (!statistic[data[i].client._id])
                         statistic[data[i].client._id] = {
                             profit: 0,
-                            cancel: 0,
-                            complet: 0,
+                            cancel: [],
+                            complet: [],
                             consignmentPrice: 0,
                             client: data[i].client.name
                         }
-                    if (data[i].status === 'отмена')
-                        statistic[data[i].client._id].cancel += 1
-                    else {
-                        statistic[data[i].client._id].complet += 1
+                    if (data[i].status === 'отмена') {
+                        if(!statistic[data[i].client._id].cancel.includes(data[i].invoice)) {
+                            statistic[data[i].client._id].cancel.push(data[i].invoice)
+                        }
+                    } else {
+                        if(!statistic[data[i].client._id].complet.includes(data[i].invoice)) {
+                            statistic[data[i].client._id].complet.push(data[i].invoice)
+                        }
                         statistic[data[i].client._id].profit += (data[i].allPrice - data[i].returned * (data[i].item.stock ? data[i].item.stock : data[i].item.price))
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                             statistic[data[i].client._id].consignmentPrice += data[i].consignmentPrice
@@ -94,20 +108,20 @@ const resolvers = {
             let cancelAll = 0
 
             for(let i=0; i<keys.length; i++){
-                profitAll += statistic[keys[i]].profit,
-                    consignmentPriceAll += statistic[keys[i]].consignmentPrice,
-                    completAll += statistic[keys[i]].complet,
-                    cancelAll += statistic[keys[i]].cancel,
-                    data.push({
-                        _id: keys[i],
-                        data: [
-                            statistic[keys[i]].client,
-                            statistic[keys[i]].profit,
-                            statistic[keys[i]].consignmentPrice,
-                            statistic[keys[i]].complet,
-                            statistic[keys[i]].cancel,
-                        ]
-                    })
+                profitAll += statistic[keys[i]].profit
+                consignmentPriceAll += statistic[keys[i]].consignmentPrice
+                completAll += statistic[keys[i]].complet.length
+                cancelAll += statistic[keys[i]].cancel.length
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].client,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].consignmentPrice,
+                        statistic[keys[i]].complet.length,
+                        statistic[keys[i]].cancel.length,
+                    ]
+                })
             }
             data = data.sort(function(a, b) {
                 return b.data[1] - a.data[1]
@@ -131,13 +145,21 @@ const resolvers = {
             };
         }
     },
-    statisticItem: async(parent, { company, dateStart }, {user}) => {
+    statisticItem: async(parent, { company, dateStart, dateType }, {user}) => {
         if(user.role==='admin'){
             let dateEnd
             if(dateStart){
                 dateStart= new Date(dateStart)
                 dateEnd = new Date(dateStart)
-                dateEnd.setMonth(dateEnd.getMonth() + 1)
+
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
             }
 
             let statistic = {}
@@ -169,21 +191,31 @@ const resolvers = {
                     ]
                 })
             data = data.filter(data =>data.orders.length>0&&data.orders[0].item&&data.orders[0].client)
+            for(let i=0; i<data.length; i++) {
+                for(let ii=0; ii<data[i].orders.length; ii++) {
+                    data[i].orders[ii].invoice = data[i]._id
+                }
+            }
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
             for(let i=0; i<data.length; i++) {
                 if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
-                        cancel: 0,
-                        complet: 0,
+                        cancel: [],
+                        complet: [],
                         consignmentPrice: 0,
                         item: data[i].item.organization.name+' '+data[i].item.name
                     }
-                    if (data[i].status === 'отмена')
-                        statistic[data[i].item._id].cancel += data[i].count
+                    if (data[i].status === 'отмена') {
+                        if (!statistic[data[i].item._id].cancel.includes(data[i].invoice)) {
+                            statistic[data[i].item._id].cancel.push(data[i].invoice)
+                        }
+                    }
                     else {
-                        statistic[data[i].item._id].complet += data[i].count
+                        if(!statistic[data[i].item._id].complet.includes(data[i].invoice)) {
+                            statistic[data[i].item._id].complet.push(data[i].invoice)
+                        }
                         statistic[data[i].item._id].profit += (data[i].allPrice - data[i].returned * (data[i].item.stock ? data[i].item.stock : data[i].item.price))
                         if (data[i].consignmentPrice) {
                             statistic[data[i].item._id].consignmentPrice += data[i].consignmentPrice
@@ -200,20 +232,20 @@ const resolvers = {
             let cancelAll = 0
 
             for(let i=0; i<keys.length; i++){
-                profitAll += statistic[keys[i]].profit,
-                    consignmentPriceAll += statistic[keys[i]].consignmentPrice,
-                    completAll += statistic[keys[i]].complet,
-                    cancelAll += statistic[keys[i]].cancel,
-                    data.push({
-                        _id: keys[i],
-                        data: [
-                            statistic[keys[i]].item,
-                            statistic[keys[i]].profit,
-                            statistic[keys[i]].consignmentPrice,
-                            statistic[keys[i]].complet,
-                            statistic[keys[i]].cancel,
-                        ]
-                    })
+                profitAll += statistic[keys[i]].profit
+                consignmentPriceAll += statistic[keys[i]].consignmentPrice
+                completAll += statistic[keys[i]].complet.length
+                cancelAll += statistic[keys[i]].cancel.length
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].item,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].consignmentPrice,
+                        statistic[keys[i]].complet.length,
+                        statistic[keys[i]].cancel.length,
+                    ]
+                })
             }
             data = data.sort(function(a, b) {
                 return b.data[1] - a.data[1]
@@ -324,7 +356,7 @@ const resolvers = {
                         let status
                         let now = new Date()
                         let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
-                        if (!clients[x].lastActive || differenceDates > 5) {
+                        if ((!clients[x].lastActive || differenceDates > 5)&&!item&&!organization) {
                             status = 'red'
                             bad+=1
                         }

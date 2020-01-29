@@ -4,6 +4,10 @@ const random = require('mongoose-random');
 const AdsAzykSchema = mongoose.Schema({
     image: String,
     url: String,
+    organization: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk'
+    },
     title: String
 }, {
     timestamps: true

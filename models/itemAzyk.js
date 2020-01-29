@@ -35,6 +35,10 @@ const ItemAzykSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    priotiry: {
+        type: Number,
+        default: 0
+    },
     size: {
         type: Number,
         default: 0

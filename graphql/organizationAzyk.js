@@ -5,6 +5,7 @@ const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
+const AdsAzyk = require('../models/adsAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -151,6 +152,7 @@ const resolversMutation = {
             await BasketAzyk.deleteMany({item: {$in: items}})
             await ItemAzyk.updateMany({organization: {$in: _id}}, {status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
+            await AdsAzyk.deleteMany({organization: {$in: _id}})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
@@ -166,6 +168,7 @@ const resolversMutation = {
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
                 await EmploymentAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
                 await ItemAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
+                await AdsAzyk.deleteMany({organization: {$in: objects[i]._id}})
                 objects[i].save()
             }
         }

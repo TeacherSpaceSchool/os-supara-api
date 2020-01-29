@@ -28,6 +28,7 @@ const type = `
     packaging: Int
     weight: Float
     size: Float
+    priotiry: Int
   }
 `;
 
@@ -41,8 +42,8 @@ const query = `
 `;
 
 const mutation = `
-    addItem( apiece: Boolean, packaging: Int!, stock: Int!, weight: Float!, size: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
-    setItem(_id: ID!,  apiece: Boolean, packaging: Int, stock: Int, weight: Float, size: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
+    addItem( priotiry: Int, apiece: Boolean, packaging: Int!, stock: Int!, weight: Float!, size: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
+    setItem(_id: ID!, priotiry: Int, apiece: Boolean, packaging: Int, stock: Int, weight: Float, size: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
     deleteItem(_id: [ID]!): Data
     onoffItem(_id: [ID]!): Data
     favoriteItem(_id: [ID]!): Data
@@ -60,6 +61,7 @@ const resolvers = {
                     .populate('subCategory')
                     .populate({ path: 'organization',
                         match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
+                    .sort('-priotiry')
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -75,6 +77,7 @@ const resolvers = {
                 })
                     .populate('subCategory')
                     .populate({ path: 'organization', match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
+                    .sort('-priotiry')
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -93,6 +96,7 @@ const resolvers = {
             })
                 .populate('subCategory')
                 .populate('organization')
+                .sort('-priotiry')
                 .sort(sort)
             items = items.filter(
                 item => (
@@ -113,6 +117,7 @@ const resolvers = {
                     .populate({ path: 'organization',
                         match: {name: filter.length===0?{'$regex': '', '$options': 'i'}:filter,
                             status: 'active'} })
+                    .sort('-priotiry')
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -130,6 +135,7 @@ const resolvers = {
                     .populate('subCategory')
                     .populate({ path: 'organization', match: {status: 'active',
                         name: filter.length===0?{'$regex': '', '$options': 'i'}:filter} })
+                    .sort('-priotiry')
                     .sort(sort)
                 items = items.filter(
                     item => (
@@ -154,6 +160,7 @@ const resolvers = {
                     path: 'organization',
                     match: {status: 'active'}
                 })
+                .sort('-priotiry')
                 .sort(sort)
             items = items.filter(
                 item => (
@@ -263,7 +270,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addItem: async(parent, {apiece, stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging, weight, size}, {user}) => {
+    addItem: async(parent, {apiece, priotiry, stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging, weight, size}, {user}) => {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
@@ -282,7 +289,8 @@ const resolversMutation = {
                 status: 'active',
                 deliveryDays: deliveryDays,
                 weight: Math.round(weight),
-                size: Math.round(size)
+                size: Math.round(size),
+                priotiry: priotiry
             });
             if(['организация', 'менеджер'].includes(user.role)) _object.organization = user.organization
             if(apiece!=undefined) _object.apiece = apiece
@@ -290,7 +298,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setItem: async(parent, {apiece, _id, weight, size, stock, name, image, info, price, subCategory, organization, packaging, hit, latest, deliveryDays}, {user}) => {
+    setItem: async(parent, {apiece, _id, priotiry, weight, size, stock, name, image, info, price, subCategory, organization, packaging, hit, latest, deliveryDays}, {user}) => {
         let object = await ItemAzyk.findById(_id)
         if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.organization.toString())) {
             if (image) {
@@ -311,6 +319,7 @@ const resolversMutation = {
             if(deliveryDays)object.deliveryDays = deliveryDays
             if(packaging)object.packaging = packaging
             if(apiece!=undefined) object.apiece = apiece
+            if(priotiry!=undefined) object.priotiry = priotiry
             if(user.role==='admin'){
                 object.organization = organization === undefined ? object.organization : organization;
             }
