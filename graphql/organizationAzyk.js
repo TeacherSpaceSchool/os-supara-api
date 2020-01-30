@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
+const AutoAzyk = require('../models/autoAzyk');
+const EquipmentAzyk = require('../models/equipmentAzyk');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ItemAzyk = require('../models/itemAzyk');
@@ -157,6 +159,8 @@ const resolversMutation = {
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
             await BonusAzyk.deleteMany({organization: {$in: _id}})
+            await AutoAzyk.deleteMany({organization: {$in: _id}})
+            await EquipmentAzyk.deleteMany({organization: {$in: _id}})
             await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted', status: 'deactive'})
         }
         return {data: 'OK'}

@@ -84,7 +84,7 @@ const resolvers = {
             },
             {
                 name: 'Дата',
-                field: '-createdAt'
+                field: 'createdAt'
             },
         ]
     },
@@ -109,14 +109,14 @@ const resolvers = {
             }
             return filter
         }
-        else if(user.role){
+        else if(user.organization){
             let filter = [
                 {
                     name: 'Все',
                     value: ''
                 }
             ]
-            let objects = await AutoAzyk.find().distinct('employment')
+            let objects = await AutoAzyk.find({organization: user.organization}).distinct('employment')
             objects = await EmploymentAzyk.find({_id: {$in: objects}})
             for(let i = 0; i<objects.length; i++){
                 filter = [
@@ -163,7 +163,7 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
-    deleteEquipment: async(parent, { _id }, {user}) => {
+    deleteAuto: async(parent, { _id }, {user}) => {
         if(['admin', 'организация'].includes(user.role)){
             let objects = await AutoAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
