@@ -11,6 +11,10 @@ const OrganizationAzykSchema = mongoose.Schema({
     status: String,
     minimumOrder: Number,
     del: String,
+    consignation: {
+        type: Boolean,
+        default: false
+    },
     accessToClient: {
         type: Boolean,
         default: false

@@ -356,7 +356,7 @@ const resolvers = {
                         let status
                         let now = new Date()
                         let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
-                        if ((!clients[x].lastActive || differenceDates > 5)&&!item&&!organization) {
+                        if ((!clients[x].lastActive || differenceDates > 7)&&!item&&!organization) {
                             status = 'red'
                             bad+=1
                         }
@@ -421,7 +421,7 @@ const resolvers = {
                             }
                             if(invoice) {
                                 differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
-                                if (differenceDates > 5) {
+                                if (differenceDates > 7) {
                                     status = 'yellow'
                                     good+=1
                                 }

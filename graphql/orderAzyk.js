@@ -11,6 +11,7 @@ const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_ORDER = 'RELOAD_ORDER';
+const DistrictAzyk = require('../models/districtAzyk');
 const { sendWebPush } = require('../module/webPush');
 const { getAdminId } = require('../module/user');
 
@@ -61,13 +62,13 @@ const type = `
   input OrderInput {
     _id: ID
     count: Int
-    allPrice: Int
+    allPrice: Float
     allTonnage: Float
     allSize: Float
     status: String
     consignment: Int
     returned: Int
-    consignmentPrice: Int
+    consignmentPrice: Float
   }
 `;
 
@@ -143,9 +144,12 @@ const resolvers = {
             return invoices
         }
         if(user.role==='агент'){
+            let clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
             let invoices =  await InvoiceAzyk.find({
                 del: {$ne: 'deleted'},
-                agent: user.employment,
+                client: {$in: clients},
                 ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                 ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
             })
@@ -157,7 +161,6 @@ const resolvers = {
                         populate : [
                             { path : 'organization'}
                         ]
-
                     }
                 })
                 .populate({
@@ -445,10 +448,10 @@ const resolversMutation = {
                         client: client,
                         count: baskets[ii].count,
                         consignment: baskets[ii].consignment,
-                        consignmentPrice: baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
+                        consignmentPrice: Math.round(baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price)),
                         allTonnage: Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0)),
                         allSize: Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0)),
-                        allPrice: baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price),
+                        allPrice: Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price)),
                         status: 'обработка',
                         agent: user.employment,
                         organization: baskets[ii].item.organization
@@ -477,8 +480,8 @@ const resolversMutation = {
                     let objectInvoice = new InvoiceAzyk({
                         orders: orders,
                         client: client,
-                        allPrice: allPrice,
-                        consignmentPrice: consignmentPrice,
+                        allPrice: Math.round(allPrice),
+                        consignmentPrice: Math.round(consignmentPrice),
                         allTonnage: Math.round(allTonnage),
                         allSize: Math.round(allSize),
                         info: info,
@@ -531,8 +534,8 @@ const resolversMutation = {
                     {_id: orders[i]._id},
                     {
                         count: orders[i].count,
-                        allPrice: orders[i].allPrice,
-                        consignmentPrice: orders[i].consignmentPrice,
+                        allPrice: Math.round(orders[i].allPrice),
+                        consignmentPrice: Math.round(orders[i].consignmentPrice),
                         returned: orders[i].returned,
                         consignment: orders[i].consignment,
                         allSize: Math.round(orders[i].allSize),
@@ -545,12 +548,13 @@ const resolversMutation = {
             }
             let object = await InvoiceAzyk.findOne({_id: invoice}).populate({ path: 'user'})
             if(object.usedBonus&&object.usedBonus>0)
-                object.allPrice = allPrice - object.usedBonus
+                object.allPrice = Math.round(allPrice - object.usedBonus)
             else
-                object.allPrice = allPrice
+                object.allPrice = Math.round(allPrice)
             object.allTonnage = allTonnage
-            object.consignmentPrice = consignmentPrice
+            object.consignmentPrice = Math.round(consignmentPrice)
             object.allSize = allSize
+            object.orders = orders.map(order=>order._id)
             await object.save();
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, client: object.client, agent: object.agent, organization: object.organization} });
 
@@ -568,7 +572,7 @@ const resolversMutation = {
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = user.role==='admin'
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
-        let undefinedClient = ['менеджер', 'организация', 'экспедитор'].includes(user.role)&&!object.client.user
+        let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
         let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
         if(paymentConsignation!=undefined&&(admin||undefinedClient||employment)){
             object.paymentConsignation = paymentConsignation
@@ -753,7 +757,7 @@ const resolversSubscription = {
                 return (
                     user.role==='admin'||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
-                    (user.employment&&payload.reloadOrder.agent.toString()===user.employment.toString())||
+                    (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                     (user.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
                 )
             },

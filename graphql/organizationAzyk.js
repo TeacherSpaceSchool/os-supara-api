@@ -24,6 +24,7 @@ const type = `
     image: String
     minimumOrder: Int
     accessToClient: Boolean
+    consignation: Boolean
   }
 `;
 
@@ -35,8 +36,8 @@ const query = `
 `;
 
 const mutation = `
-    addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!): Data
-    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean): Data
+    addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!): Data
+    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
 `;
@@ -102,7 +103,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrganization: async(parent, {info, phone, email, address, image, name, minimumOrder}, {user}) => {
+    addOrganization: async(parent, {info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
@@ -116,6 +117,8 @@ const resolversMutation = {
                 info: info,
                 minimumOrder: minimumOrder,
                 reiting: 0,
+                accessToClient: accessToClient,
+                consignation: consignation
             });
             objectOrganization = await OrganizationAzyk.create(objectOrganization)
             let objectBonus = new BonusAzyk({
@@ -127,7 +130,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder, accessToClient}, {user}) => {
+    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
         if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
@@ -141,6 +144,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
+            if(consignation!=undefined) object.consignation = consignation
             if(accessToClient!=undefined) object.accessToClient = accessToClient
             if(minimumOrder!=undefined) object.minimumOrder = minimumOrder
             object.save();
@@ -152,7 +156,7 @@ const resolversMutation = {
             let items = await ItemAzyk.find({organization: {$in: _id}})
             items = items.map(element=>element._id)
             await BasketAzyk.deleteMany({item: {$in: items}})
-            await ItemAzyk.updateMany({organization: {$in: _id}}, {status: 'deactive'})
+            await ItemAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted', status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
             await AdsAzyk.deleteMany({organization: {$in: _id}})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});

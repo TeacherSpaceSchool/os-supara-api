@@ -21,6 +21,8 @@ const EquipmentAzyk = require('./equipmentAzyk');
 const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
 const StatisticAzyk = require('./statistic');
+const DistrictAzyk = require('./districtAzyk');
+const Integrate1CAzyk = require('./integrate1CAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
 
@@ -41,6 +43,8 @@ const typeDefs = gql`
         url: String
         image: String
     }
+    ${DistrictAzyk.type}
+    ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
     ${FaqAzyk.type}
     ${AutoAzyk.type}
@@ -61,6 +65,8 @@ const typeDefs = gql`
     ${BonusClientAzyk.type}
     ${StatisticAzyk.type}
     type Mutation {
+        ${Integrate1CAzyk.mutation}
+        ${DistrictAzyk.mutation}
         ${AdsAzyk.mutation}
         ${FaqAzyk.mutation}
         ${AutoAzyk.mutation}
@@ -81,6 +87,8 @@ const typeDefs = gql`
         ${BonusClientAzyk.mutation}
     }
     type Query {
+        ${Integrate1CAzyk.query}
+        ${DistrictAzyk.query}
         ${ClientAzyk.query}
         ${FaqAzyk.query}
         ${AutoAzyk.query}
@@ -124,6 +132,8 @@ const resolvers = {
         },
     }),
     Query: {
+        ...Integrate1CAzyk.resolvers,
+        ...DistrictAzyk.resolvers,
         ...FaqAzyk.resolvers,
         ...AutoAzyk.resolvers,
         ...EquipmentAzyk.resolvers,
@@ -145,6 +155,8 @@ const resolvers = {
         ...StatisticAzyk.resolvers,
     },
     Mutation: {
+        ...Integrate1CAzyk.resolversMutation,
+        ...DistrictAzyk.resolversMutation,
         ...FaqAzyk.resolversMutation,
         ...ClientAzyk.resolversMutation,
         ...AutoAzyk.resolversMutation,

@@ -1,7 +1,6 @@
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
-const EmploymentAzyk = require('../models/employmentAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
@@ -17,7 +16,7 @@ const type = `
     name: String
     info: String
     image: String
-    price: Int
+    price: Float
     reiting: Int
     subCategory: SubCategory
     organization: Organization
@@ -42,8 +41,8 @@ const query = `
 `;
 
 const mutation = `
-    addItem( priotiry: Int, apiece: Boolean, packaging: Int!, stock: Int!, weight: Float!, size: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Int!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
-    setItem(_id: ID!, priotiry: Int, apiece: Boolean, packaging: Int, stock: Int, weight: Float, size: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Int, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
+    addItem( priotiry: Int, apiece: Boolean, packaging: Int!, stock: Int!, weight: Float!, size: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Float!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
+    setItem(_id: ID!, priotiry: Int, apiece: Boolean, packaging: Int, stock: Int, weight: Float, size: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Float, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
     deleteItem(_id: [ID]!): Data
     onoffItem(_id: [ID]!): Data
     favoriteItem(_id: [ID]!): Data

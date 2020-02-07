@@ -20,6 +20,7 @@ const query = `
     employments(search: String!, sort: String!, filter: String!): [Employment]
     employment(_id: ID!): Employment
     ecspeditors(_id: ID): [Employment]
+    agents(_id: ID): [Employment]
     sortEmployment: [Sort]
     filterEmployment: [Filter]
 `;
@@ -81,6 +82,27 @@ const resolvers = {
                 organization: user.organization
             })
                 .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+                .populate({path: 'organization'})
+            employments = employments.filter(employment => (employment.user))
+            return employments
+        }
+    },
+    agents: async(parent, {_id}, {user}) => {
+        if (user.role === 'admin') {
+            if(mongoose.Types.ObjectId.isValid(_id)) {
+                let employments = await EmploymentAzyk.find({organization: _id})
+                    .populate({path: 'user', match: {role: 'агент', status: 'active'}})
+                    .populate({path: 'organization'})
+                employments = employments.filter(employment => (employment.user))
+                return employments
+            }
+            else return []
+        }
+        else if (['организация', 'менеджер'].includes(user.role)) {
+            let employments = await EmploymentAzyk.find({
+                organization: user.organization
+            })
+                .populate({path: 'user', match: {role: 'агент', status: 'active'}})
                 .populate({path: 'organization'})
             employments = employments.filter(employment => (employment.user))
             return employments

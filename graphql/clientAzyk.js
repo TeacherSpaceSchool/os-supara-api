@@ -3,6 +3,7 @@ const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
 const { saveFile, deleteFile, urlMain, saveImage } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
@@ -34,6 +35,7 @@ const type = `
 
 const query = `
     clients(search: String!, sort: String!, filter: String!): [Client]
+    clientsWithoutDistrict(organization: ID): [Client]
     client(_id: ID!): Client
     sortClient: [Sort]
     filterClient: [Filter]
@@ -70,8 +72,12 @@ const resolvers = {
                     )
             )
             return clients
-        } else if('агент'===user.role) {
-            let clients = await ClientAzyk.find({organization: user.organization, del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
+        }
+        else if('агент'===user.role) {
+            let clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
+            clients = await ClientAzyk.find({_id: {$in: clients}, del: {$ne: 'deleted'}}).populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} }).populate({ path: 'organization' }).sort(sort)
             clients = clients.filter(
                 client => {
                     return (client.user || client.organization) && (
@@ -125,6 +131,39 @@ const resolvers = {
                 }
             )
             return clients
+        }
+    },
+    clientsWithoutDistrict: async(parent, { organization }, {user}) => {
+        if(['организация', 'менеджер', 'admin'].includes(user.role)){
+            if(user.role!=='admin')organization=user.organization
+            let clients = await DistrictAzyk
+                .find({organization: organization})
+                .distinct('client')
+            clients = clients.flat()
+            organization = await OrganizationAzyk.findOne({_id: organization})
+            if(organization.accessToClient)
+                clients = await ClientAzyk
+                    .find({_id: { $nin: clients}, del: {$ne: 'deleted'}})
+                    .populate({
+                        path: 'user',
+                        match: {status: 'active'}
+                    })
+                    .populate({ path: 'organization' })
+            else {
+                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
+                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await ClientAzyk.find({
+                    _id: { $nin: clients},
+                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                    del: {$ne: 'deleted'}
+                }).populate({
+                    path: 'user',
+                    match: {status: 'active'}
+                }).populate({path: 'organization'})
+            }
+            clients = clients.filter(client => (client.user || client.organization))
+            return clients
+
         }
     },
     client: async(parent, {_id}) => {
