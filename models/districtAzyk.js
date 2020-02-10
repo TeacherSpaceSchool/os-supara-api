@@ -18,6 +18,10 @@ const DistrictAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EmploymentAzyk'
     },
+    manager: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
 }, {
     timestamps: true
 });

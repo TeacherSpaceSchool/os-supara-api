@@ -7,11 +7,13 @@ const ItemAzyk = require('../models/itemAzyk');
 const { addBonusToClient } = require('../module/bonusClientAzyk');
 const randomstring = require('randomstring');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
+const EmploymentAzyk = require('../models/employmentAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_ORDER = 'RELOAD_ORDER';
 const DistrictAzyk = require('../models/districtAzyk');
+const HistoryOrderAzyk = require('../models/historyOrderAzyk');
 const { sendWebPush } = require('../module/webPush');
 const { getAdminId } = require('../module/user');
 
@@ -19,6 +21,7 @@ const type = `
   type Order {
     _id: ID
     createdAt: Date
+    updatedAt: Date
     item: Item
     client: Client
     count: Int
@@ -33,15 +36,16 @@ const type = `
   type Invoice {
     _id: ID
     createdAt: Date
-    orders: [Order],
-    client: Client,
+    updatedAt: Date
+    orders: [Order]
+    client: Client
     allPrice: Int 
     consignmentPrice: Int
     info: String,
-    address: [String],
-    paymentMethod: String,
-    number: String,
-    confirmationForwarder: Boolean,
+    address: [String]
+    paymentMethod: String
+    number: String
+    confirmationForwarder: Boolean
     confirmationClient: Boolean
     paymentConsignation: Boolean
     cancelClient: Date
@@ -49,9 +53,22 @@ const type = `
     taken: Boolean
     dateDelivery: Date
     usedBonus: Int
-    agent: Employment,
-    allTonnage: Float,
+    agent: Employment
+    allTonnage: Float
     allSize: Float
+    editor: String
+  }
+  type HistoryOrder {
+    createdAt: Date
+    invoice: ID
+    orders: [HistoryOrderElement]
+    editor: String
+  }
+  type HistoryOrderElement {
+    item: String
+    count: Int
+    consignment: Int
+    returned: Int
   }
   type ReloadOrder {
     who: ID
@@ -65,6 +82,7 @@ const type = `
     allPrice: Float
     allTonnage: Float
     allSize: Float
+    name: String
     status: String
     consignment: Int
     returned: Int
@@ -74,6 +92,7 @@ const type = `
 
 const query = `
     invoices(search: String!, sort: String!, filter: String!, date: String!): [Invoice]
+    orderHistorys(invoice: ID!): [HistoryOrder]
     invoicesForRouting(organization: ID): [Invoice]
     invoice(_id: ID!): Invoice
     sortInvoice: [Sort]
@@ -109,7 +128,7 @@ const resolvers = {
                     ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
 
                 }
-                )
+            )
                 .populate({
                     path: 'orders',
                     match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
@@ -143,14 +162,28 @@ const resolvers = {
             )
             return invoices
         }
-        if(user.role==='агент'){
+        else if(user.role==='агент'){
+            if(date!=='') {
+                let now = new Date()
+                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+                if(differenceDates>7) {
+                    dateStart = new Date()
+                    dateEnd = new Date(dateStart)
+                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 7)
+                }
+            }
+            else {
+                dateEnd = new Date()
+                dateStart = new Date(dateEnd)
+                dateStart = dateStart.setDate(dateStart.getDate() - 7)
+            }
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
             let invoices =  await InvoiceAzyk.find({
                 del: {$ne: 'deleted'},
                 client: {$in: clients},
-                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
                 ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
             })
                 .populate({
@@ -158,6 +191,67 @@ const resolvers = {
                     match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
                     populate : {
                         path : 'item',
+                        match: { organization: user.organization },
+                        populate : [
+                            { path : 'organization'}
+                        ]
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate : [
+                        { path : 'user'}
+                    ]
+                })
+                .populate({
+                    path: 'agent'
+                })
+                .sort(sort)
+            invoices = invoices.filter(
+                invoice =>
+                    invoice.orders.length>0&&invoice.orders[0].item&&
+                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
+
+            )
+            return invoices
+        }
+        else if(user.role==='менеджер'){
+            if(date!=='') {
+                let now = new Date()
+                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+                if(differenceDates>7) {
+                    dateStart = new Date()
+                    dateEnd = new Date(dateStart)
+                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 7)
+                }
+            }
+            else {
+                dateEnd = new Date()
+                dateStart = new Date(dateEnd)
+                dateStart = dateStart.setDate(dateStart.getDate() - 7)
+            }
+            let clients = await DistrictAzyk
+                .find({manager: user.employment})
+                .distinct('client')
+            let invoices =  await InvoiceAzyk.find({
+                del: {$ne: 'deleted'},
+                client: {$in: clients},
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+            })
+                .populate({
+                    path: 'orders',
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
+                    populate : {
+                        path : 'item',
+                        match: { organization: user.organization },
                         populate : [
                             { path : 'organization'}
                         ]
@@ -190,10 +284,10 @@ const resolvers = {
         }
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.find({
-                    del: {$ne: 'deleted'},
-                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-                })
+                del: {$ne: 'deleted'},
+                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+            })
                 .populate({
                     path: 'orders',
                     match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
@@ -230,11 +324,11 @@ const resolvers = {
             )
             return invoices
         }
-        else if(['организация', 'менеджер'].includes(user.role)) {
+        else if(['организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find({
-                    del: {$ne: 'deleted'},
-                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+                del: {$ne: 'deleted'},
+                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
             })
                 .populate({
                     path: 'orders',
@@ -271,6 +365,12 @@ const resolvers = {
                     )
             )
             return invoices
+        }
+    },
+    orderHistorys: async(parent, {invoice}, {user}) => {
+        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+            let historyOrders =  await HistoryOrderAzyk.find({invoice: invoice})
+            return historyOrders
         }
     },
     invoicesForRouting: async(parent, { organization }, {user}) => {
@@ -454,10 +554,10 @@ const resolversMutation = {
                         allPrice: Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price)),
                         status: 'обработка',
                         agent: user.employment,
-                        organization: baskets[ii].item.organization
                     });
                     objectOrder = await OrderAzyk.create(objectOrder);
                     if(invoices[baskets[ii].item.organization]===undefined)invoices[baskets[ii].item.organization]=[];
+                    objectOrder.organization = baskets[ii].item.organization
                     invoices[baskets[ii].item.organization].push(objectOrder);
                 }
                 let keysInvoices = Object.keys(invoices)
@@ -469,6 +569,7 @@ const resolversMutation = {
                     let allTonnage = 0
                     let allSize = 0
                     let consignmentPrice = 0
+                    let organizaiton = invoices[keysInvoices[ii]][0].organization
                     let orders = invoices[keysInvoices[ii]]
                     for(let iii=0; iii<orders.length;iii++) {
                         allPrice += orders[iii].allPrice
@@ -489,7 +590,7 @@ const resolversMutation = {
                         paymentMethod: paymentMethod,
                         number: number,
                         agent: user.employment,
-                        organization: orders[0].organization
+                        organization: organizaiton
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus
@@ -497,7 +598,14 @@ const resolversMutation = {
                         usedBonus = 0
                     }
                     objectInvoice = await InvoiceAzyk.create(objectInvoice);
-                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, agent: user.employment, client: client, organization: orders[0].organization} });
+
+
+                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                        who: user.role==='admin'?null:user._id,
+                        agent: user.employment,
+                        client: client,
+                        organization: organizaiton
+                    } });
                 }
             }
             for(let i = 0; i< baskets.length; i++){
@@ -518,7 +626,12 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 objects[i].del = 'deleted'
                 objects[i].save()
-                pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, client: objects[i].client, agent: objects[i].agent, organization: objects[i].organization} });
+                pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                    who: user.role==='admin'?null:user._id,
+                    client: objects[i].client,
+                    agent: objects[i].agent,
+                    organization: objects[i].organization
+                } });
             }
         }
         return {data: 'OK'};
@@ -546,7 +659,33 @@ const resolversMutation = {
                 allSize += orders[i].allSize
                 consignmentPrice += orders[i].consignmentPrice
             }
-            let object = await InvoiceAzyk.findOne({_id: invoice}).populate({ path: 'user'})
+            let object = await InvoiceAzyk.findOne({_id: invoice}).populate({ path: 'client'})
+
+            let editor;
+            if(user.role==='admin'){
+                editor = 'админ'
+            }
+            else if(user.role==='client'){
+                editor = `клиент ${object.client.name}`
+            }
+            else{
+                let employment = await EmploymentAzyk.findOne({user: user._id})
+                editor = `${user.role} ${employment.name}`
+            }
+            let objectHistoryOrder = new HistoryOrderAzyk({
+                invoice: invoice,
+                orders: orders.map(order=>{
+                    return {
+                        item: order.name,
+                        count: order.count,
+                        consignment: order.consignment,
+                        returned: order.returned
+                    }
+                }),
+                editor: editor,
+            });
+            await HistoryOrderAzyk.create(objectHistoryOrder);
+
             if(object.usedBonus&&object.usedBonus>0)
                 object.allPrice = Math.round(allPrice - object.usedBonus)
             else
@@ -554,9 +693,15 @@ const resolversMutation = {
             object.allTonnage = allTonnage
             object.consignmentPrice = Math.round(consignmentPrice)
             object.allSize = allSize
+            object.editor = editor
             object.orders = orders.map(order=>order._id)
             await object.save();
-            pubsub.publish(RELOAD_ORDER, { reloadOrder: {who: user.role==='admin'?null:user._id, client: object.client, agent: object.agent, organization: object.organization} });
+            pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                who: user.role==='admin'?null:user._id,
+                client: object.client._id,
+                agent: object.agent,
+                organization: object.organization
+            } });
 
             /*if(user._id.toString()!==(getAdminId()).toString())
                 sendWebPush('Заказ изменен', '', getAdminId())
@@ -758,7 +903,7 @@ const resolversSubscription = {
                     user.role==='admin'||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
                     (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
-                    (user.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                    (user.organization&&payload.reloadOrder.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
                 )
             },
         )

@@ -2,6 +2,8 @@ const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const ItemAzyk = require('../models/itemAzyk');
+const OrganizationAzyk = require('../models/organizationAzyk');
+const OrderAzyk = require('../models/orderAzyk');
 const mongoose = require('mongoose');
 
 const type = `
@@ -127,12 +129,33 @@ const resolvers = {
                     client: {$ne: null}
                 })
                 .distinct('client')
-            clients = await ClientAzyk.find({
-                _id: {$nin: clients},
-                del: {$ne: 'deleted'},
-            })
-                .populate({path: 'user', match: {status: 'active'}})
-            clients = clients.filter(client => (client.user))
+            organization = await OrganizationAzyk.findOne({_id: organization})
+            if(organization.accessToClient)
+                clients = await ClientAzyk.find({
+                    _id: {$nin: clients},
+                    del: {$ne: 'deleted'}
+                })
+                    .populate({path: 'user', match: {status: 'active'}})
+            else {
+                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
+                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await ClientAzyk.find({
+                    _id: { $nin: clients},
+                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                    del: {$ne: 'deleted'}
+                }).populate({
+                    path: 'user',
+                    match: {status: 'active'}
+                }).populate({path: 'organization'})
+            }
+            clients = clients.filter(client => (
+                client.user&&
+                client.address[0]&&
+                client.address[0][1]&&
+                client.address[0][1].length>0&&
+                !(client.name.toLowerCase()).includes('агент')&&
+                !(client.name.toLowerCase()).includes('agent'))
+            )
             for(let i=0; i<clients.length; i++){
                 for(let i1=0; i1<clients[i].address.length; i1++) {
                     clients[i].name+=` ${clients[i].address[i1][2]?`${clients[i].address[i1][2]}, `:''}${clients[i].address[i1][0]}`
