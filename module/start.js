@@ -22,6 +22,21 @@ let startResetBonusesClient = async () => {
     }
 }
 
+let startResetUnloading = async () => {
+    if(isMainThread) {
+        let w = new Worker('./thread/resetUnloading.js', {workerData: 0});
+        w.on('message', (msg) => {
+            console.log('ResetUnloading: '+msg);
+        })
+        w.on('error', console.error);
+        w.on('exit', (code) => {
+            if(code !== 0)
+                console.error(new Error(`ResetUnloading stopped with exit code ${code}`))
+        });
+        console.log('ResetUnloading '+w.threadId+ ' run')
+    }
+}
+
 let startReminderClient = async () => {
     if(isMainThread) {
         let w = new Worker('./thread/reminderClient.js', {workerData: 0});
@@ -40,6 +55,7 @@ let startReminderClient = async () => {
 let start = async () => {
     //await startClientRedis()
     await startCategoryAzyk()
+    await startResetUnloading()
     await startSubCategoryAzyk()
     await reductionToBonus()
     await reductionToClient()

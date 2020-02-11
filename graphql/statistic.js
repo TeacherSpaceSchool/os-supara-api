@@ -1,5 +1,11 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const ClientAzyk = require('../models/clientAzyk');
+const ExcelJS = require('exceljs');
+const randomstring = require('randomstring');
+const app = require('../app');
+const fs = require('fs');
+const path = require('path');
+const { urlMain } = require('../module/const');
 
 const type = `
     type Statistic {
@@ -18,6 +24,7 @@ const type = `
 `;
 
 const query = `
+    unloadingOrders(organization: ID!, dateStart: Date!): Data
     statisticClient(company: String, dateStart: Date, dateType: String): Statistic
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     activeItem(organization: ID!): [Item]
@@ -459,7 +466,131 @@ const resolvers = {
             ]
             return address
         }
-    }
+    },
+    unloadingOrders: async(parent, { organization, dateStart }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let dateEnd
+            if(dateStart){
+                dateStart = new Date(dateStart)
+                dateStart = dateStart.setHours(3)
+                dateEnd = new Date(dateStart)
+                dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+            }
+            let data = await InvoiceAzyk.find(
+                {
+                    $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                    ...{del: {$ne: 'deleted'}}
+                }
+            )
+                .populate({
+                    path: 'orders',
+                    match: { status: 'принят' },
+                    populate : [
+                        {
+                            path : 'item',
+                            match: { organization: organization }
+                        }
+                    ]
+                })
+                .populate({
+                   path : 'client'
+                })
+            data = data.filter(data =>{
+                return(data.orders.length>0&&data.orders[0].item)
+            })
+            let worksheet;
+            let orders = {};
+            for(let i = 0; i<data.length;i++){
+                let allPrice = 0
+                let consignmentPrice = 0
+                if(!orders[data[i].client._id]) {
+                    orders[data[i].client._id]= {
+                        client: data[i].client,
+                        address: `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`,
+                        orders: {},
+                        allPrice: 0,
+                        consignmentPrice: 0
+                    }
+                }
+                for(let i1 = 0; i1<data[i].orders.length; i1++) {
+                    if(!orders[data[i].client._id].orders[data[i].orders[i1].item._id]) {
+                        orders[data[i].client._id].orders[data[i].orders[i1].item._id] = {
+                            allPrice: 0,
+                            consignmentPrice: 0,
+                            count: 0,
+                            name: data[i].orders[i1].item.name
+                        }
+                    }
+                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].allPrice += data[i].orders[i1].allPrice
+                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].count += data[i].orders[i1].count
+                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].consignmentPrice += data[i].orders[i1].consignmentPrice
+                    allPrice += data[i].orders[i1].allPrice
+                    consignmentPrice += data[i].orders[i1].consignmentPrice
+                }
+                orders[data[i].client._id].allPrice = allPrice
+                orders[data[i].client._id].consignmentPrice = consignmentPrice
+            }
+            const keys = Object.keys(orders)
+            for(let i = 0; i<keys.length;i++){
+                worksheet = await workbook.addWorksheet(`Заказ${i+1}`);
+                let row = 1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Клиент:';
+                worksheet.getCell(`B${row}`).value = orders[keys[i]].client.name;
+                row+=1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Адрес:';
+                worksheet.getCell(`B${row}`).value = orders[keys[i]].address;
+                for(let i1=0; i1<orders[keys[i]].client.phone.length; i1++) {
+                    row+=1;
+                    if(!i1) {
+                        worksheet.getCell(`A${row}`).font = {bold: true};
+                        worksheet.getCell(`A${row}`).value = 'Телефон:';
+                    }
+                    worksheet.getCell(`B${row}`).value = orders[keys[i]].client.phone[i1];
+                }
+                row+=1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Сумма:';
+                worksheet.getCell(`B${row}`).value = `${orders[keys[i]].allPrice} сом`;
+                if(orders[keys[i]].consignmentPrice>0) {
+                    row+=1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Консигнации:';
+                    worksheet.getCell(`B${row}`).value = `${orders[keys[i]].consignmentPrice} сом`;
+                }
+                row+=2;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Товары:';
+                worksheet.getCell(`B${row}`).font = {bold: true};
+                worksheet.getCell(`B${row}`).value = 'Количество:';
+                worksheet.getCell(`C${row}`).font = {bold: true};
+                worksheet.getCell(`C${row}`).value = 'Сумма:';
+                if(orders[keys[i]].consignmentPrice>0) {
+                    worksheet.getCell(`D${row}`).font = {bold: true};
+                    worksheet.getCell(`D${row}`).value = 'Консигнации:';
+                }
+                const keys1 = Object.keys(orders[keys[i]].orders)
+                for(let i1=0; i1<keys1.length; i1++) {
+                    worksheet.addRow([
+                        orders[keys[i]].orders[keys1[i1]].name,
+                        `${orders[keys[i]].orders[keys1[i1]].count} шт`,
+                        `${orders[keys[i]].orders[keys1[i1]].allPrice} сом`,
+                        orders[keys[i]].orders[keys1[i1]].consignmentPrice>0?`${orders[keys[i]].orders[keys1[i1]].consignmentPrice} сом`:''
+                    ]);
+                }
+            }
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
 };
 
 module.exports.type = type;

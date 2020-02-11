@@ -1,6 +1,6 @@
 const EmploymentAzyk = require('../models/employmentAzyk');
 const UserAzyk = require('../models/userAzyk');
-const OrganizationAzyk = require('../models/organizationAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
 
@@ -60,13 +60,32 @@ const resolvers = {
                 .populate({ path: 'organization' })
                 .sort(sort)
             employments = employments.filter(
-                    employment => (
-                        employment.user&&
-                        (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                employment => (
+                    employment.user&&
+                    (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (employment.name.toLowerCase()).includes(search.toLowerCase())||
                         (employment.email.toLowerCase()).includes(search.toLowerCase())||
                         (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
-                    ))
+                ))
+            return employments
+        } else if(user.role==='менеджер'){
+            let employments = await DistrictAzyk
+                .find({manager: user.employment})
+                .distinct('agent')
+            employments = await EmploymentAzyk.find({
+                _id: {$in: employments}
+            })
+                .populate({ path: 'user'})
+                .populate({ path: 'organization' })
+                .sort(sort)
+            employments = employments.filter(
+                employment => (
+                    employment.user&&
+                    (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        (employment.name.toLowerCase()).includes(search.toLowerCase())||
+                        (employment.email.toLowerCase()).includes(search.toLowerCase())||
+                        (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
+                ))
             return employments
         }
     },
@@ -138,11 +157,11 @@ const resolvers = {
             let result = await EmploymentAzyk.findOne({
                 user: _id
             }).populate({ path: 'user'}).populate({ path: 'organization' })
-            if(result === null||(user.role!=='admin'&&user.role!=='организация'))
+            if(result === null||!['admin', 'организация'].includes(user.role))
                 return await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'user'}).populate({ path: 'organization' })
             if(user.role==='admin')
                 return result
-            else if(result&&user.role==='организация'&&user.organization.toString()===result.organization._id.toString())
+            else if(result&&'организация'===user.role&&user.organization.toString()===result.organization._id.toString())
                 return result
             else
                 return null
@@ -166,29 +185,31 @@ const resolvers = {
         }
         return sort
     },
-    filterEmployment: async() => {
-        return [
-            {
-                name: 'Все',
-                value: ''
-            },
-            {
-                name: 'Агент',
-                value: 'агент'
-            },
-            {
-                name: 'Менеджер',
-                value: 'менеджер'
-            },
-            {
-                name: 'Экспедитор',
-                value: 'экспедитор'
-            },
-            {
-                name: 'Организация',
-                value: 'организация'
-            }
-        ]
+    filterEmployment: async(parent, ctx, {user}) => {
+        if(['организация', 'менеджер'].includes(user.role))
+            return [
+                {
+                    name: 'Все',
+                    value: ''
+                },
+                {
+                    name: 'Агент',
+                    value: 'агент'
+                },
+                {
+                    name: 'Менеджер',
+                    value: 'менеджер'
+                },
+                {
+                    name: 'Экспедитор',
+                    value: 'экспедитор'
+                },
+                {
+                    name: 'Организация',
+                    value: 'организация'
+                }
+            ]
+        else return []
     },
 };
 
