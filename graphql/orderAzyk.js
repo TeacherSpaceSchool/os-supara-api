@@ -166,16 +166,16 @@ const resolvers = {
             if(date!=='') {
                 let now = new Date()
                 let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
-                if(differenceDates>7) {
+                if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 7)
+                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
                 }
             }
             else {
                 dateEnd = new Date()
                 dateStart = new Date(dateEnd)
-                dateStart = dateStart.setDate(dateStart.getDate() - 7)
+                dateStart = dateStart.setDate(dateStart.getDate() - 3)
             }
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
@@ -226,16 +226,16 @@ const resolvers = {
             if(date!=='') {
                 let now = new Date()
                 let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
-                if(differenceDates>7) {
+                if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 7)
+                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
                 }
             }
             else {
                 dateEnd = new Date()
                 dateStart = new Date(dateEnd)
-                dateStart = dateStart.setDate(dateStart.getDate() - 7)
+                dateStart = dateStart.setDate(dateStart.getDate() - 3)
             }
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
