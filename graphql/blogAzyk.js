@@ -1,5 +1,5 @@
 const BlogAzyk = require('../models/blogAzyk');
-const { saveImage, deleteFile, urlMain } = require('../module/const');
+const { saveImage, deleteFile, urlMain, skip } = require('../module/const');
 
 const type = `
   type Blog {
@@ -12,7 +12,7 @@ const type = `
 `;
 
 const query = `
-    blogs(search: String!, sort: String!, filter: String!): [Blog]
+    blogs(search: String!, sort: String!, count: Int!): [Blog]
     sortBlog: [Sort]
     filterBlog: [Filter]
 `;
@@ -24,10 +24,13 @@ const mutation = `
 `;
 
 const resolvers = {
-    blogs: async(parent, {search, sort, filter}) => {
+    blogs: async(parent, {search, sort, count}) => {
         return await BlogAzyk.find({
             title: {'$regex': search, '$options': 'i'}
-        }).sort(sort)
+        })
+            .sort(sort)
+            .skip(parseInt(count*skip))
+            .limit(skip)
     },
     sortBlog: async() => {
         return [

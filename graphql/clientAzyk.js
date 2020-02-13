@@ -49,7 +49,6 @@ const mutation = `
 
 const resolvers = {
     clients: async(parent, {search, sort, filter, date}, {user}) => {
-        console.log(`date ${!date||date===''?1:0}`)
         let dateStart;
         let dateEnd;
         if(date&&date!==''){

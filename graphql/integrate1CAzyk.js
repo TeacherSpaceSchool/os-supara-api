@@ -70,6 +70,12 @@ const resolvers = {
                     (integrate1C.ecspeditor&&integrate1C.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))||
                     (integrate1C.item&&integrate1C.item.name.toLowerCase().includes(search.toLowerCase()))
             )
+            for(let i=0; i<integrate1Cs.length; i++){
+                if(integrate1Cs[i].client)
+                    for(let i1=0; i1<integrate1Cs[i].client.address.length; i1++) {
+                        integrate1Cs[i].client.name+=` | ${integrate1Cs[i].client.address[i1][2]?`${integrate1Cs[i].client.address[i1][2]}, `:''}${integrate1Cs[i].client.address[i1][0]}`
+                    }
+            }
             return integrate1Cs
         }
     },
@@ -158,7 +164,7 @@ const resolvers = {
             )
             for(let i=0; i<clients.length; i++){
                 for(let i1=0; i1<clients[i].address.length; i1++) {
-                    clients[i].name+=` ${clients[i].address[i1][2]?`${clients[i].address[i1][2]}, `:''}${clients[i].address[i1][0]}`
+                    clients[i].name+=` | ${clients[i].address[i1][2]?`${clients[i].address[i1][2]}, `:''}${clients[i].address[i1][0]}`
                 }
             }
             return clients

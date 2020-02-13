@@ -6,7 +6,7 @@ const path = require('path');
 
 const urlMain = `${process.env.URL.trim()}:3000`,
     adminLogin = 'admin',
-    skip = 10,
+    skip = 1,
     adminPass = 'hGNSKtmSBG'
 const validMail = (mail) =>
 {

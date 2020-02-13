@@ -86,17 +86,22 @@ const resolvers = {
                         match: {status: 'active'}
                     })
                     .populate({ path: 'organization' })
+                    .sort('-name')
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
                 clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-                clients = await ClientAzyk.find({
-                    _id: { $nin: clients},
-                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
-                    del: {$ne: 'deleted'}
-                }).populate({
-                    path: 'user',
-                    match: {status: 'active'}
-                }).populate({path: 'organization'})
+                clients = await ClientAzyk
+                    .find({
+                        _id: { $nin: clients},
+                        $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                        del: {$ne: 'deleted'}
+                    })
+                    .populate({
+                        path: 'user',
+                        match: {status: 'active'}
+                    })
+                    .populate({path: 'organization'})
+                    .sort('-name')
             }
             clients = clients.filter(client => (
                 client.user&&
