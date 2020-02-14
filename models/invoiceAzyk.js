@@ -44,6 +44,11 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
+    distributer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk',
+        default: null
+    },
 }, {
     timestamps: true
 });

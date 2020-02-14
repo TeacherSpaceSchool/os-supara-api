@@ -34,6 +34,7 @@ const type = `
 const query = `
     items(subCategory: ID!, search: String!, sort: String!, filter: String!): [Item]
     brands(organization: ID!, search: String!, sort: String!): [Item]
+    brandOrganizations(search: String!, sort: String!, filter: String!): [Organization]
     item(_id: ID!): Item
     sortItem: [Sort]
     filterItem: [Filter]
@@ -195,6 +196,26 @@ const resolvers = {
                 .populate({path: 'subCategory', populate: [{path: 'category'}]})
                 .populate('organization')
         } else return null
+    },
+    brandOrganizations: async(parent, {search, sort, filter}, {user}) => {
+        let brandOrganizations = await ItemAzyk.find({
+            status: 'active',
+            del: {$ne: 'deleted'}
+        }).distinct('organization')
+        if(user.role==='admin'){
+            return await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                del: {$ne: 'deleted'}
+            }).sort(sort)
+        } else
+            return await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: 'active',
+                del: {$ne: 'deleted'}
+            }).sort(sort)
     },
     sortItem: async(parent, ctx, {user}) => {
         let sort = [

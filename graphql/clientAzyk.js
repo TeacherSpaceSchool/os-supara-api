@@ -4,6 +4,7 @@ const OrderAzyk = require('../models/orderAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const { saveFile, deleteFile, urlMain, saveImage } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
 const mongoose = require('mongoose')
@@ -343,7 +344,7 @@ const resolversMutation = {
                 }
                 objects[i].del = 'deleted'
                 objects[i].save()
-                //await UserAzyk.delete({_id: objects.user._id})
+                await Integrate1CAzyk.delete({client: objects[i]._id})
             }
         }
         return {data: 'OK'}

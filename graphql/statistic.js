@@ -504,37 +504,51 @@ const resolvers = {
             for(let i = 0; i<data.length;i++){
                 let allPrice = 0
                 let consignmentPrice = 0
-                if(!orders[data[i].client._id]) {
-                    orders[data[i].client._id]= {
+                let address = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`
+                let client = `${data[i].client._id}${address}`
+                if(!orders[client]) {
+                    orders[client]= {
                         client: data[i].client,
-                        address: `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`,
+                        address: address,
                         orders: {},
                         allPrice: 0,
                         consignmentPrice: 0
                     }
                 }
                 for(let i1 = 0; i1<data[i].orders.length; i1++) {
-                    if(!orders[data[i].client._id].orders[data[i].orders[i1].item._id]) {
-                        orders[data[i].client._id].orders[data[i].orders[i1].item._id] = {
+                    if(!orders[client].orders[data[i].orders[i1].item._id]) {
+                        orders[client].orders[data[i].orders[i1].item._id] = {
                             allPrice: 0,
                             consignmentPrice: 0,
                             count: 0,
+                            packaging: data[i].orders[i1].item.packaging,
                             name: data[i].orders[i1].item.name
                         }
                     }
-                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].allPrice += data[i].orders[i1].allPrice
-                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].count += data[i].orders[i1].count
-                    orders[data[i].client._id].orders[data[i].orders[i1].item._id].consignmentPrice += data[i].orders[i1].consignmentPrice
+                    orders[client].orders[data[i].orders[i1].item._id].allPrice += data[i].orders[i1].allPrice
+                    orders[client].orders[data[i].orders[i1].item._id].count += data[i].orders[i1].count
+                    orders[client].orders[data[i].orders[i1].item._id].consignmentPrice += data[i].orders[i1].consignmentPrice
                     allPrice += data[i].orders[i1].allPrice
                     consignmentPrice += data[i].orders[i1].consignmentPrice
                 }
-                orders[data[i].client._id].allPrice = allPrice
-                orders[data[i].client._id].consignmentPrice = consignmentPrice
+                orders[client].allPrice += allPrice
+                orders[client].consignmentPrice += consignmentPrice
             }
             const keys = Object.keys(orders)
+            worksheet = await workbook.addWorksheet('Заказы');
+            worksheet.getColumn(1).width = 30;
+            worksheet.getColumn(2).width = 20;
+            worksheet.getColumn(3).width = 15;
+            worksheet.getColumn(4).width = 15;
+            worksheet.getColumn(5).width = 15;
+            let row = 1;
             for(let i = 0; i<keys.length;i++){
-                worksheet = await workbook.addWorksheet(`Заказ${i+1}`);
-                let row = 1;
+                if(i!==0) {
+                    row += 2;
+                }
+                worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
+                worksheet.getCell(`A${row}`).value = `Заказ${i+1}`;
+                row += 1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Клиент:';
                 worksheet.getCell(`B${row}`).value = orders[keys[i]].client.name;
@@ -560,22 +574,26 @@ const resolvers = {
                     worksheet.getCell(`A${row}`).value = 'Консигнации:';
                     worksheet.getCell(`B${row}`).value = `${orders[keys[i]].consignmentPrice} сом`;
                 }
-                row+=2;
+                row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Товары:';
                 worksheet.getCell(`B${row}`).font = {bold: true};
                 worksheet.getCell(`B${row}`).value = 'Количество:';
                 worksheet.getCell(`C${row}`).font = {bold: true};
-                worksheet.getCell(`C${row}`).value = 'Сумма:';
+                worksheet.getCell(`C${row}`).value = 'Упаковок:';
+                worksheet.getCell(`D${row}`).font = {bold: true};
+                worksheet.getCell(`D${row}`).value = 'Сумма:';
                 if(orders[keys[i]].consignmentPrice>0) {
-                    worksheet.getCell(`D${row}`).font = {bold: true};
-                    worksheet.getCell(`D${row}`).value = 'Консигнации:';
+                    worksheet.getCell(`E${row}`).font = {bold: true};
+                    worksheet.getCell(`E${row}`).value = 'Консигнации:';
                 }
                 const keys1 = Object.keys(orders[keys[i]].orders)
                 for(let i1=0; i1<keys1.length; i1++) {
+                    row += 1;
                     worksheet.addRow([
                         orders[keys[i]].orders[keys1[i1]].name,
                         `${orders[keys[i]].orders[keys1[i1]].count} шт`,
+                        `${Math.round(orders[keys[i]].orders[keys1[i1]].count/(orders[keys[i]].orders[keys1[i1]].packaging?orders[keys[i]].orders[keys1[i1]].packaging:1))} уп`,
                         `${orders[keys[i]].orders[keys1[i1]].allPrice} сом`,
                         orders[keys[i]].orders[keys1[i1]].consignmentPrice>0?`${orders[keys[i]].orders[keys1[i1]].consignmentPrice} сом`:''
                     ]);
