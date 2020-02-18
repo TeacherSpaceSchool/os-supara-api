@@ -20,22 +20,13 @@ const ClientAzykSchema = mongoose.Schema({
     image: String,
     city: String,
     device: String,
-    type: String,
-    birthday: Date,
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserAzyk'
     },
-    patent: String,
-    passport: String,
     notification: {
         type: Boolean,
         default: null
-    },
-    certificate: String,
-    organization: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'OrganizationAzyk'
     },
     del: String,
 }, {

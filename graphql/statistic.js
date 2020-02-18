@@ -1,5 +1,6 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const ClientAzyk = require('../models/clientAzyk');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const ExcelJS = require('exceljs');
 const randomstring = require('randomstring');
 const app = require('../app');
@@ -25,6 +26,7 @@ const type = `
 
 const query = `
     unloadingOrders(organization: ID!, dateStart: Date!): Data
+    unloadingClients(organization: ID!): Data
     statisticClient(company: String, dateStart: Date, dateType: String): Statistic
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     activeItem(organization: ID!): [Item]
@@ -494,7 +496,7 @@ const resolvers = {
                     ]
                 })
                 .populate({
-                   path : 'client'
+                    path : 'client'
                 })
             data = data.filter(data =>{
                 return(data.orders.length>0&&data.orders[0].item)
@@ -599,6 +601,58 @@ const resolvers = {
                     ]);
                 }
             }
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingClients: async(parent, { organization }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let data = await ClientAzyk.find(
+                {
+                    ...{del: {$ne: 'deleted'}}
+                }
+            )
+            data = data.filter(data =>{
+                return(data.name.length>0&&data.address[0][1]&&data.address[0][1].length>0&&!(data.name.toLowerCase()).includes('агент')&&!(data.name.toLowerCase()).includes('agent'))
+            })
+            let worksheet;
+            worksheet = await workbook.addWorksheet('Клиенты');
+            worksheet.getColumn(1).width = 30;
+            worksheet.getCell('A1').font = {bold: true, size: 14};
+            worksheet.getCell('A1').value = 'ID';
+            worksheet.getColumn(2).width = 30;
+            worksheet.getCell('B1').font = {bold: true, size: 14};
+            worksheet.getCell('B1').value = 'GUID';
+            worksheet.getColumn(3).width = 30;
+            worksheet.getCell('C1').font = {bold: true, size: 14};
+            worksheet.getCell('C1').value = 'Магазин';
+            worksheet.getColumn(4).width = 30;
+            worksheet.getCell('D1').font = {bold: true, size: 14};
+            worksheet.getCell('D1').value = 'Адрес';
+            worksheet.getColumn(5).width = 30;
+            worksheet.getCell('E1').font = {bold: true, size: 14};
+            worksheet.getCell('E1').value = 'Телефон';
+            for(let i = 0; i<data.length;i++){
+                let GUID = ''
+                let findGUID = await Integrate1CAzyk.findOne({organization: organization, client: data[i]._id})
+                if(findGUID)
+                    GUID = findGUID.guid
+                worksheet.addRow([
+                    data[i]._id.toString(),
+                    GUID,
+                    data[i].address[0][2],
+                    data[i].address[0][0],
+                    data[i].phone.reduce((accumulator, currentValue, index) => accumulator + `${index!==0?', ':''}${currentValue}`, '')
+                ]);
+            }
+
             let xlsxname = `${randomstring.generate(20)}.xlsx`;
             let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
             if (!await fs.existsSync(xlsxdir)){
