@@ -2,6 +2,7 @@ const EmploymentAzyk = require('../models/employmentAzyk');
 const UserAzyk = require('../models/userAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const { createJwtGQL } = require('../module/passport');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const mongoose = require('mongoose')
 
 const type = `
@@ -264,6 +265,9 @@ const resolversMutation = {
                 if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
                     await UserAzyk.deleteMany({_id: objects[i].user._id})
                     await EmploymentAzyk.deleteMany({_id: objects[i]._id})
+                    await Integrate1CAzyk.deleteMany({manager: objects[i]._id, organization: objects[i].organization})
+                    await Integrate1CAzyk.deleteMany({agent: objects[i]._id, organization: objects[i].organization})
+                    await Integrate1CAzyk.deleteMany({ecspeditor: objects[i]._id, organization: objects[i].organization})
                 }
             }
         return {data: 'OK'}

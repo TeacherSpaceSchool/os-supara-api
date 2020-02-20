@@ -85,6 +85,7 @@ const typeDefs = gql`
         ${RouteAzyk.mutation}
         ${BonusAzyk.mutation}
         ${BonusClientAzyk.mutation}
+        ${StatisticAzyk.mutation}
     }
     type Query {
         ${Integrate1CAzyk.query}
@@ -175,6 +176,7 @@ const resolvers = {
         ...RouteAzyk.resolversMutation,
         ...BonusAzyk.resolversMutation,
         ...BonusClientAzyk.resolversMutation,
+        ...StatisticAzyk.resolversMutation,
     },
     Subscription: {
         ...OrderAzyk.resolversSubscription,

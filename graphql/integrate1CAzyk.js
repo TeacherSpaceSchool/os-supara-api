@@ -5,6 +5,10 @@ const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const mongoose = require('mongoose');
+const { saveFile, deleteFile } = require('../module/const');
+const readXlsxFile = require('read-excel-file/node');
+const path = require('path');
+const app = require('../app');
 
 const type = `
   type Integrate1C {
@@ -33,6 +37,7 @@ const mutation = `
     addIntegrate1C(organization: ID!, item: ID, client: ID, guid: String, agent: ID, ecspeditor: ID): Data
     setIntegrate1C(_id: ID!, item: ID, client: ID, guid: String, agent: ID, ecspeditor: ID): Data
     deleteIntegrate1C(_id: [ID]!): Data
+    unloadingIntegrate1C(document: Upload!, organization: ID!): Data
 `;
 
 const resolvers = {
@@ -157,8 +162,6 @@ const resolvers = {
             clients = clients.filter(client => (
                 client.user&&
                 client.address[0]&&
-                client.address[0][1]&&
-                client.address[0][1].length>0&&
                 !(client.name.toLowerCase()).includes('агент')&&
                 !(client.name.toLowerCase()).includes('agent'))
             )
@@ -250,7 +253,43 @@ const resolversMutation = {
         if(user.role==='admin')
             await Integrate1CAzyk.deleteMany({_id: {$in: _id}})
         return {data: 'OK'}
-    }
+    },
+    unloadingIntegrate1C: async(parent, { document, organization }, {user}) => {
+        if(user.role==='admin'){
+            let {stream, filename} = await document;
+            filename = await saveFile(stream, filename);
+            let xlsxpath = path.join(app.dirname, 'public', filename);
+            let rows = await readXlsxFile(xlsxpath)
+            for(let i = 0;i<rows.length;i++){
+                if(mongoose.Types.ObjectId.isValid(rows[i][0])) {
+                    let client = await ClientAzyk.findOne({_id: rows[i][0]})
+                    if (client) {
+                        let integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: organization,
+                            client: client._id
+                        })
+                        if(integrate1CAzyk) {
+                            integrate1CAzyk.guid = rows[i][1]
+                            integrate1CAzyk.save()
+                        }
+                        else {
+                            let _object = new Integrate1CAzyk({
+                                item: null,
+                                client: client._id,
+                                agent: null,
+                                ecspeditor: null,
+                                organization: organization,
+                                guid: rows[i][1],
+                            });
+                            await Integrate1CAzyk.create(_object)
+                        }
+                    }
+                }
+            }
+            await deleteFile(filename)
+            return({data: 'OK'})
+        }
+    },
 };
 
 module.exports.resolversMutation = resolversMutation;

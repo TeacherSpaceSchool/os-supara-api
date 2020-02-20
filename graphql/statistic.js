@@ -1,12 +1,15 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
+const UserAzyk = require('../models/userAzyk');
 const ExcelJS = require('exceljs');
 const randomstring = require('randomstring');
 const app = require('../app');
 const fs = require('fs');
 const path = require('path');
-const { urlMain } = require('../module/const');
+const { urlMain, saveFile, deleteFile } = require('../module/const');
+const readXlsxFile = require('read-excel-file/node');
 
 const type = `
     type Statistic {
@@ -33,6 +36,11 @@ const query = `
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
 `;
+
+const mutation = `
+    uploadingClients(document: Upload!, organization: ID!): Data
+    uploadingDistricts(document: Upload!, organization: ID!): Data
+   `;
 
 const resolvers = {
     statisticClient: async(parent, { company, dateStart, dateType }, {user}) => {
@@ -620,7 +628,7 @@ const resolvers = {
                 }
             )
             data = data.filter(data =>{
-                return(data.name.length>0&&data.address[0][1]&&data.address[0][1].length>0&&!(data.name.toLowerCase()).includes('агент')&&!(data.name.toLowerCase()).includes('agent'))
+                return(data.name.length>0&&data.address[0]&&!(data.name.toLowerCase()).includes('агент')&&!(data.name.toLowerCase()).includes('agent'))
             })
             let worksheet;
             worksheet = await workbook.addWorksheet('Клиенты');
@@ -665,6 +673,104 @@ const resolvers = {
     },
 };
 
+const resolversMutation = {
+    uploadingClients: async(parent, { document, organization }, {user}) => {
+        if (user.role === 'admin') {
+            let {stream, filename} = await document;
+            filename = await saveFile(stream, filename);
+            let xlsxpath = path.join(app.dirname, 'public', filename);
+            let rows = await readXlsxFile(xlsxpath)
+            for (let i = 0; i < rows.length; i++) {
+                let integrate1CAzyk = await Integrate1CAzyk.findOne({
+                    organization: organization,
+                    guid: rows[i][0]
+                })
+                if(!integrate1CAzyk) {
+                    let client = new UserAzyk({
+                        login: randomstring.generate(20),
+                        role: 'client',
+                        status: 'deactive',
+                        password: '12345678',
+                    });
+                    client = await UserAzyk.create(client);
+                    client = new ClientAzyk({
+                        name: rows[i][1],
+                        phone: [''],
+                        city: rows[i][2]?rows[i][2]:'',
+                        address: [[rows[i][3], '', rows[i][1]]],
+                        user: client._id,
+                        notification: false
+                    });
+                    client = await ClientAzyk.create(client);
+                    let _object = new Integrate1CAzyk({
+                        item: null,
+                        client: client._id,
+                        agent: null,
+                        ecspeditor: null,
+                        organization: organization,
+                        guid: rows[i][0],
+                    });
+                    await Integrate1CAzyk.create(_object)
+                }
+            }
+            await deleteFile(filename)
+            return ({data: 'OK'})
+        }
+    },
+    uploadingDistricts: async(parent, { document, organization }, {user}) => {
+        if (user.role === 'admin') {
+            let {stream, filename} = await document;
+            filename = await saveFile(stream, filename);
+            let xlsxpath = path.join(app.dirname, 'public', filename);
+            let rows = await readXlsxFile(xlsxpath)
+            let districts = {}
+            let findEmployments = {}
+            let integrate1CAzyk
+            for (let i = 0; i < rows.length; i++) {
+                if(!findEmployments[rows[i][0]]||!districts[findEmployments[rows[i][0]]]){
+                    integrate1CAzyk = await Integrate1CAzyk.findOne({
+                        organization: organization,
+                        guid: rows[i][0]
+                    })
+                    if(integrate1CAzyk&&integrate1CAzyk.agent) {
+                        findEmployments[rows[i][0]] = integrate1CAzyk.agent
+                        districts[findEmployments[rows[i][0]]] = []
+                    }
+                }
+                if(findEmployments[rows[i][0]]&&districts[findEmployments[rows[i][0]]]) {
+                    integrate1CAzyk = await Integrate1CAzyk.findOne({
+                        organization: organization,
+                        guid: rows[i][1]
+                    })
+                    if(integrate1CAzyk&&integrate1CAzyk.client) {
+                        districts[findEmployments[rows[i][0]]].push(integrate1CAzyk.client)
+                    }
+
+                }
+            }
+            const keys1 = Object.keys(districts);
+            let district;
+            for (let i = 0; i < keys1.length; i++) {
+                district = await DistrictAzyk.findOne({
+                    organization: organization,
+                    agent: keys1[i]
+                })
+                if(district) {
+                    for (let i1 = 0; i1 < districts[keys1[i]].length; i1++) {
+                        if(!district.client.includes(districts[keys1[i]][i1]))
+                            district.client.push(districts[keys1[i]])
+                    }
+                    district.save()
+                }
+            }
+            await deleteFile(filename)
+            return ({data: 'OK'})
+        }
+    }
+}
+
 module.exports.type = type;
 module.exports.query = query;
+module.exports.mutation = mutation;
+module.exports.resolversMutation = resolversMutation;
 module.exports.resolvers = resolvers;
