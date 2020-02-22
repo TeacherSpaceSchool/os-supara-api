@@ -111,6 +111,11 @@ const verifydeuserGQL = async (req, res) => {
                     resolve(user)
 
                 }
+                else if(['суперагент', 'суперменеджер'].includes(user.role)) {
+                    let employment = await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'organization' })
+                    user.employment = employment._id
+                    resolve(user)
+                }
                 else {
                     let employment = await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'organization' })
                     if(employment.organization.status==='active') {

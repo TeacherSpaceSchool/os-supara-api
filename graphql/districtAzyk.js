@@ -35,22 +35,42 @@ const mutation = `
 const resolvers = {
     districts: async(parent, {organization, search, sort}, {user}) => {
         if(user.role==='admin'){
-            let districts =  await DistrictAzyk.find({organization: organization})
-                .populate('agent')
-                .populate('client')
-                .populate('ecspeditor')
-                .populate('organization')
-                .populate('distributer')
-                .populate('manager')
-                .sort(sort)
-            districts = districts.filter(
-                district =>
-                    (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.agent&&district.agent.name.toLowerCase().includes(search.toLowerCase()))||
-                    (district.organization&&district.organization.name.toLowerCase().includes(search.toLowerCase()))||
-                    (district.ecspeditor&&district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
-            )
-            return districts
+            if(organization==='super'){
+                let districts = await DistrictAzyk.find({organization: null})
+                    .populate('agent')
+                    .populate('client')
+                    .populate('ecspeditor')
+                    .populate('organization')
+                    .populate('distributer')
+                    .populate('manager')
+                    .sort(sort)
+                districts = districts.filter(
+                    district =>
+                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
+                )
+                return districts
+            }
+            else {
+                let districts = await DistrictAzyk.find({organization: organization})
+                    .populate('agent')
+                    .populate('client')
+                    .populate('ecspeditor')
+                    .populate('organization')
+                    .populate('distributer')
+                    .populate('manager')
+                    .sort(sort)
+                districts = districts.filter(
+                    district =>
+                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
+                )
+                return districts
+            }
         }
         else if(['организация'].includes(user.role)){
             let districts =  await DistrictAzyk.find({
@@ -75,13 +95,13 @@ const resolvers = {
     },
     clientsWithoutDistrict: async(parent, { organization }, {user}) => {
         if(['admin'].includes(user.role)){
-            if(user.role!=='admin')organization=user.organization
             let clients = await DistrictAzyk
-                .find({organization: organization})
+                .find({organization: organization==='super'?null:organization})
                 .distinct('client')
             clients = clients.flat()
-            organization = await OrganizationAzyk.findOne({_id: organization})
-            if(organization.accessToClient)
+            if(organization!=='super')
+                organization = await OrganizationAzyk.findOne({_id: organization})
+            if(organization==='super'||organization.accessToClient)
                 clients = await ClientAzyk
                     .find({_id: { $nin: clients}, del: {$ne: 'deleted'}})
                     .populate({

@@ -37,23 +37,46 @@ const mutation = `
 const resolvers = {
     employments: async(parent, {organization, search, sort, filter}, {user}) => {
         if(user.role==='admin'){
-            let employments = await EmploymentAzyk.find({organization: organization})
-                .populate({ path: 'user', match: {role: filter.length===0?{'$regex': '', '$options': 'i'}:filter } })
-                .populate({ path: 'organization'})
-                .sort(sort)
-            employments = employments.filter(
-                employment => {
-                    return (
-                        employment.user&&
-                        (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        (employment.name.toLowerCase()).includes(search.toLowerCase())||
-                        (employment.email.toLowerCase()).includes(search.toLowerCase())||
-                        (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
-                    )
-                }
-            )
-            return employments
-        } else if(user.role==='организация'){
+            if(organization==='super'){
+                let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}})
+                    .distinct('_id')
+                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                    .populate({ path: 'user' })
+                    .populate({ path: 'organization'})
+                    .sort(sort)
+                employments = employments.filter(
+                    employment => {
+                        return (
+                            employment.user&&
+                            (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                                (employment.name.toLowerCase()).includes(search.toLowerCase())||
+                                (employment.email.toLowerCase()).includes(search.toLowerCase())||
+                                (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
+                        )
+                    }
+                )
+                return employments
+            }
+            else if(mongoose.Types.ObjectId.isValid(organization)){
+                let employments = await EmploymentAzyk.find({organization: organization})
+                    .populate({ path: 'user', match: {role: filter.length===0?{'$regex': '', '$options': 'i'}:filter } })
+                    .populate({ path: 'organization'})
+                    .sort(sort)
+                employments = employments.filter(
+                    employment => {
+                        return (
+                            employment.user&&
+                            (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                                (employment.name.toLowerCase()).includes(search.toLowerCase())||
+                                (employment.email.toLowerCase()).includes(search.toLowerCase())||
+                                (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
+                        )
+                    }
+                )
+                return employments
+            }
+        }
+        else if(user.role==='организация'){
             let employments = await EmploymentAzyk.find({
                 organization: user.organization
             })
@@ -69,7 +92,8 @@ const resolvers = {
                         (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
                 ))
             return employments
-        } else if(user.role==='менеджер'){
+        }
+        else if(user.role==='менеджер'){
             let employments = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('agent')
@@ -216,7 +240,7 @@ const resolvers = {
 
 const resolversMutation = {
     addEmployment: async(parent, {name, email, phone, login, password, role, organization}, {user}) => {
-        if(user.role==='admin'||user.role==='организация') {
+        if(user.role==='admin') {
             let newUser = new UserAzyk({
                 login: login.trim(),
                 role: role,
@@ -231,7 +255,6 @@ const resolversMutation = {
                 organization: organization,
                 user: newUser._id,
             });
-            if(user.role==='организация') client.organization = user.organization
             await EmploymentAzyk.create(client);
         }
         return {data: 'OK'}
