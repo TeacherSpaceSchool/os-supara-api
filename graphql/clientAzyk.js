@@ -311,7 +311,7 @@ const resolversMutation = {
         let objects = await ClientAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
             if(
-                user.role==='admin'
+                ['агент', 'admin'].includes(user.role)
             ){
                 let object = await UserAzyk.findOne({_id: objects[i].user})
                 object.status = object.status==='active'?'deactive':'active'
