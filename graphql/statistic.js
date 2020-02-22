@@ -756,10 +756,11 @@ const resolversMutation = {
                     agent: keys1[i]
                 })
                 if(district) {
-                    for (let i1 = 0; i1 < districts[keys1[i]].length; i1++) {
+                    district.client = districts[keys1[i]]
+                    /*for (let i1 = 0; i1 < districts[keys1[i]].length; i1++) {
                         if(!district.client.includes(districts[keys1[i]][i1]))
-                            district.client.push(districts[keys1[i]])
-                    }
+                            district.client.push(districts[keys1[i]][i1])
+                    }*/
                     district.save()
                 }
             }
