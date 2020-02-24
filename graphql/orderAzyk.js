@@ -162,6 +162,61 @@ const resolvers = {
             )
             return invoices
         }
+        else if(user.role==='суперагент'){
+            if(date!=='') {
+                let now = new Date()
+                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+                if(differenceDates>3) {
+                    dateStart = new Date()
+                    dateEnd = new Date(dateStart)
+                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
+                }
+            }
+            else {
+                dateEnd = new Date()
+                dateStart = new Date(dateEnd)
+                dateStart = dateStart.setDate(dateStart.getDate() - 3)
+            }
+            let invoices =  await InvoiceAzyk.find({
+                del: {$ne: 'deleted'},
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+            })
+                .populate({
+                    path: 'orders',
+                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
+                    populate : {
+                        path : 'item',
+                        populate : [
+                            { path : 'organization'}
+                        ]
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate : [
+                        { path : 'user'}
+                    ]
+                })
+                .populate({
+                    path: 'agent'
+                })
+                .sort(sort)
+            invoices = invoices.filter(
+                invoice =>
+                    invoice.orders.length>0&&invoice.orders[0].item&&
+                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
+                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
+                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
+
+            )
+            return invoices
+        }
         else if(user.role==='агент'){
             if(date!=='') {
                 let now = new Date()
@@ -637,7 +692,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setOrder: async(parent, {orders, invoice}, {user}) => {
-        if(orders.length>0&&/*orders[0].status==='обработка'&&*/(['менеджер', 'организация', 'admin', 'client', 'агент'].includes(user.role))){
+        if(orders.length>0&&/*orders[0].status==='обработка'&&*/(['менеджер', 'организация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
@@ -715,7 +770,7 @@ const resolversMutation = {
     setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
         let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
-        let admin = user.role==='admin'
+        let admin = ['admin', 'суперагент'].includes(user.role)
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
         let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
         let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
@@ -900,7 +955,7 @@ const resolversSubscription = {
             () => pubsub.asyncIterator(RELOAD_ORDER),
             (payload, variables, {user} ) => {
                 return (
-                    user.role==='admin'||
+                    ['admin', 'суперагент'].includes(user.role)||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
                     (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                     (user.organization&&payload.reloadOrder.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())

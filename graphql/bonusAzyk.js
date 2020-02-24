@@ -41,7 +41,7 @@ const resolvers = {
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)
         }
-        else if(!user.role||user.role==='client'){
+        else if(!user.role||['client', 'суперагент'].includes(user.role)){
             bonuses =  await BonusAzyk.find({target: {$gt: 0}})
                 .populate({
                     path: 'organization',

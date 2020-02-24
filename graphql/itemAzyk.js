@@ -52,7 +52,7 @@ const mutation = `
 
 const resolvers = {
     items: async(parent, {subCategory, search, sort, filter}, {user}) => {
-        if(user.role==='admin'){
+        if(['admin', 'суперагент'].includes(user.role)){
             if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
                 let items =  await ItemAzyk.find({
                     subCategory: subCategory,

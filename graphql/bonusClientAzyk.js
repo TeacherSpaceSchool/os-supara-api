@@ -23,7 +23,7 @@ const mutation = `
 const resolvers = {
     bonusesClient: async(parent, { search, sort}, {user}) => {
         let bonuses = [];
-        if(user.role==='admin'){
+        if(['admin', 'суперагент'].includes(user.role)){
             bonuses =  await BonusClientAzyk.find()
                 .populate({
                     path: 'client',

@@ -67,13 +67,40 @@ const resolvers = {
                         (client.name.toLowerCase()).includes(search.toLowerCase())||
                         (client.email.toLowerCase()).includes(search.toLowerCase())||
                         (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
-                        ((client.address.filter(addres=>addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
+                        ((client.address.filter(addres=>addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
+                        ((client.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())||
                         client.device&&(client.device.toLowerCase()).includes(search.toLowerCase())
                     )
             )
             return clients
+        }
+        else if(user.role==='суперагент'){
+            if(search.length>2||filter==='all') {
+                let clients = await ClientAzyk
+                    .find({
+                        ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                        del: {$ne: 'deleted'}
+                    })
+                    .populate({
+                        path: 'user'
+                    })
+                    .sort(sort)
+                clients = clients.filter(
+                    client =>
+                        (client.user) && (
+                            ((client.phone.filter(phone => phone && phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                            (client.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.email.toLowerCase()).includes(search.toLowerCase()) ||
+                            (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
+                            ((client.address.filter(addres => addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                            ((client.address.filter(addres => addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                            (client.info.toLowerCase()).includes(search.toLowerCase()) ||
+                            client.device && (client.device.toLowerCase()).includes(search.toLowerCase())
+                        )
+                )
+                return clients
+            } else return []
         }
         else if('агент'===user.role) {
             let clients = await DistrictAzyk
@@ -82,7 +109,9 @@ const resolvers = {
             clients = await ClientAzyk.find({
                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                 _id: {$in: clients}, del: {$ne: 'deleted'}})
-                .populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} })
+                .populate({
+                    path: 'user'
+                })
                 .sort(sort)
             clients = clients.filter(
                 client => {
@@ -91,8 +120,8 @@ const resolvers = {
                         (client.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.email.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres&&addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        ((client.address.filter(addres=> addres&&addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
+                        ((client.address.filter(addres => addres[0]&&addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        ((client.address.filter(addres=> addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
                 }
@@ -111,12 +140,12 @@ const resolvers = {
             clients = clients.filter(
                 client => {
                     return (client.user) && (
-                        ((client.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        ((client.phone.filter(phone => phone&&phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (client.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.email.toLowerCase()).includes(search.toLowerCase()) ||
                         (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
+                        ((client.address.filter(addres => addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                        ((client.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         (client.info.toLowerCase()).includes(search.toLowerCase())
                     )
                 }
@@ -256,7 +285,7 @@ const resolversMutation = {
     setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, login, city, device}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
         if(
-            ['агент', 'admin'].includes(user.role)||
+            ['агент', 'admin', 'суперагент'].includes(user.role)||
             object.user&&object.user.toString()===user._id.toString()
         ) {
             if (image) {
@@ -311,7 +340,7 @@ const resolversMutation = {
         let objects = await ClientAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
             if(
-                ['агент', 'admin'].includes(user.role)
+                ['агент', 'admin', 'суперагент'].includes(user.role)
             ){
                 let object = await UserAzyk.findOne({_id: objects[i].user})
                 object.status = object.status==='active'?'deactive':'active'
