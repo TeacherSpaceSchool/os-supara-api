@@ -30,7 +30,8 @@ const type = `
 `;
 
 const query = `
-    clients(search: String!, sort: String!, filter: String!, date: String): [Client]
+    clientsSimpleStatistic(search: String!, filter: String!, date: String): [String]
+    clients(search: String!, sort: String!, filter: String!, date: String, skip: Int): [Client]
     client(_id: ID!): Client
     sortClient: [Sort]
     filterClient: [Filter]
@@ -44,7 +45,7 @@ const mutation = `
 `;
 
 const resolvers = {
-    clients: async(parent, {search, sort, filter, date}, {user}) => {
+    clientsSimpleStatistic: async(parent, {search, filter, date,}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date&&date!==''){
@@ -54,79 +55,83 @@ const resolvers = {
         }
         if(user.role==='admin'){
             let clients = await ClientAzyk
-                .find({
-                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                    del: {$ne: 'deleted'}
-                })
-                .populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} })
-                .sort(sort)
-            clients = clients.filter(
-                client =>
-                    (client.user)&&(
-                        ((client.phone.filter(phone => phone&&phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        (client.name.toLowerCase()).includes(search.toLowerCase())||
-                        (client.email.toLowerCase()).includes(search.toLowerCase())||
-                        (client.city&&(client.city.toLowerCase()).includes(search.toLowerCase()))||
-                        ((client.address.filter(addres=>addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        ((client.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())||
-                        client.device&&(client.device.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
-            return clients
+                .aggregate(
+                    [
+                        { $lookup:
+                            {
+                                from: UserAzyk.collection.collectionName,
+                                let: { user: '$user' },
+                                pipeline: [
+                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                ],
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $unwind:{
+                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                path : '$user'
+                            }
+                        },
+                        {
+                            $match:{
+                                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                del: {$ne: 'deleted'},
+                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
+                        {
+                            $count :  'clientCount'
+                        }
+                    ])
+            return [clients[0].clientCount.toString()]
         }
         else if(user.role==='суперагент'){
             if(search.length>2||filter==='all') {
                 let clients = await ClientAzyk
-                    .find({
+                    .count({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                        del: {$ne: 'deleted'}
+                        del: {$ne: 'deleted'},
+                        $or: [
+                            {name: {'$regex': search, '$options': 'i'}},
+                            {email: {'$regex': search, '$options': 'i'}},
+                            {city: {'$regex': search, '$options': 'i'}},
+                            {info: {'$regex': search, '$options': 'i'}},
+                            {device: {'$regex': search, '$options': 'i'}},
+                            {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                            {phone: {'$regex': search, '$options': 'i'}}
+                        ]
                     })
-                    .populate({
-                        path: 'user'
-                    })
-                    .sort(sort)
-                clients = clients.filter(
-                    client =>
-                        (client.user) && (
-                            ((client.phone.filter(phone => phone && phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                            (client.name.toLowerCase()).includes(search.toLowerCase()) ||
-                            (client.email.toLowerCase()).includes(search.toLowerCase()) ||
-                            (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                            ((client.address.filter(addres => addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                            ((client.address.filter(addres => addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                            (client.info.toLowerCase()).includes(search.toLowerCase()) ||
-                            client.device && (client.device.toLowerCase()).includes(search.toLowerCase())
-                        )
-                )
-                return clients
-            } else return []
+                return [clients.toString()]
+            } else return ['0']
         }
         else if('агент'===user.role) {
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
-            clients = await ClientAzyk.find({
+            clients = await ClientAzyk.count({
                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                _id: {$in: clients}, del: {$ne: 'deleted'}})
-                .populate({
-                    path: 'user'
-                })
-                .sort(sort)
-            clients = clients.filter(
-                client => {
-                    return (client.user) && (
-                        ((client.phone.filter(phone => phone&&phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        (client.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.email.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0]&&addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        ((client.address.filter(addres=> addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())
-                    )
-                }
-            )
-            return clients
+                _id: {$in: clients}, del: {$ne: 'deleted'},
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {email: {'$regex': search, '$options': 'i'}},
+                    {city: {'$regex': search, '$options': 'i'}},
+                    {info: {'$regex': search, '$options': 'i'}},
+                    {device: {'$regex': search, '$options': 'i'}},
+                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                    {phone: {'$regex': search, '$options': 'i'}}
+                ]
+            })
+            return [clients.toString()]
         }
         else if('менеджер'===user.role) {
             let clients = await DistrictAzyk
@@ -134,63 +139,272 @@ const resolvers = {
                 .distinct('client')
             clients = await ClientAzyk.find({
                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                _id: {$in: clients}, del: {$ne: 'deleted'}})
-                .populate({ path: 'user', match: {status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter} })
-                .sort(sort)
-            clients = clients.filter(
-                client => {
-                    return (client.user) && (
-                        ((client.phone.filter(phone => phone&&phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        (client.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.email.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        ((client.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())
-                    )
-                }
-            )
-            return clients
+                _id: {$in: clients}, del: {$ne: 'deleted'},
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {email: {'$regex': search, '$options': 'i'}},
+                    {city: {'$regex': search, '$options': 'i'}},
+                    {info: {'$regex': search, '$options': 'i'}},
+                    {device: {'$regex': search, '$options': 'i'}},
+                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                    {phone: {'$regex': search, '$options': 'i'}}
+                ]
+            })
+            return [clients.toString()]
         } else if(['организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
             let clients;
-            if(organization.accessToClient)
+            if(organization.accessToClient){
                 clients = await ClientAzyk
-                    .find({
-                        ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                        del: {$ne: 'deleted'}
-                    })
-                    .populate({
-                        path: 'user',
-                        match: {status: 'active'}
-                    })
-                    .sort(sort)
+                    .aggregate(
+                        [
+                            { $lookup:
+                                {
+                                    from: UserAzyk.collection.collectionName,
+                                    let: { user: '$user' },
+                                    pipeline: [
+                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                    path : '$user'
+                                }
+                            },
+                            {
+                                $match:{
+                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                    del: {$ne: 'deleted'},
+                                    'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                                    $or: [
+                                        {name: {'$regex': search, '$options': 'i'}},
+                                        {email: {'$regex': search, '$options': 'i'}},
+                                        {city: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {device: {'$regex': search, '$options': 'i'}},
+                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                        {phone: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                            },
+                            {
+                                $count :  'clientCount'
+                            }
+                        ])
+                clients = clients[0].clientCount
+            }
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
                 clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
                 clients = await ClientAzyk.find({
                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                     _id: {$in: clients},
-                    del: {$ne: 'deleted'}
+                    del: {$ne: 'deleted'},
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {email: {'$regex': search, '$options': 'i'}},
+                        {city: {'$regex': search, '$options': 'i'}},
+                        {info: {'$regex': search, '$options': 'i'}},
+                        {device: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                        {phone: {'$regex': search, '$options': 'i'}}
+                    ]
+                })
+            }
+            return [clients.toString()]
+        }
+    },
+    clients: async(parent, {search, sort, filter, date, skip}, {user}) => {
+        let dateStart;
+        let dateEnd;
+        if(date&&date!==''){
+            dateStart = new Date(date)
+            dateEnd = new Date(dateStart)
+            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+        }
+        if(user.role==='admin'){
+            let clients = await ClientAzyk
+                .aggregate(
+                    [
+                        { $lookup:
+                            {
+                                from: UserAzyk.collection.collectionName,
+                                let: { user: '$user' },
+                                pipeline: [
+                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                ],
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $unwind:{
+                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                path : '$user'
+                            }
+                        },
+                        {
+                            $match:{
+                                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                del: {$ne: 'deleted'},
+                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
+                    ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
+                .sort(sort)
+            return clients
+        }
+        else if(user.role==='суперагент'){
+            if(search.length>2) {
+                let clients = await ClientAzyk
+                    .find({
+                        ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                        del: {$ne: 'deleted'},
+                        $or: [
+                            {name: {'$regex': search, '$options': 'i'}},
+                            {email: {'$regex': search, '$options': 'i'}},
+                            {city: {'$regex': search, '$options': 'i'}},
+                            {info: {'$regex': search, '$options': 'i'}},
+                            {device: {'$regex': search, '$options': 'i'}},
+                            {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                            {phone: {'$regex': search, '$options': 'i'}}
+                        ]
+                    })
+                    .populate({
+                        path: 'user'
+                    })
+                    .skip(skip!=undefined?skip:0)
+                    .limit(skip!=undefined?100:10000000000)
+                    .sort(sort)
+                return clients
+            } else return []
+        }
+        else if('агент'===user.role) {
+            if(skip != undefined||search.length>2) {
+                let clients = await DistrictAzyk
+                    .find({agent: user.employment})
+                    .distinct('client')
+                clients = await ClientAzyk.find({
+                    ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                    _id: {$in: clients}, del: {$ne: 'deleted'},
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {email: {'$regex': search, '$options': 'i'}},
+                        {city: {'$regex': search, '$options': 'i'}},
+                        {info: {'$regex': search, '$options': 'i'}},
+                        {device: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                        {phone: {'$regex': search, '$options': 'i'}}
+                    ]
+                })
+                    .populate({
+                        path: 'user'
+                    })
+                    .skip(skip != undefined ? skip : 0)
+                    .limit(skip != undefined ? 100 : 10000000000)
+                    .sort(sort)
+                return clients
+            }
+            else return []
+        }
+        else if('менеджер'===user.role) {
+            let clients = await DistrictAzyk
+                .find({manager: user.employment})
+                .distinct('client')
+            clients = await ClientAzyk.find({
+                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                _id: {$in: clients}, del: {$ne: 'deleted'},
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {email: {'$regex': search, '$options': 'i'}},
+                    {city: {'$regex': search, '$options': 'i'}},
+                    {info: {'$regex': search, '$options': 'i'}},
+                    {device: {'$regex': search, '$options': 'i'}},
+                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                    {phone: {'$regex': search, '$options': 'i'}}
+                ]
+            })
+                .populate({ path: 'user'})
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
+                .sort(sort)
+            return clients
+        } else if(['организация'].includes(user.role)) {
+            let organization = await OrganizationAzyk.findOne({_id: user.organization})
+            let clients;
+            if(organization.accessToClient)
+                clients = await ClientAzyk
+                    .aggregate(
+                        [
+                            { $lookup:
+                                {
+                                    from: UserAzyk.collection.collectionName,
+                                    let: { user: '$user' },
+                                    pipeline: [
+                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                    path : '$user'
+                                }
+                            },
+                            {
+                                $match:{
+                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                    del: {$ne: 'deleted'},
+                                    'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                                    $or: [
+                                        {name: {'$regex': search, '$options': 'i'}},
+                                        {email: {'$regex': search, '$options': 'i'}},
+                                        {city: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {device: {'$regex': search, '$options': 'i'}},
+                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                        {phone: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                            },
+                        ])
+            else {
+                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
+                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await ClientAzyk.find({
+                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                    _id: {$in: clients},
+                    del: {$ne: 'deleted'},
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {email: {'$regex': search, '$options': 'i'}},
+                        {city: {'$regex': search, '$options': 'i'}},
+                        {info: {'$regex': search, '$options': 'i'}},
+                        {device: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                        {phone: {'$regex': search, '$options': 'i'}}
+                    ]
                 }).populate({
                     path: 'user',
-                    match: {status: 'active'}
                 })
+                    .skip(skip!=undefined?skip:0)
+                    .limit(skip!=undefined?100:10000000000)
                     .sort(sort)
             }
-            clients = clients.filter(
-                client => {
-                    return (client.user) && (
-                        ((client.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        (client.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.email.toLowerCase()).includes(search.toLowerCase()) ||
-                        (client.city && (client.city.toLowerCase()).includes(search.toLowerCase())) ||
-                        ((client.address.filter(addres => addres[0].toLowerCase().includes(search.toLowerCase()))).length > 0) ||
-                        ((client.address.filter(addres=>(addres[2]?addres[2]:'').toLowerCase().includes(search.toLowerCase()))).length>0)||
-                        (client.info.toLowerCase()).includes(search.toLowerCase())
-                    )
-                }
-            )
             return clients
         }
     },
@@ -234,7 +448,7 @@ const resolvers = {
         return sort
     },
     filterClient: async(parent, ctx, {user}) => {
-        if(['организация', 'менеджер', 'admin'].includes(user.role))
+        if(['организация', 'admin'].includes(user.role))
             return await [
                 {
                     name: 'Все',

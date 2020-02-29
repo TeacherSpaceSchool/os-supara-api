@@ -1,7 +1,9 @@
 const OrderAzyk = require('../models/orderAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
+const OrganizationAzyk = require('../models/organizationAzyk');
 const RouteAzyk = require('../models/routeAzyk');
 const BasketAzyk = require('../models/basketAzyk');
+const ClientAzyk = require('../models/clientAzyk');
 const mongoose = require('mongoose');
 const ItemAzyk = require('../models/itemAzyk');
 const { addBonusToClient } = require('../module/bonusClientAzyk');
@@ -75,6 +77,8 @@ const type = `
     client: ID
     agent: ID
     organization: ID
+    invoice: Invoice
+    type: String
   }
   input OrderInput {
     _id: ID
@@ -91,7 +95,8 @@ const type = `
 `;
 
 const query = `
-    invoices(search: String!, sort: String!, filter: String!, date: String!): [Invoice]
+    invoices(search: String!, sort: String!, filter: String!, date: String!, skip: Int): [Invoice]
+   invoicesSimpleStatistic(search: String!, filter: String!, date: String): [String]
     orderHistorys(invoice: ID!): [HistoryOrder]
     invoicesForRouting(organization: ID): [Invoice]
     invoice(_id: ID!): Invoice
@@ -101,7 +106,7 @@ const query = `
 
 const mutation = `
     addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!, client: ID!): Data
-    setOrder(orders: [OrderInput], invoice: ID): Data
+    setOrder(orders: [OrderInput], invoice: ID): Invoice
     setInvoice(taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean, paymentConsignation: Boolean): Data
     deleteOrders(_id: [ID]!): Data
     approveOrders(invoices: [ID]!, route: ID): Data
@@ -112,7 +117,7 @@ const subscription  = `
 `;
 
 const resolvers = {
-    invoices: async(parent, {search, sort, filter, date}, {user}) => {
+    invoicesSimpleStatistic: async(parent, {search, filter, date,}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date!==''){
@@ -121,45 +126,466 @@ const resolvers = {
             dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
         }
         if(user.role==='client'){
-            let invoices =  await InvoiceAzyk.find({
-                    del: {$ne: 'deleted'},
-                    client: user.client,
-                    ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            'client._id': user.client,
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+            let tonnage = 0;
+            let size = 0;
+            let price = 0;
+            let consignment = 0;
+            let consignmentPayment = 0;
+            let lengthList = 0;
+            for(let i=0; i<invoices.length; i++){
+                if(invoices[i].orders[0].status!=='отмена') {
+                    if (invoices[i].allPrice)
+                        price += invoices[i].allPrice
+                    if (invoices[i].allSize)
+                        size += invoices[i].allSize
+                    lengthList += 1
+                    if (invoices[i].allTonnage)
+                        tonnage += invoices[i].allTonnage
+                    if (invoices[i].consignmentPrice)
+                        consignment += invoices[i].consignmentPrice
+                    if (invoices[i].paymentConsignation)
+                        consignmentPayment += invoices[i].consignmentPrice
                 }
-            )
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        populate : [
-                            { path : 'organization'}
-                        ]
-
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
+            }
+            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
+        }
+        else if(user.role==='admin') {
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+            let tonnage = 0;
+            let size = 0;
+            let price = 0;
+            let consignment = 0;
+            let consignmentPayment = 0;
+            let lengthList = 0;
+            for(let i=0; i<invoices.length; i++){
+                if(invoices[i].orders[0].status!=='отмена') {
+                    if (invoices[i].allPrice)
+                        price += invoices[i].allPrice
+                    if (invoices[i].allSize)
+                        size += invoices[i].allSize
+                    lengthList += 1
+                    if (invoices[i].allTonnage)
+                        tonnage += invoices[i].allTonnage
+                    if (invoices[i].consignmentPrice)
+                        consignment += invoices[i].consignmentPrice
+                    if (invoices[i].paymentConsignation)
+                        consignmentPayment += invoices[i].consignmentPrice
+                }
+            }
+            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
+        }
+        else if(['организация'].includes(user.role)) {
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+            let tonnage = 0;
+            let size = 0;
+            let price = 0;
+            let consignment = 0;
+            let consignmentPayment = 0;
+            let lengthList = 0;
+            for(let i=0; i<invoices.length; i++){
+                if(invoices[i].orders[0].status!=='отмена') {
+                    if (invoices[i].allPrice)
+                        price += invoices[i].allPrice
+                    if (invoices[i].allSize)
+                        size += invoices[i].allSize
+                    lengthList += 1
+                    if (invoices[i].allTonnage)
+                        tonnage += invoices[i].allTonnage
+                    if (invoices[i].consignmentPrice)
+                        consignment += invoices[i].consignmentPrice
+                    if (invoices[i].paymentConsignation)
+                        consignmentPayment += invoices[i].consignmentPrice
+                }
+            }
+            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
+        }
+    },
+    invoices: async(parent, {search, sort, filter, date, skip}, {user}) => {
+        let dateStart;
+        let dateEnd;
+        if(date!==''){
+            dateStart = new Date(date)
+            dateEnd = new Date(dateStart)
+            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+        }
+        if(user.role==='client'){
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            'client._id': user.client,
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&invoice.orders[0].item&&
-                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
-
-            )
             return invoices
         }
         else if(user.role==='суперагент'){
@@ -177,44 +603,103 @@ const resolvers = {
                 dateStart = new Date(dateEnd)
                 dateStart = dateStart.setDate(dateStart.getDate() - 3)
             }
-            let invoices =  await InvoiceAzyk.find({
-                del: {$ne: 'deleted'},
-                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-            })
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        populate : [
-                            { path : 'organization'}
-                        ]
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
-                .populate({
-                    path: 'agent'
-                })
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&invoice.orders[0].item&&
-                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
-
-            )
             return invoices
         }
         else if(user.role==='агент'){
@@ -235,46 +720,103 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
-            let invoices =  await InvoiceAzyk.find({
-                del: {$ne: 'deleted'},
-                client: {$in: clients},
-                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-            })
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        match: { organization: user.organization },
-                        populate : [
-                            { path : 'organization'}
-                        ]
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
-                .populate({
-                    path: 'agent'
-                })
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            'client._id': {$in: clients},
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&invoice.orders[0].item&&
-                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
-
-            )
             return invoices
         }
         else if(user.role==='менеджер'){
@@ -295,130 +837,304 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
-            let invoices =  await InvoiceAzyk.find({
-                del: {$ne: 'deleted'},
-                client: {$in: clients},
-                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-            })
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        match: { organization: user.organization },
-                        populate : [
-                            { path : 'organization'}
-                        ]
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
-                .populate({
-                    path: 'agent'
-                })
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            'client._id': {$in: clients},
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&invoice.orders[0].item&&
-                    ((invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase()))
-
-            )
             return invoices
         }
         else if(user.role==='admin') {
-            let invoices =  await InvoiceAzyk.find({
-                del: {$ne: 'deleted'},
-                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-            })
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        populate : [
-                            { path : 'organization'}
-                        ]
-
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
-                .populate({
-                    path: 'agent'
-                })
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice =>
-                    invoice.orders.length>0&&invoice.orders[0].item&&(
-                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
             return invoices
         }
         else if(['организация'].includes(user.role)) {
-            let invoices =  await InvoiceAzyk.find({
-                del: {$ne: 'deleted'},
-                ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-            })
-                .populate({
-                    path: 'orders',
-                    match: filter!=='консигнации'?{ status: {'$regex': filter, '$options': 'i'}}:{},
-                    populate : {
-                        path : 'item',
-                        match: { organization: user.organization },
-                        populate : [
-                            { path : 'organization'}
-                        ]
-                    }
-                })
-                .populate({
-                    path: 'client',
-                    populate : [
-                        { path : 'user'}
-                    ]
-                })
-                .populate({
-                    path: 'agent'
-                })
+            let invoices =  await InvoiceAzyk.aggregate(
+                [
+                    { $lookup:
+                        {
+                            from: OrderAzyk.collection.collectionName,
+                            let: { order: '$orders' },
+                            pipeline: [
+                                { $match: {$expr:{$in:['$_id', '$$order']}} },
+                                { $lookup:
+                                    {
+                                        from: ItemAzyk.collection.collectionName,
+                                        let: { item: '$item' },
+                                        pipeline: [
+                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
+                                            { $lookup:
+                                                {
+                                                    from: OrganizationAzyk.collection.collectionName,
+                                                    let: { organization: '$organization' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                                                    ],
+                                                    as: 'organization'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$organization'
+                                                }
+                                            },
+                                        ],
+                                        as: 'item'
+                                    }
+                                },
+                                {
+                                    $unwind:{
+                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        path : '$item'
+                                    }
+                                },
+                            ],
+                            as: 'orders'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                            ]
+                        }
+                    },
+                ])
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
-            invoices = invoices.filter(
-                invoice => invoice.orders.length>0&&invoice.orders[0].item&&
-                    (
-                        (invoice.number.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.info.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.address[0].toLowerCase()).includes(search.toLowerCase())||
-                        ((invoice.address[2]?invoice.address[2]:'').toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.paymentMethod.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.client.name.toLowerCase()).includes(search.toLowerCase())||
-                        invoice.agent&&(invoice.agent.name.toLowerCase()).includes(search.toLowerCase())||
-                        (invoice.orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
-                    )
-            )
             return invoices
         }
     },
@@ -659,7 +1375,9 @@ const resolversMutation = {
                         who: user.role==='admin'?null:user._id,
                         agent: user.employment,
                         client: client,
-                        organization: organizaiton
+                        organization: organizaiton,
+                        invoice: await InvoiceAzyk.findOne({_id: objectInvoice._id}).populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}}).populate({path: 'client',populate: [{path: 'user'}]}),
+                        type: 'ADD'
                     } });
                 }
             }
@@ -685,7 +1403,9 @@ const resolversMutation = {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,
                     agent: objects[i].agent,
-                    organization: objects[i].organization
+                    organization: objects[i].organization,
+                    invoice: {_id: objects[i]._id},
+                    type: 'DELETE'
                 } });
             }
         }
@@ -751,11 +1471,29 @@ const resolversMutation = {
             object.editor = editor
             object.orders = orders.map(order=>order._id)
             await object.save();
+            let newInvoice = await InvoiceAzyk.findOne({_id: object._id})
+                .populate({
+                    path: 'orders',
+                    populate: {
+                        path: 'item',
+                        populate: [
+                            {path: 'organization'}
+                        ]
+                    }
+                })
+                .populate({
+                    path: 'client',
+                    populate: [
+                        {path: 'user'}
+                    ]
+                })
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                 who: user.role==='admin'?null:user._id,
                 client: object.client._id,
                 agent: object.agent,
-                organization: object.organization
+                organization: object.organization,
+                invoice: newInvoice,
+                type: 'SET'
             } });
 
             /*if(user._id.toString()!==(getAdminId()).toString())
@@ -763,9 +1501,9 @@ const resolversMutation = {
 
             if(user._id.toString()!==(object.client.user).toString())
                 sendWebPush('Заказ изменен', '', object.client.user)*/
-
+            return newInvoice
         }
-        return {data: 'OK'};
+        return null;
     },
     setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
         let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
@@ -954,6 +1692,7 @@ const resolversSubscription = {
         subscribe: withFilter(
             () => pubsub.asyncIterator(RELOAD_ORDER),
             (payload, variables, {user} ) => {
+                console.log(payload)
                 return (
                     ['admin', 'суперагент'].includes(user.role)||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
