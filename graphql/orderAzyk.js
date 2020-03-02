@@ -584,7 +584,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -698,7 +698,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -815,7 +815,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -933,7 +933,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -971,7 +971,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    //preserveNullAndEmptyArrays : true, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -981,7 +981,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        //preserveNullAndEmptyArrays : true, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -1001,7 +1001,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            //preserveNullAndEmptyArrays : true, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -1017,7 +1017,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            //preserveNullAndEmptyArrays : true, // this remove the object which is null
                             path : '$agent'
                         }
                     },
@@ -1037,7 +1037,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -1137,7 +1137,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?30:10000000000)
                 .sort(sort)
             return invoices
         }
