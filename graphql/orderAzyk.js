@@ -481,7 +481,6 @@ const resolvers = {
         }
     },
     invoices: async(parent, {search, sort, filter, date, skip}, {user}) => {
-        console.log(search, sort, filter, date, skip)
         let dateStart;
         let dateEnd;
         if(date!==''){
@@ -584,9 +583,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
         else if(user.role==='суперагент'){
@@ -698,9 +697,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
         else if(user.role==='агент'){
@@ -815,9 +814,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
         else if(user.role==='менеджер'){
@@ -933,9 +932,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
         else if(user.role==='admin') {
@@ -1037,9 +1036,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
         else if(['организация'].includes(user.role)) {
@@ -1137,9 +1136,9 @@ const resolvers = {
                         }
                     },
                 ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return invoices
         }
     },

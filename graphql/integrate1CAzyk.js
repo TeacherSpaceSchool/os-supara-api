@@ -284,9 +284,9 @@ const resolvers = {
                         }
                     }
                 ])
+                .sort('-createdAt')
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort('-createdAt')
             for(let i=0; i<integrate1Cs.length; i++){
                 if(integrate1Cs[i].client) {
                     for(let i1=0; i1<integrate1Cs[i].client.address.length; i1++) {

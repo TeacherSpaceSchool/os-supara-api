@@ -262,9 +262,9 @@ const resolvers = {
                             }
                         },
                     ])
+                .sort(sort)
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return clients
         }
         else if(user.role==='суперагент'){
@@ -286,9 +286,9 @@ const resolvers = {
                     .populate({
                         path: 'user'
                     })
+                    .sort(sort)
                     .skip(skip!=undefined?skip:0)
                     .limit(skip!=undefined?100:10000000000)
-                    .sort(sort)
                 return clients
             } else return []
         }
@@ -313,9 +313,9 @@ const resolvers = {
                     .populate({
                         path: 'user'
                     })
+                    .sort(sort)
                     .skip(skip != undefined ? skip : 0)
                     .limit(skip != undefined ? 100 : 10000000000)
-                    .sort(sort)
                 return clients
             }
             else return []
@@ -337,10 +337,10 @@ const resolvers = {
                     {phone: {'$regex': search, '$options': 'i'}}
                 ]
             })
+                .sort(sort)
                 .populate({ path: 'user'})
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?100:10000000000)
-                .sort(sort)
             return clients
         } else if(['организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
@@ -401,9 +401,9 @@ const resolvers = {
                 }).populate({
                     path: 'user',
                 })
+                    .sort(sort)
                     .skip(skip!=undefined?skip:0)
                     .limit(skip!=undefined?100:10000000000)
-                    .sort(sort)
             }
             return clients
         }
