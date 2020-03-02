@@ -44,6 +44,20 @@ const mutation = `
 const resolvers = {
     integrate1CsSimpleStatistic: async(parent, {search, filter, organization}, {user}) => {
         if(user.role==='admin'){
+            let _items;
+            let _clients;
+            let _employments;
+            if(search.length>0){
+                _items = await ItemAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+                _clients = await ClientAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+                _employments = await EmploymentAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+            }
             let integrate1Cs =  await Integrate1CAzyk.aggregate(
                 [
                     {
@@ -63,118 +77,44 @@ const resolvers = {
                                                 {client: {$ne: null}}
                                                 :
                                                 {}
-                            )
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: ItemAzyk.collection.collectionName,
-                            let: { item: '$item' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                            ],
-                            as: 'item'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$item'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: OrganizationAzyk.collection.collectionName,
-                            let: { organization: '$organization' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                            ],
-                            as: 'organization'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$organization'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: EmploymentAzyk.collection.collectionName,
-                            let: { ecspeditor: '$ecspeditor' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$ecspeditor', '$_id']}} },
-                            ],
-                            as: 'ecspeditor'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$ecspeditor'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: ClientAzyk.collection.collectionName,
-                            let: { client: '$client' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
-                            ],
-                            as: 'client'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$client'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: EmploymentAzyk.collection.collectionName,
-                            let: { agent: '$agent' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
-                            ],
-                            as: 'agent'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$agent'
-                        }
-                    },
-                    {
-                        $match:{
-                            $or: [
-                                {guid: {'$regex': search, '$options': 'i'}},
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'ecspeditor.name': {'$regex': search, '$options': 'i'}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'item.name': {'$regex': search, '$options': 'i'}},
-                                {'client.address': {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                            ]
+                            ),
+                            ...(search.length>0?{
+                                    $or: [
+                                        {agent: {$in: _employments}},
+                                        {client: {$in: _clients}},
+                                        {ecspeditor: {$in: _employments}},
+                                        {item: {$in: _items}},
+                                        {guid: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                                :{}),
                         }
                     },
                     {
                         $count :  'integrate1CsCount'
                     }
                 ])
-            return [integrate1Cs[0].integrate1CsCount.toString()]
+            return [integrate1Cs[0]?integrate1Cs[0].integrate1CsCount.toString():'0']
         }
     },
     integrate1Cs: async(parent, {search, filter, organization, skip}, {user}) => {
         if(user.role==='admin'){
+            let _items;
+            let _clients;
+            let _employments;
+            if(search.length>0){
+                _items = await ItemAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+                _clients = await ClientAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+                _employments = await EmploymentAzyk.find({
+                    name: {'$regex': search, '$options': 'i'}
+                }).distinct('_id')
+            }
             let integrate1Cs =  await Integrate1CAzyk.aggregate(
                 [
-                    {
-                        $match:{
-                            guid: {'$regex': search, '$options': 'i'}
-                        }
-                    },
                     {
                         $match:{
                             organization: new mongoose.Types.ObjectId(organization),
@@ -192,9 +132,22 @@ const resolvers = {
                                                 {client: {$ne: null}}
                                                 :
                                                 {}
-                            )
+                            ),
+                            ...(search.length>0?{
+                                    $or: [
+                                        {agent: {$in: _employments}},
+                                        {client: {$in: _clients}},
+                                        {ecspeditor: {$in: _employments}},
+                                        {item: {$in: _items}},
+                                        {guid: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                                :{}),
                         }
                     },
+                    { $sort : {'createdAt': -1} },
+                    { $skip : skip!=undefined?skip:0 },
+                    { $limit : skip!=undefined?100:10000000000 },
                     { $lookup:
                         {
                             from: ItemAzyk.collection.collectionName,
@@ -275,21 +228,6 @@ const resolvers = {
                             path : '$agent'
                         }
                     },
-                    {
-                        $match:{
-                            $or: [
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'ecspeditor.name': {'$regex': search, '$options': 'i'}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'item.name': {'$regex': search, '$options': 'i'}},
-                                {'client.address': {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                            ]
-                        }
-                    },
-                    { $sort : {'createdAt': -1} },
-                    { $skip : skip!=undefined?skip:0 },
-                    { $limit : skip!=undefined?100:10000000000 }
                 ])
             for(let i=0; i<integrate1Cs.length; i++){
                 if(integrate1Cs[i].client) {

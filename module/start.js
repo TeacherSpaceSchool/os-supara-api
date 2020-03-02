@@ -2,6 +2,7 @@ const { startCategoryAzyk } = require('../module/categoryAzyk');
 const { startSubCategoryAzyk } = require('../module/subCategoryAzyk');
 const { reductionToBonus } = require('../module/bonusAzyk');
 const { reductionToClient } = require('../module/clientAzyk');
+const { reductionInvoices } = require('../module/invoiceAzyk');
 const { startClientRedis } = require('../module/redis');
 const { reductionToUser, createAdmin } = require('../module/user');
 const subscriberAzyk = require('../models/subscriberAzyk');
@@ -54,6 +55,7 @@ let startReminderClient = async () => {
 
 let start = async () => {
     //await startClientRedis()
+    await reductionInvoices()
     await startCategoryAzyk()
     await startResetUnloading()
     await startSubCategoryAzyk()

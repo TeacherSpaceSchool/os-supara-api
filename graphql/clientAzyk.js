@@ -45,7 +45,7 @@ const mutation = `
 `;
 
 const resolvers = {
-    clientsSimpleStatistic: async(parent, {search, filter, date,}, {user}) => {
+    clientsSimpleStatistic: async(parent, {search, date}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date&&date!==''){
@@ -57,27 +57,10 @@ const resolvers = {
             let clients = await ClientAzyk
                 .aggregate(
                     [
-                        { $lookup:
-                            {
-                                from: UserAzyk.collection.collectionName,
-                                let: { user: '$user' },
-                                pipeline: [
-                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
-                                ],
-                                as: 'user'
-                            }
-                        },
-                        {
-                            $unwind:{
-                                preserveNullAndEmptyArrays : true, // this remove the object which is null
-                                path : '$user'
-                            }
-                        },
                         {
                             $match:{
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
-                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                                 $or: [
                                     {name: {'$regex': search, '$options': 'i'}},
                                     {email: {'$regex': search, '$options': 'i'}},
@@ -93,10 +76,10 @@ const resolvers = {
                             $count :  'clientCount'
                         }
                     ])
-            return [clients[0].clientCount.toString()]
+            return [clients[0]?clients[0].clientCount.toString():'0']
         }
         else if(user.role==='суперагент'){
-            if(search.length>2||filter==='all') {
+            if(search.length>2) {
                 let clients = await ClientAzyk
                     .count({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
@@ -158,27 +141,10 @@ const resolvers = {
                 clients = await ClientAzyk
                     .aggregate(
                         [
-                            { $lookup:
-                                {
-                                    from: UserAzyk.collection.collectionName,
-                                    let: { user: '$user' },
-                                    pipeline: [
-                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
-                                    ],
-                                    as: 'user'
-                                }
-                            },
-                            {
-                                $unwind:{
-                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
-                                    path : '$user'
-                                }
-                            },
                             {
                                 $match:{
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
-                                    'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                                     $or: [
                                         {name: {'$regex': search, '$options': 'i'}},
                                         {email: {'$regex': search, '$options': 'i'}},
@@ -217,7 +183,7 @@ const resolvers = {
             return [clients.toString()]
         }
     },
-    clients: async(parent, {search, sort, filter, date, skip}, {user}) => {
+    clients: async(parent, {search, sort, date, skip}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date&&date!==''){
@@ -246,6 +212,9 @@ const resolvers = {
                                 ]
                             }
                         },
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?100:10000000000 },
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -261,15 +230,7 @@ const resolvers = {
                                 preserveNullAndEmptyArrays : true, // this remove the object which is null
                                 path : '$user'
                             }
-                        },
-                        {
-                            $match:{
-                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter
-                            }
-                        },
-                        { $sort : _sort },
-                        { $skip : skip!=undefined?skip:0 },
-                        { $limit : skip!=undefined?100:10000000000 }
+                        }
                     ])
             return clients
         }
@@ -305,7 +266,8 @@ const resolvers = {
                     .distinct('client')
                 clients = await ClientAzyk.find({
                     ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                    _id: {$in: clients}, del: {$ne: 'deleted'},
+                    _id: {$in: clients},
+                    del: {$ne: 'deleted'},
                     $or: [
                         {name: {'$regex': search, '$options': 'i'}},
                         {email: {'$regex': search, '$options': 'i'}},
@@ -355,6 +317,24 @@ const resolvers = {
                 clients = await ClientAzyk
                     .aggregate(
                         [
+                            {
+                                $match:{
+                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                    del: {$ne: 'deleted'},
+                                    $or: [
+                                        {name: {'$regex': search, '$options': 'i'}},
+                                        {email: {'$regex': search, '$options': 'i'}},
+                                        {city: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {device: {'$regex': search, '$options': 'i'}},
+                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                        {phone: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                            },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?100:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -371,25 +351,6 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
-                            {
-                                $match:{
-                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                                    del: {$ne: 'deleted'},
-                                    'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
-                                    $or: [
-                                        {name: {'$regex': search, '$options': 'i'}},
-                                        {email: {'$regex': search, '$options': 'i'}},
-                                        {city: {'$regex': search, '$options': 'i'}},
-                                        {info: {'$regex': search, '$options': 'i'}},
-                                        {device: {'$regex': search, '$options': 'i'}},
-                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                                        {phone: {'$regex': search, '$options': 'i'}}
-                                    ]
-                                }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?100:10000000000 }
                         ])
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
@@ -407,12 +368,13 @@ const resolvers = {
                         {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
                         {phone: {'$regex': search, '$options': 'i'}}
                     ]
-                }).populate({
-                    path: 'user',
                 })
                     .sort(sort)
                     .skip(skip!=undefined?skip:0)
                     .limit(skip!=undefined?100:10000000000)
+                    .populate({
+                        path: 'user',
+                    })
             }
             return clients
         }
@@ -456,23 +418,7 @@ const resolvers = {
         }
         return sort
     },
-    filterClient: async(parent, ctx, {user}) => {
-        if(['организация', 'admin'].includes(user.role))
-            return await [
-                {
-                    name: 'Все',
-                    value: ''
-                },
-                {
-                    name: 'Активные',
-                    value: 'active'
-                },
-                {
-                    name: 'Неактивные',
-                    value: 'deactive'
-                }
-            ]
-        else
+    filterClient: async() => {
             return await []
     },
 };
