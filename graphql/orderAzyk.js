@@ -123,19 +123,11 @@ const resolvers = {
         if(date!==''){
             dateStart = new Date(date)
             dateEnd = new Date(dateStart)
-            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
         }
         if(user.role==='client'){
             let invoices =  await InvoiceAzyk.aggregate(
                 [
-                    {
-                        $match: {
-                            del: {$ne: 'deleted'},
-                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            client: user.client,
-                        }
-                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -160,7 +152,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -170,7 +162,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -190,7 +182,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -212,13 +204,17 @@ const resolvers = {
                     },
                     {
                         $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            client: user.client,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
                                 {address: {'$regex': search, '$options': 'i'}},
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
@@ -273,7 +269,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -283,7 +279,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -303,7 +299,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -325,6 +321,9 @@ const resolvers = {
                     },
                     {
                         $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -332,7 +331,7 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
@@ -363,13 +362,6 @@ const resolvers = {
         else if(['организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
-                    {
-                        $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                        }
-                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -394,7 +386,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -404,7 +396,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -424,7 +416,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -446,7 +438,10 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            'orders.0.item.organization._id': user.organization,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -488,7 +483,7 @@ const resolvers = {
         if(date!==''){
             dateStart = new Date(date)
             dateEnd = new Date(dateStart)
-            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
         }
         let _sort = {}
         _sort[sort[0]==='-'?sort.substring(1):sort]=sort[0]==='-'?-1:1
@@ -544,7 +539,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -554,7 +549,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -574,7 +569,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -587,7 +582,7 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
@@ -603,13 +598,13 @@ const resolvers = {
                 if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
+                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
                 }
             }
             else {
                 dateEnd = new Date()
                 dateStart = new Date(dateEnd)
-                dateStart = dateStart.setDate(dateStart.getDate() - 3)
+                dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
             let invoices =  await InvoiceAzyk.aggregate(
                 [
@@ -633,7 +628,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -677,7 +672,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -687,7 +682,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -704,7 +699,7 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
@@ -720,13 +715,13 @@ const resolvers = {
                 if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
+                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
                 }
             }
             else {
                 dateEnd = new Date()
                 dateStart = new Date(dateEnd)
-                dateStart = dateStart.setDate(dateStart.getDate() - 3)
+                dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
@@ -766,7 +761,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -776,7 +771,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -796,7 +791,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -818,7 +813,7 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            'orders.0.item.organization._id': user.organization,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -840,13 +835,13 @@ const resolvers = {
                 if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = dateEnd.setDate(dateEnd.getDate() - 3)
+                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
                 }
             }
             else {
                 dateEnd = new Date()
                 dateStart = new Date(dateEnd)
-                dateStart = dateStart.setDate(dateStart.getDate() - 3)
+                dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
@@ -886,7 +881,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -896,7 +891,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -916,7 +911,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -938,7 +933,7 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            'orders.0.item.organization._id': user.organization,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -957,14 +952,6 @@ const resolvers = {
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
-                    {
-                        $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
-                        }
-                    },
-                    { $sort : _sort },
                     { $lookup:
                         {
                             from: ClientAzyk.collection.collectionName,
@@ -977,7 +964,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true,
+                            preserveNullAndEmptyArrays : false,
                             path : '$client'
                         }
                     },
@@ -1021,7 +1008,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true,
+                                                    preserveNullAndEmptyArrays : false,
                                                     path : '$organization'
                                                 }
                                             },
@@ -1031,7 +1018,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true,
+                                        preserveNullAndEmptyArrays : false,
                                         path : '$item'
                                     }
                                 },
@@ -1041,6 +1028,9 @@ const resolvers = {
                     },
                     {
                         $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -1048,10 +1038,11 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
+                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
+                    { $sort : _sort },
                     { $skip : skip!=undefined?skip:0 },
                     { $limit : skip!=undefined?100:10000000000 }
 
@@ -1093,7 +1084,7 @@ const resolvers = {
                                             },
                                             {
                                                 $unwind:{
-                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
                                                     path : '$organization'
                                                 }
                                             },
@@ -1103,7 +1094,7 @@ const resolvers = {
                                 },
                                 {
                                     $unwind:{
-                                        preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
                                         path : '$item'
                                     }
                                 },
@@ -1123,7 +1114,7 @@ const resolvers = {
                     },
                     {
                         $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
                         }
                     },
@@ -1145,7 +1136,7 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            orders: {$elemMatch: {'item.organization._id': user.organization}},
+                            'orders.0.item.organization._id': user.organization,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
