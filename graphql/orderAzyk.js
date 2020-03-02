@@ -128,6 +128,20 @@ const resolvers = {
         if(user.role==='client'){
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match: {
+                            del: {$ne: 'deleted'},
+                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            client: user.client,
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                            ]
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -204,15 +218,7 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            'client._id': user.client,
                             $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
@@ -246,6 +252,16 @@ const resolvers = {
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                            ]
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -322,14 +338,7 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
@@ -364,6 +373,19 @@ const resolvers = {
         else if(['организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                            ]
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -440,15 +462,8 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
