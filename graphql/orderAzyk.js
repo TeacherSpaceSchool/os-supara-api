@@ -134,12 +134,6 @@ const resolvers = {
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             client: user.client,
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
                         }
                     },
                     { $lookup:
@@ -219,6 +213,10 @@ const resolvers = {
                     {
                         $match:{
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
@@ -252,16 +250,6 @@ const resolvers = {
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
-                    {
-                        $match:{
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
-                        }
-                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -339,6 +327,10 @@ const resolvers = {
                     {
                         $match:{
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
@@ -378,12 +370,6 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
                         }
                     },
                     { $lookup:
@@ -464,6 +450,10 @@ const resolvers = {
                         $match:{
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
@@ -514,15 +504,25 @@ const resolvers = {
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             client: user.client,
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
                         }
                     },
                     { $sort : _sort },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -581,28 +581,16 @@ const resolvers = {
                             path : '$client'
                         }
                     },
-                    { $lookup:
-                        {
-                            from: EmploymentAzyk.collection.collectionName,
-                            let: { agent: '$agent' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
-                            ],
-                            as: 'agent'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$agent'
-                        }
-                    },
                     {
                         $match:{
                             $or: [
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
@@ -644,6 +632,38 @@ const resolvers = {
                     { $sort : _sort },
                     { $lookup:
                         {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true, // this remove the object which is null
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrderAzyk.collection.collectionName,
                             let: { order: '$orders' },
                             pipeline: [
@@ -684,43 +704,11 @@ const resolvers = {
                             as: 'orders'
                         }
                     },
-                    { $lookup:
-                        {
-                            from: ClientAzyk.collection.collectionName,
-                            let: { client: '$client' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
-                            ],
-                            as: 'client'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$client'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: EmploymentAzyk.collection.collectionName,
-                            let: { agent: '$agent' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
-                            ],
-                            as: 'agent'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true, // this remove the object which is null
-                            path : '$agent'
-                        }
-                    },
                     {
                         $match:{
                             $or: [
-                                {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
@@ -756,11 +744,7 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            client: {$in: clients},
-                            $or: [
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
-                            ]
+                            client: {$in: clients}
                         }
                     },
                     { $sort : _sort },
@@ -842,6 +826,8 @@ const resolvers = {
                         $match:{
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
@@ -878,12 +864,6 @@ const resolvers = {
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             client: {$in: clients},
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
                         }
                     },
                     { $sort : _sort },
@@ -965,6 +945,10 @@ const resolvers = {
                         $match:{
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
@@ -981,20 +965,42 @@ const resolvers = {
                 [
                     {
                         $match:{
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
-                        }
-                    },
-                    { $sort : _sort },
-                    {
-                        $match:{
                             del: {$ne: 'deleted'},
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+                        }
+                    },
+                    { $sort : _sort },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
                         }
                     },
                     { $lookup:
@@ -1039,41 +1045,13 @@ const resolvers = {
                             as: 'orders'
                         }
                     },
-                    { $lookup:
-                        {
-                            from: ClientAzyk.collection.collectionName,
-                            let: { client: '$client' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
-                            ],
-                            as: 'client'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true,
-                            path : '$client'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: EmploymentAzyk.collection.collectionName,
-                            let: { agent: '$agent' },
-                            pipeline: [
-                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
-                            ],
-                            as: 'agent'
-                        }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true,
-                            path : '$agent'
-                        }
-                    },
                     {
                         $match:{
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
@@ -1094,13 +1072,7 @@ const resolvers = {
                         $match:{
                             del: {$ne: 'deleted'},
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
                         }
                     },
                     { $sort : _sort },
@@ -1185,6 +1157,10 @@ const resolvers = {
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
