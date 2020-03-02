@@ -219,7 +219,6 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -334,7 +333,6 @@ const resolvers = {
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -456,7 +454,6 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -584,13 +581,13 @@ const resolvers = {
                     {
                         $match:{
                             $or: [
-                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
                                 {address: {'$regex': search, '$options': 'i'}},
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
+                                {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -621,12 +618,6 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                            ]
                         }
                     },
                     { $sort : _sort },
@@ -707,10 +698,13 @@ const resolvers = {
                     {
                         $match:{
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -826,10 +820,11 @@ const resolvers = {
                         $match:{
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -951,7 +946,6 @@ const resolvers = {
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -1055,7 +1049,6 @@ const resolvers = {
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {orders: {$elemMatch: {'item.organization.name': {'$regex': search, '$options': 'i'}}}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
                     },
@@ -1154,13 +1147,12 @@ const resolvers = {
                         $match:{
                             orders: {$elemMatch: {'item.organization._id': user.organization}},
                             $or: [
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {orders: {$elemMatch: {'item.name': {'$regex': search, '$options': 'i'}}}},
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
                                 {address: {'$regex': search, '$options': 'i'}},
                                 {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {'client.name': {'$regex': search, '$options': 'i'}},
+                                {'agent.name': {'$regex': search, '$options': 'i'}},
                             ]
                         }
                     },
