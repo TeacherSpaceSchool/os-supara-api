@@ -584,7 +584,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -698,7 +698,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -815,7 +815,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -933,13 +933,20 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }})
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -1016,9 +1023,6 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -1033,7 +1037,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
@@ -1133,7 +1137,7 @@ const resolvers = {
                     },
                 ])
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?30:10000000000)
+                .limit(skip!=undefined?100:10000000000)
                 .sort(sort)
             return invoices
         }
