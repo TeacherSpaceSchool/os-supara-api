@@ -1047,16 +1047,22 @@ const resolvers = {
                         }
                     },
                     {
-                        $match:{
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                {'client.name': {'$regex': search, '$options': 'i'}},
-                                {'agent.name': {'$regex': search, '$options': 'i'}},
-                                {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
-                            ]
+                        $match: {
+                            ...(search ?
+                                    {
+                                        $or: [
+                                            {number: {'$regex': search, '$options': 'i'}},
+                                            {info: {'$regex': search, '$options': 'i'}},
+                                            {address: {'$regex': search, '$options': 'i'}},
+                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                            {'client.name': {'$regex': search, '$options': 'i'}},
+                                            {'agent.name': {'$regex': search, '$options': 'i'}},
+                                            {'orders.0.item.organization.name': {'$regex': search, '$options': 'i'}},
+                                        ]
+                                    }
+                                    :
+                                    {}
+                            )
                         }
                     },
                     { $sort : _sort },
