@@ -225,10 +225,27 @@ const resolvers = {
             dateEnd = new Date(dateStart)
             dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
         }
+        let _sort = {}
+        _sort[sort[0]==='-'?sort.substring(1):sort]=sort[0]==='-'?-1:1
         if(user.role==='admin'){
             let clients = await ClientAzyk
                 .aggregate(
                     [
+                        {
+                            $match:{
+                                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                del: {$ne: 'deleted'},
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -247,24 +264,13 @@ const resolvers = {
                         },
                         {
                             $match:{
-                                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                                del: {$ne: 'deleted'},
-                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
-                                $or: [
-                                    {name: {'$regex': search, '$options': 'i'}},
-                                    {email: {'$regex': search, '$options': 'i'}},
-                                    {city: {'$regex': search, '$options': 'i'}},
-                                    {info: {'$regex': search, '$options': 'i'}},
-                                    {device: {'$regex': search, '$options': 'i'}},
-                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                                    {phone: {'$regex': search, '$options': 'i'}}
-                                ]
+                                'user.status': filter.length===0?{'$regex': filter, '$options': 'i'}:filter
                             }
                         },
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?100:10000000000 }
                     ])
-                .sort(sort)
-                .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
             return clients
         }
         else if(user.role==='суперагент'){
@@ -381,6 +387,9 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?100:10000000000 }
                         ])
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')

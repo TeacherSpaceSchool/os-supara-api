@@ -172,6 +172,11 @@ const resolvers = {
                 [
                     {
                         $match:{
+                            guid: {'$regex': search, '$options': 'i'}
+                        }
+                    },
+                    {
+                        $match:{
                             organization: new mongoose.Types.ObjectId(organization),
                             ...(
                                 filter==='агент'?
@@ -273,7 +278,6 @@ const resolvers = {
                     {
                         $match:{
                             $or: [
-                                {guid: {'$regex': search, '$options': 'i'}},
                                 {'agent.name': {'$regex': search, '$options': 'i'}},
                                 {'client.name': {'$regex': search, '$options': 'i'}},
                                 {'ecspeditor.name': {'$regex': search, '$options': 'i'}},
@@ -282,11 +286,11 @@ const resolvers = {
                                 {'client.address': {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
                             ]
                         }
-                    }
+                    },
+                    { $sort : {'createdAt': -1} },
+                    { $skip : skip!=undefined?skip:0 },
+                    { $limit : skip!=undefined?100:10000000000 }
                 ])
-                .sort('-createdAt')
-                .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
             for(let i=0; i<integrate1Cs.length; i++){
                 if(integrate1Cs[i].client) {
                     for(let i1=0; i1<integrate1Cs[i].client.address.length; i1++) {
