@@ -128,6 +128,14 @@ const resolvers = {
         if(user.role==='client'){
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            client: user.client,
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -204,10 +212,6 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            client: user.client,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -245,6 +249,13 @@ const resolvers = {
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -321,9 +332,6 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
@@ -362,6 +370,13 @@ const resolvers = {
         else if(['организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                        }
+                    },
                     { $lookup:
                         {
                             from: OrderAzyk.collection.collectionName,
@@ -438,9 +453,6 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             'orders.0.item.organization._id': user.organization,
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
@@ -952,6 +964,14 @@ const resolvers = {
         else if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                        }
+                    },
+                    { $sort : _sort },
                     { $lookup:
                         {
                             from: ClientAzyk.collection.collectionName,
@@ -1028,9 +1048,6 @@ const resolvers = {
                     },
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
                                 {info: {'$regex': search, '$options': 'i'}},
