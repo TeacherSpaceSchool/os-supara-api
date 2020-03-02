@@ -214,7 +214,7 @@ const resolvers = {
                         },
                         { $sort : _sort },
                         { $skip : skip!=undefined?skip:0 },
-                        { $limit : skip!=undefined?100:10000000000 },
+                        { $limit : skip!=undefined?15:10000000000 },
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -255,7 +255,7 @@ const resolvers = {
                     })
                     .sort(sort)
                     .skip(skip!=undefined?skip:0)
-                    .limit(skip!=undefined?100:10000000000)
+                    .limit(skip!=undefined?15:10000000000)
                 return clients
             } else return []
         }
@@ -308,7 +308,7 @@ const resolvers = {
                 .sort(sort)
                 .populate({ path: 'user'})
                 .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?100:10000000000)
+                .limit(skip!=undefined?15:10000000000)
             return clients
         } else if(['организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
@@ -334,7 +334,7 @@ const resolvers = {
                             },
                             { $sort : _sort },
                             { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?100:10000000000 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -371,7 +371,7 @@ const resolvers = {
                 })
                     .sort(sort)
                     .skip(skip!=undefined?skip:0)
-                    .limit(skip!=undefined?100:10000000000)
+                    .limit(skip!=undefined?15:10000000000)
                     .populate({
                         path: 'user',
                     })

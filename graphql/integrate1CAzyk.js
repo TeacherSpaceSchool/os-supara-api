@@ -147,7 +147,7 @@ const resolvers = {
                     },
                     { $sort : {'createdAt': -1} },
                     { $skip : skip!=undefined?skip:0 },
-                    { $limit : skip!=undefined?100:10000000000 },
+                    { $limit : skip!=undefined?15:10000000000 },
                     { $lookup:
                         {
                             from: ItemAzyk.collection.collectionName,
