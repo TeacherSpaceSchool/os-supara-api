@@ -10,6 +10,7 @@ const { addBonusToClient } = require('../module/bonusClientAzyk');
 const randomstring = require('randomstring');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
+const { setOutXMLShoroAzyk, cancelOutXMLShoroAzyk } = require('../module/outXMLShoroAzykAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
@@ -50,6 +51,7 @@ const type = `
     confirmationForwarder: Boolean
     confirmationClient: Boolean
     paymentConsignation: Boolean
+    sync: Int
     cancelClient: Date
     cancelForwarder: Date
     taken: Boolean
@@ -145,6 +147,7 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
+                            status: {$ne: 'отмена'},
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             client: user.client,
@@ -191,6 +194,7 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
+                            status: {$ne: 'отмена'},
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             ...(search.length>0?{
@@ -237,6 +241,7 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
+                            status: {$ne: 'отмена'},
                             organization: user.organization,
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
@@ -769,15 +774,19 @@ const resolvers = {
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             client: {$in: clients},
                             organization: user.organization,
+
                             $match:{
-                                $or: [
-                                    {number: {'$regex': search, '$options': 'i'}},
-                                    {info: {'$regex': search, '$options': 'i'}},
-                                    {address: {'$regex': search, '$options': 'i'}},
-                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                    {client: {$in: _clients}},
-                                    {agent: {$in: _agents}},
-                                ]
+                                ...(search.length>0?{
+                                        $or: [
+                                            {number: {'$regex': search, '$options': 'i'}},
+                                            {info: {'$regex': search, '$options': 'i'}},
+                                            {address: {'$regex': search, '$options': 'i'}},
+                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                            {client: {$in: _clients}},
+                                            {agent: {$in: _agents}},
+                                        ]
+                                    }
+                                    :{})
                             }
                         }
                     },
@@ -862,6 +871,7 @@ const resolvers = {
             return invoices
         }
         else if(['организация'].includes(user.role)) {
+            console.log(_clients, _agents)
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -870,14 +880,17 @@ const resolvers = {
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             organization: user.organization,
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                {client: {$in: _clients}},
-                                {agent: {$in: _agents}},
-                            ]
+                            ...(search.length>0?{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                        {agent: {$in: _agents}},
+                                    ]
+                                }
+                                :{})
                         }
                     },
                     { $sort : _sort },
@@ -1192,14 +1205,16 @@ const resolversMutation = {
                         usedBonus = 0
                     }
                     objectInvoice = await InvoiceAzyk.create(objectInvoice);
-
-
-                    pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                    let newInvoice = await InvoiceAzyk.findOne({_id: objectInvoice._id})
+                        .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
+                        .populate({path: 'client',populate: [{path: 'user'}]})
+                        .populate({path: 'agent'})
+                     pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                         who: user.role==='admin'?null:user._id,
                         agent: user.employment,
                         client: client,
                         organization: organizaiton,
-                        invoice: await InvoiceAzyk.findOne({_id: objectInvoice._id}).populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}}).populate({path: 'client',populate: [{path: 'user'}]}),
+                        invoice: newInvoice,
                         type: 'ADD'
                     } });
                 }
@@ -1257,8 +1272,10 @@ const resolversMutation = {
                 allSize += orders[i].allSize
                 consignmentPrice += orders[i].consignmentPrice
             }
-            let object = await InvoiceAzyk.findOne({_id: invoice}).populate({ path: 'client'})
-
+            let object = await InvoiceAzyk.findOne({_id: invoice})
+                .populate({
+                    path: 'client'
+                })
             let editor;
             if(user.role==='admin'){
                 editor = 'админ'
@@ -1292,9 +1309,17 @@ const resolversMutation = {
             object.consignmentPrice = Math.round(consignmentPrice)
             object.allSize = allSize
             object.editor = editor
+            object.sync = 1
             object.orders = orders.map(order=>order._id)
             await object.save();
-            let newInvoice = await InvoiceAzyk.findOne({_id: object._id})
+
+            /*if(user._id.toString()!==(getAdminId()).toString())
+                sendWebPush('Заказ изменен', '', getAdminId())
+
+            if(user._id.toString()!==(object.client.user).toString())
+                sendWebPush('Заказ изменен', '', object.client.user)*/
+        }
+        let resInvoice = await InvoiceAzyk.findOne({_id: invoice})
                 .populate({
                     path: 'orders',
                     populate: {
@@ -1304,29 +1329,28 @@ const resolversMutation = {
                         ]
                     }
                 })
-                .populate({
-                    path: 'client',
-                    populate: [
-                        {path: 'user'}
-                    ]
-                })
-            pubsub.publish(RELOAD_ORDER, { reloadOrder: {
-                who: user.role==='admin'?null:user._id,
-                client: object.client._id,
-                agent: object.agent,
-                organization: object.organization,
-                invoice: newInvoice,
-                type: 'SET'
-            } });
-
-            /*if(user._id.toString()!==(getAdminId()).toString())
-                sendWebPush('Заказ изменен', '', getAdminId())
-
-            if(user._id.toString()!==(object.client.user).toString())
-                sendWebPush('Заказ изменен', '', object.client.user)*/
-            return newInvoice
+            .populate({
+                path: 'client',
+                populate: [
+                    {path: 'user'}
+                ]
+            })
+            .populate({path: 'agent'})
+        if(resInvoice.orders[0].item.organization.name.toLowerCase().includes('шоро')){
+            if(resInvoice.orders[0].status==='принят')
+                setOutXMLShoroAzyk(resInvoice)
+            else if(resInvoice.orders[0].status==='отмена')
+                cancelOutXMLShoroAzyk(resInvoice)
         }
-        return null;
+        pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+            who: user.role==='admin'?null:user._id,
+            client: resInvoice.client._id,
+            agent: resInvoice.agent?resInvoice.agent._id:null,
+            organization: resInvoice.organization,
+            invoice: resInvoice,
+            type: 'SET'
+        } });
+        return resInvoice
     },
     setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
         let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
@@ -1340,12 +1364,14 @@ const resolversMutation = {
         }
         if(taken!=undefined&&(admin||employment)){
             object.taken = taken
-            if(taken)
+            if(taken) {
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'принят'})
+            }
             else {
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка', returned: 0})
                 object.confirmationForwarder = false
                 object.confirmationClient = false
+                object.sync = object.sync!==0?1:0
             }
         }
         if(object.taken&&confirmationClient!=undefined&&(admin||undefinedClient||client)){
@@ -1515,7 +1541,6 @@ const resolversSubscription = {
         subscribe: withFilter(
             () => pubsub.asyncIterator(RELOAD_ORDER),
             (payload, variables, {user} ) => {
-                console.log(payload)
                 return (
                     ['admin', 'суперагент'].includes(user.role)||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||

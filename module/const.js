@@ -66,10 +66,18 @@ module.exports.deleteFile = (oldFile) => {
         })
     })
 }
+const pdDDMMYYYY = (date) =>
+{
+    date = new Date(date)
+    date = JSON.stringify(date).split('-')
+    date = date[2].split('T')[0]+'.'+date[1]+'.'+date[0].replace('"', '')
+    return date
+}
 
 
 
 module.exports.checkInt = checkInt;
+module.exports.pdDDMMYYYY = pdDDMMYYYY;
 module.exports.skip = skip;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;
