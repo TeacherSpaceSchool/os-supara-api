@@ -32,6 +32,10 @@ const type = `
         address: [String]
         data: [String]
     }
+    type ChartStatisticAll {
+        all: Int
+        geoStatistic: [ChartStatistic]
+    }
 `;
 
 const query = `
@@ -41,7 +45,7 @@ const query = `
     statisticClientActivity: Statistic
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String): Statistic
-    statisticOrderChart(company: String, dateStart: Date, dateType: String): [ChartStatistic]
+    statisticOrderChart(company: String, dateStart: Date, dateType: String): ChartStatisticAll
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
@@ -56,6 +60,9 @@ const resolvers = {
     statisticOrderChart: async(parent, { company, dateStart, dateType }, {user}) => {
         if(user.role==='admin'){
             let result = []
+            let dateEnd
+            let profit=0
+            let profitAll=0
             if(dateStart){
                 let organizations
                 let districts
@@ -83,9 +90,6 @@ const resolvers = {
                 else {
                     districts = await DistrictAzyk.find({organization: company})
                 }
-                let dateEnd
-                let profit=0
-                let profitAll=0
                 dateStart = new Date(dateStart)
                 dateStart = new Date(dateStart.setHours(3))
                 if(dateType==='day') {
@@ -122,6 +126,7 @@ const resolvers = {
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                     }
                                 }
+                                profitAll+=profit
                                 result[i].data.push([dateStart.getDate(), profit])
                             }
                         }
@@ -305,7 +310,10 @@ const resolvers = {
                     }
                 }
             }
-            return result;
+            return {
+                all: profitAll,
+                geoStatistic: result
+            };
         }
     },
     statisticClientActivity: async(parent, ctx , {user}) => {
@@ -330,10 +338,9 @@ const resolvers = {
                     })
                         .sort('-createdAt')
                         .lean()
-
                     statistic[data[i]._id] = {
-                        lastOrder: invoice?Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):'никогда',
-                        lastActive: Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)),
+                        lastOrder: invoice?Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24))===0?'сегодня':Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):'никогда',
+                        lastActive: Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24))===0?'сегодня':Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)),
                         client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
                     }
                 }
