@@ -1,6 +1,6 @@
 let express = require('express');
 let router = express.Router();
-const {getOutXMLShoroAzyk, checkOutXMLShoroAzyk} = require('../module/outXMLShoroAzykAzyk');
+const {getOutXMLShoroAzyk, checkOutXMLShoroAzyk} = require('../module/outXMLShoroAzyk');
 
 router.get('/shoro/out', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');

@@ -100,7 +100,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
             (item.item).push({ product: [{ _attr: {
                 guid: outXMLShoros[i].data[ii].guid,
                 package: outXMLShoros[i].data[ii].package,
-                qt:  outXMLShoros[i].data[ii].qt,
+                qty:  outXMLShoros[i].data[ii].qt,
                 price: outXMLShoros[i].data[ii].price,
                 amount: outXMLShoros[i].data[ii].amount
             }}]})

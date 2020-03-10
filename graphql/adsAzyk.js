@@ -1,7 +1,6 @@
 const AdsAzyk = require('../models/adsAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
-const { sendWebPush } = require('../module/webPush');
 
 const type = `
   type Ads {
@@ -35,7 +34,10 @@ const resolvers = {
     },
     adsOrganizations: async() => {
         let organizations = await AdsAzyk.find().distinct('organization')
-        organizations = await OrganizationAzyk.find({_id: {$in: organizations}}).sort('name')
+        organizations = await OrganizationAzyk.find({
+            _id: {$in: organizations},
+            status: 'active',
+            del: {$ne: 'deleted'}}).sort('name')
         return organizations
     },
     ads: async() => {
@@ -46,7 +48,7 @@ const resolvers = {
 
 const resolversMutation = {
     addAds: async(parent, {image, url, title, organization}, {user}) => {
-        if(['организация', 'менеджер', 'admin'].includes(user.role)){
+        if(['организация', 'admin'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
             let _object = new AdsAzyk({
@@ -55,14 +57,14 @@ const resolversMutation = {
                 title: title,
                 organization: organization
             });
-            if(['организация', 'менеджер'].includes(user.role)) _object.organization = user.organization
+            if(['организация'].includes(user.role)) _object.organization = user.organization
             await AdsAzyk.create(_object)
         }
         //sendWebPush('AZYK.STORE', title, 'all')
         return {data: 'OK'};
     },
     setAds: async(parent, {_id, image, url, title}, {user}) => {
-        if(['организация', 'менеджер', 'admin'].includes(user.role)){
+        if(['организация', 'admin'].includes(user.role)){
             let object = await AdsAzyk.findById(_id)
             if (image) {
                 let {stream, filename} = await image;
@@ -77,7 +79,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteAds: async(parent, { _id }, {user}) => {
-        if(['организация', 'менеджер', 'admin'].includes(user.role)){
+        if(['организация', 'admin'].includes(user.role)){
             let objects = await AdsAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)

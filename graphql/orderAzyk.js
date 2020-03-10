@@ -10,7 +10,7 @@ const { addBonusToClient } = require('../module/bonusClientAzyk');
 const randomstring = require('randomstring');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
-const { setOutXMLShoroAzyk, cancelOutXMLShoroAzyk } = require('../module/outXMLShoroAzykAzyk');
+const { setOutXMLShoroAzyk, cancelOutXMLShoroAzyk } = require('../module/outXMLShoroAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
@@ -1250,6 +1250,8 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setOrder: async(parent, {orders, invoice}, {user}) => {
+        let object;
+        let editor;
         if(orders.length>0&&/*orders[0].status==='обработка'&&*/(['менеджер', 'организация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
@@ -1272,34 +1274,10 @@ const resolversMutation = {
                 allSize += orders[i].allSize
                 consignmentPrice += orders[i].consignmentPrice
             }
-            let object = await InvoiceAzyk.findOne({_id: invoice})
+            object = await InvoiceAzyk.findOne({_id: invoice})
                 .populate({
                     path: 'client'
                 })
-            let editor;
-            if(user.role==='admin'){
-                editor = 'админ'
-            }
-            else if(user.role==='client'){
-                editor = `клиент ${object.client.name}`
-            }
-            else{
-                let employment = await EmploymentAzyk.findOne({user: user._id})
-                editor = `${user.role} ${employment.name}`
-            }
-            let objectHistoryOrder = new HistoryOrderAzyk({
-                invoice: invoice,
-                orders: orders.map(order=>{
-                    return {
-                        item: order.name,
-                        count: order.count,
-                        consignment: order.consignment,
-                        returned: order.returned
-                    }
-                }),
-                editor: editor,
-            });
-            await HistoryOrderAzyk.create(objectHistoryOrder);
 
             if(object.usedBonus&&object.usedBonus>0)
                 object.allPrice = Math.round(allPrice - object.usedBonus)
@@ -1308,11 +1286,9 @@ const resolversMutation = {
             object.allTonnage = allTonnage
             object.consignmentPrice = Math.round(consignmentPrice)
             object.allSize = allSize
-            object.editor = editor
             object.sync = 1
             object.orders = orders.map(order=>order._id)
             await object.save();
-
             /*if(user._id.toString()!==(getAdminId()).toString())
                 sendWebPush('Заказ изменен', '', getAdminId())
 
@@ -1320,15 +1296,15 @@ const resolversMutation = {
                 sendWebPush('Заказ изменен', '', object.client.user)*/
         }
         let resInvoice = await InvoiceAzyk.findOne({_id: invoice})
-                .populate({
-                    path: 'orders',
-                    populate: {
-                        path: 'item',
-                        populate: [
-                            {path: 'organization'}
-                        ]
-                    }
-                })
+            .populate({
+                path: 'orders',
+                populate: {
+                    path: 'item',
+                    populate: [
+                        {path: 'organization'}
+                    ]
+                }
+            })
             .populate({
                 path: 'client',
                 populate: [
@@ -1336,6 +1312,31 @@ const resolversMutation = {
                 ]
             })
             .populate({path: 'agent'})
+        if(user.role==='admin'){
+            editor = 'админ'
+        }
+        else if(user.role==='client'){
+            editor = `клиент ${resInvoice.client.name}`
+        }
+        else{
+            let employment = await EmploymentAzyk.findOne({user: user._id})
+            editor = `${user.role} ${employment.name}`
+        }
+        resInvoice.editor = editor
+        await resInvoice.save();
+        let objectHistoryOrder = new HistoryOrderAzyk({
+            invoice: invoice,
+            orders: orders.map(order=>{
+                return {
+                    item: order.name,
+                    count: order.count,
+                    consignment: order.consignment,
+                    returned: order.returned
+                }
+            }),
+            editor: editor,
+        });
+        await HistoryOrderAzyk.create(objectHistoryOrder);
         if(resInvoice.orders[0].item.organization.name.toLowerCase().includes('шоро')){
             if(resInvoice.orders[0].status==='принят')
                 setOutXMLShoroAzyk(resInvoice)

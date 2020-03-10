@@ -240,141 +240,141 @@ const resolvers = {
         }
     },
     integrate1C: async(parent, {_id}, {user}) => {
-    if(mongoose.Types.ObjectId.isValid(_id)&&user.role==='admin'){
-    return await Integrate1CAzyk
-    .findOne({_id: _id})
-    .populate('agent')
-    .populate('client')
-    .populate('ecspeditor')
-    .populate('organization')
-    .populate('item')
-    }
-    else return null
+        if(mongoose.Types.ObjectId.isValid(_id)&&user.role==='admin'){
+            return await Integrate1CAzyk
+                .findOne({_id: _id})
+                .populate('agent')
+                .populate('client')
+                .populate('ecspeditor')
+                .populate('organization')
+                .populate('item')
+        }
+        else return null
     },
-ecspeditorsIntegrate1C: async(parent, {organization}, {user}) => {
-if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
-let ecspeditors =  await Integrate1CAzyk
-.find({
- organization: organization,
- ecspeditor: {$ne: null}
-})
-.distinct('ecspeditor')
-ecspeditors = await EmploymentAzyk.find({
-organization: organization,
-_id: {$nin: ecspeditors},
-})
-.populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
-ecspeditors = ecspeditors.filter(ecspeditor => (ecspeditor.user))
-return ecspeditors
-}
-else return []
-},
-agentsIntegrate1C: async(parent, {organization}, {user}) => {
-if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
-let agents =  await Integrate1CAzyk
-.find({
- organization: organization,
- agent: {$ne: null}
-})
-.distinct('agent')
-agents = await EmploymentAzyk.find({
-organization: organization,
-_id: {$nin: agents},
-})
-.populate({path: 'user', match: {role: 'агент', status: 'active'}})
-agents = agents.filter(agent => (agent.user))
-return agents
-}
-else return []
-},
-clientsIntegrate1C: async(parent, {organization}, {user}) => {
-if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
-let clients =  await Integrate1CAzyk
-.find({
- organization: organization,
- client: {$ne: null}
-})
-.distinct('client')
-organization = await OrganizationAzyk.findOne({_id: organization})
-if(organization.accessToClient)
-clients = await ClientAzyk.find({
- _id: {$nin: clients},
- del: {$ne: 'deleted'}
-})
- .populate({path: 'user', match: {status: 'active'}})
-else {
-let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
-clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-clients = await ClientAzyk.find({
- _id: { $nin: clients},
- $or: [{_id: {$in: clients}}, {organization: user.organization}],
- del: {$ne: 'deleted'}
-}).populate({
- path: 'user',
- match: {status: 'active'}
-}).populate({path: 'organization'})
-}
-clients = clients.filter(client => (
-client.user&&
-client.address[0]&&
-!(client.name.toLowerCase()).includes('агент')&&
-!(client.name.toLowerCase()).includes('agent'))
-)
-for(let i=0; i<clients.length; i++){
-for(let i1=0; i1<clients[i].address.length; i1++) {
- clients[i].name+=` | ${clients[i].address[i1][2]?`${clients[i].address[i1][2]}, `:''}${clients[i].address[i1][0]}`
-}
-}
-return clients
-}
-else return []
-},
-itemsIntegrate1C: async(parent, {organization}, {user}) => {
-if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
-let items =  await Integrate1CAzyk
-.find({
- organization: organization,
- item: {$ne: null}
-})
-.distinct('item')
-items = await ItemAzyk.find({
-_id: {$nin: items},
-status: 'active',
-organization: organization,
-del: {$ne: 'deleted'}
-})
-return items
-}
-else return []
-},
-filterIntegrate1C: async(parent, ctx, {user}) => {
-let filter = []
-if(user.role==='admin'){
-filter = [
-{
- name: 'Все',
- value: ''
-},
-{
- name: 'Агент',
- value: 'агент'
-},
-{
- name: 'Экспедитор',
- value: 'экспедитор'
-},
-{
- name: 'Товар',
- value: 'товар'
-},
-{
- name: 'Клиент',
- value: 'клиент'
-},
-]
-return filter
-}
-},
+    ecspeditorsIntegrate1C: async(parent, {organization}, {user}) => {
+        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+            let ecspeditors =  await Integrate1CAzyk
+                .find({
+                    organization: organization,
+                    ecspeditor: {$ne: null}
+                })
+                .distinct('ecspeditor')
+            ecspeditors = await EmploymentAzyk.find({
+                organization: organization,
+                _id: {$nin: ecspeditors},
+            })
+                .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+            ecspeditors = ecspeditors.filter(ecspeditor => (ecspeditor.user))
+            return ecspeditors
+        }
+        else return []
+    },
+    agentsIntegrate1C: async(parent, {organization}, {user}) => {
+        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+            let agents =  await Integrate1CAzyk
+                .find({
+                    organization: organization,
+                    agent: {$ne: null}
+                })
+                .distinct('agent')
+            agents = await EmploymentAzyk.find({
+                organization: organization,
+                _id: {$nin: agents},
+            })
+                .populate({path: 'user', match: {role: 'агент', status: 'active'}})
+            agents = agents.filter(agent => (agent.user))
+            return agents
+        }
+        else return []
+    },
+    clientsIntegrate1C: async(parent, {organization}, {user}) => {
+        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+            let clients =  await Integrate1CAzyk
+                .find({
+                    organization: organization,
+                    client: {$ne: null}
+                })
+                .distinct('client')
+            organization = await OrganizationAzyk.findOne({_id: organization})
+            if(organization.accessToClient)
+                clients = await ClientAzyk.find({
+                    _id: {$nin: clients},
+                    del: {$ne: 'deleted'}
+                })
+                    .populate({path: 'user', match: {status: 'active'}})
+            else {
+                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
+                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await ClientAzyk.find({
+                    _id: { $nin: clients},
+                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                    del: {$ne: 'deleted'}
+                }).populate({
+                    path: 'user',
+                    match: {status: 'active'}
+                }).populate({path: 'organization'})
+            }
+            clients = clients.filter(client => (
+                client.user&&
+                client.address[0]&&
+                !(client.name.toLowerCase()).includes('агент')&&
+                !(client.name.toLowerCase()).includes('agent'))
+            )
+            for(let i=0; i<clients.length; i++){
+                for(let i1=0; i1<clients[i].address.length; i1++) {
+                    clients[i].name+=` | ${clients[i].address[i1][2]?`${clients[i].address[i1][2]}, `:''}${clients[i].address[i1][0]}`
+                }
+            }
+            return clients
+        }
+        else return []
+    },
+    itemsIntegrate1C: async(parent, {organization}, {user}) => {
+        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+            let items =  await Integrate1CAzyk
+                .find({
+                    organization: organization,
+                    item: {$ne: null}
+                })
+                .distinct('item')
+            items = await ItemAzyk.find({
+                _id: {$nin: items},
+                status: 'active',
+                organization: organization,
+                del: {$ne: 'deleted'}
+            })
+            return items
+        }
+        else return []
+    },
+    filterIntegrate1C: async(parent, ctx, {user}) => {
+        let filter = []
+        if(user.role==='admin'){
+            filter = [
+                {
+                    name: 'Все',
+                    value: ''
+                },
+                {
+                    name: 'Агент',
+                    value: 'агент'
+                },
+                {
+                    name: 'Экспедитор',
+                    value: 'экспедитор'
+                },
+                {
+                    name: 'Товар',
+                    value: 'товар'
+                },
+                {
+                    name: 'Клиент',
+                    value: 'клиент'
+                },
+            ]
+            return filter
+        }
+    },
 };
 
 const resolversMutation = {
