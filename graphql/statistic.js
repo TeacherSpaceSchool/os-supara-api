@@ -84,8 +84,10 @@ const resolvers = {
                     districts = await DistrictAzyk.find({organization: company})
                 }
                 let dateEnd
-                let profit
+                let profit=0
+                let profitAll=0
                 dateStart = new Date(dateStart)
+                dateStart = new Date(dateStart.setHours(3))
                 if(dateType==='day') {
                     dateStart = new Date(dateStart.setDate(1))
                     const month = dateStart.getMonth()
@@ -152,6 +154,7 @@ const resolvers = {
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                     }
                                 }
+                                profitAll+=profit
                                 result[i].data.push([dateStart.getDate(), profit])
                             }
                         }
@@ -191,6 +194,7 @@ const resolvers = {
                                     if (!['обработка', 'отмена'].includes(data[i1].status))
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                 }
+                                profitAll+=profit
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
                         }
@@ -222,6 +226,7 @@ const resolvers = {
                                     if (!['обработка', 'отмена'].includes(data[i1].status))
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                 }
+                                profitAll+=profit
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
                         }
@@ -261,6 +266,7 @@ const resolvers = {
                                     if (!['обработка', 'отмена'].includes(data[i1].status))
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                 }
+                                profitAll+=profit
                                 result[i1].data.push([dateStart.getFullYear(), profit])
                             }
                         }
@@ -292,6 +298,7 @@ const resolvers = {
                                     if (!['обработка', 'отмена'].includes(data[i1].status))
                                         profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
                                 }
+                                profitAll+=profit
                                 result[i1].data.push([dateStart.getFullYear(), profit])
                             }
                         }
@@ -916,9 +923,9 @@ const resolvers = {
             let dateEnd
             if(dateStart){
                 dateStart = new Date(dateStart)
-                dateStart = dateStart.setHours(3)
+                dateStart = new Date(dateStart.setHours(3))
                 dateEnd = new Date(dateStart)
-                dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+                dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
             }
             let data = await InvoiceAzyk.find(
                 {
