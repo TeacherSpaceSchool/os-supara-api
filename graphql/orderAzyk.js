@@ -172,7 +172,7 @@ const resolvers = {
             let consignmentPayment = 0;
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
-                if(invoices[i].orders[0].status!=='отмена') {
+                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
                     if (invoices[i].allPrice)
                         price += invoices[i].allPrice
                     if (invoices[i].allSize)
@@ -219,7 +219,7 @@ const resolvers = {
             let consignmentPayment = 0;
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
-                if(invoices[i].orders[0].status!=='отмена') {
+                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
                     if (invoices[i].allPrice)
                         price += invoices[i].allPrice
                     if (invoices[i].allSize)
@@ -266,7 +266,7 @@ const resolvers = {
             let consignmentPayment = 0;
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
-                if(invoices[i].orders[0].status!=='отмена') {
+                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
                     if (invoices[i].allPrice)
                         price += invoices[i].allPrice
                     if (invoices[i].allSize)
@@ -871,7 +871,6 @@ const resolvers = {
             return invoices
         }
         else if(['организация'].includes(user.role)) {
-            console.log(_clients, _agents)
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
