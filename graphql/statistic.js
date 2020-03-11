@@ -311,6 +311,7 @@ const resolvers = {
                                 profitAll+=profit
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
+
                                 if (!result[districts.length])
                                     result[districts.length] = {
                                         label: 'Прочие',
@@ -339,7 +340,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[districts.length].data.push([dateStart.getDate(), profit])
+                                result[districts.length].data.push([dateStart.getMonth()+1, profit])
 
                         }
                     }
@@ -442,7 +443,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[districts.length].data.push([dateStart.getDate(), profit])
+                                result[districts.length].data.push([dateStart.getFullYear(), profit])
 
                         }
                     }
