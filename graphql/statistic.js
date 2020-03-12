@@ -947,7 +947,6 @@ const resolvers = {
             let data = await InvoiceAzyk.find(
                 {
                     del: {$ne: 'deleted'},
-                    orders: {$in: data},
                     taken: true
                 }
             ).distinct('organization')
