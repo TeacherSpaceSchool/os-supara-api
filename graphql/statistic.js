@@ -25,7 +25,7 @@ const type = `
     }
     type ChartStatistic {
         label: String
-        data: [[Int]]
+        data: [[String]]
     }
     type GeoStatistic {
         client: ID
@@ -34,7 +34,7 @@ const type = `
     }
     type ChartStatisticAll {
         all: Int
-        geoStatistic: [ChartStatistic]
+        chartStatistic: [ChartStatistic]
     }
 `;
 
@@ -60,7 +60,11 @@ const mutation = `
 const resolvers = {
     checkOrder: async(parent, { company, today }, {user}) => {
         if(user.role==='admin'){
+            let tomorrow = new Date(today)
+            tomorrow = new Date(tomorrow.setHours(3))
+            tomorrow.setDate(tomorrow.getDate() + 1)
             let yesterday = new Date(today)
+            yesterday = new Date(yesterday.setHours(3))
             yesterday.setDate(yesterday.getDate() - 1)
             let statistic = []
             let problem = ''
@@ -70,7 +74,7 @@ const resolvers = {
                 {
                     $and: [
                         {createdAt: {$gte: yesterday}},
-                        {createdAt: {$lt: today}}
+                        {createdAt: {$lt: tomorrow}}
                     ],
                     ...(company?{organization: company}:{}),
                     taken: true,
@@ -79,7 +83,7 @@ const resolvers = {
             )
                 .lean()
             for(let i=0; i<data.length; i++) {
-                problem = (data.filter(element => element.client.toString()===data[i].client.toString())).length>1
+                problem = (data.filter(element => element.client.toString()===data[i].client.toString()&&element.organization.toString()===data[i].organization.toString())).length>1
                 if(problem||data[i].sync!==2) {
                     if(problem)repeat+=1
                     if(data[i].sync!==2)noSync+=1
@@ -113,18 +117,10 @@ const resolvers = {
                 let districts
                 let withoutDistricts
                 if(!company){
-                    organizations = await OrderAzyk.find(
-                        {
-                            $and: [
-                                {status: {$ne: 'отмена'}},
-                                {status: {$ne: 'обработка'}}
-                            ]
-                        }
-                    ).distinct('_id')
                     organizations = await InvoiceAzyk.find(
                         {
                             del: {$ne: 'deleted'},
-                            orders: {$in: organizations}
+                            taken: true
                         }
                     ).distinct('organization')
                     organizations = await OrganizationAzyk.find(
@@ -140,9 +136,15 @@ const resolvers = {
                 dateStart = new Date(dateStart)
                 dateStart = new Date(dateStart.setHours(3))
                 if(dateType==='day') {
-                    dateStart = new Date(dateStart.setDate(1))
-                    const month = dateStart.getMonth()
-                    while(month===dateStart.getMonth()){
+                    let today = new Date();
+                    let month = 31;
+                    if(today.getDate()===dateStart.getDate()&&today.getMonth()===dateStart.getMonth()&&today.getFullYear()===dateStart.getFullYear()){
+                        dateStart = new Date(dateStart.setDate(dateStart.getDate()-30))
+                    }
+                    else {
+                        dateStart = new Date(dateStart.setDate(1))
+                    }
+                    for(let x=0; x<month; x++){
                         dateEnd = new Date(dateStart)
                         dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
                         if(!company) {
@@ -174,7 +176,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[i].data.push([dateStart.getDate(), profit])
+                                result[i].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                         }
                         else {
@@ -207,7 +209,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[i].data.push([dateStart.getDate(), profit])
+                                result[i].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                                 if (!result[districts.length])
                                     result[districts.length] = {
@@ -237,7 +239,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[districts.length].data.push([dateStart.getDate(), profit])
+                                result[districts.length].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
 
                         }
                         dateStart = dateEnd
@@ -451,7 +453,7 @@ const resolvers = {
             }
             return {
                 all: profitAll,
-                geoStatistic: result
+                chartStatistic: result
             };
         }
     },
@@ -919,7 +921,7 @@ const resolvers = {
             let data = await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
-                        organization: organization
+                        organization: organization,
                     }
                 ).distinct('orders')
             data = data.reduce((acc, val) => acc.concat(val), []);
@@ -942,18 +944,11 @@ const resolvers = {
     },
     activeOrganization: async(parent, ctx, {user}) => {
         if(user.role==='admin'){
-            let data = await OrderAzyk.find(
-                {
-                    $and: [
-                        {status: {$ne: 'отмена'}},
-                        {status: {$ne: 'обработка'}}
-                    ]
-                }
-            ).distinct('_id')
-            data = await InvoiceAzyk.find(
+            let data = await InvoiceAzyk.find(
                 {
                     del: {$ne: 'deleted'},
-                    orders: {$in: data}
+                    orders: {$in: data},
+                    taken: true
                 }
             ).distinct('organization')
             data = await OrganizationAzyk.find(
@@ -987,7 +982,8 @@ const resolvers = {
                                 invoice = await InvoiceAzyk.find({
                                     organization: organization,
                                     client: clients[x]._id,
-                                    del: {$ne: 'deleted'}})
+                                    del: {$ne: 'deleted'},
+                                    taken: true})
                                     .populate({
                                         path: 'orders',
                                         populate : {
@@ -1004,7 +1000,9 @@ const resolvers = {
                                 invoice = await InvoiceAzyk.findOne({
                                     organization: organization,
                                     client: clients[x]._id,
-                                    del: {$ne: 'deleted'}})
+                                    del: {$ne: 'deleted'},
+                                    taken: true
+                                })
                                     .populate({
                                         path: 'orders',
                                     })
@@ -1015,7 +1013,8 @@ const resolvers = {
                             else {
                                 invoice = await InvoiceAzyk.findOne({
                                     client: clients[x]._id,
-                                    del: {$ne: 'deleted'}
+                                    del: {$ne: 'deleted'},
+                                    taken: true
                                 })
                                     .populate({
                                         path: 'orders',
