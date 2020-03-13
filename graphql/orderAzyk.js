@@ -143,30 +143,31 @@ const resolvers = {
             }).distinct('_id')
         }
         if(user.role==='client'){
-            let invoices =  await InvoiceAzyk.aggregate(
-                [
+            let invoices =  await InvoiceAzyk.find(
                     {
-                        $match:{
-                            del: {$ne: 'deleted'},
-                            status: {$ne: 'отмена'},
-                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            client: user.client,
-                            ...(search.length>0?{
-                                    $or: [
-                                        {number: {'$regex': search, '$options': 'i'}},
-                                        {info: {'$regex': search, '$options': 'i'}},
-                                        {address: {'$regex': search, '$options': 'i'}},
-                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                        {agent: {$in: _agents}},
-                                        {organization: {$in: _organizations}},
-                                        {distributer: {$in: _organizations}},
-                                    ]
-                                }
-                                :{})
-                        }
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                        ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                        client: user.client,
+                        ...(search.length>0?{
+                                $or: [
+                                    {number: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {address: {'$regex': search, '$options': 'i'}},
+                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                    {agent: {$in: _agents}},
+                                    {organization: {$in: _organizations}},
+                                    {distributer: {$in: _organizations}},
+                                ]
+                            }
+                            :{})
                     }
-                ])
+                )
+                .populate({
+                    path: 'orders'
+                })
+                .lean()
             let tonnage = 0;
             let size = 0;
             let price = 0;
@@ -175,8 +176,11 @@ const resolvers = {
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
                 if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice)
-                        price += invoices[i].allPrice
+                    if (invoices[i].allPrice) {
+                        for(let i1=0; i1<invoices[i].orders.length;i1++){
+                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
+                        }
+                    }
                     if (invoices[i].allSize)
                         size += invoices[i].allSize
                     lengthList += 1
@@ -191,12 +195,10 @@ const resolvers = {
             return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
         }
         else if(user.role==='admin') {
-            let invoices =  await InvoiceAzyk.aggregate(
-                [
-                    {
-                        $match:{
+            let invoices =  await InvoiceAzyk.find(
+                            {
                             del: {$ne: 'deleted'},
-                            status: {$ne: 'отмена'},
+                            taken: true,
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             ...(search.length>0?{
@@ -213,8 +215,11 @@ const resolvers = {
                                 }
                                 :{})
                         }
-                    }
-                ])
+                    )
+                .populate({
+                    path: 'orders'
+                })
+                .lean()
             let tonnage = 0;
             let size = 0;
             let price = 0;
@@ -223,8 +228,11 @@ const resolvers = {
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
                 if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice)
-                        price += invoices[i].allPrice
+                    if (invoices[i].allPrice) {
+                        for(let i1=0; i1<invoices[i].orders.length;i1++){
+                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
+                        }
+                    }
                     if (invoices[i].allSize)
                         size += invoices[i].allSize
                     lengthList += 1
@@ -239,12 +247,11 @@ const resolvers = {
             return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
         }
         else if(['организация'].includes(user.role)) {
-            let invoices =  await InvoiceAzyk.aggregate(
-                [
+            let invoices =  await InvoiceAzyk.find(
                     {
                         $match:{
                             del: {$ne: 'deleted'},
-                            status: {$ne: 'отмена'},
+                            taken: true,
 
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
@@ -263,7 +270,11 @@ const resolvers = {
                                 :{})
                         }
                     }
-                ])
+                )
+                .populate({
+                    path: 'orders'
+                })
+                .lean()
             let tonnage = 0;
             let size = 0;
             let price = 0;
@@ -272,8 +283,11 @@ const resolvers = {
             let lengthList = 0;
             for(let i=0; i<invoices.length; i++){
                 if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice)
-                        price += invoices[i].allPrice
+                    if (invoices[i].allPrice) {
+                        for(let i1=0; i1<invoices[i].orders.length;i1++){
+                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
+                        }
+                    }
                     if (invoices[i].allSize)
                         size += invoices[i].allSize
                     lengthList += 1

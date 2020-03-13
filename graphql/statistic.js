@@ -46,7 +46,7 @@ const query = `
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String): Statistic
     checkOrder(company: String, today: Date!): Statistic
-    statisticOrderChart(company: String, dateStart: Date, dateType: String): ChartStatisticAll
+    statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String): ChartStatisticAll
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
@@ -106,7 +106,7 @@ const resolvers = {
             };
         }
     },
-    statisticOrderChart: async(parent, { company, dateStart, dateType }, {user}) => {
+    statisticOrderChart: async(parent, { company, dateStart, dateType, type }, {user}) => {
         if(user.role==='admin'){
             let result = []
             let dateEnd
@@ -160,21 +160,26 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
-                                        organization: organizations[i]._id,
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
+                                        organization: organizations[i]._id
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i1 = 0; i1 < data.length; i1++) {
-                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
-                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
                                     }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
@@ -192,22 +197,27 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         client: {$in: districts[i].client},
-                                        organization: districts[i].organization,
+                                        organization: districts[i].organization
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i1 = 0; i1 < data.length; i1++) {
-                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
-                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
                                     }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
@@ -222,22 +232,27 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         client: {$nin: withoutDistricts},
-                                        organization: company,
+                                        organization: company
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i1 = 0; i1 < data.length; i1++) {
-                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
-                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
                                     }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[districts.length].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
 
@@ -264,20 +279,25 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
-                                        organization: organizations[i1]._id,
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
+                                        organization: organizations[i1]._id
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i2 = 0; i2 < data.length; i2++) {
-                                    if (!['обработка', 'отмена'].includes(data[i2].status))
-                                        profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i2 = 0; i2 < data.length; i2++) {
+                                        if (!['обработка', 'отмена'].includes(data[i2].status))
+                                            profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                    }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
@@ -295,21 +315,26 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         client: {$in: districts[i1].client},
-                                        organization: districts[i1].organization,
+                                        organization: districts[i1].organization
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i2 = 0; i2 < data.length; i2++) {
-                                    if (!['обработка', 'отмена'].includes(data[i2].status))
-                                        profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i2 = 0; i2 < data.length; i2++) {
+                                        if (!['обработка', 'отмена'].includes(data[i2].status))
+                                            profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                    }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
@@ -325,22 +350,27 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         client: {$nin: withoutDistricts},
-                                        organization: company,
+                                        organization: company
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i1 = 0; i1 < data.length; i1++) {
-                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
-                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
                                     }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[districts.length].data.push([dateStart.getMonth()+1, profit])
 
@@ -367,7 +397,8 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         organization: organizations[i1]._id,
                                     }
                                 )
@@ -375,12 +406,16 @@ const resolvers = {
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i2 = 0; i2 < data.length; i2++) {
-                                    if (!['обработка', 'отмена'].includes(data[i2].status))
-                                        profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i2 = 0; i2 < data.length; i2++) {
+                                        if (!['обработка', 'отмена'].includes(data[i2].status))
+                                            profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                    }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i1].data.push([dateStart.getFullYear(), profit])
                             }
@@ -398,21 +433,26 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
                                         client: {$in: districts[i1].client},
-                                        organization: districts[i1].organization,
+                                        organization: districts[i1].organization
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i2 = 0; i2 < data.length; i2++) {
-                                    if (!['обработка', 'отмена'].includes(data[i2].status))
-                                        profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i2 = 0; i2 < data.length; i2++) {
+                                        if (!['обработка', 'отмена'].includes(data[i2].status))
+                                            profit += (data[i2].allPrice - data[i2].returned * (data[i2].allPrice / data[i2].count))
+                                    }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[i1].data.push([dateStart.getFullYear(), profit])
                             }
@@ -428,22 +468,27 @@ const resolvers = {
                                             {createdAt: {$gte: dateStart}},
                                             {createdAt: {$lt: dateEnd}}
                                         ],
-                                        ...{del: {$ne: 'deleted'}},
+                                        del: {$ne: 'deleted'},
                                         client: {$nin: withoutDistricts},
                                         organization: company,
+                                        taken: true
                                     }
                                 )
                                     .populate({
                                         path: 'orders'
                                     })
                                     .lean()
-                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
                                 profit = 0
-                                for (let i1 = 0; i1 < data.length; i1++) {
-                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
-                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
                                     }
                                 }
+                                else
+                                    profit = data.length
                                 profitAll+=profit
                                 result[districts.length].data.push([dateStart.getFullYear(), profit])
 
