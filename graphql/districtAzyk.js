@@ -67,6 +67,7 @@ const resolvers = {
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.distributer && district.distributer.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
                 )
                 return districts
@@ -74,7 +75,11 @@ const resolvers = {
         }
         else if(['организация'].includes(user.role)){
             let districts =  await DistrictAzyk.find({
-                organization: user.organization
+                $or: [
+                    {organization: user.organization},
+                    {distributer: user.organization}
+                ]
+
             })
                 .populate('agent')
                 .populate('client')
@@ -86,8 +91,7 @@ const resolvers = {
             districts = districts.filter(
                 district => (
                     (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase())||
-                    (district.ecspeditor&&district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
+                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase())
                 )
             )
             return districts
@@ -149,7 +153,7 @@ const resolvers = {
                 .populate('manager')
         }
         else if(['организация'].includes(user.role)){
-            return await DistrictAzyk.findOne({_id: _id, organization: user.organization})
+            return await DistrictAzyk.findOne({_id: _id, $or: [{organization: user.organization}, {distributer: user.organization}]})
                 .populate('agent')
                 .populate('client')
                 .populate('ecspeditor')

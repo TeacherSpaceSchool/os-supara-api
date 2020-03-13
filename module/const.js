@@ -17,6 +17,16 @@ const validPhone = (phone) =>
     return /^[+]{1}996[0-9]{9}$/.test(phone);
 }
 
+module.exports.weekDay = [
+    'BC',
+    'ПН',
+    'ВТ',
+    'СР',
+    'ЧТ',
+    'ПТ',
+    'СБ',
+]
+
 const checkInt = (int) => {
     return isNaN(parseInt(int))?0:parseInt(int)
 }

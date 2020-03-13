@@ -11,7 +11,7 @@ const randomstring = require('randomstring');
 const app = require('../app');
 const fs = require('fs');
 const path = require('path');
-const { urlMain, saveFile, deleteFile } = require('../module/const');
+const { urlMain, saveFile, deleteFile, weekDay } = require('../module/const');
 const readXlsxFile = require('read-excel-file/node');
 
 const type = `
@@ -176,7 +176,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[i].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                                result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                         }
                         else {
@@ -209,7 +209,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[i].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                                result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                                 if (!result[districts.length])
                                     result[districts.length] = {
@@ -239,7 +239,7 @@ const resolvers = {
                                     }
                                 }
                                 profitAll+=profit
-                                result[districts.length].data.push([`${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                                result[districts.length].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
 
                         }
                         dateStart = dateEnd

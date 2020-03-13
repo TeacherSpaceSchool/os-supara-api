@@ -1,6 +1,7 @@
 const OrderAzyk = require('../models/orderAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
 const RouteAzyk = require('../models/routeAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const ClientAzyk = require('../models/clientAzyk');
@@ -15,7 +16,6 @@ const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_ORDER = 'RELOAD_ORDER';
-const DistrictAzyk = require('../models/districtAzyk');
 const HistoryOrderAzyk = require('../models/historyOrderAzyk');
 const { sendWebPush } = require('../module/webPush');
 const { getAdminId } = require('../module/user');
@@ -61,6 +61,7 @@ const type = `
     allTonnage: Float
     allSize: Float
     editor: String
+    distributer: Organization
   }
   type HistoryOrder {
     createdAt: Date
@@ -159,6 +160,7 @@ const resolvers = {
                                         {paymentMethod: {'$regex': search, '$options': 'i'}},
                                         {agent: {$in: _agents}},
                                         {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
                                     ]
                                 }
                                 :{})
@@ -206,6 +208,7 @@ const resolvers = {
                                         {client: {$in: _clients}},
                                         {agent: {$in: _agents}},
                                         {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
                                     ]
                                 }
                                 :{})
@@ -242,7 +245,7 @@ const resolvers = {
                         $match:{
                             del: {$ne: 'deleted'},
                             status: {$ne: 'отмена'},
-                            organization: user.organization,
+
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             ...(search.length>0?{
@@ -253,6 +256,8 @@ const resolvers = {
                                         {paymentMethod: {'$regex': search, '$options': 'i'}},
                                         {client: {$in: _clients}},
                                         {agent: {$in: _agents}},
+                                        {organization: user.organization},
+                                        {distributer: user.organization}
                                     ]
                                 }
                                 :{})
@@ -324,6 +329,7 @@ const resolvers = {
                                         {client: {$in: _clients}},
                                         {agent: {$in: _agents}},
                                         {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
                                     ]
                                 }
                                 :{})
@@ -362,6 +368,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
                         }
                     },
                     { $lookup:
@@ -426,6 +448,7 @@ const resolvers = {
                                         {paymentMethod: {'$regex': search, '$options': 'i'}},
                                         {agent: {$in: _agents}},
                                         {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
                                     ]
                                 }
                                 :{})
@@ -508,6 +531,22 @@ const resolvers = {
                             path : '$client'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -542,6 +581,7 @@ const resolvers = {
                                         {client: {$in: _clients}},
                                         {agent: {$in: _agents}},
                                         {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
                                     ]
                                 }
                                 :{})
@@ -550,6 +590,22 @@ const resolvers = {
                     { $sort : _sort },
                     { $skip : skip!=undefined?skip:0 },
                     { $limit : skip!=undefined?15:10000000000 },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
                     { $lookup:
                         {
                             from: ClientAzyk.collection.collectionName,
@@ -730,6 +786,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: EmploymentAzyk.collection.collectionName,
                             let: { agent: '$agent' },
                             pipeline: [
@@ -867,6 +939,22 @@ const resolvers = {
                             path : '$agent'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -878,7 +966,6 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            organization: user.organization,
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -887,6 +974,8 @@ const resolvers = {
                                         {paymentMethod: {'$regex': search, '$options': 'i'}},
                                         {client: {$in: _clients}},
                                         {agent: {$in: _agents}},
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
                                     ]
                                 }
                                 :{})
@@ -967,6 +1056,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true, // this remove the object which is null
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
                         }
                     },
                 ])
@@ -1126,6 +1231,10 @@ const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
         if(user.client)
             client = user.client
+        let district = await DistrictAzyk.findOne({
+            organization: organization,
+            client: client
+        })
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
@@ -1196,7 +1305,8 @@ const resolversMutation = {
                         paymentMethod: paymentMethod,
                         number: number,
                         agent: user.employment,
-                        organization: organizaiton
+                        organization: organizaiton,
+                        distributer: district&&district.distributer?district.distributer:null
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus
@@ -1311,6 +1421,7 @@ const resolversMutation = {
                 ]
             })
             .populate({path: 'agent'})
+            .populate({path: 'distributer'})
         if(user.role==='admin'){
             editor = 'админ'
         }
@@ -1358,7 +1469,7 @@ const resolversMutation = {
         let admin = ['admin', 'суперагент'].includes(user.role)
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
         let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
-        let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&order.item.organization.toString()===user.organization.toString();
+        let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&[order.item.organization.toString(), object.distributer?object.distributer.toString():'lol'].includes(user.organization.toString());
         if(paymentConsignation!=undefined&&(admin||undefinedClient||employment)){
             object.paymentConsignation = paymentConsignation
         }
