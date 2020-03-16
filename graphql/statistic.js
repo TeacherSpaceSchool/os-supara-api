@@ -88,14 +88,6 @@ const resolvers = {
                     path: 'organization'
                 })
                 .lean()
-            console.log(await InvoiceAzyk.find(
-                {
-                    $and: [
-                        {createdAt: {$gte: yesterday}},
-                        {createdAt: {$lt: tomorrow}}
-                    ],
-                }
-            ))
             for(let i=0; i<data.length; i++) {
                 problem = (
                     data.filter(element => element.client._id.toString()===data[i].client._id.toString()&&element.organization._id.toString()===data[i].organization._id.toString())
@@ -105,7 +97,7 @@ const resolvers = {
                     if(data[i].sync!==2)noSync+=1
                     statistic.push({_id: null, data: [
                         data[i].number,
-                        data[i].client.name,
+                        `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`,
                         data[i].organization.name,
                         `${problem ? 'повторяющийся' : ''}${problem&&data[i].sync !== 2?', ':''}${data[i].sync !== 2 ? 'несинхронизирован' : ''}`
                     ]})
@@ -998,7 +990,7 @@ const resolvers = {
                         ],
                         ...{del: {$ne: 'deleted'}},
                         client: {$nin: withDistricts},
-                        organization: districts[0].organization,
+                        organization: company,
                     }
                 )
                     .populate({
