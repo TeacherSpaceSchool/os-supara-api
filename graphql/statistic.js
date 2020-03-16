@@ -61,10 +61,10 @@ const resolvers = {
     checkOrder: async(parent, { company, today }, {user}) => {
         if(user.role==='admin'){
             let tomorrow = new Date(today)
-            tomorrow = new Date(tomorrow.setHours(3))
+            tomorrow.setHours(3)
             tomorrow.setDate(tomorrow.getDate() + 1)
             let yesterday = new Date(today)
-            yesterday = new Date(yesterday.setHours(3))
+            yesterday.setHours(3)
             yesterday.setDate(yesterday.getDate() - 1)
             let statistic = []
             let problem = ''
@@ -88,8 +88,18 @@ const resolvers = {
                     path: 'organization'
                 })
                 .lean()
+            console.log(await InvoiceAzyk.find(
+                {
+                    $and: [
+                        {createdAt: {$gte: yesterday}},
+                        {createdAt: {$lt: tomorrow}}
+                    ],
+                }
+            ))
             for(let i=0; i<data.length; i++) {
-                problem = (data.filter(element => element.client.toString()===data[i].client.toString()&&element.organization.toString()===data[i].organization.toString())).length>1
+                problem = (
+                    data.filter(element => element.client._id.toString()===data[i].client._id.toString()&&element.organization._id.toString()===data[i].organization._id.toString())
+                ).length>1
                 if(problem||data[i].sync!==2) {
                     if(problem)repeat+=1
                     if(data[i].sync!==2)noSync+=1
