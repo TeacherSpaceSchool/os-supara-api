@@ -14,7 +14,7 @@ router.get('/shoro/out/sales', async (req, res, next) => {
     }
 });
 
-router.post('/shoro/put/sales', async (req, res, next) => {
+router.post('/shoro/put/sales/confirm', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');
     try{
         for(let i=0;i<req.body.elements[0].elements.length;i++) {
