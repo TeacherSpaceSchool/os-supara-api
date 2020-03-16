@@ -1,5 +1,6 @@
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
@@ -89,9 +90,14 @@ const resolvers = {
             }
         }
         else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
+            let organizations = await DistributerAzyk.findOne({
+                distributer: user.organization
+            })
+                .distinct('organizations')
+            organizations = [...organizations, user.organization]
             let items =  await ItemAzyk.find({
                 ...(filter.length===0?{}:{subCategory: filter}),
-                organization: user.organization,
+                organization: {$in: organizations},
                 del: {$ne: 'deleted'}
             })
                 .populate('subCategory')
@@ -209,7 +215,20 @@ const resolvers = {
                 status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                 del: {$ne: 'deleted'}
             }).sort(sort)
-        } else
+        }
+        else if(user.role==='агент'){
+            brandOrganizations = await DistributerAzyk.findOne({
+                distributer: user.organization
+            }).distinct('organizations')
+            brandOrganizations = [...brandOrganizations, user.organization]
+            return await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                del: {$ne: 'deleted'}
+            }).sort(sort)
+        }
+        else
             return await OrganizationAzyk.find({
                 _id: {$in: brandOrganizations},
                 name: {'$regex': search, '$options': 'i'},

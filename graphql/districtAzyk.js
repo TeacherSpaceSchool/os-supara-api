@@ -10,7 +10,6 @@ const type = `
       _id: ID
       createdAt: Date
       organization: Organization
-      distributer: Organization
       client: [Client]
       name: String
       agent: Employment
@@ -27,8 +26,8 @@ const query = `
 `;
 
 const mutation = `
-    addDistrict(organization: ID, distributer: ID, client: [ID]!, name: String!, agent: ID, manager: ID, ecspeditor: ID): Data
-    setDistrict(_id: ID!, distributer: ID, client: [ID], name: String, agent: ID, manager: ID, ecspeditor: ID): Data
+    addDistrict(organization: ID, client: [ID]!, name: String!, agent: ID, manager: ID, ecspeditor: ID): Data
+    setDistrict(_id: ID!, client: [ID], name: String, agent: ID, manager: ID, ecspeditor: ID): Data
     deleteDistrict(_id: [ID]!): Data
 `;
 
@@ -41,7 +40,6 @@ const resolvers = {
                     .populate('client')
                     .populate('ecspeditor')
                     .populate('organization')
-                    .populate('distributer')
                     .populate('manager')
                     .sort(sort)
                 districts = districts.filter(
@@ -59,7 +57,6 @@ const resolvers = {
                     .populate('client')
                     .populate('ecspeditor')
                     .populate('organization')
-                    .populate('distributer')
                     .populate('manager')
                     .sort(sort)
                 districts = districts.filter(
@@ -67,7 +64,6 @@ const resolvers = {
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.distributer && district.distributer.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
                 )
                 return districts
@@ -77,7 +73,6 @@ const resolvers = {
             let districts =  await DistrictAzyk.find({
                 $or: [
                     {organization: user.organization},
-                    {distributer: user.organization}
                 ]
 
             })
@@ -85,7 +80,6 @@ const resolvers = {
                 .populate('client')
                 .populate('ecspeditor')
                 .populate('organization')
-                .populate('distributer')
                 .populate('manager')
                 .sort(sort)
             districts = districts.filter(
@@ -149,16 +143,14 @@ const resolvers = {
                 .populate('client')
                 .populate('ecspeditor')
                 .populate('organization')
-                .populate('distributer')
                 .populate('manager')
         }
         else if(['организация'].includes(user.role)){
-            return await DistrictAzyk.findOne({_id: _id, $or: [{organization: user.organization}, {distributer: user.organization}]})
+            return await DistrictAzyk.findOne({_id: _id, organization: user.organization})
                 .populate('agent')
                 .populate('client')
                 .populate('ecspeditor')
                 .populate('organization')
-                .populate('distributer')
                 .populate('manager')
         }
         else return null
@@ -175,7 +167,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addDistrict: async(parent, {distributer, organization, client, name, agent, ecspeditor, manager}, {user}) => {
+    addDistrict: async(parent, {organization, client, name, agent, ecspeditor, manager}, {user}) => {
         if(['admin'].includes(user.role)){
             let _object = new DistrictAzyk({
                 name: name,
@@ -184,13 +176,12 @@ const resolversMutation = {
                 ecspeditor: ecspeditor,
                 organization: organization,
                 manager: manager,
-                distributer: distributer
             });
             await DistrictAzyk.create(_object)
         }
         return {data: 'OK'};
     },
-    setDistrict: async(parent, {distributer, _id, client, ecspeditor, name, agent, manager}, {user}) => {
+    setDistrict: async(parent, {_id, client, ecspeditor, name, agent, manager}, {user}) => {
         let object = await DistrictAzyk.findById(_id)
         if(user.role==='admin') {
             if(name)object.name = name
@@ -198,9 +189,6 @@ const resolversMutation = {
             if(agent)object.agent = agent
             if(ecspeditor)object.ecspeditor = ecspeditor
             if(manager)object.manager = manager
-            if(user.role==='admin'){
-                if(distributer)object.distributer = distributer
-            }
             object.save();
         }
         return {data: 'OK'}

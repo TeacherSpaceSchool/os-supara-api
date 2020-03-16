@@ -3,6 +3,7 @@ const { RedisPubSub } = require('graphql-redis-subscriptions');
 const pubsub = new RedisPubSub();
 module.exports.pubsub = pubsub;
 const AdsAzyk = require('./adsAzyk');
+const DistributerAzyk = require('./distributerAzyk');
 const BlogAzyk = require('./blogAzyk');
 const CategoryAzyk = require('./categoryAzyk');
 const SubCategoryAzyk = require('./subCategoryAzyk');
@@ -44,6 +45,7 @@ const typeDefs = gql`
         image: String
     }
     ${DistrictAzyk.type}
+    ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
     ${FaqAzyk.type}
@@ -67,6 +69,7 @@ const typeDefs = gql`
     type Mutation {
         ${Integrate1CAzyk.mutation}
         ${DistrictAzyk.mutation}
+        ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
         ${FaqAzyk.mutation}
         ${AutoAzyk.mutation}
@@ -90,6 +93,7 @@ const typeDefs = gql`
     type Query {
         ${Integrate1CAzyk.query}
         ${DistrictAzyk.query}
+        ${DistributerAzyk.query}
         ${ClientAzyk.query}
         ${FaqAzyk.query}
         ${AutoAzyk.query}
@@ -135,6 +139,7 @@ const resolvers = {
     Query: {
         ...Integrate1CAzyk.resolvers,
         ...DistrictAzyk.resolvers,
+        ...DistributerAzyk.resolvers,
         ...FaqAzyk.resolvers,
         ...AutoAzyk.resolvers,
         ...EquipmentAzyk.resolvers,
@@ -158,6 +163,7 @@ const resolvers = {
     Mutation: {
         ...Integrate1CAzyk.resolversMutation,
         ...DistrictAzyk.resolversMutation,
+        ...DistributerAzyk.resolversMutation,
         ...FaqAzyk.resolversMutation,
         ...ClientAzyk.resolversMutation,
         ...AutoAzyk.resolversMutation,

@@ -5,10 +5,6 @@ const DistrictAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
-    distributer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'OrganizationAzyk'
-    },
     client: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ClientAzyk'

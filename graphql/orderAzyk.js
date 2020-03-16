@@ -1,6 +1,7 @@
 const OrderAzyk = require('../models/orderAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const RouteAzyk = require('../models/routeAzyk');
 const BasketAzyk = require('../models/basketAzyk');
@@ -248,29 +249,31 @@ const resolvers = {
         }
         else if(['организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find(
-                    {
-                        $match:{
-                            del: {$ne: 'deleted'},
-                            taken: true,
+                {
+                    del: {$ne: 'deleted'},
+                    taken: true,
 
-                            ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            ...(search.length>0?{
-                                    $or: [
-                                        {number: {'$regex': search, '$options': 'i'}},
-                                        {info: {'$regex': search, '$options': 'i'}},
-                                        {address: {'$regex': search, '$options': 'i'}},
-                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                        {client: {$in: _clients}},
-                                        {agent: {$in: _agents}},
-                                        {organization: user.organization},
-                                        {distributer: user.organization}
-                                    ]
-                                }
-                                :{})
+                    ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                    ...(search.length>0?{
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                {client: {$in: _clients}},
+                                {agent: {$in: _agents}},
+                                {organization: user.organization},
+                                {distributer: user.organization}
+                            ]
                         }
-                    }
-                )
+                        :{
+                            $or: [
+                                {organization: user.organization},
+                                {distributer: user.organization},
+                            ]
+                        })
+                })
                 .populate({
                     path: 'orders'
                 })
@@ -734,7 +737,12 @@ const resolvers = {
                                         {client: {$in: _clients}},
                                     ]
                                 }
-                                :{})
+                                :{
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
+                                    ]
+                                })
                         }
                     },
                     { $sort : _sort },
@@ -872,7 +880,12 @@ const resolvers = {
                                             {agent: {$in: _agents}},
                                         ]
                                     }
-                                    :{})
+                                    :{
+                                        $or: [
+                                            {organization: user.organization},
+                                            {distributer: user.organization},
+                                        ]
+                                    })
                             }
                         }
                     },
@@ -972,7 +985,7 @@ const resolvers = {
                 ])
             return invoices
         }
-        else if(['организация'].includes(user.role)) {
+        else if('организация'===user.role) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -992,7 +1005,12 @@ const resolvers = {
                                         {distributer: user.organization},
                                     ]
                                 }
-                                :{})
+                                :{
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
+                                    ]
+                                })
                         }
                     },
                     { $sort : _sort },
@@ -1245,10 +1263,20 @@ const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
         if(user.client)
             client = user.client
-        let district = await DistrictAzyk.findOne({
-            organization: organization,
-            client: client
+        let distributers = await DistributerAzyk.find({
+            organizations: organization
         })
+        let district = null;
+        if(distributers.length>0){
+            for(let i=0; i<distributers.length; i++){
+                let findDistrict = await DistrictAzyk.findOne({
+                    organization: distributers[i].distributer,
+                    client: client
+                })
+                if(findDistrict)
+                    district = findDistrict
+            }
+        }
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
@@ -1320,7 +1348,7 @@ const resolversMutation = {
                         number: number,
                         agent: user.employment,
                         organization: organizaiton,
-                        distributer: district&&district.distributer?district.distributer:null
+                        distributer: district&&district.organization?district.organization:null
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus

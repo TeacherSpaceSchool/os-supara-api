@@ -81,13 +81,24 @@ const resolvers = {
                     del: {$ne: 'deleted'}
                 }
             )
+                .populate({
+                    path: 'client'
+                })
+                .populate({
+                    path: 'organization'
+                })
                 .lean()
             for(let i=0; i<data.length; i++) {
                 problem = (data.filter(element => element.client.toString()===data[i].client.toString()&&element.organization.toString()===data[i].organization.toString())).length>1
                 if(problem||data[i].sync!==2) {
                     if(problem)repeat+=1
                     if(data[i].sync!==2)noSync+=1
-                    statistic.push({_id: null, data: [data[i].number, `${problem ? 'повторяющийся, ' : ''}${data[i].sync !== 2 ? 'несинхронизирован' : ''}`]})
+                    statistic.push({_id: null, data: [
+                        data[i].number,
+                        data[i].client.name,
+                        data[i].organization.name,
+                        `${problem ? 'повторяющийся' : ''}${problem&&data[i].sync !== 2?', ':''}${data[i].sync !== 2 ? 'несинхронизирован' : ''}`
+                    ]})
                 }
             }
             statistic = [
@@ -101,7 +112,7 @@ const resolvers = {
                 ...statistic
             ]
             return {
-                columns: ['№заказа', 'проблема'],
+                columns: ['№заказа', 'клиент', 'компания', 'проблема'],
                 row: statistic
             };
         }
@@ -505,6 +516,17 @@ const resolvers = {
     statisticClientActivity: async(parent, ctx , {user}) => {
         if(user.role==='admin'){
             let now = new Date()
+            let allActive = 0;
+            let todayActive = 0;
+            let weekActive = 0;
+            let monthActive = 0;
+            let allOrder = 0;
+            let noOrder = 0;
+            let todayOrder = 0;
+            let weekOrder = 0;
+            let monthOrder = 0;
+            let lastActive;
+            let lastOrder;
 
             let statistic = {}
             let data = await ClientAzyk.find(
@@ -524,9 +546,29 @@ const resolvers = {
                     })
                         .sort('-createdAt')
                         .lean()
+                    lastActive = Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24))
+                    lastOrder = invoice?Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
+                    allActive+=1
+                    if(lastActive===0)
+                        todayActive+=1
+                    else if(lastActive<7)
+                        weekActive+=1
+                    else if(lastActive<31)
+                        monthActive+=1
+                    if(lastOrder===9999)
+                        noOrder+=1
+                    else {
+                        allOrder+=1
+                        if(lastOrder===0)
+                            todayOrder+=1
+                        else if(lastOrder<7)
+                            weekOrder+=1
+                        else if(lastOrder<31)
+                            monthOrder+=1
+                    }
                     statistic[data[i]._id] = {
-                        lastOrder: invoice?Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):-1,
-                        lastActive: Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)),
+                        lastOrder: lastOrder,
+                        lastActive: lastActive,
                         client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
                     }
                 }
@@ -547,6 +589,23 @@ const resolvers = {
             data = data.sort(function(a, b) {
                 return a.data[1] - b.data[1]
             });
+            data = [
+                {
+                    _id: null,
+                    data: [
+                        allActive,//0
+                        todayActive,//1
+                        weekActive,//2
+                        monthActive,//3
+                        noOrder,//4
+                        allOrder,//5
+                        todayOrder,//6
+                        weekOrder,//7
+                        monthOrder//8
+                    ]
+                },
+                ...data
+            ]
             return {
                 columns: ['клиент', 'активность', 'заказ'],
                 row: data
