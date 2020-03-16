@@ -93,7 +93,10 @@ module.exports.checkOutXMLShoroAzyk = async(guid) => {
 
 module.exports.getOutXMLShoroAzyk = async() => {
     let result = [ { root: [ { _attr: { mode: 'sales'} }] } ];
-    let outXMLShoros = await OutXMLShoroAzyk.find({status: {$ne: 'check'}})
+    let outXMLShoros = await OutXMLShoroAzyk
+        .find({status: {$ne: 'check'}})
+        .sort('date')
+        .limit(20)
     for(let i=0;i<outXMLShoros.length;i++){
         let item = { item: [{ _attr: { ...(outXMLShoros[i].status==='del'?{del: '1'}:{}), guid: outXMLShoros[i].guid, client: outXMLShoros[i].client, agent: outXMLShoros[i].agent, forwarder: outXMLShoros[i].forwarder, date: pdDDMMYYYY(outXMLShoros[i].date)}}]};
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){

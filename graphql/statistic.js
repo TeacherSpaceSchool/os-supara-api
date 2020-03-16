@@ -922,6 +922,7 @@ const resolvers = {
             }
             else {
                 let districts = await DistrictAzyk.find({organization: company})
+                let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
                         profit: 0,
@@ -967,6 +968,54 @@ const resolvers = {
                                 if (data[i1].consignmentPrice) {
                                     statistic[districts[i]._id].consignmentPrice += data[i1].consignmentPrice
                                 }
+                            }
+                        }
+                    }
+                }
+                
+                if (!statistic['without']) statistic['without'] = {
+                    profit: 0,
+                    cancel: [],
+                    complet: [],
+                    consignmentPrice: 0,
+                    organization: 'Прочие'
+                }
+                data = await InvoiceAzyk.find(
+                    {
+                        $and: [
+                            dateStart ? {createdAt: {$gte: dateStart}} : {},
+                            dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                        ],
+                        ...{del: {$ne: 'deleted'}},
+                        client: {$nin: withDistricts},
+                        organization: districts[0].organization,
+                    }
+                )
+                    .populate({
+                        path: 'orders'
+                    })
+                    .lean()
+                data = data.filter(data => data.orders[0].status !== 'обработка')
+                for(let i1=0; i1<data.length; i1++) {
+                    for(let i2=0; i2<data[i1].orders.length; i2++) {
+                        data[i1].orders[i2].invoice = data[i1]._id
+                    }
+                }
+                data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                for(let i1=0; i1<data.length; i1++) {
+                    if (data[i1].status !== 'обработка') {
+                        if (data[i1].status === 'отмена') {
+                            if (!statistic['without'].cancel.includes(data[i1].invoice)) {
+                                statistic['without'].cancel.push(data[i1].invoice)
+                            }
+                        }
+                        else {
+                            if(!statistic['without'].complet.includes(data[i1].invoice)) {
+                                statistic['without'].complet.push(data[i1].invoice)
+                            }
+                            statistic['without'].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
+                            if (data[i1].consignmentPrice) {
+                                statistic['without'].consignmentPrice += data[i1].consignmentPrice
                             }
                         }
                     }
