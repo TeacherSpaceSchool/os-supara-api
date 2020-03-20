@@ -550,8 +550,8 @@ const resolvers = {
                     })
                         .sort('-createdAt')
                         .lean()
-                    lastActive = Math.round((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24))
-                    lastOrder = invoice?Math.round((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
+                    lastActive = parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24))
+                    lastOrder = invoice?parseInt((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
                     allActive+=1
                     if(lastActive===0)
                         todayActive+=1
