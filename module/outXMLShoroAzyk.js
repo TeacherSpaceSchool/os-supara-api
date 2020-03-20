@@ -40,7 +40,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    date = new Date(date.setDate(date.getDate() + 1))
+                    date.setDate(date.getDate() + 1)
                     let newOutXMLShoroAzyk = new OutXMLShoroAzyk({
                         data: [],
                         guid: await uuidv1(),

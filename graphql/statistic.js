@@ -61,10 +61,10 @@ const resolvers = {
     checkOrder: async(parent, { company, today }, {user}) => {
         if(user.role==='admin'){
             let tomorrow = new Date(today)
-            tomorrow.setHours(3)
+            tomorrow.setHours(3, 0, 0, 0)
             tomorrow.setDate(tomorrow.getDate() + 1)
             let yesterday = new Date(today)
-            yesterday.setHours(3)
+            yesterday.setHours(3, 0, 0, 0)
             yesterday.setDate(yesterday.getDate() - 1)
             let statistic = []
             let problem = ''
@@ -147,19 +147,19 @@ const resolvers = {
                     withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 }
                 dateStart = new Date(dateStart)
-                dateStart = new Date(dateStart.setHours(3))
+                dateStart.setHours(3, 0, 0, 0)
                 if(dateType==='day') {
                     let today = new Date();
                     let month = 31;
                     if(today.getDate()===dateStart.getDate()&&today.getMonth()===dateStart.getMonth()&&today.getFullYear()===dateStart.getFullYear()){
-                        dateStart = new Date(dateStart.setDate(dateStart.getDate()-30))
+                        dateStart.setDate(dateStart.getDate()-30)
                     }
                     else {
-                        dateStart = new Date(dateStart.setDate(1))
+                        dateStart.setDate(1)
                     }
                     for(let x=0; x<month; x++){
                         dateEnd = new Date(dateStart)
-                        dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
+                        dateEnd.setDate(dateEnd.getDate() + 1)
                         if(!company) {
                             for (let i = 0; i < organizations.length; i++) {
                                 if (!result[i])
@@ -274,11 +274,11 @@ const resolvers = {
                     }
                 }
                 else if(dateType==='month') {
-                    dateStart = new Date(dateStart.setDate(1))
+                    dateStart.setDate(1)
                     for(let i=0; i<12; i++) {
-                        dateStart = new Date(dateStart.setMonth(i))
+                        dateStart.setMonth(i)
                         dateEnd = new Date(dateStart)
-                        dateEnd = new Date(dateEnd.setMonth(i+1))
+                        dateEnd.setMonth(i+1)
                         if(!company) {
                             for (let i1 = 0; i1 < organizations.length; i1++) {
                                 if (!result[i1])
@@ -391,12 +391,12 @@ const resolvers = {
                     }
                 }
                 else if(dateType==='year') {
-                    dateStart = new Date(dateStart.setDate(1))
-                    dateStart = new Date(dateStart.setMonth(0))
+                    dateStart.setDate(1)
+                    dateStart.setMonth(0)
                     for(let i=2020; i<2050; i++) {
-                        dateStart = new Date(dateStart.setYear(i))
+                        dateStart.setYear(i)
                         dateEnd = new Date(dateStart)
-                        dateEnd = new Date(dateEnd.setYear(i+1))
+                        dateEnd.setYear(i+1)
                         if(!company) {
                             for (let i1 = 0; i1 < organizations.length; i1++) {
                                 if (!result[i1])
@@ -518,6 +518,8 @@ const resolvers = {
     statisticClientActivity: async(parent, ctx , {user}) => {
         if(user.role==='admin'){
             let now = new Date()
+            now.setDate(now.getDate() + 1)
+            now.setHours(3, 0, 0, 0)
             let allActive = 0;
             let todayActive = 0;
             let weekActive = 0;
@@ -619,6 +621,7 @@ const resolvers = {
             let dateEnd
             if(dateStart){
                 dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
                 dateEnd = new Date(dateStart)
                 if(dateType==='year')
                     dateEnd.setFullYear(dateEnd.getFullYear() + 1)
@@ -733,6 +736,7 @@ const resolvers = {
             let dateEnd
             if(dateStart){
                 dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
                 dateEnd = new Date(dateStart)
 
                 if(dateType==='year')
@@ -853,6 +857,7 @@ const resolvers = {
             let dateEnd
             if(dateStart){
                 dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
                 dateEnd = new Date(dateStart)
 
                 if(dateType==='year')
@@ -873,7 +878,7 @@ const resolvers = {
                             dateStart ? {createdAt: {$gte: dateStart}} : {},
                             dateEnd ? {createdAt: {$lt: dateEnd}} : {}
                         ],
-                        ...{del: {$ne: 'deleted'}}
+                        del: {$ne: 'deleted'}
                     }
                 )
                     .populate({
@@ -1125,6 +1130,8 @@ const resolvers = {
                     if(clients[x].address[i][1]&&clients[x].address[i][1].length>0&&!(clients[x].name.toLowerCase()).includes('агент')&&!(clients[x].name.toLowerCase()).includes('agent')) {
                         let status
                         let now = new Date()
+                        now.setDate(now.getDate() + 1)
+                        now.setHours(3, 0, 0, 0)
                         let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
                         if ((!clients[x].lastActive || differenceDates > 7)&&!item&&!organization) {
                             status = 'red'
@@ -1222,9 +1229,9 @@ const resolvers = {
             let dateEnd
             if(dateStart){
                 dateStart = new Date(dateStart)
-                dateStart = new Date(dateStart.setHours(3))
+                dateStart.setHours(3, 0, 0, 0)
                 dateEnd = new Date(dateStart)
-                dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
+                dateEnd.setDate(dateEnd.getDate() + 1)
             }
             let data = await InvoiceAzyk.find(
                 {

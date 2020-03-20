@@ -126,8 +126,9 @@ const resolvers = {
         let dateEnd;
         if(date!==''){
             dateStart = new Date(date)
+            dateStart.setHours(3, 0, 0, 0)
             dateEnd = new Date(dateStart)
-            dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
+            dateEnd.setDate(dateEnd.getDate() + 1)
         }
         let _organizations;
         let _clients;
@@ -310,8 +311,9 @@ const resolvers = {
         let dateEnd;
         if(date!==''){
             dateStart = new Date(date)
+            dateStart.setHours(3, 0, 0, 0)
             dateEnd = new Date(dateStart)
-            dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() + 1))
+            dateEnd.setDate(dateEnd.getDate() + 1)
         }
         let _sort = {}
         _sort[sort[0]==='-'?sort.substring(1):sort]=sort[0]==='-'?-1:1
@@ -570,6 +572,8 @@ const resolvers = {
         else if(user.role==='суперагент'){
             if(date!=='') {
                 let now = new Date()
+                now.setHours(3, 0, 0, 0)
+                now.setDate(now.getDate() + 1)
                 let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
                 if(differenceDates>3) {
                     dateStart = new Date()
@@ -579,6 +583,8 @@ const resolvers = {
             }
             else {
                 dateEnd = new Date()
+                dateEnd.setHours(3, 0, 0, 0)
+                dateEnd.setDate(dateEnd.getDate() + 1)
                 dateStart = new Date(dateEnd)
                 dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
@@ -703,6 +709,8 @@ const resolvers = {
         else if(user.role==='агент'){
             if(date!=='') {
                 let now = new Date()
+                now.setDate(now.getDate() + 1)
+                now.setHours(3, 0, 0, 0)
                 let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
                 if(differenceDates>3) {
                     dateStart = new Date()
@@ -712,8 +720,10 @@ const resolvers = {
             }
             else {
                 dateEnd = new Date()
+                dateEnd.setDate(dateEnd.getDate() + 1)
+                dateEnd.setHours(3, 0, 0, 0)
                 dateStart = new Date(dateEnd)
-                dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
+                dateStart.setDate(dateStart.getDate() - 3)
             }
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
@@ -844,17 +854,21 @@ const resolvers = {
         else if(user.role==='менеджер'){
             if(date!=='') {
                 let now = new Date()
+                now.setHours(3, 0, 0, 0)
+                now.setDate(now.getDate() + 1)
                 let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
                 if(differenceDates>3) {
                     dateStart = new Date()
                     dateEnd = new Date(dateStart)
-                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
+                    dateEnd.setDate(dateEnd.getDate() - 3)
                 }
             }
             else {
                 dateEnd = new Date()
+                dateEnd.setHours(3, 0, 0, 0)
+                dateEnd.setDate(dateEnd.getDate() + 1)
                 dateStart = new Date(dateEnd)
-                dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
+                dateStart.setDate(dateStart.getDate() - 3)
             }
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
@@ -1377,8 +1391,6 @@ const resolversMutation = {
                 object.save()
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
-            /*if(getAdminId())
-                sendWebPush('Добавлен заказ', '', getAdminId())*/
         }
         return {data: 'OK'};
     },
@@ -1440,11 +1452,6 @@ const resolversMutation = {
             object.sync = 1
             object.orders = orders.map(order=>order._id)
             await object.save();
-            /*if(user._id.toString()!==(getAdminId()).toString())
-                sendWebPush('Заказ изменен', '', getAdminId())
-
-            if(user._id.toString()!==(object.client.user).toString())
-                sendWebPush('Заказ изменен', '', object.client.user)*/
         }
         let resInvoice = await InvoiceAzyk.findOne({_id: invoice})
             .populate({

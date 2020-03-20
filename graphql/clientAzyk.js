@@ -50,8 +50,9 @@ const resolvers = {
         let dateEnd;
         if(date&&date!==''){
             dateStart = new Date(date)
+            dateStart.setHours(3, 0, 0, 0)
             dateEnd = new Date(dateStart)
-            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd.setDate(dateEnd.getDate() + 1)
         }
         if(user.role==='admin'){
             let clients = await ClientAzyk
@@ -188,8 +189,9 @@ const resolvers = {
         let dateEnd;
         if(date&&date!==''){
             dateStart = new Date(date)
+            dateStart.setHours(3, 0, 0, 0)
             dateEnd = new Date(dateStart)
-            dateEnd = dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd.setDate(dateEnd.getDate() + 1)
         }
         let _sort = {}
         _sort[sort[0]==='-'?sort.substring(1):sort]=sort[0]==='-'?-1:1

@@ -60,7 +60,6 @@ const resolversMutation = {
             if(['организация'].includes(user.role)) _object.organization = user.organization
             await AdsAzyk.create(_object)
         }
-        //sendWebPush('AZYK.STORE', title, 'all')
         return {data: 'OK'};
     },
     setAds: async(parent, {_id, image, url, title}, {user}) => {

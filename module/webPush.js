@@ -1,4 +1,5 @@
 const SubscriberAzyk = require('../models/subscriberAzyk');
+const NotificationStatisticAzyk = require('../models/notificationStatisticAzyk');
 const q = require('q');
 const webPush = require('web-push');
 const keys = require((process.env.URL).trim()==='https://azyk.store'?'./../config/keys_prod':'./../config/keys_dev');
@@ -55,7 +56,26 @@ module.exports.sendWebPush = async(title, message, user) => {
                     });
                 });
                 q.allSettled(parallelSubscriberAzykCalls).then((pushResults) => {
-                    console.info(pushResults);
+                    try{
+                        let delivered = 0;
+                        let failed = 0;
+                        for(let i=0; i<pushResults.length; i++){
+                            if(pushResults[i].state === 'rejected'||pushResults[i].reason){
+                                failed+=1
+                            }
+                            else
+                                delivered+=1
+                        }
+                        let _object = new NotificationStatisticAzyk({
+                            title: title,
+                            text: message,
+                            delivered: delivered,
+                            failed: failed,
+                        });
+                        NotificationStatisticAzyk.create(_object)
+                    } catch (err) {
+                        console.error(err)
+                    }
                 });
             }
         });
@@ -104,7 +124,26 @@ module.exports.sendWebPush = async(title, message, user) => {
                     });
                 });
                 q.allSettled(parallelSubscriberAzykCalls).then((pushResults) => {
-                    console.info(pushResults);
+                    try{
+                        let delivered = 0;
+                        let failed = 0;
+                        for(let i=0; i<pushResults.length; i++){
+                            if(pushResults[i].state === 'rejected'||pushResults[i].reason){
+                                failed+=1
+                            }
+                            else
+                                delivered+=1
+                        }
+                        let _object = new NotificationStatisticAzyk({
+                            title: title,
+                            text: message,
+                            delivered: delivered,
+                            failed: failed,
+                        });
+                        NotificationStatisticAzyk.create(_object)
+                    } catch (err) {
+                        console.error(err)
+                    }
                 });
             }
         });

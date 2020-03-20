@@ -21,6 +21,7 @@ const BonusClientAzyk = require('./bonusClientAzyk');
 const EquipmentAzyk = require('./equipmentAzyk');
 const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
+const NotificationStatisticAzyk = require('./notificationStatisticAzyk');
 const StatisticAzyk = require('./statistic');
 const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
@@ -48,6 +49,7 @@ const typeDefs = gql`
     ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
+    ${NotificationStatisticAzyk.type}
     ${FaqAzyk.type}
     ${AutoAzyk.type}
     ${EquipmentAzyk.type}
@@ -71,6 +73,7 @@ const typeDefs = gql`
         ${DistrictAzyk.mutation}
         ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
+        ${NotificationStatisticAzyk.mutation}
         ${FaqAzyk.mutation}
         ${AutoAzyk.mutation}
         ${EquipmentAzyk.mutation}
@@ -100,6 +103,7 @@ const typeDefs = gql`
         ${EquipmentAzyk.query}
         ${OrganizationAzyk.query}
         ${AdsAzyk.query}
+        ${NotificationStatisticAzyk.query}
         ${CategoryAzyk.query}
         ${SubCategoryAzyk.query}
         ${BlogAzyk.query}
@@ -147,6 +151,7 @@ const resolvers = {
         ...OrganizationAzyk.resolvers,
         ...BlogAzyk.resolvers,
         ...AdsAzyk.resolvers,
+        ...NotificationStatisticAzyk.resolvers,
         ...PassportAzyk.resolvers,
         ...CategoryAzyk.resolvers,
         ...EmploymentAzyk.resolvers,
@@ -173,6 +178,7 @@ const resolvers = {
         ...SubCategoryAzyk.resolversMutation,
         ...BlogAzyk.resolversMutation,
         ...AdsAzyk.resolversMutation,
+        ...NotificationStatisticAzyk.resolversMutation,
         ...EmploymentAzyk.resolversMutation,
         ...PassportAzyk.resolversMutation,
         ...ItemAzyk.resolversMutation,
