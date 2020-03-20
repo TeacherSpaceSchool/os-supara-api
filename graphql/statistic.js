@@ -555,10 +555,11 @@ const resolvers = {
                     allActive+=1
                     if(lastActive===0)
                         todayActive+=1
-                    else if(lastActive<7) {
-                        weekActive += 1
+                    else {
+                        if (lastActive < 7)
+                            weekActive += 1
                         if (lastActive < 31)
-                            monthActive += 1
+                                monthActive += 1
                     }
                     if(lastOrder===9999)
                         noOrder+=1
@@ -566,10 +567,11 @@ const resolvers = {
                         allOrder+=1
                         if(lastOrder===0)
                             todayOrder+=1
-                        else if(lastOrder<7) {
-                            weekOrder += 1
+                        else {
+                            if(lastOrder<7)
+                                weekOrder += 1
                             if (lastOrder < 31)
-                                monthOrder += 1
+                                    monthOrder += 1
                         }
                     }
                     statistic[data[i]._id] = {
