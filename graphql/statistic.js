@@ -561,7 +561,7 @@ const resolvers = {
                         .lean()
                     lastActive = data[i].lastActive?parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)):9999
                     lastOrder = invoice?parseInt((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
-                    if(allActive===9999)
+                    if(lastActive===9999)
                         noActive+=1
                     else {
                         allActive+=1
