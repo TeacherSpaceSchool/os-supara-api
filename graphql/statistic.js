@@ -526,6 +526,7 @@ const resolvers = {
             let monthActive = 0;
             let allOrder = 0;
             let noOrder = 0;
+            let noActive = 0;
             let todayOrder = 0;
             let weekOrder = 0;
             let monthOrder = 0;
@@ -533,14 +534,22 @@ const resolvers = {
             let lastOrder;
 
             let statistic = {}
-            let data = await ClientAzyk.find(
+            let data = await InvoiceAzyk.find(
+                {
+                    taken: true,
+                    del: {$ne: 'deleted'}
+                }
+            ).distinct('client')
+            data = await ClientAzyk.find(
                 {
                     del: {$ne: 'deleted'},
-                    lastActive: {$ne: null}
+                    $or: [
+                        {lastActive: {$ne: null}},
+                        {_id: {$in: data}}
+                    ]
                 }
             )
                 .lean()
-
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
                     let invoice = await InvoiceAzyk.findOne({
@@ -550,16 +559,20 @@ const resolvers = {
                     })
                         .sort('-createdAt')
                         .lean()
-                    lastActive = parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24))
+                    lastActive = data[i].lastActive?parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)):9999
                     lastOrder = invoice?parseInt((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
-                    allActive+=1
-                    if(lastActive===0)
-                        todayActive+=1
+                    if(allActive===9999)
+                        noActive+=1
                     else {
-                        if (lastActive < 7)
-                            weekActive += 1
-                        if (lastActive < 31)
+                        allActive+=1
+                        if(lastActive===0)
+                            todayActive+=1
+                        else {
+                            if (lastActive < 7)
+                                weekActive += 1
+                            if (lastActive < 31)
                                 monthActive += 1
+                        }
                     }
                     if(lastOrder===9999)
                         noOrder+=1
@@ -609,7 +622,8 @@ const resolvers = {
                         allOrder,//5
                         todayOrder,//6
                         weekOrder,//7
-                        monthOrder//8
+                        monthOrder,//8
+                        noActive//9
                     ]
                 },
                 ...data
