@@ -9,7 +9,7 @@ router.get('/shoro/out/sales', async (req, res, next) => {
     try{
         await res.status(200);
         await res.end(await getOutXMLShoroAzyk())
-        logger.info(`start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
+        logger.info(`out start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
     } catch (err) {
         console.error(err)
         res.status(501);
@@ -26,7 +26,7 @@ router.post('/shoro/put/sales/confirm', async (req, res, next) => {
         }
          await res.status(200);
         await res.end('succes')
-        logger.info(`start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
+        logger.info(`put start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
     } catch (err) {
         console.error(err)
         res.status(501);
