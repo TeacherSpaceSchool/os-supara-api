@@ -26,7 +26,7 @@ router.post('/shoro/put/sales/confirm', async (req, res, next) => {
         }
          await res.status(200);
         await res.end('succes')
-        logger.info(`put start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
+        logger.info(`put start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         console.error(err)
         res.status(501);
