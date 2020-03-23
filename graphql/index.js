@@ -23,6 +23,7 @@ const PassportAzyk = require('./passport');
 const RouteAzyk = require('./routeAzyk');
 const NotificationStatisticAzyk = require('./notificationStatisticAzyk');
 const StatisticAzyk = require('./statistic');
+const SubscriberAzyk = require('./subscriberAzyk');
 const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
 const { verifydeuserGQL } = require('../module/passport');
@@ -49,6 +50,7 @@ const typeDefs = gql`
     ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
+    ${SubscriberAzyk.type}
     ${NotificationStatisticAzyk.type}
     ${FaqAzyk.type}
     ${AutoAzyk.type}
@@ -73,6 +75,7 @@ const typeDefs = gql`
         ${DistrictAzyk.mutation}
         ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
+        ${SubscriberAzyk.mutation}
         ${NotificationStatisticAzyk.mutation}
         ${FaqAzyk.mutation}
         ${AutoAzyk.mutation}
@@ -103,6 +106,7 @@ const typeDefs = gql`
         ${EquipmentAzyk.query}
         ${OrganizationAzyk.query}
         ${AdsAzyk.query}
+        ${SubscriberAzyk.query}
         ${NotificationStatisticAzyk.query}
         ${CategoryAzyk.query}
         ${SubCategoryAzyk.query}
@@ -151,6 +155,7 @@ const resolvers = {
         ...OrganizationAzyk.resolvers,
         ...BlogAzyk.resolvers,
         ...AdsAzyk.resolvers,
+        ...SubscriberAzyk.resolvers,
         ...NotificationStatisticAzyk.resolvers,
         ...PassportAzyk.resolvers,
         ...CategoryAzyk.resolvers,
@@ -178,6 +183,7 @@ const resolvers = {
         ...SubCategoryAzyk.resolversMutation,
         ...BlogAzyk.resolversMutation,
         ...AdsAzyk.resolversMutation,
+        ...SubscriberAzyk.resolversMutation,
         ...NotificationStatisticAzyk.resolversMutation,
         ...EmploymentAzyk.resolversMutation,
         ...PassportAzyk.resolversMutation,

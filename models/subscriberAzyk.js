@@ -8,6 +8,7 @@ const SubscriberAzykSchema = mongoose.Schema({
         ref: 'UserAzyk'
     },
     number: String,
+    status: String,
 }, {
     timestamps: true
 });

@@ -19,6 +19,7 @@ module.exports.sendWebPush = async(title, message, user) => {
             } else {
                 let parallelSubscriberAzykCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
+                        console.log(subscription)
                         const pushSubscriberAzyk = {
                             endpoint: subscription.endpoint,
                             keys: {
