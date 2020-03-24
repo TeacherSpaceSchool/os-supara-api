@@ -37,7 +37,7 @@ const resolvers = {
             if(organization==='super'){
                 let districts = await DistrictAzyk.find({organization: null})
                     .populate('agent')
-                    .populate('client')
+                    .populate({path: 'client', populate: [{path: 'user'}]})
                     .populate('ecspeditor')
                     .populate('organization')
                     .populate('manager')
@@ -54,7 +54,7 @@ const resolvers = {
             else {
                 let districts = await DistrictAzyk.find({organization: organization})
                     .populate('agent')
-                    .populate('client')
+                    .populate({path: 'client', populate: [{path: 'user'}]})
                     .populate('ecspeditor')
                     .populate('organization')
                     .populate('manager')
@@ -77,7 +77,7 @@ const resolvers = {
 
             })
                 .populate('agent')
-                .populate('client')
+                .populate({path: 'client', populate: [{path: 'user'}]})
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('manager')
@@ -140,7 +140,7 @@ const resolvers = {
         if(mongoose.Types.ObjectId.isValid(_id)&&user.role==='admin'){
             return await DistrictAzyk.findOne({_id: _id})
                 .populate('agent')
-                .populate('client')
+                .populate({path: 'client', populate: [{path: 'user'}]})
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('manager')
@@ -148,7 +148,7 @@ const resolvers = {
         else if(['организация'].includes(user.role)){
             return await DistrictAzyk.findOne({_id: _id, organization: user.organization})
                 .populate('agent')
-                .populate('client')
+                .populate({path: 'client', populate: [{path: 'user'}]})
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('manager')
