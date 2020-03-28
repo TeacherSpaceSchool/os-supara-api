@@ -7,6 +7,7 @@ const DistributerAzyk = require('./distributerAzyk');
 const BlogAzyk = require('./blogAzyk');
 const CategoryAzyk = require('./categoryAzyk');
 const SubCategoryAzyk = require('./subCategoryAzyk');
+const ReturnedAzyk = require('./returnedAzyk');
 const OrganizationAzyk = require('./organizationAzyk');
 const ContactAzyk = require('./contactAzyk');
 const FaqAzyk = require('./faqAzyk');
@@ -24,6 +25,7 @@ const RouteAzyk = require('./routeAzyk');
 const NotificationStatisticAzyk = require('./notificationStatisticAzyk');
 const StatisticAzyk = require('./statistic');
 const SubscriberAzyk = require('./subscriberAzyk');
+const AgentRouteAzyk = require('./agentRouteAzyk');
 const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
 const { verifydeuserGQL } = require('../module/passport');
@@ -47,6 +49,7 @@ const typeDefs = gql`
         image: String
     }
     ${DistrictAzyk.type}
+    ${AgentRouteAzyk.type}
     ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
@@ -61,6 +64,7 @@ const typeDefs = gql`
     ${PassportAzyk.type}
     ${CategoryAzyk.type}
     ${SubCategoryAzyk.type}
+    ${ReturnedAzyk.type}
     ${EmploymentAzyk.type}
     ${ItemAzyk.type}
     ${ContactAzyk.type}
@@ -73,6 +77,7 @@ const typeDefs = gql`
     type Mutation {
         ${Integrate1CAzyk.mutation}
         ${DistrictAzyk.mutation}
+        ${AgentRouteAzyk.mutation}
         ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
         ${SubscriberAzyk.mutation}
@@ -84,6 +89,7 @@ const typeDefs = gql`
         ${OrganizationAzyk.mutation}
         ${CategoryAzyk.mutation}
         ${SubCategoryAzyk.mutation}
+        ${ReturnedAzyk.mutation}
         ${BlogAzyk.mutation}
         ${PassportAzyk.mutation}
         ${EmploymentAzyk.mutation}
@@ -99,6 +105,7 @@ const typeDefs = gql`
     type Query {
         ${Integrate1CAzyk.query}
         ${DistrictAzyk.query}
+        ${AgentRouteAzyk.query}
         ${DistributerAzyk.query}
         ${ClientAzyk.query}
         ${FaqAzyk.query}
@@ -110,6 +117,7 @@ const typeDefs = gql`
         ${NotificationStatisticAzyk.query}
         ${CategoryAzyk.query}
         ${SubCategoryAzyk.query}
+        ${ReturnedAzyk.query}
         ${BlogAzyk.query}
         ${PassportAzyk.query}
         ${EmploymentAzyk.query}
@@ -124,6 +132,7 @@ const typeDefs = gql`
     }
     type Subscription {
         ${OrderAzyk.subscription}
+        ${ReturnedAzyk.subscription}
     }
 `;
 
@@ -147,6 +156,7 @@ const resolvers = {
     Query: {
         ...Integrate1CAzyk.resolvers,
         ...DistrictAzyk.resolvers,
+        ...AgentRouteAzyk.resolvers,
         ...DistributerAzyk.resolvers,
         ...FaqAzyk.resolvers,
         ...AutoAzyk.resolvers,
@@ -161,6 +171,7 @@ const resolvers = {
         ...CategoryAzyk.resolvers,
         ...EmploymentAzyk.resolvers,
         ...SubCategoryAzyk.resolvers,
+        ...ReturnedAzyk.resolvers,
         ...ItemAzyk.resolvers,
         ...ContactAzyk.resolvers,
         ...BasketAzyk.resolvers,
@@ -172,6 +183,7 @@ const resolvers = {
     },
     Mutation: {
         ...Integrate1CAzyk.resolversMutation,
+        ...AgentRouteAzyk.resolversMutation,
         ...DistrictAzyk.resolversMutation,
         ...DistributerAzyk.resolversMutation,
         ...FaqAzyk.resolversMutation,
@@ -181,6 +193,7 @@ const resolvers = {
         ...OrganizationAzyk.resolversMutation,
         ...CategoryAzyk.resolversMutation,
         ...SubCategoryAzyk.resolversMutation,
+        ...ReturnedAzyk.resolversMutation,
         ...BlogAzyk.resolversMutation,
         ...AdsAzyk.resolversMutation,
         ...SubscriberAzyk.resolversMutation,
@@ -198,6 +211,7 @@ const resolvers = {
     },
     Subscription: {
         ...OrderAzyk.resolversSubscription,
+        ...ReturnedAzyk.resolversSubscription
     }
 };
 

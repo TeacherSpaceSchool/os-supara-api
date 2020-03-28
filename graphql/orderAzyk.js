@@ -144,8 +144,9 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'}
             }).distinct('_id')
         }
+        let invoices;
         if(user.role==='client'){
-            let invoices =  await InvoiceAzyk.find(
+            invoices =  await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
                         taken: true,
@@ -170,34 +171,9 @@ const resolvers = {
                     path: 'orders'
                 })
                 .lean()
-            let tonnage = 0;
-            let size = 0;
-            let price = 0;
-            let consignment = 0;
-            let consignmentPayment = 0;
-            let lengthList = 0;
-            for(let i=0; i<invoices.length; i++){
-                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice) {
-                        for(let i1=0; i1<invoices[i].orders.length;i1++){
-                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
-                        }
-                    }
-                    if (invoices[i].allSize)
-                        size += invoices[i].allSize
-                    lengthList += 1
-                    if (invoices[i].allTonnage)
-                        tonnage += invoices[i].allTonnage
-                    if (invoices[i].consignmentPrice)
-                        consignment += invoices[i].consignmentPrice
-                    if (invoices[i].paymentConsignation)
-                        consignmentPayment += invoices[i].consignmentPrice
-                }
-            }
-            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
-        }
+               }
         else if(user.role==='admin') {
-            let invoices =  await InvoiceAzyk.find(
+            invoices =  await InvoiceAzyk.find(
                             {
                             del: {$ne: 'deleted'},
                             taken: true,
@@ -222,89 +198,162 @@ const resolvers = {
                     path: 'orders'
                 })
                 .lean()
-            let tonnage = 0;
-            let size = 0;
-            let price = 0;
-            let consignment = 0;
-            let consignmentPayment = 0;
-            let lengthList = 0;
-            for(let i=0; i<invoices.length; i++){
-                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice) {
-                        for(let i1=0; i1<invoices[i].orders.length;i1++){
-                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
-                        }
-                    }
-                    if (invoices[i].allSize)
-                        size += invoices[i].allSize
-                    lengthList += 1
-                    if (invoices[i].allTonnage)
-                        tonnage += invoices[i].allTonnage
-                    if (invoices[i].consignmentPrice)
-                        consignment += invoices[i].consignmentPrice
-                    if (invoices[i].paymentConsignation)
-                        consignmentPayment += invoices[i].consignmentPrice
-                }
             }
-            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
-        }
         else if(['организация'].includes(user.role)) {
-            let invoices =  await InvoiceAzyk.find(
+            invoices =  await InvoiceAzyk.find(
                 {
                     del: {$ne: 'deleted'},
                     taken: true,
-
-                    ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
+                        $and: [
+                            ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
+                            {
+                                $or: [
+                                    {organization: user.organization},
+                                    {distributer: user.organization},
+                                ],
+                            },
+                            {
+                                ...(search.length>0?{
+                                        $or: [
+                                            {number: {'$regex': search, '$options': 'i'}},
+                                            {info: {'$regex': search, '$options': 'i'}},
+                                            {address: {'$regex': search, '$options': 'i'}},
+                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                            {client: {$in: _clients}},
+                                            {agent: {$in: _agents}}
+                                        ]
+                                    }
+                                    :{
+                                    })
+                            }
+                        ],
                     ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                    ...(search.length>0?{
-                            $or: [
-                                {number: {'$regex': search, '$options': 'i'}},
-                                {info: {'$regex': search, '$options': 'i'}},
-                                {address: {'$regex': search, '$options': 'i'}},
-                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                {client: {$in: _clients}},
-                                {agent: {$in: _agents}},
-                                {organization: user.organization},
-                                {distributer: user.organization}
-                            ]
-                        }
-                        :{
-                            $or: [
-                                {organization: user.organization},
-                                {distributer: user.organization},
-                            ]
-                        })
                 })
                 .populate({
                     path: 'orders'
                 })
                 .lean()
-            let tonnage = 0;
-            let size = 0;
-            let price = 0;
-            let consignment = 0;
-            let consignmentPayment = 0;
-            let lengthList = 0;
-            for(let i=0; i<invoices.length; i++){
-                if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                    if (invoices[i].allPrice) {
-                        for(let i1=0; i1<invoices[i].orders.length;i1++){
-                            price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
+        }
+        else if(user.role==='менеджер'){
+            let clients = await DistrictAzyk
+                .find({manager: user.employment})
+                .distinct('client')
+            invoices =  await InvoiceAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            taken: true,
+                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            client: {$in: clients},
+                            $and: [
+                                ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
+                                {
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
+                                    ],
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                                {agent: {$in: _agents}}
+                                            ]
+                                        }
+                                        :{})
+                                }
+                            ],
+
                         }
                     }
-                    if (invoices[i].allSize)
-                        size += invoices[i].allSize
-                    lengthList += 1
-                    if (invoices[i].allTonnage)
-                        tonnage += invoices[i].allTonnage
-                    if (invoices[i].consignmentPrice)
-                        consignment += invoices[i].consignmentPrice
-                    if (invoices[i].paymentConsignation)
-                        consignmentPayment += invoices[i].consignmentPrice
+                ])
+        }
+        else if(user.role==='агент'){
+            if(date!=='') {
+                let now = new Date()
+                now.setDate(now.getDate() + 1)
+                now.setHours(3, 0, 0, 0)
+                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+                if(differenceDates>3) {
+                    dateStart = new Date()
+                    dateEnd = new Date(dateStart)
+                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
                 }
             }
-            return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
+            else {
+                dateEnd = new Date()
+                dateEnd.setDate(dateEnd.getDate() + 1)
+                dateEnd.setHours(3, 0, 0, 0)
+                dateStart = new Date(dateEnd)
+                dateStart.setDate(dateStart.getDate() - 3)
+            }
+            let clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
+            invoices =  await InvoiceAzyk.aggregate(
+                [
+                    {
+                        $match: {
+                            del: {$ne: 'deleted'},
+                            taken: true,
+                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            client: {$in: clients},
+                            $and: [
+                                {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
+                                {
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
+                                    ],
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                            ]
+                                        }
+                                        :{
+                                        })
+                                }
+                            ],
+                        }
+                    }
+                ])
         }
+        let tonnage = 0;
+        let size = 0;
+        let price = 0;
+        let consignment = 0;
+        let consignmentPayment = 0;
+        let lengthList = 0;
+        for(let i=0; i<invoices.length; i++){
+            if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
+                if (invoices[i].allPrice) {
+                    for(let i1=0; i1<invoices[i].orders.length;i1++){
+                        price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
+                    }
+                }
+                if (invoices[i].allSize)
+                    size += invoices[i].allSize
+                lengthList += 1
+                if (invoices[i].allTonnage)
+                    tonnage += invoices[i].allTonnage
+                if (invoices[i].consignmentPrice)
+                    consignment += invoices[i].consignmentPrice
+                if (invoices[i].paymentConsignation)
+                    consignmentPayment += invoices[i].consignmentPrice
+            }
+        }
+        return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
     },
     invoices: async(parent, {search, sort, filter, date, skip}, {user}) => {
         let dateStart;
@@ -733,26 +782,30 @@ const resolvers = {
                     {
                         $match: {
                             del: {$ne: 'deleted'},
-                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             client: {$in: clients},
-                            organization: user.organization,
-                            ...(search.length>0?{
-                                    $or: [
-                                        {number: {'$regex': search, '$options': 'i'}},
-                                        {info: {'$regex': search, '$options': 'i'}},
-                                        {address: {'$regex': search, '$options': 'i'}},
-                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                        {agent: {$in: _agents}},
-                                        {client: {$in: _clients}},
-                                    ]
-                                }
-                                :{
+                            $and: [
+                                {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
+                                {
                                     $or: [
                                         {organization: user.organization},
                                         {distributer: user.organization},
-                                    ]
-                                })
+                                    ],
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                            ]
+                                        }
+                                        :{
+                                        })
+                                }
+                                ],
                         }
                     },
                     { $sort : _sort },
@@ -852,24 +905,6 @@ const resolvers = {
             return invoices
         }
         else if(user.role==='менеджер'){
-            if(date!=='') {
-                let now = new Date()
-                now.setHours(3, 0, 0, 0)
-                now.setDate(now.getDate() + 1)
-                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
-                if(differenceDates>3) {
-                    dateStart = new Date()
-                    dateEnd = new Date(dateStart)
-                    dateEnd.setDate(dateEnd.getDate() - 3)
-                }
-            }
-            else {
-                dateEnd = new Date()
-                dateEnd.setHours(3, 0, 0, 0)
-                dateEnd.setDate(dateEnd.getDate() + 1)
-                dateStart = new Date(dateEnd)
-                dateStart.setDate(dateStart.getDate() - 3)
-            }
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
@@ -878,29 +913,29 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             client: {$in: clients},
-                            organization: user.organization,
-
-                            $match:{
-                                ...(search.length>0?{
-                                        $or: [
-                                            {number: {'$regex': search, '$options': 'i'}},
-                                            {info: {'$regex': search, '$options': 'i'}},
-                                            {address: {'$regex': search, '$options': 'i'}},
-                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                            {client: {$in: _clients}},
-                                            {agent: {$in: _agents}},
-                                        ]
-                                    }
-                                    :{
-                                        $or: [
-                                            {organization: user.organization},
-                                            {distributer: user.organization},
-                                        ]
-                                    })
-                            }
+                            $and: [
+                                ...(date===''?[] :[{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]),
+                                {
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
+                                    ]
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                                {agent: {$in: _agents}},
+                                            ]
+                                        }
+                                        :{
+                                        })}],
                         }
                     },
                     { $sort : _sort },
@@ -1005,26 +1040,54 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
-                            ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            ...(search.length>0?{
+                            ...(
+                                date===''?{
+                                $and: [
+                                    {
+                                        $or: [
+                                            {organization: user.organization},
+                                            {distributer: user.organization},
+                                        ]
+                                    },
+                                    {
+                                        ...(search.length>0?{
+                                                $or: [
+                                                    {number: {'$regex': search, '$options': 'i'}},
+                                                    {info: {'$regex': search, '$options': 'i'}},
+                                                    {address: {'$regex': search, '$options': 'i'}},
+                                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                    {client: {$in: _clients}},
+                                                    {agent: {$in: _agents}}
+                                                ]
+                                            }
+                                            :{
+                                            })
+                                    }
+                                ]
+                            }:{ $and: [
+                                {createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}},
+                                {
                                     $or: [
-                                        {number: {'$regex': search, '$options': 'i'}},
-                                        {info: {'$regex': search, '$options': 'i'}},
-                                        {address: {'$regex': search, '$options': 'i'}},
-                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                        {client: {$in: _clients}},
-                                        {agent: {$in: _agents}},
                                         {organization: user.organization},
                                         {distributer: user.organization},
                                     ]
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                                {agent: {$in: _agents}}
+                                            ]
+                                        }
+                                        :{
+                                        })
                                 }
-                                :{
-                                    $or: [
-                                        {organization: user.organization},
-                                        {distributer: user.organization},
-                                    ]
-                                })
+                                ]}),
                         }
                     },
                     { $sort : _sort },
