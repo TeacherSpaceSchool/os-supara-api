@@ -302,6 +302,11 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
+                            {
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },
                             { $sort : _sort },
                             { $skip : skip },
                             { $limit : 15 },
@@ -349,14 +354,14 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        { $sort : _sort },
-                        { $skip : skip!=undefined?skip:0 },
-                        { $limit : skip!=undefined?15:10000000000 },
                         {
                             $match:{
                                 'user.status': 'active'
                             }
                         },
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?15:10000000000 },
                     ])
             return clients
         }
@@ -398,14 +403,14 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
                             {
                                 $match:{
                                     'user.status': 'active'
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                         ])
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
