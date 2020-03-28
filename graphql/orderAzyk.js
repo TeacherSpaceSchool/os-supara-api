@@ -238,40 +238,41 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
-            invoices =  await InvoiceAzyk.aggregate(
-                [
-                    {
-                        $match:{
-                            del: {$ne: 'deleted'},
-                            taken: true,
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
-                            client: {$in: clients},
-                            $and: [
-                                ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
-                                {
-                                    $or: [
-                                        {organization: user.organization},
-                                        {distributer: user.organization},
-                                    ],
-                                },
-                                {
-                                    ...(search.length>0?{
-                                            $or: [
-                                                {number: {'$regex': search, '$options': 'i'}},
-                                                {info: {'$regex': search, '$options': 'i'}},
-                                                {address: {'$regex': search, '$options': 'i'}},
-                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                {client: {$in: _clients}},
-                                                {agent: {$in: _agents}}
-                                            ]
-                                        }
-                                        :{})
-                                }
+            invoices =  await InvoiceAzyk.find(
+                {
+                    del: {$ne: 'deleted'},
+                    taken: true,
+                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                    client: {$in: clients},
+                    $and: [
+                        ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
+                        {
+                            $or: [
+                                {organization: user.organization},
+                                {distributer: user.organization},
                             ],
-
+                        },
+                        {
+                            ...(search.length>0?{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                        {agent: {$in: _agents}}
+                                    ]
+                                }
+                                :{})
                         }
-                    }
-                ])
+                    ],
+
+                }
+            )
+                .populate({
+                    path: 'orders'
+                })
+                .lean()
         }
         else if(user.role==='агент'){
             if(date!=='') {
@@ -295,39 +296,40 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
-            invoices =  await InvoiceAzyk.aggregate(
-                [
-                    {
-                        $match: {
-                            del: {$ne: 'deleted'},
-                            taken: true,
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
-                            client: {$in: clients},
-                            $and: [
-                                {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
-                                {
-                                    $or: [
-                                        {organization: user.organization},
-                                        {distributer: user.organization},
-                                    ],
-                                },
-                                {
-                                    ...(search.length>0?{
-                                            $or: [
-                                                {number: {'$regex': search, '$options': 'i'}},
-                                                {info: {'$regex': search, '$options': 'i'}},
-                                                {address: {'$regex': search, '$options': 'i'}},
-                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                {client: {$in: _clients}},
-                                            ]
-                                        }
-                                        :{
-                                        })
-                                }
+            invoices =  await InvoiceAzyk.find(
+                {
+                    del: {$ne: 'deleted'},
+                    taken: true,
+                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                    client: {$in: clients},
+                    $and: [
+                        {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
+                        {
+                            $or: [
+                                {organization: user.organization},
+                                {distributer: user.organization},
                             ],
+                        },
+                        {
+                            ...(search.length>0?{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                    ]
+                                }
+                                :{
+                                })
                         }
-                    }
-                ])
+                    ],
+                }
+            )
+                .populate({
+                    path: 'orders'
+                })
+                .lean()
         }
         let tonnage = 0;
         let size = 0;
