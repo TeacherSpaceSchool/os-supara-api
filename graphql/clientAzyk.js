@@ -104,7 +104,8 @@ const resolvers = {
                 .distinct('client')
             clients = await ClientAzyk.count({
                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                _id: {$in: clients}, del: {$ne: 'deleted'},
+                _id: {$in: clients},
+                del: {$ne: 'deleted'},
                 $or: [
                     {name: {'$regex': search, '$options': 'i'}},
                     {email: {'$regex': search, '$options': 'i'}},
@@ -302,13 +303,8 @@ const resolvers = {
                                 }
                             },
                             { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
-                            {
-                                $match:{
-                                    'user.status': 'active'
-                                }
-                            },
+                            { $skip : skip },
+                            { $limit : 15 },
                         ])
                 return clients
             }
