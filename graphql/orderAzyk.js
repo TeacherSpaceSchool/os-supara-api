@@ -144,7 +144,7 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'}
             }).distinct('_id')
         }
-        let invoices;
+        let invoices = [];
         if(user.role==='client'){
             invoices =  await InvoiceAzyk.find(
                     {

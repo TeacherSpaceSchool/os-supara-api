@@ -100,7 +100,7 @@ const resolvers = {
         }
         let _organizations;
         let _clients;
-        let returneds;
+        let returneds = [];
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
@@ -469,7 +469,7 @@ const resolvers = {
                     { $lookup:
                         {
                             from: OrganizationAzyk.collection.collectionName,
-                            let: { distributer: '$organization' },
+                            let: { organization: '$organization' },
                             pipeline: [
                                 { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
@@ -575,7 +575,7 @@ const resolvers = {
                     { $lookup:
                         {
                             from: OrganizationAzyk.collection.collectionName,
-                            let: { distributer: '$organization' },
+                            let: { organization: '$organization' },
                             pipeline: [
                                 { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
@@ -681,7 +681,7 @@ const resolvers = {
                     { $lookup:
                         {
                             from: OrganizationAzyk.collection.collectionName,
-                            let: { distributer: '$organization' },
+                            let: { organization: '$organization' },
                             pipeline: [
                                 { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
@@ -783,7 +783,7 @@ const resolvers = {
                     { $lookup:
                         {
                             from: OrganizationAzyk.collection.collectionName,
-                            let: { distributer: '$organization' },
+                            let: { organization: '$organization' },
                             pipeline: [
                                 { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
