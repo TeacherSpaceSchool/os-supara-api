@@ -1356,6 +1356,7 @@ const resolversMutation = {
                     district = findDistrict
             }
         }
+        console.log(district)
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
