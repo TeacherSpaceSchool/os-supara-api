@@ -9,6 +9,7 @@ const CategoryAzyk = require('./categoryAzyk');
 const SubCategoryAzyk = require('./subCategoryAzyk');
 const ReturnedAzyk = require('./returnedAzyk');
 const OrganizationAzyk = require('./organizationAzyk');
+const AgentHistoryGeoAzyk = require('./agentHistoryGeoAzyk');
 const ContactAzyk = require('./contactAzyk');
 const FaqAzyk = require('./faqAzyk');
 const ClientAzyk = require('./clientAzyk');
@@ -60,6 +61,7 @@ const typeDefs = gql`
     ${EquipmentAzyk.type}
     ${ClientAzyk.type}
     ${OrganizationAzyk.type}
+    ${AgentHistoryGeoAzyk.type}
     ${BlogAzyk.type}
     ${PassportAzyk.type}
     ${CategoryAzyk.type}
@@ -87,6 +89,7 @@ const typeDefs = gql`
         ${EquipmentAzyk.mutation}
         ${ClientAzyk.mutation}
         ${OrganizationAzyk.mutation}
+        ${AgentHistoryGeoAzyk.mutation}
         ${CategoryAzyk.mutation}
         ${SubCategoryAzyk.mutation}
         ${ReturnedAzyk.mutation}
@@ -112,6 +115,7 @@ const typeDefs = gql`
         ${AutoAzyk.query}
         ${EquipmentAzyk.query}
         ${OrganizationAzyk.query}
+        ${AgentHistoryGeoAzyk.query}
         ${AdsAzyk.query}
         ${SubscriberAzyk.query}
         ${NotificationStatisticAzyk.query}
@@ -163,6 +167,7 @@ const resolvers = {
         ...EquipmentAzyk.resolvers,
         ...ClientAzyk.resolvers,
         ...OrganizationAzyk.resolvers,
+        ...AgentHistoryGeoAzyk.resolvers,
         ...BlogAzyk.resolvers,
         ...AdsAzyk.resolvers,
         ...SubscriberAzyk.resolvers,
@@ -191,6 +196,7 @@ const resolvers = {
         ...AutoAzyk.resolversMutation,
         ...EquipmentAzyk.resolversMutation,
         ...OrganizationAzyk.resolversMutation,
+        ...AgentHistoryGeoAzyk.resolversMutation,
         ...CategoryAzyk.resolversMutation,
         ...SubCategoryAzyk.resolversMutation,
         ...ReturnedAzyk.resolversMutation,

@@ -17,6 +17,25 @@ const validPhone = (phone) =>
     return /^[+]{1}996[0-9]{9}$/.test(phone);
 }
 
+const getGeoDistance = (lat1, lon1, lat2, lon2) => {
+    lat1 = parseFloat(lat1)
+    lon1 = parseFloat(lon1)
+    lat2 = parseFloat(lat2)
+    lon2 = parseFloat(lon2)
+    let deg2rad = Math.PI / 180;
+    lat1 *= deg2rad;
+    lon1 *= deg2rad;
+    lat2 *= deg2rad;
+    lon2 *= deg2rad;
+    let diam = 12742000; // Diameter of the earth in km (2 * 6371)
+    let dLat = lat2 - lat1;
+    let dLon = lon2 - lon1;
+    let a = (
+        (1 - Math.cos(dLat)) +
+        (1 - Math.cos(dLon)) * Math.cos(lat1) * Math.cos(lat2)
+    ) / 2;
+    return parseInt(diam * Math.asin(Math.sqrt(a)));
+}
 module.exports.weekDay = [
     'BC',
     'ПН',
@@ -85,7 +104,7 @@ const pdDDMMYYYY = (date) =>
 }
 
 
-
+module.exports.getGeoDistance = getGeoDistance;
 module.exports.checkInt = checkInt;
 module.exports.pdDDMMYYYY = pdDDMMYYYY;
 module.exports.skip = skip;

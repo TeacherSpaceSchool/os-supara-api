@@ -266,26 +266,50 @@ const resolvers = {
                 let clients = await DistrictAzyk
                     .find({agent: user.employment})
                     .distinct('client')
-                clients = await ClientAzyk.find({
-                    ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                    _id: {$in: clients},
-                    del: {$ne: 'deleted'},
-                    $or: [
-                        {name: {'$regex': search, '$options': 'i'}},
-                        {email: {'$regex': search, '$options': 'i'}},
-                        {city: {'$regex': search, '$options': 'i'}},
-                        {info: {'$regex': search, '$options': 'i'}},
-                        {device: {'$regex': search, '$options': 'i'}},
-                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                        {phone: {'$regex': search, '$options': 'i'}}
-                    ]
-                })
-                    .populate({
-                        path: 'user'
-                    })
-                    .sort(sort)
-                    .skip(skip != undefined ? skip : 0)
-                    .limit(skip != undefined ? 100 : 10000000000)
+                clients = await ClientAzyk
+                    .aggregate(
+                        [
+                            {
+                                $match:{
+                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                    del: {$ne: 'deleted'},
+                                    _id: {$in: clients},
+                                    $or: [
+                                        {name: {'$regex': search, '$options': 'i'}},
+                                        {email: {'$regex': search, '$options': 'i'}},
+                                        {city: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {device: {'$regex': search, '$options': 'i'}},
+                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                        {phone: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                            },
+                            { $lookup:
+                                {
+                                    from: UserAzyk.collection.collectionName,
+                                    let: { user: '$user' },
+                                    pipeline: [
+                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                    path : '$user'
+                                }
+                            },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
+                            {
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },
+                        ])
                 return clients
             }
             else return []
@@ -294,25 +318,53 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
-            clients = await ClientAzyk.find({
-                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                _id: {$in: clients}, del: {$ne: 'deleted'},
-                $or: [
-                    {name: {'$regex': search, '$options': 'i'}},
-                    {email: {'$regex': search, '$options': 'i'}},
-                    {city: {'$regex': search, '$options': 'i'}},
-                    {info: {'$regex': search, '$options': 'i'}},
-                    {device: {'$regex': search, '$options': 'i'}},
-                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                    {phone: {'$regex': search, '$options': 'i'}}
-                ]
-            })
-                .sort(sort)
-                .populate({ path: 'user'})
-                .skip(skip!=undefined?skip:0)
-                .limit(skip!=undefined?15:10000000000)
+            clients = await ClientAzyk
+                .aggregate(
+                    [
+                        {
+                            $match:{
+                                ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                del: {$ne: 'deleted'},
+                                _id: {$in: clients},
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
+                        { $lookup:
+                            {
+                                from: UserAzyk.collection.collectionName,
+                                let: { user: '$user' },
+                                pipeline: [
+                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                ],
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $unwind:{
+                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                path : '$user'
+                            }
+                        },
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?15:10000000000 },
+                        {
+                            $match:{
+                                'user.status': 'active'
+                            }
+                        },
+                    ])
             return clients
-        } else if(['организация'].includes(user.role)) {
+        }
+        else if(['организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
             let clients;
             if(organization.accessToClient)
@@ -334,9 +386,6 @@ const resolvers = {
                                     ]
                                 }
                             },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -353,30 +402,62 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
+                            {
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },
                         ])
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
                 clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
-                clients = await ClientAzyk.find({
-                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                    _id: {$in: clients},
-                    del: {$ne: 'deleted'},
-                    $or: [
-                        {name: {'$regex': search, '$options': 'i'}},
-                        {email: {'$regex': search, '$options': 'i'}},
-                        {city: {'$regex': search, '$options': 'i'}},
-                        {info: {'$regex': search, '$options': 'i'}},
-                        {device: {'$regex': search, '$options': 'i'}},
-                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
-                        {phone: {'$regex': search, '$options': 'i'}}
-                    ]
-                })
-                    .sort(sort)
-                    .skip(skip!=undefined?skip:0)
-                    .limit(skip!=undefined?15:10000000000)
-                    .populate({
-                        path: 'user',
-                    })
+                clients = await ClientAzyk
+                    .aggregate(
+                        [
+                            {
+                                $match:{
+                                    ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
+                                    del: {$ne: 'deleted'},
+                                    _id: {$in: clients},
+                                    $or: [
+                                        {name: {'$regex': search, '$options': 'i'}},
+                                        {email: {'$regex': search, '$options': 'i'}},
+                                        {city: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {device: {'$regex': search, '$options': 'i'}},
+                                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                        {phone: {'$regex': search, '$options': 'i'}}
+                                    ]
+                                }
+                            },
+                            { $lookup:
+                                {
+                                    from: UserAzyk.collection.collectionName,
+                                    let: { user: '$user' },
+                                    pipeline: [
+                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                    ],
+                                    as: 'user'
+                                }
+                            },
+                            {
+                                $unwind:{
+                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                    path : '$user'
+                                }
+                            },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
+                            {
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },
+                        ])
             }
             return clients
         }
