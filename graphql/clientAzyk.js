@@ -616,7 +616,7 @@ const resolversMutation = {
                 password: password,
             });
             newUser = await UserAzyk.create(newUser);
-            let client = {status: 'active', user: newUser._id}
+            let client = {status: 'active', user: newUser._id, sync: []}
             if(name)client.name = name
             if(email)client.email = email
             if(city)client.city = city
@@ -654,6 +654,7 @@ const resolversMutation = {
             if(city) object.city = city
             if(phone) object.phone = phone
             if(device) object.device = device
+            object.sync = []
 
             if(newPass||login){
                 let objectUser = await UserAzyk.findById(object.user)
@@ -682,6 +683,7 @@ const resolversMutation = {
                     await object.save()
                 }
                 objects[i].del = 'deleted'
+                objects[i].sync = []
                 objects[i].save()
                 await Integrate1CAzyk.deleteMany({client: objects[i]._id})
             }
@@ -696,6 +698,7 @@ const resolversMutation = {
             ){
                 let object = await UserAzyk.findOne({_id: objects[i].user})
                 object.status = object.status==='active'?'deactive':'active'
+                object.sync = []
                 await object.save()
             }
         }

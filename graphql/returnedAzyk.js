@@ -56,6 +56,7 @@ const type = `
     organization: ID
     returned: Returned
     type: String
+    manager: ID
   }
   input ReturnedItemsInput {
     _id: ID
@@ -890,7 +891,7 @@ const resolversMutation = {
             info: info,
             address: address,
             organization: organization,
-            distributer: district&&district.organization&&district.organization.toString()!==organization.toString()?district.organization:null
+            distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
         });
         objectReturned = await ReturnedAzyk.create(objectReturned);
         pubsub.publish(RELOAD_RETURNED, { reloadReturned: {
@@ -899,6 +900,7 @@ const resolversMutation = {
             client: client,
             organization: organization,
             returned: objectReturned,
+            manager: district?district.manager:undefined,
             type: 'ADD'
         } });
         return {data: 'OK'};
@@ -919,6 +921,7 @@ const resolversMutation = {
                     agent: findDistrict?findDistrict.agent:null,
                     organization: objects[i].organization,
                     returned: {_id: objects[i]._id},
+                    manager: findDistrict?findDistrict.manager:undefined,
                     type: 'DELETE'
                 } });
             }
@@ -999,7 +1002,7 @@ const resolversMutation = {
             editor: editor,
         });
         await HistoryReturnedAzyk.create(objectHistoryReturned);
-        if(object.organization.name.toLowerCase().includes('шоро')){
+        if(object.organization.name==='ЗАО «ШОРО»'){
             if(object.confirmationForwarder)
                 setOutXMLReturnedShoroAzyk(object)
             else if(object.cancelForwarder)
@@ -1011,6 +1014,7 @@ const resolversMutation = {
             agent: district?district.agent:null,
             organization: object.organization._id,
             returned: object,
+            manager: district?district.manager:undefined,
             type: 'SET'
         } });
         return object
@@ -1025,7 +1029,8 @@ const resolversSubscription = {
                 return (
                     ['admin', 'суперагент'].includes(user.role)||
                     (user.employment&&payload.reloadReturned.agent&&payload.reloadReturned.agent.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadReturned.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadReturned.organization.toString()===user.organization.toString())
+                    (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
+                    (user.organization&&payload.reloadReturned.organization&&'организация'===user.role&&payload.reloadReturned.organization.toString()===user.organization.toString())
                 )
             },
         )

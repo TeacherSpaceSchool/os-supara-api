@@ -144,6 +144,14 @@ const resolvers = {
                 employments = employments.filter(employment => (employment.user))
                 return employments
             }
+            else if(_id === 'super'){
+                let employments = await UserAzyk.find({role: 'суперменеджер', status: 'active'})
+                    .distinct('_id')
+                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                    .populate({ path: 'user' })
+                    .populate({ path: 'organization'})
+                return employments
+            }
             else return []
         }
         else if (['организация', 'менеджер'].includes(user.role)) {
@@ -165,7 +173,7 @@ const resolvers = {
                 employments = employments.filter(employment => (employment.user))
                 return employments
             }
-            else if(user.role === 'super'){
+            else if(_id === 'super'){
                 let employments = await UserAzyk.find({role: 'суперагент', status: 'active'})
                     .distinct('_id')
                 employments = await EmploymentAzyk.find({user: {$in: employments}})

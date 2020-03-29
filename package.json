@@ -46,7 +46,8 @@
     "socketio-jwt": "^4.5.0",
     "uuid": "^7.0.1",
     "web-push": "^3.4.3",
-    "xml": "^1.0.1"
+    "xml": "^1.0.1",
+    "xmlbuilder": "^15.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

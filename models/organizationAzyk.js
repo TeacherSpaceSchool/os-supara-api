@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const OrganizationAzykSchema = mongoose.Schema({
-    name: String,
+    name:  {
+        type: String,
+        required: true,
+        unique: true
+    },
     image: String,
     address: [String],
     email: [String],
@@ -23,7 +28,9 @@ const OrganizationAzykSchema = mongoose.Schema({
     timestamps: true
 });
 
+OrganizationAzykSchema.plugin(uniqueValidator);
 
 const OrganizationAzyk = mongoose.model('OrganizationAzyk', OrganizationAzykSchema);
+
 
 module.exports = OrganizationAzyk;

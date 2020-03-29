@@ -11,7 +11,7 @@ const randomstring = require('randomstring');
 const app = require('../app');
 const fs = require('fs');
 const path = require('path');
-const { urlMain, saveFile, deleteFile, weekDay } = require('../module/const');
+const { urlMain, saveFile, deleteFile, weekDay, pdDDMMYYYY } = require('../module/const');
 const readXlsxFile = require('read-excel-file/node');
 
 const type = `
@@ -99,6 +99,7 @@ const resolvers = {
                         data[i].number,
                         `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`,
                         data[i].organization.name,
+                        pdDDMMYYYY(new Date(data[i].createdAt)),
                         `${problem ? 'повторяющийся' : ''}${problem&&data[i].sync !== 2?', ':''}${data[i].sync !== 2 ? 'несинхронизирован' : ''}`
                     ]})
                 }
@@ -114,7 +115,7 @@ const resolvers = {
                 ...statistic
             ]
             return {
-                columns: ['№заказа', 'клиент', 'компания', 'проблема'],
+                columns: ['№заказа', 'клиент', 'компания', 'дата', 'проблема'],
                 row: statistic
             };
         }

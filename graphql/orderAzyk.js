@@ -80,6 +80,7 @@ const type = `
     who: ID
     client: ID
     agent: ID
+    manager: ID
     organization: ID
     invoice: Invoice
     type: String
@@ -1356,7 +1357,14 @@ const resolversMutation = {
                     district = findDistrict
             }
         }
-        console.log(district)
+        else {
+            let findDistrict = await DistrictAzyk.findOne({
+                organization: organization,
+                client: client
+            })
+            if(findDistrict)
+                district = findDistrict
+        }
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
@@ -1428,7 +1436,7 @@ const resolversMutation = {
                         number: number,
                         agent: user.employment,
                         organization: organizaiton,
-                        distributer: district&&district.organization?district.organization:null
+                        distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
                     });
                     if(usedBonus>0) {
                         objectInvoice.allPrice -= usedBonus
@@ -1442,10 +1450,11 @@ const resolversMutation = {
                         .populate({path: 'agent'})
                      pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                         who: user.role==='admin'?null:user._id,
-                        agent: user.employment,
+                        agent: district?district.agent:undefined,
                         client: client,
                         organization: organizaiton,
                         invoice: newInvoice,
+                         manager: district?district.manager:undefined,
                         type: 'ADD'
                     } });
                 }
@@ -1466,12 +1475,17 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 objects[i].del = 'deleted'
                 objects[i].save()
+                let district = await DistrictAzyk.findOne({
+                    organization: objects[i].organization,
+                    client: objects[i].client
+                })
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,
-                    agent: objects[i].agent,
+                    agent: district?district.agent:undefined,
                     organization: objects[i].organization,
                     invoice: {_id: objects[i]._id},
+                    manager: district?district.manager:undefined,
                     type: 'DELETE'
                 } });
             }
@@ -1562,18 +1576,23 @@ const resolversMutation = {
             editor: editor,
         });
         await HistoryOrderAzyk.create(objectHistoryOrder);
-        if(resInvoice.orders[0].item.organization.name.toLowerCase().includes('шоро')){
+        if(resInvoice.orders[0].item.organization.name==='ЗАО «ШОРО»'){
             if(resInvoice.orders[0].status==='принят')
                 setOutXMLShoroAzyk(resInvoice)
             else if(resInvoice.orders[0].status==='отмена')
                 cancelOutXMLShoroAzyk(resInvoice)
         }
+        let district = await DistrictAzyk.findOne({
+            organization: resInvoice.organization,
+            client: resInvoice.client._id
+        })
         pubsub.publish(RELOAD_ORDER, { reloadOrder: {
             who: user.role==='admin'?null:user._id,
             client: resInvoice.client._id,
-            agent: resInvoice.agent?resInvoice.agent._id:null,
+            agent: district?district.agent:undefined,
             organization: resInvoice.organization,
             invoice: resInvoice,
+            manager: district?district.manager:undefined,
             type: 'SET'
         } });
         return resInvoice
@@ -1771,7 +1790,8 @@ const resolversSubscription = {
                     ['admin', 'суперагент'].includes(user.role)||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
                     (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadOrder.organization&&['организация', 'менеджер'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                    (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
+                    (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString())
                 )
             },
         )

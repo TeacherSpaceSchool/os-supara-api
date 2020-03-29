@@ -29,7 +29,19 @@ const resolvers = {
     agentRoutes: async(parent, {organization, search}, {user}) => {
         if (user.role !== 'admin')
             organization = user.organization
-        if(['admin', 'организация'].includes(user.role)) {
+        if(user.role==='admin'){
+            let agentRoutes = await AgentRouteAzyk
+                .find({organization: organization==='super'?null:organization})
+                .populate('district')
+                .populate('organization')
+            agentRoutes = agentRoutes.filter(
+                agentRoute =>
+                    (agentRoute.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (agentRoute.district.name.toLowerCase().includes(search.toLowerCase()))
+            )
+            return agentRoutes
+        }
+        if('организация'===user.role) {
             let agentRoutes = await AgentRouteAzyk.find({organization: organization})
                 .populate('district')
                 .populate('organization')
@@ -98,7 +110,7 @@ const resolvers = {
                 .populate({path: 'district', populate: [{path: 'client', populate: [{path: 'user'}]}]})
                 .populate('organization')
         }
-        else if('агент'===user.role){
+        else if(['агент', 'суперагент'].includes(user.role)){
             let res = await DistrictAzyk
                 .findOne({agent: user.employment})
             res = await AgentRouteAzyk.findOne({district: res._id, organization: user.organization})
@@ -116,7 +128,7 @@ const resolversMutation = {
             let _object = new AgentRouteAzyk({
                 name: name,
                 district: district,
-                organization: organization,
+                organization: organization!=='super'?organization:undefined,
                 clients: clients,
             });
             await AgentRouteAzyk.create(_object)

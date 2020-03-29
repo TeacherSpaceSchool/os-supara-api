@@ -12,7 +12,7 @@ const ClientAzykSchema = mongoose.Schema({
     phone: [String],
     address: [[String]],
     sync:  {
-        type: [mongoose.Schema.Types.ObjectId],
+        type: [String],
         default: []
     },
     info: {
