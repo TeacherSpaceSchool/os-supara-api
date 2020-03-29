@@ -1,5 +1,5 @@
 const AgentHistoryGeoAzyk = require('../models/agentHistoryGeoAzyk');
-const {getGeoDistance, pdDDMMYYYY} = require('../module/const');
+const {getGeoDistance, pdDDMMYYHHMM} = require('../module/const');
 
 const type = `
   type AgentHistoryGeo {
@@ -36,7 +36,7 @@ const resolvers = {
             data.push({
                 _id: agentHistoryGeoAzyks[i]._id,
                 data: [
-                    pdDDMMYYYY(agentHistoryGeoAzyks[i].createdAt),
+                    pdDDMMYYHHMM(agentHistoryGeoAzyks[i].createdAt),
                     `${agentHistoryGeoAzyks[i].client.name}${agentHistoryGeoAzyks[i].client.address&&agentHistoryGeoAzyks[i].client.address[0]?` (${agentHistoryGeoAzyks[i].client.address[0][2]?`${agentHistoryGeoAzyks[i].client.address[0][2]}, `:''}${agentHistoryGeoAzyks[i].client.address[0][0]})`:''}`,
                     `${getGeoDistance(...(agentHistoryGeoAzyks[i].geo.split(', ')), ...(agentHistoryGeoAzyks[i].client.address[0][1].split(', ')))} м`
                 ]

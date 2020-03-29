@@ -102,11 +102,19 @@ const pdDDMMYYYY = (date) =>
     date = date[2].split('T')[0]+'.'+date[1]+'.'+date[0].replace('"', '')
     return date
 }
+const pdDDMMYYHHMM = (date) =>
+{
+    date.setHours(date.getHours() - (date.getTimezoneOffset()/60));
+    date = JSON.stringify(date).split('-')
+    date = date[2].split('T')[0]+'.'+date[1]+'.'+(date[0].replace('"', '')).substring(2,4)+' '+date[2].split('T')[1].split(':')[0]+':'+date[2].split('T')[1].split(':')[1]
+    return date
+}
 
 
 module.exports.getGeoDistance = getGeoDistance;
 module.exports.checkInt = checkInt;
 module.exports.pdDDMMYYYY = pdDDMMYYYY;
+module.exports.pdDDMMYYHHMM = pdDDMMYYHHMM;
 module.exports.skip = skip;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;

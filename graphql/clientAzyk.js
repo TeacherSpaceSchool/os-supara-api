@@ -407,8 +407,8 @@ const resolvers = {
                                 }
                             },
                             { $sort : _sort },
-                            { $skip : skip },
-                            { $limit : 15 },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                         ])
                 return clients
             }
