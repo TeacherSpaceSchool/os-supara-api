@@ -120,7 +120,7 @@ const resolvers = {
                                     {phone: {'$regex': search, '$options': 'i'}}
                                 ]
                             }
-                        },
+                        }/*,
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -141,7 +141,7 @@ const resolvers = {
                             $match:{
                                 'user.status': 'active'
                             }
-                        },
+                        },*/
                     ])
             return [(clients.length).toString()]
         }
@@ -167,7 +167,7 @@ const resolvers = {
                                     {phone: {'$regex': search, '$options': 'i'}}
                                 ]
                             }
-                        },
+                        }/*,
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -188,7 +188,7 @@ const resolvers = {
                             $match:{
                                 'user.status': 'active'
                             }
-                        },
+                        },*/
                     ])
             return [(clients.length).toString()]
         } else if(['организация'].includes(user.role)) {
@@ -212,7 +212,7 @@ const resolvers = {
                                         {phone: {'$regex': search, '$options': 'i'}}
                                     ]
                                 }
-                            },
+                            }/*,
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -233,7 +233,7 @@ const resolvers = {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            }])
+                            }*/])
                 clients = clients.length
             }
             else {
@@ -257,7 +257,7 @@ const resolvers = {
                                         {phone: {'$regex': search, '$options': 'i'}}
                                     ]
                                 }
-                            },
+                            }/*,
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -278,7 +278,7 @@ const resolvers = {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            }])
+                            }*/])
                 clients = clients.length
             }
             return [clients.toString()]
@@ -385,6 +385,9 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -400,15 +403,12 @@ const resolvers = {
                                     preserveNullAndEmptyArrays : true, // this remove the object which is null
                                     path : '$user'
                                 }
-                            },
+                            }/*,
                             {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
+                            }*/
                         ])
                 return clients
             }
@@ -437,6 +437,9 @@ const resolvers = {
                                 ]
                             }
                         },
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?15:10000000000 },
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -452,15 +455,12 @@ const resolvers = {
                                 preserveNullAndEmptyArrays : true, // this remove the object which is null
                                 path : '$user'
                             }
-                        },
+                        }/*,
                         {
                             $match:{
                                 'user.status': 'active'
                             }
-                        },
-                        { $sort : _sort },
-                        { $skip : skip!=undefined?skip:0 },
-                        { $limit : skip!=undefined?15:10000000000 },
+                        }*/
                     ])
             return clients
         }
@@ -486,6 +486,9 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -501,15 +504,12 @@ const resolvers = {
                                     preserveNullAndEmptyArrays : true, // this remove the object which is null
                                     path : '$user'
                                 }
-                            },
+                            }/*,
                             {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
+                            }*/
                         ])
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
@@ -533,6 +533,9 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -548,15 +551,12 @@ const resolvers = {
                                     preserveNullAndEmptyArrays : true, // this remove the object which is null
                                     path : '$user'
                                 }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 },
+                            }/*,
                             {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            },
+                            }*/
                         ])
             }
             return clients
