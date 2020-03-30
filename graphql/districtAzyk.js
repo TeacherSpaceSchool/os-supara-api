@@ -98,7 +98,6 @@ const resolvers = {
 
             })
                 .populate('agent')
-                .populate({path: 'client', populate: [{path: 'user'}]})
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('manager')

@@ -2,6 +2,7 @@ const InvoiceAzyk = require('../models/invoiceAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const EmploymentAzyk = require('../models/employmentAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
@@ -1414,7 +1415,7 @@ const resolvers = {
             worksheet.getCell('E1').value = 'Телефон';
             for(let i = 0; i<data.length;i++){
                 let GUID = ''
-                let findGUID = await Integrate1CAzyk.findOne({organization: organization, client: data[i]._id})
+                let findGUID = await Integrate1CAzyk.findOne({organization: organization!=='super'?organization:undefined, client: data[i]._id})
                 if(findGUID)
                     GUID = findGUID.guid
                 worksheet.addRow([
@@ -1424,6 +1425,24 @@ const resolvers = {
                     data[i].address[0][0],
                     data[i].phone.reduce((accumulator, currentValue, index) => accumulator + `${index!==0?', ':''}${currentValue}`, '')
                 ]);
+            }
+            if(organization==='super'){
+                let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}})
+                    .distinct('_id')
+                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                worksheet = await workbook.addWorksheet('Агенты');
+                worksheet.getColumn(1).width = 30;
+                worksheet.getCell('A1').font = {bold: true, size: 14};
+                worksheet.getCell('A1').value = 'ID';
+                worksheet.getColumn(2).width = 30;
+                worksheet.getCell('B1').font = {bold: true, size: 14};
+                worksheet.getCell('B1').value = 'Имя';
+                for(let i = 0; i<employments.length;i++){
+                    worksheet.addRow([
+                        employments[i]._id.toString(),
+                        employments[i].name
+                    ]);
+                }
             }
 
             let xlsxname = `${randomstring.generate(20)}.xlsx`;
@@ -1493,22 +1512,33 @@ const resolversMutation = {
             let integrate1CAzyk
             for (let i = 0; i < rows.length; i++) {
                 if(!findEmployments[rows[i][0]]||!districts[findEmployments[rows[i][0]]]){
-                    integrate1CAzyk = await Integrate1CAzyk.findOne({
-                        organization: organization,
-                        guid: rows[i][0]
-                    })
-                    if(integrate1CAzyk&&integrate1CAzyk.agent) {
-                        findEmployments[rows[i][0]] = integrate1CAzyk.agent
+                    if(organization!=='super') {
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: organization,
+                            guid: rows[i][0]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.agent) {
+                            findEmployments[rows[i][0]] = integrate1CAzyk.agent
+                            districts[findEmployments[rows[i][0]]] = []
+                        }
+                    }
+                    else {
+                        findEmployments[rows[i][0]] = rows[i][0]
                         districts[findEmployments[rows[i][0]]] = []
                     }
                 }
                 if(findEmployments[rows[i][0]]&&districts[findEmployments[rows[i][0]]]) {
-                    integrate1CAzyk = await Integrate1CAzyk.findOne({
-                        organization: organization,
-                        guid: rows[i][1]
-                    })
-                    if(integrate1CAzyk&&integrate1CAzyk.client) {
-                        districts[findEmployments[rows[i][0]]].push(integrate1CAzyk.client)
+                    if(organization!=='super') {
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: organization,
+                            guid: rows[i][1]
+                        })
+                        if(integrate1CAzyk&&integrate1CAzyk.client) {
+                            districts[findEmployments[rows[i][0]]].push(integrate1CAzyk.client)
+                        }
+                    }
+                    else {
+                        districts[findEmployments[rows[i][0]]].push(rows[i][1])
                     }
 
                 }
@@ -1517,7 +1547,7 @@ const resolversMutation = {
             let district;
             for (let i = 0; i < keys1.length; i++) {
                 district = await DistrictAzyk.findOne({
-                    organization: organization,
+                    organization: organization!=='super'?organization:undefined,
                     agent: keys1[i]
                 })
                 if(district) {

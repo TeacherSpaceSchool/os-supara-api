@@ -131,7 +131,10 @@ const resolvers = {
                                             filter==='клиент'?
                                                 {client: {$ne: null}}
                                                 :
-                                                {}
+                                                filter==='менеджер'?
+                                                    {manager: {$ne: null}}
+                                                    :
+                                                    {}
                             ),
                             ...(search.length>0?{
                                     $or: [
@@ -370,6 +373,10 @@ const resolvers = {
                 {
                     name: 'Клиент',
                     value: 'клиент'
+                },
+                {
+                    name: 'Менеджер',
+                    value: 'менеджер'
                 },
             ]
             return filter
