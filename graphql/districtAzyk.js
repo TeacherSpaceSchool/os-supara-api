@@ -37,7 +37,6 @@ const resolvers = {
             if(organization==='super'){
                 let districts = await DistrictAzyk.find({organization: null})
                     .populate('agent')
-                    .populate({path: 'client', populate: [{path: 'user'}]})
                     .populate('ecspeditor')
                     .populate('organization')
                     .populate('manager')
@@ -54,7 +53,6 @@ const resolvers = {
             else {
                 let districts = await DistrictAzyk.find({organization: organization})
                     .populate('agent')
-                    .populate({path: 'client', populate: [{path: 'user'}]})
                     .populate('ecspeditor')
                     .populate('organization')
                     .populate('manager')
@@ -77,7 +75,6 @@ const resolvers = {
 
             })
                 .populate('agent')
-                .populate({path: 'client', populate: [{path: 'user'}]})
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('manager')
