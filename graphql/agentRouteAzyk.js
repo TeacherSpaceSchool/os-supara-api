@@ -137,7 +137,7 @@ const resolversMutation = {
     },
     setAgentRoute: async(parent, {_id, clients, name}, {user}) => {
         let object = await AgentRouteAzyk.findById(_id)
-        if(['admin', 'организация', 'менеджер'].includes(user.role)) {
+        if(['admin', 'организация', 'менеджер', 'агент', 'суперагент'].includes(user.role)) {
             if(name)object.name = name
             if(clients)object.clients = clients
             object.save();
