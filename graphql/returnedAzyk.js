@@ -995,14 +995,15 @@ const resolversMutation = {
                 object.cancelForwarder = false
             }
         }
-        if(object.organization.name==='ЗАО «ШОРО»'){
-            object.sync = 1
-            if(object.confirmationForwarder)
-                setOutXMLReturnedShoroAzyk(object)
-            else if(object.cancelForwarder)
-                cancelOutXMLReturnedShoroAzyk(object)
-        }
         await object.save();
+        if(object.organization.name==='ЗАО «ШОРО»'){
+            if(object.confirmationForwarder) {
+                setOutXMLReturnedShoroAzyk(object)
+            }
+            else if(object.cancelForwarder) {
+                cancelOutXMLReturnedShoroAzyk(object)
+            }
+        }
         let objectHistoryReturned = new HistoryReturnedAzyk({
             returned: returned,
             editor: editor,
@@ -1029,7 +1030,7 @@ const resolversSubscription = {
                 return (
                     ['admin', 'суперагент'].includes(user.role)||
                     (user.employment&&payload.reloadReturned.agent&&payload.reloadReturned.agent.toString()===user.employment.toString())||
-                    (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
+                    (user.employment&&payload.reloadReturned.manager&&payload.reloadReturned.manager.toString()===user.employment.toString())||
                     (user.organization&&payload.reloadReturned.organization&&'организация'===user.role&&payload.reloadReturned.organization.toString()===user.organization.toString())
                 )
             },

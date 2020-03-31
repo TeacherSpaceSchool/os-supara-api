@@ -1764,12 +1764,12 @@ const resolversMutation = {
         });
         await HistoryOrderAzyk.create(objectHistoryOrder);
         if(resInvoice.orders[0].item.organization.name==='ЗАО «ШОРО»'){
-            object.sync = 1
-            await object.save();
-            if(resInvoice.orders[0].status==='принят')
+            if(resInvoice.orders[0].status==='принят') {
                 setOutXMLShoroAzyk(resInvoice)
-            else if(resInvoice.orders[0].status==='отмена')
+            }
+            else if(resInvoice.orders[0].status==='отмена') {
                 cancelOutXMLShoroAzyk(resInvoice)
+            }
         }
         let district = await DistrictAzyk.findOne({
             organization: resInvoice.organization,
