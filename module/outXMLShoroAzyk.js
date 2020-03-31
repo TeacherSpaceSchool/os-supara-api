@@ -45,9 +45,10 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    console.log(date.getHours(), date.getHours()>1)
+                    console.log(date)
                     if(date.getHours()>1)
                         date.setDate(date.getDate() + 1)
+                    console.log(date)
                     let newOutXMLReturnedShoroAzyk = new OutXMLReturnedShoroAzyk({
                         data: [],
                         guid: await uuidv1(),
