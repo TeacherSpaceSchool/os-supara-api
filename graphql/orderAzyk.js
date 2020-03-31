@@ -546,10 +546,6 @@ const resolvers = {
                         }
                     },
                 ])
-            console.log(dateStart.getHours())
-            console.log(invoices[invoices.length-1])
-            console.log(dateStart)
-            console.log(dateEnd)
             return invoices
         }
         else if(user.role==='client'){
