@@ -57,6 +57,7 @@ const resolvers = {
                         {
                             $match:{
                                 del: 'deleted',
+                                user: {$ne: null},
                                 $or: [
                                     {name: {'$regex': search, '$options': 'i'}},
                                     {email: {'$regex': search, '$options': 'i'}},
@@ -322,6 +323,7 @@ const resolvers = {
                         {
                             $match:{
                                 del: 'deleted',
+                                user: {$ne: null},
                                 $or: [
                                     {name: {'$regex': search, '$options': 'i'}},
                                     {email: {'$regex': search, '$options': 'i'}},
@@ -333,6 +335,7 @@ const resolvers = {
                                 ]
                             }
                         },
+                        { $sort : {'createdAt': -1} },
                         { $skip : skip!=undefined?skip:0 },
                         { $limit : skip!=undefined?15:10000000000 },
                         { $lookup:
