@@ -404,7 +404,7 @@ const resolvers = {
         }
         return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
     },
-    invoices: async(parent, {search, sort, filter, date, skip}, {user}) => {
+    invoices: async(parent, {search, sort, filter, date, skip}, {user}) =>  {
         let dateStart;
         let dateEnd;
         if(date!==''){
@@ -546,6 +546,9 @@ const resolvers = {
                         }
                     },
                 ])
+            console.log(invoices[invoices.length])
+            console.log(dateStart)
+            console.log(dateEnd)
             return invoices
         }
         else if(user.role==='client'){
