@@ -45,9 +45,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    console.log(date)
-                    console.log(returned.createdAt)
-                    if(date.getHours()<18)
+                    if(date.getHours()>1)
                         date.setDate(date.getDate() + 1)
                     let newOutXMLReturnedShoroAzyk = new OutXMLReturnedShoroAzyk({
                         data: [],
@@ -113,7 +111,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    if(date.getHours()<18)
+                    if(date.getHours()>1)
                         date.setDate(date.getDate() + 1)
                     let newOutXMLShoroAzyk = new OutXMLShoroAzyk({
                         data: [],
