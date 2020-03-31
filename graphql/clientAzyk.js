@@ -685,6 +685,11 @@ const resolversMutation = {
                 objects[i].del = 'deleted'
                 objects[i].sync = []
                 objects[i].save()
+                let districts = await DistrictAzyk.find({client: objects[i]._id, })
+                for(let i1=0; i1<districts.length; i1++) {
+                    districts[i1].client.splice(districts[i1].client.indexOf(objects[i]._id), 1)
+                    districts[i1].save()
+                }
                 await Integrate1CAzyk.deleteMany({client: objects[i]._id})
             }
         }
