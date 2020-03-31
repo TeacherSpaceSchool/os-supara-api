@@ -15,6 +15,7 @@ const type = `
     image: String
     name: String
     createdAt: Date
+    updatedAt: Date
     lastActive: Date
     email: String
     city: String
