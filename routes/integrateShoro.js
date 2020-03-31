@@ -53,7 +53,7 @@ router.post('/shoro/put/returned/confirm', async (req, res, next) => {
             await checkOutXMLReturnedShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
         }
          await res.status(200);
-        await res.end('succes')
+        await res.end('success')
         logger.info(`put returned start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         console.error(err)
@@ -70,7 +70,7 @@ router.post('/shoro/put/sales/confirm', async (req, res, next) => {
             await checkOutXMLShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
         }
         await res.status(200);
-        await res.end('succes')
+        await res.end('success')
         logger.info(`put sales start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         console.error(err)
@@ -87,7 +87,7 @@ router.post('/shoro/put/client/confirm', async (req, res, next) => {
             await checkOutXMLClientShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
         }
         await res.status(200);
-        await res.end('succes')
+        await res.end('success')
         logger.info(`put client start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         console.error(err)

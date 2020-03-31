@@ -45,7 +45,8 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    date.setDate(date.getDate() + 1)
+                    if(date.getHours()<18)
+                        date.setDate(date.getDate() + 1)
                     let newOutXMLReturnedShoroAzyk = new OutXMLReturnedShoroAzyk({
                         data: [],
                         guid: await uuidv1(),
@@ -110,7 +111,8 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
                     let date = new Date()
-                    date.setDate(date.getDate() + 1)
+                    if(date.getHours()<18)
+                        date.setDate(date.getDate() + 1)
                     let newOutXMLShoroAzyk = new OutXMLShoroAzyk({
                         data: [],
                         guid: await uuidv1(),
@@ -196,6 +198,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'sales');
     let outXMLShoros = await OutXMLShoroAzyk
         .find({status: {$ne: 'check'}})
+        .populate({path: 'invoice'})
         .sort('date')
         .limit(20)
     for(let i=0;i<outXMLShoros.length;i++){
@@ -208,6 +211,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
         item.att('agent', outXMLShoros[i].agent)
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
+        item.att('coment', outXMLShoros[i].invoice.info?outXMLShoros[i].invoice.info:'')
 
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){
             item.ele('product')
@@ -287,6 +291,7 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'returned');
     let outXMLReturnedShoros = await OutXMLReturnedShoroAzyk
         .find({status: {$ne: 'check'}})
+        .populate({path: 'returned'})
         .sort('date')
         .limit(20)
     for(let i=0;i<outXMLReturnedShoros.length;i++){
@@ -299,6 +304,7 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         item.att('agent', outXMLReturnedShoros[i].agent)
         item.att('forwarder', outXMLReturnedShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLReturnedShoros[i].date))
+        item.att('coment', outXMLReturnedShoros[i].returned.info?outXMLReturnedShoros[i].returned.info:'')
         for(let ii=0;ii<outXMLReturnedShoros[i].data.length;ii++){
             item.ele('product')
                 .att('guid', outXMLReturnedShoros[i].data[ii].guid)

@@ -24,6 +24,7 @@ const type = `
     reiting: Int
     user: Status
     device: String
+    del: String
     organization: Organization
     notification: Boolean
   }
@@ -32,6 +33,8 @@ const type = `
 const query = `
     clientsSimpleStatistic(search: String!, filter: String!, date: String): [String]
     clients(search: String!, sort: String!, filter: String!, date: String, skip: Int): [Client]
+    clientsTrashSimpleStatistic(search: String!): [String]
+    clientsTrash(search: String!, skip: Int): [Client]
     client(_id: ID!): Client
     sortClient: [Sort]
     filterClient: [Filter]
@@ -41,10 +44,37 @@ const mutation = `
     addClient(image: Upload, name: String!, email: String, city: String!, address: [[String]]!, phone: [String]!, info: String, password: String!, login: String!): Data
     setClient(_id: ID!, device: String, image: Upload, name: String, city: String, phone: [String], login: String, email: String, address: [[String]], info: String, newPass: String): Data
     deleteClient(_id: [ID]!): Data
+    restoreClient(_id: [ID]!): Data
     onoffClient(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    clientsTrashSimpleStatistic: async(parent, {search}, {user}) => {
+        if(user.role==='admin'){
+            let clients = await ClientAzyk
+                .aggregate(
+                    [
+                        {
+                            $match:{
+                                del: 'deleted',
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
+                        {
+                            $count :  'clientCount'
+                        }
+                    ])
+            return [clients[0]?clients[0].clientCount.toString():'0']
+        }
+    },
     clientsSimpleStatistic: async(parent, {search, date}, {user}) => {
         let dateStart;
         let dateEnd;
@@ -282,6 +312,47 @@ const resolvers = {
                 clients = clients.length
             }
             return [clients.toString()]
+        }
+    },
+    clientsTrash: async(parent, {search, skip}, {user}) => {
+        if(user.role==='admin'){
+            let clients = await ClientAzyk
+                .aggregate(
+                    [
+                        {
+                            $match:{
+                                del: 'deleted',
+                                $or: [
+                                    {name: {'$regex': search, '$options': 'i'}},
+                                    {email: {'$regex': search, '$options': 'i'}},
+                                    {city: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {device: {'$regex': search, '$options': 'i'}},
+                                    {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                                    {phone: {'$regex': search, '$options': 'i'}}
+                                ]
+                            }
+                        },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?15:10000000000 },
+                        { $lookup:
+                            {
+                                from: UserAzyk.collection.collectionName,
+                                let: { user: '$user' },
+                                pipeline: [
+                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                ],
+                                as: 'user'
+                            }
+                        },
+                        {
+                            $unwind:{
+                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                path : '$user'
+                            }
+                        }
+                    ])
+            return clients
         }
     },
     clients: async(parent, {search, sort, date, skip}, {user}) => {
@@ -679,7 +750,7 @@ const resolversMutation = {
                     await deleteFile(objects[i].image)
                 if(objects[i].user) {
                     let object = await UserAzyk.findOne({_id: objects[i].user})
-                    object.status = object.status === 'active' ? 'deactive' : 'active'
+                    object.status = 'deactive'
                     await object.save()
                 }
                 objects[i].del = 'deleted'
@@ -691,6 +762,24 @@ const resolversMutation = {
                     districts[i1].save()
                 }
                 await Integrate1CAzyk.deleteMany({client: objects[i]._id})
+            }
+        }
+        return {data: 'OK'}
+    },
+    restoreClient: async(parent, { _id }, {user}) => {
+        let objects = await ClientAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(
+                user.role==='admin'
+            ){
+                if(objects[i].user) {
+                    let object = await UserAzyk.findOne({_id: objects[i].user})
+                    object.status = 'active'
+                    await object.save()
+                }
+                objects[i].del = null
+                objects[i].sync = []
+                objects[i].save()
             }
         }
         return {data: 'OK'}

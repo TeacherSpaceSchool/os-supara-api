@@ -971,7 +971,6 @@ const resolversMutation = {
             object.allPrice = Math.round(allPrice)
             object.allTonnage = allTonnage
             object.allSize = allSize
-            object.sync = 1
             object.items = items
         }
         if(user.role==='admin'){
@@ -996,18 +995,19 @@ const resolversMutation = {
                 object.cancelForwarder = false
             }
         }
+        if(object.organization.name==='ЗАО «ШОРО»'){
+            object.sync = 1
+            if(object.confirmationForwarder)
+                setOutXMLReturnedShoroAzyk(object)
+            else if(object.cancelForwarder)
+                cancelOutXMLReturnedShoroAzyk(object)
+        }
         await object.save();
         let objectHistoryReturned = new HistoryReturnedAzyk({
             returned: returned,
             editor: editor,
         });
         await HistoryReturnedAzyk.create(objectHistoryReturned);
-        if(object.organization.name==='ЗАО «ШОРО»'){
-            if(object.confirmationForwarder)
-                setOutXMLReturnedShoroAzyk(object)
-            else if(object.cancelForwarder)
-                cancelOutXMLReturnedShoroAzyk(object)
-        }
         pubsub.publish(RELOAD_RETURNED, { reloadReturned: {
             who: user.role==='admin'?null:user._id,
             client: object.client._id,
