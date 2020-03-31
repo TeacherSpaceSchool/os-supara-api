@@ -98,15 +98,13 @@ module.exports.deleteFile = (oldFile) => {
 const pdDDMMYYYY = (date) =>
 {
     date = new Date(date)
-    date = JSON.stringify(date).split('-')
-    date = date[2].split('T')[0]+'.'+date[1]+'.'+date[0].replace('"', '')
+    date = `${date.getDate()<10?'0':''}${date.getDate()}.${date.getMonth()<9?'0':''}${date.getMonth()+1}.${date.getFullYear()}`
     return date
 }
 const pdDDMMYYHHMM = (date) =>
 {
-    date.setHours(date.getHours() - (date.getTimezoneOffset()/60));
-    date = JSON.stringify(date).split('-')
-    date = date[2].split('T')[0]+'.'+date[1]+'.'+(date[0].replace('"', '')).substring(2,4)+' '+date[2].split('T')[1].split(':')[0]+':'+date[2].split('T')[1].split(':')[1]
+    date = new Date(date)
+    date = `${date.getDate()<10?'0':''}${date.getDate()}.${date.getMonth()<9?'0':''}${date.getMonth()+1}.${date.getFullYear()} ${date.getHours()<10?'0':''}${date.getHours()}:${date.getMinutes()<10?'0':''}${date.getMinutes()}`
     return date
 }
 

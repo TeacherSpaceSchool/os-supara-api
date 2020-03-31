@@ -100,7 +100,7 @@ const resolvers = {
                         data[i].number,
                         `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`,
                         data[i].organization.name,
-                        pdDDMMYYHHMM(new Date(data[i].createdAt)),
+                        pdDDMMYYHHMM(data[i].createdAt),
                         `${problem ? 'повторяющийся' : ''}${problem&&data[i].sync !== 2?', ':''}${data[i].sync !== 2 ? 'несинхронизирован' : ''}`
                     ]})
                 }
