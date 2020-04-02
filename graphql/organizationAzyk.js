@@ -5,6 +5,10 @@ const AutoAzyk = require('../models/autoAzyk');
 const EquipmentAzyk = require('../models/equipmentAzyk');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
+const AgentRouteAzyk = require('../models/agentRouteAzyk');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const AdsAzyk = require('../models/adsAzyk');
@@ -25,11 +29,13 @@ const type = `
     minimumOrder: Int
     accessToClient: Boolean
     consignation: Boolean
+    del: String
   }
 `;
 
 const query = `
     organizations(search: String!, sort: String!, filter: String!): [Organization]
+    organizationsTrash(search: String!): [Organization]
     organization(_id: ID!): Organization
     sortOrganization: [Sort]
     filterOrganization: [Filter]
@@ -38,6 +44,7 @@ const query = `
 const mutation = `
     addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!): Data
     setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean): Data
+    restoreOrganization(_id: [ID]!): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
 `;
@@ -56,6 +63,14 @@ const resolvers = {
                 status: 'active',
                 del: {$ne: 'deleted'}
             }).sort(sort)
+    },
+    organizationsTrash: async(parent, {search}, {user}) => {
+        if(user.role==='admin'){
+            return await OrganizationAzyk.find({
+                name: {'$regex': search, '$options': 'i'},
+                del: 'deleted'
+            }).sort('-createdAt')
+        }
     },
     organization: async(parent, {_id}) => {
         if(mongoose.Types.ObjectId.isValid(_id))
@@ -158,6 +173,19 @@ const resolversMutation = {
             await BasketAzyk.deleteMany({item: {$in: items}})
             await ItemAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted', status: 'deactive'})
             await EmploymentAzyk.deleteMany({organization: {$in: _id}})
+            await Integrate1CAzyk.deleteMany({organization: {$in: _id}})
+            await AgentRouteAzyk.deleteMany({organization: {$in: _id}})
+            await DistrictAzyk.deleteMany({organization: {$in: _id}})
+            await DistributerAzyk.deleteMany({distributer: {$in: _id}})
+            let distributers = await DistributerAzyk.findOne({
+                organizations: _id
+            })
+            for(let i=0; i<distributers.length; i++){
+                for(let i1=0; i1<_id.length; i1++) {
+                    distributers[i].organizations.splice(_id[i1], 1)
+                }
+                distributers[i].save()
+            }
             await AdsAzyk.deleteMany({organization: {$in: _id}})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
             bonus = bonus.map(element=>element._id)
@@ -174,9 +202,11 @@ const resolversMutation = {
             let objects = await OrganizationAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
-                await EmploymentAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
-                await ItemAzyk.updateMany({organization: {$in: objects[i]._id}}, {status: objects[i].status})
-                await AdsAzyk.deleteMany({organization: {$in: objects[i]._id}})
+                await EmploymentAzyk.updateMany({organization: objects[i]._id}, {status: objects[i].status})
+                let items = await ItemAzyk.find({organization: objects[i]._id})
+                items = items.map(element=>element._id)
+                await BasketAzyk.deleteMany({item: {$in: items}})
+                await ItemAzyk.updateMany({organization: objects[i]._id}, {status: objects[i].status})
                 objects[i].save()
             }
         }

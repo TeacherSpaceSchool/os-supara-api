@@ -76,11 +76,15 @@ const resolvers = {
                                             filter==='клиент'?
                                                 {client: {$ne: null}}
                                                 :
-                                                {}
+                                                filter==='менеджер'?
+                                                    {manager: {$ne: null}}
+                                                    :
+                                                    {}
                             ),
                             ...(search.length>0?{
                                     $or: [
                                         {agent: {$in: _employments}},
+                                        {manager: {$in: _employments}},
                                         {client: {$in: _clients}},
                                         {ecspeditor: {$in: _employments}},
                                         {item: {$in: _items}},
@@ -140,6 +144,7 @@ const resolvers = {
                                     $or: [
                                         {agent: {$in: _employments}},
                                         {client: {$in: _clients}},
+                                        {manager: {$in: _employments}},
                                         {ecspeditor: {$in: _employments}},
                                         {item: {$in: _items}},
                                         {guid: {'$regex': search, '$options': 'i'}}
@@ -307,10 +312,14 @@ const resolvers = {
                     .populate({path: 'user', match: {status: 'active'}})
             else {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
-                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                let clients1 = await OrderAzyk.find({item: {$in: items}}).distinct('client')
                 clients = await ClientAzyk.find({
-                    _id: { $nin: clients},
-                    $or: [{_id: {$in: clients}}, {organization: user.organization}],
+                    $or: [
+                        {$and: [
+                            {_id: {$in: clients1}},
+                            {_id: { $nin: clients}}
+                        ]},
+                        {organization: user.organization}],
                     del: {$ne: 'deleted'}
                 }).populate({
                     path: 'user',
@@ -342,7 +351,6 @@ const resolvers = {
                 .distinct('item')
             items = await ItemAzyk.find({
                 _id: {$nin: items},
-                status: 'active',
                 organization: organization,
                 del: {$ne: 'deleted'}
             })

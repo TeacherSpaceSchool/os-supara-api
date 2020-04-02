@@ -43,6 +43,7 @@ const type = `
     editor: String
     distributer: Organization
     organization: Organization
+    del: String
   }
   type HistoryReturned {
     createdAt: Date
@@ -75,6 +76,8 @@ const type = `
 const query = `
     returneds(search: String!, sort: String!, date: String!, skip: Int): [Returned]
     returnedsSimpleStatistic(search: String!, date: String): [String]
+    returnedsTrash(search: String!, skip: Int): [Returned]
+    returnedsTrashSimpleStatistic(search: String!): [String]
     returnedHistorys(returned: ID!): [HistoryReturned]
     sortReturned: [Sort]
 `;
@@ -83,6 +86,7 @@ const mutation = `
     addReturned(info: String, address: [[String]], organization: ID!, items: [ReturnedItemsInput], client: ID!): Data
     setReturned(items: [ReturnedItemsInput], returned: ID, confirmationForwarder: Boolean, cancelForwarder: Boolean): Returned
     deleteReturneds(_id: [ID]!): Data
+    restoreReturneds(_id: [ID]!): Data
 `;
 
 const subscription  = `
@@ -90,6 +94,124 @@ const subscription  = `
 `;
 
 const resolvers = {
+    returnedsTrashSimpleStatistic: async(parent, {search}, {user}) => {
+        let _organizations;
+        let _clients;
+        let returneds = [];
+        if(search.length>0){
+            _organizations = await OrganizationAzyk.find({
+                name: {'$regex': search, '$options': 'i'}
+            }).distinct('_id')
+            _clients = await ClientAzyk.find({
+                name: {'$regex': search, '$options': 'i'}
+            }).distinct('_id')
+        }
+        if(user.role==='admin') {
+            returneds =  await ReturnedAzyk.find(
+                {
+                    del: 'deleted',
+                    ...(search.length>0?{
+                            $or: [
+                                {number: {'$regex': search, '$options': 'i'}},
+                                {info: {'$regex': search, '$options': 'i'}},
+                                {address: {'$regex': search, '$options': 'i'}},
+                                {client: {$in: _clients}},
+                                {organization: {$in: _organizations}},
+                                {distributer: {$in: _organizations}},
+                            ]
+                        }
+                        :{})
+                }
+            )
+                .lean()
+        }
+        return [returneds.length.toString()]
+    },
+    returnedsTrash: async(parent, {search, skip}, {user}) => {
+        let _organizations;
+        let _clients;
+        if(search.length>0){
+            _organizations = await OrganizationAzyk.find({
+                name: {'$regex': search, '$options': 'i'}
+            }).distinct('_id')
+            _clients = await ClientAzyk.find({
+                name: {'$regex': search, '$options': 'i'}
+            }).distinct('_id')
+        }
+        if(user.role==='admin') {
+            let returneds =  await ReturnedAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            del: 'deleted',
+                            ...(search.length>0?{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                        {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
+                                    ]
+                                }
+                                :{})
+                        }
+                    },
+                    { $sort : {'createdAt': -1} },
+                    { $skip : skip!=undefined?skip:0 },
+                    { $limit : skip!=undefined?15:10000000000 },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : false,
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
+                ])
+            return returneds
+        }
+    },
     returnedsSimpleStatistic: async(parent, {search, date,}, {user}) => {
         let dateStart;
         let dateEnd;

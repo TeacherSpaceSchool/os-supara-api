@@ -1,9 +1,11 @@
 const ClientAzyk = require('../models/clientAzyk');
 const UserAzyk = require('../models/userAzyk');
 const OrderAzyk = require('../models/orderAzyk');
+const BasketAzyk = require('../models/basketAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const { deleteFile, urlMain, saveImage } = require('../module/const');
 const { createJwtGQL } = require('../module/passport');
@@ -587,8 +589,7 @@ const resolvers = {
                             }*/
                         ])
             else {
-                let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
-                clients = await OrderAzyk.find({item: {$in: items}}).distinct('client')
+                clients = await OrderAzyk.find({organization: user.organization}).distinct('client')
                 clients = await ClientAzyk
                     .aggregate(
                         [
@@ -762,9 +763,16 @@ const resolversMutation = {
                 objects[i].save()
                 let districts = await DistrictAzyk.find({client: objects[i]._id, })
                 for(let i1=0; i1<districts.length; i1++) {
+                    let agentRoutes = await AgentRouteAzyk.find({district: districts[i1]._id, })
+                    for(let i2=0; i2<agentRoutes.length; i2++) {
+                        for(let i3=0; i3<agentRoutes[i2].clients.length; i3++) {
+                            agentRoutes[i2].clients[i3].splice(agentRoutes[i2].clients[i3].indexOf(objects[i]._id), 1)
+                        }
+                    }
                     districts[i1].client.splice(districts[i1].client.indexOf(objects[i]._id), 1)
                     districts[i1].save()
                 }
+                await BasketAzyk.deleteMany({client: objects[i]._id})
                 await Integrate1CAzyk.deleteMany({client: objects[i]._id})
             }
         }

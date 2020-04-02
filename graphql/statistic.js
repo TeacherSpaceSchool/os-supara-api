@@ -661,6 +661,7 @@ const resolvers = {
                         dateEnd?{createdAt: {$lt: dateEnd}}:{}
                     ],
                     del: {$ne: 'deleted'},
+                    taken: true,
                     ...(company==='all'?{}:{ organization: company })
                 }
             )
@@ -671,7 +672,6 @@ const resolvers = {
                     path: 'orders'
                 })
                 .lean()
-            data = data.filter(data =>data.orders[0].status !== 'обработка')
             for(let i=0; i<data.length; i++) {
                 for(let ii=0; ii<data[i].orders.length; ii++) {
                     data[i].orders[ii].invoice = data[i]._id
@@ -777,7 +777,8 @@ const resolvers = {
                         dateEnd?{createdAt: {$lt: dateEnd}}:{}
                     ],
                     ...(company==='all'?{}:{ organization: company }),
-                    ...{del: {$ne: 'deleted'}}
+                    del: {$ne: 'deleted'},
+                    taken: true,
                 }
             )
                 .populate({
@@ -792,7 +793,6 @@ const resolvers = {
                     path: 'client'
                 })
                 .lean()
-            data = data.filter(data =>data.orders[0].status !== 'обработка')
             for(let i=0; i<data.length; i++) {
                 for(let ii=0; ii<data[i].orders.length; ii++) {
                     data[i].orders[ii].invoice = data[i]._id
@@ -802,7 +802,7 @@ const resolvers = {
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
             for(let i=0; i<data.length; i++) {
-                if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
                         cancel: [],
@@ -898,6 +898,7 @@ const resolvers = {
                             dateStart ? {createdAt: {$gte: dateStart}} : {},
                             dateEnd ? {createdAt: {$lt: dateEnd}} : {}
                         ],
+                        taken: true,
                         del: {$ne: 'deleted'}
                     }
                 )
@@ -911,7 +912,6 @@ const resolvers = {
                         path: 'client'
                     })
                     .lean()
-                data = data.filter(data => data.orders[0].status !== 'обработка')
                 for (let i = 0; i < data.length; i++) {
                     for (let ii = 0; ii < data[i].orders.length; ii++) {
                         data[i].orders[ii].organization = data[i].organization
@@ -922,7 +922,7 @@ const resolvers = {
                 data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
                 for(let i=0; i<data.length; i++) {
-                    if (data[i].status !== 'обработка'&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                         if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
                             profit: 0,
                             cancel: [],
@@ -964,7 +964,8 @@ const resolvers = {
                                 dateStart ? {createdAt: {$gte: dateStart}} : {},
                                 dateEnd ? {createdAt: {$lt: dateEnd}} : {}
                             ],
-                            ...{del: {$ne: 'deleted'}},
+                            del: {$ne: 'deleted'},
+                            taken: true,
                             client: {$in: districts[i].client},
                             organization: districts[i].organization,
                         }
@@ -973,7 +974,6 @@ const resolvers = {
                             path: 'orders'
                         })
                         .lean()
-                    data = data.filter(data => data.orders[0].status !== 'обработка')
                     for(let i1=0; i1<data.length; i1++) {
                         for(let i2=0; i2<data[i1].orders.length; i2++) {
                             data[i1].orders[i2].invoice = data[i1]._id
@@ -981,7 +981,7 @@ const resolvers = {
                     }
                     data = data.reduce((acc, val) => acc.concat(val.orders), []);
                     for(let i1=0; i1<data.length; i1++) {
-                        if (data[i1].status !== 'обработка') {
+                        if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                             if (data[i1].status === 'отмена') {
                                 if (!statistic[districts[i]._id].cancel.includes(data[i1].invoice)) {
                                     statistic[districts[i]._id].cancel.push(data[i1].invoice)
@@ -1014,6 +1014,7 @@ const resolvers = {
                             dateEnd ? {createdAt: {$lt: dateEnd}} : {}
                         ],
                         ...{del: {$ne: 'deleted'}},
+                        taken: true,
                         client: {$nin: withDistricts},
                         organization: company,
                     }
@@ -1022,7 +1023,6 @@ const resolvers = {
                         path: 'orders'
                     })
                     .lean()
-                data = data.filter(data => data.orders[0].status !== 'обработка')
                 for(let i1=0; i1<data.length; i1++) {
                     for(let i2=0; i2<data[i1].orders.length; i2++) {
                         data[i1].orders[i2].invoice = data[i1]._id
@@ -1030,7 +1030,7 @@ const resolvers = {
                 }
                 data = data.reduce((acc, val) => acc.concat(val.orders), []);
                 for(let i1=0; i1<data.length; i1++) {
-                    if (data[i1].status !== 'обработка') {
+                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                         if (data[i1].status === 'отмена') {
                             if (!statistic['without'].cancel.includes(data[i1].invoice)) {
                                 statistic['without'].cancel.push(data[i1].invoice)
@@ -1102,16 +1102,13 @@ const resolvers = {
                     {
                         del: {$ne: 'deleted'},
                         organization: organization,
+                        taken: true,
                     }
                 ).distinct('orders')
             data = data.reduce((acc, val) => acc.concat(val), []);
             data = await OrderAzyk.find(
                 {
                     _id: {$in: data},
-                    $and: [
-                        {status: {$ne: 'отмена'}},
-                        {status: {$ne: 'обработка'}}
-                    ]
                 }
             ).distinct('item')
             data = await ItemAzyk.find(
@@ -1256,25 +1253,22 @@ const resolvers = {
             let data = await InvoiceAzyk.find(
                 {
                     $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-                    ...{del: {$ne: 'deleted'}}
+                    del: {$ne: 'deleted'},
+                    taken: true,
+                    organization: organization
                 }
             )
                 .populate({
                     path: 'orders',
-                    match: { status: 'принят' },
                     populate : [
                         {
                             path : 'item',
-                            match: { organization: organization }
                         }
                     ]
                 })
                 .populate({
                     path : 'client'
                 })
-            data = data.filter(data =>{
-                return(data.orders.length>0&&data.orders[0].item)
-            })
             let worksheet;
             let orders = {};
             for(let i = 0; i<data.length;i++){

@@ -16,7 +16,7 @@ module.exports.addBonusToClient = async(client, organization, cash) => {
                 _object.addedBonus += bonus.bonus
                 _object.added = true
             }
-            bonusClient = await BonusClientAzyk.create(_object)
+            await BonusClientAzyk.create(_object)
         } else {
             bonusClient.current+=cash
             if(bonusClient.current>bonus.target&&!bonusClient.added) {

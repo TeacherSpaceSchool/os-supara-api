@@ -1,6 +1,8 @@
 const EmploymentAzyk = require('../models/employmentAzyk');
 const UserAzyk = require('../models/userAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const BasketAzyk = require('../models/basketAzyk');
+const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const { createJwtGQL } = require('../module/passport');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const mongoose = require('mongoose')
@@ -279,14 +281,13 @@ const resolversMutation = {
         let object = await EmploymentAzyk.findById(_id)
         if(
             user.role==='admin'||
-            (user.role==='организация'&&user.organization.toString()===object.organization.toString())||
-            user._id.toString()===object.user.toString()) {
+            (user.role==='организация'&&user.organization.toString()===object.organization.toString())
+        ) {
             if (role || newPass || login) {
                 let objectUser = await UserAzyk.findById(object.user)
                 if(login)objectUser.login = login.trim()
                 if(newPass)objectUser.password = newPass
-                if(user.role==='admin' ||user.role==='организация'&&(user.organization.toString()===object.organization.toString()))
-                    if(role)objectUser.role = role
+                if(role)objectUser.role = role
                 objectUser.save()
                 if(objectUser._id.toString()===user._id.toString())
                     await createJwtGQL(res, objectUser)
@@ -304,9 +305,32 @@ const resolversMutation = {
                 if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
                     await UserAzyk.deleteMany({_id: objects[i].user._id})
                     await EmploymentAzyk.deleteMany({_id: objects[i]._id})
-                    await Integrate1CAzyk.deleteMany({manager: objects[i]._id, organization: objects[i].organization})
-                    await Integrate1CAzyk.deleteMany({agent: objects[i]._id, organization: objects[i].organization})
-                    await Integrate1CAzyk.deleteMany({ecspeditor: objects[i]._id, organization: objects[i].organization})
+                    await Integrate1CAzyk.deleteMany({
+                            organization: objects[i].organization,
+                            $or:
+                                [
+                                    {manager: objects[i]._id},
+                                    {agent: objects[i]._id},
+                                    {ecspeditor: objects[i]._id}
+                                ]
+                        }
+                    )
+                    let district = await DistrictAzyk.findOne({
+                        organization: objects[i].organization,
+                        $or:
+                            [
+                                {manager: objects[i]._id},
+                                {agent: objects[i]._id},
+                                {ecspeditor: objects[i]._id}
+                            ]
+                    })
+                    if(district){
+                        await AgentRouteAzyk.deleteMany({district: district._id})
+                        if(district.manager.toString()===objects[i]._id.toString())district.manager=null
+                        else if(district.ecspeditor.toString()===objects[i]._id.toString())district.ecspeditor=null
+                        else if(district.agent.toString()===objects[i]._id.toString())district.agent=null
+                        district.save()
+                    }
                 }
             }
         return {data: 'OK'}

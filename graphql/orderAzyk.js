@@ -1522,28 +1522,6 @@ const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client}, {user}) => {
         if(user.client)
             client = user.client
-        let distributers = await DistributerAzyk.find({
-            organizations: organization
-        })
-        let district = null;
-        if(distributers.length>0){
-            for(let i=0; i<distributers.length; i++){
-                let findDistrict = await DistrictAzyk.findOne({
-                    organization: distributers[i].distributer,
-                    client: client
-                })
-                if(findDistrict)
-                    district = findDistrict
-            }
-        }
-        else {
-            let findDistrict = await DistrictAzyk.findOne({
-                organization: organization,
-                client: client
-            })
-            if(findDistrict)
-                district = findDistrict
-        }
         let baskets = await BasketAzyk.find(
             user.client?
                 {client: user.client}:
@@ -1551,21 +1529,57 @@ const resolversMutation = {
         )
             .populate({
                 path: 'item',
-                match: {status: 'active', organization: organization}
+                match: {organization: organization}
             });
         baskets = baskets.filter(basket => (basket.item))
         if(baskets.length>0){
-            if(usedBonus){
-                let bonus = await BonusAzyk.findOne({organization: organization});
-                let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
-                usedBonus = bonusClient.addedBonus;
-                bonusClient.addedBonus = 0
-                bonusClient.save();
+            let dateStart = new Date()
+            if(dateStart.getHours()<3)
+                dateStart.setDate(dateStart.getDate() - 1)
+            dateStart.setHours(3, 0, 0, 0)
+            let dateEnd = new Date(dateStart)
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            let distributers = await DistributerAzyk.find({
+                organizations: organization
+            })
+            let district = null;
+            if(distributers.length>0){
+                for(let i=0; i<distributers.length; i++){
+                    let findDistrict = await DistrictAzyk.findOne({
+                        organization: distributers[i].distributer,
+                        client: client
+                    })
+                    if(findDistrict)
+                        district = findDistrict
+                }
             }
-            else
-                usedBonus=0
-            for(let i=0; i<address.length;i++){
-                let invoices = {};
+            if(!district) {
+                let findDistrict = await DistrictAzyk.findOne({
+                    organization: organization,
+                    client: client
+                })
+                if(findDistrict)
+                    district = findDistrict
+            }
+            let objectInvoice = await InvoiceAzyk.findOne({
+                organization: organization,
+                client: client,
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                del: {$ne: 'deleted'},
+                cancelClient: null,
+                cancelForwarder: null
+            }).sort('-createdAt')
+            if(!objectInvoice){
+                if(usedBonus){
+                    let bonus = await BonusAzyk.findOne({organization: organization});
+                    let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
+                    usedBonus = bonusClient.addedBonus;
+                    bonusClient.addedBonus = 0
+                    bonusClient.save();
+                }
+                else
+                    usedBonus=0
+                let orders = [];
                 for(let ii=0; ii<baskets.length;ii++){
                     let objectOrder = new OrderAzyk({
                         item: baskets[ii].item._id,
@@ -1580,64 +1594,101 @@ const resolversMutation = {
                         agent: user.employment,
                     });
                     objectOrder = await OrderAzyk.create(objectOrder);
-                    if(invoices[baskets[ii].item.organization]===undefined)invoices[baskets[ii].item.organization]=[];
-                    objectOrder.organization = baskets[ii].item.organization
-                    invoices[baskets[ii].item.organization].push(objectOrder);
+                    orders.push(objectOrder);
                 }
-                let keysInvoices = Object.keys(invoices)
-                for(let ii=0; ii<keysInvoices.length;ii++) {
-                    let number = randomstring.generate({length: 12, charset: 'numeric'});
-                    while (await InvoiceAzyk.findOne({number: number}))
-                        number = randomstring.generate({length: 12, charset: 'numeric'});
-                    let allPrice = 0
-                    let allTonnage = 0
-                    let allSize = 0
-                    let consignmentPrice = 0
-                    let organizaiton = invoices[keysInvoices[ii]][0].organization
-                    let orders = invoices[keysInvoices[ii]]
-                    for(let iii=0; iii<orders.length;iii++) {
-                        allPrice += orders[iii].allPrice
-                        consignmentPrice += orders[iii].consignmentPrice
-                        allTonnage += orders[iii].allTonnage
-                        allSize += orders[iii].allSize
-                        orders[iii] = orders[iii]._id
-                    }
-                    let objectInvoice = new InvoiceAzyk({
-                        orders: orders,
-                        client: client,
-                        allPrice: Math.round(allPrice),
-                        consignmentPrice: Math.round(consignmentPrice),
-                        allTonnage: Math.round(allTonnage),
-                        allSize: Math.round(allSize),
-                        info: info,
-                        address: address[i],
-                        paymentMethod: paymentMethod,
-                        number: number,
-                        agent: user.employment,
-                        organization: organizaiton,
-                        distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
-                    });
-                    if(usedBonus>0) {
-                        objectInvoice.allPrice -= usedBonus
-                        objectInvoice.usedBonus = usedBonus
-                        usedBonus = 0
-                    }
-                    objectInvoice = await InvoiceAzyk.create(objectInvoice);
-                    let newInvoice = await InvoiceAzyk.findOne({_id: objectInvoice._id})
-                        .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
-                        .populate({path: 'client',populate: [{path: 'user'}]})
-                        .populate({path: 'agent'})
-                     pubsub.publish(RELOAD_ORDER, { reloadOrder: {
-                        who: user.role==='admin'?null:user._id,
-                        agent: district?district.agent:undefined,
-                        client: client,
-                        organization: organizaiton,
-                        invoice: newInvoice,
-                         manager: district?district.manager:undefined,
-                        type: 'ADD'
-                    } });
+                let number = randomstring.generate({length: 12, charset: 'numeric'});
+                while (await InvoiceAzyk.findOne({number: number}))
+                    number = randomstring.generate({length: 12, charset: 'numeric'});
+                let allPrice = 0
+                let allTonnage = 0
+                let allSize = 0
+                let consignmentPrice = 0
+                for(let iii=0; iii<orders.length;iii++) {
+                    allPrice += orders[iii].allPrice
+                    consignmentPrice += orders[iii].consignmentPrice
+                    allTonnage += orders[iii].allTonnage
+                    allSize += orders[iii].allSize
+                    orders[iii] = orders[iii]._id
                 }
+                objectInvoice = new InvoiceAzyk({
+                    orders: orders,
+                    client: client,
+                    allPrice: Math.round(allPrice),
+                    consignmentPrice: Math.round(consignmentPrice),
+                    allTonnage: Math.round(allTonnage),
+                    allSize: Math.round(allSize),
+                    info: info,
+                    address: address[0],
+                    paymentMethod: paymentMethod,
+                    number: number,
+                    agent: user.employment,
+                    organization: organization,
+                    distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
+                });
+                if(usedBonus>0) {
+                    objectInvoice.allPrice -= usedBonus
+                    objectInvoice.usedBonus = usedBonus
+                    usedBonus = 0
+                }
+                objectInvoice = await InvoiceAzyk.create(objectInvoice);
             }
+            else {
+                for(let ii=0; ii<baskets.length;ii++){
+                    let objectOrder = await OrderAzyk.findOne({
+                        item: baskets[ii].item._id,
+                        _id: {$in: objectInvoice.orders},
+                    })
+                    if(objectOrder){
+                        objectOrder.count+=baskets[ii].count
+                        objectOrder.consignment+=baskets[ii].consignment
+                        objectOrder.consignmentPrice+=Math.round(baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
+                        objectOrder.allTonnage+=Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0))
+                        objectOrder.allSize+=Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0))
+                        objectOrder.allPrice+=Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
+                        objectOrder.save()
+                    }
+                    else {
+                        objectOrder = new OrderAzyk({
+                            item: baskets[ii].item._id,
+                            client: client,
+                            count: baskets[ii].count,
+                            consignment: baskets[ii].consignment,
+                            consignmentPrice: Math.round(baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price)),
+                            allTonnage: Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0)),
+                            allSize: Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0)),
+                            allPrice: Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price)),
+                            status: 'обработка',
+                            agent: user.employment,
+                        });
+                        objectOrder = await OrderAzyk.create(objectOrder);
+                        objectInvoice.orders.push(objectOrder);
+                    }
+                    objectInvoice.allPrice+=Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
+                    objectInvoice.allTonnage+=Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0))
+                    objectInvoice.allSize+=Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0))
+                    objectInvoice.consignmentPrice+=Math.round(baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
+                }
+                await OrderAzyk.updateMany({_id: {$in: objectInvoice.orders}}, {status: 'обработка', returned: 0})
+                objectInvoice.confirmationForwarder = false
+                objectInvoice.confirmationClient = false
+                objectInvoice.taken = false
+                objectInvoice.sync = 0
+                objectInvoice.orders = objectInvoice.orders.map(order=>order._id)
+                objectInvoice.save()
+            }
+            let newInvoice = await InvoiceAzyk.findOne({_id: objectInvoice._id})
+                .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
+                .populate({path: 'client',populate: [{path: 'user'}]})
+                .populate({path: 'agent'})
+            pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                who: user.role==='admin'?null:user._id,
+                agent: district?district.agent:undefined,
+                client: client,
+                organization: organization,
+                invoice: newInvoice,
+                manager: district?district.manager:undefined,
+                type: 'ADD'
+            } });
             for(let i = 0; i< baskets.length; i++){
                 let object = await ItemAzyk.findOne({_id: baskets[i].item})
                 let index = object.basket.indexOf(user._id)
@@ -1687,7 +1738,7 @@ const resolversMutation = {
                 path: 'client'
             })
         let editor;
-        if(orders.length>0&&/*orders[0].status==='обработка'&&*/(['менеджер', 'организация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
+        if(orders.length>0&&(['менеджер', 'организация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0

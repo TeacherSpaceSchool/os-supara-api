@@ -53,8 +53,8 @@ const resolvers = {
                         (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.email.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.client.city&&(bonus.client.city.toLowerCase()).includes(search.toLowerCase()))||
-                        ((bonus.client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
-                        (bonus.client.type.toLowerCase()).includes(search.toLowerCase())||
+                        ((bonus.client.address[0][0].toLowerCase()).includes(search.toLowerCase()))||
+                        ((bonus.client.address[0][2].toLowerCase()).includes(search.toLowerCase()))||
                         (bonus.client.info.toLowerCase()).includes(search.toLowerCase())||
                         (bonus.bonus.organization.name.toLowerCase()).includes(search.toLowerCase())
                     )
@@ -82,19 +82,20 @@ const resolvers = {
                     ]
                 })
                 .sort(sort)
-             bonuses = bonuses.filter(
-                    bonus =>
-                        bonus.bonus.organization&&bonus.client&&(
-                            ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
-                            bonus.client.user&&(bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
-                            (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
-                            (bonus.client.email.toLowerCase()).includes(search.toLowerCase())||
-                            (bonus.client.city.toLowerCase()).includes(search.toLowerCase())||
-                            ((bonus.client.address.filter(addres=>addres[0].toLowerCase()).includes(search.toLowerCase())).length>0)||
-                            (bonus.client.type.toLowerCase()).includes(search.toLowerCase())||
-                            (bonus.client.info.toLowerCase()).includes(search.toLowerCase())
-                        )
-                )
+            bonuses = bonuses.filter(
+                bonus =>
+                    bonus.bonus.organization&&bonus.client&&(
+                        ((bonus.client.phone.filter(phone => phone.toLowerCase()).includes(search.toLowerCase())).length > 0) ||
+                        bonus.client.user&&(bonus.client.user.status.toLowerCase()).includes(search.toLowerCase())||
+                        (bonus.client.name.toLowerCase()).includes(search.toLowerCase())||
+                        (bonus.client.email.toLowerCase()).includes(search.toLowerCase())||
+                        (bonus.client.city.toLowerCase()).includes(search.toLowerCase())||
+                        ((bonus.client.address[0][0].toLowerCase()).includes(search.toLowerCase()))||
+                        ((bonus.client.address[0][2].toLowerCase()).includes(search.toLowerCase()))||
+                        (bonus.client.type.toLowerCase()).includes(search.toLowerCase())||
+                        (bonus.client.info.toLowerCase()).includes(search.toLowerCase())
+                    )
+            )
         }
         else if(user.role==='client'){
             bonuses =  await BonusClientAzyk.find({client: user.client})
@@ -143,7 +144,6 @@ const resolvers = {
                     populate : [
                         {
                             path : 'organization',
-                            match: {status: 'active'}
                         }
                     ]
                 })
@@ -183,12 +183,9 @@ const resolvers = {
                     populate : [
                         {
                             path : 'organization',
-                            match: {status: 'active'}
                         }
                     ]
                 })
-            if(!bonus.bonus.organization)
-                bonus = null
         }
         return bonus
     },

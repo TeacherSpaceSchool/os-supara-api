@@ -12,7 +12,7 @@ const type = `
 `;
 
 const query = `
-    blogs(search: String!, sort: String!, count: Int!): [Blog]
+    blogs(search: String!, sort: String!): [Blog]
     sortBlog: [Sort]
     filterBlog: [Filter]
 `;
@@ -24,13 +24,11 @@ const mutation = `
 `;
 
 const resolvers = {
-    blogs: async(parent, {search, sort, count}) => {
+    blogs: async(parent, {search, sort}) => {
         return await BlogAzyk.find({
             title: {'$regex': search, '$options': 'i'}
         })
             .sort(sort)
-            .skip(parseInt(count*skip))
-            .limit(skip)
     },
     sortBlog: async() => {
         return [

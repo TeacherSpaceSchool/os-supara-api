@@ -56,24 +56,22 @@ const resolvers = {
         let bonus;
         if(user.role==='admin'){
             bonus =  await BonusAzyk.findOne({_id: _id})
+                .populate({
+                    path: 'organization'
+                })
         }
         else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
             bonus =  await BonusAzyk.findOne({organization: user.organization})
                 .populate({
-                    path: 'organization',
-                    match: {status: 'active'}
+                    path: 'organization'
                 })
-            if(!bonus.organization)
-                bonus = null
         }
-        else if(!user.role||user.role==='client'){
+        else if(user.role==='client'){
             bonus =  await BonusAzyk.find({_id: _id})
                 .populate({
                     path: 'organization',
                     match: {status: 'active'}
                 })
-            if(!bonus.organization)
-                bonus = null
         }
         return bonus
     },

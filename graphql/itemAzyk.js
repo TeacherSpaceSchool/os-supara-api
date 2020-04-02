@@ -2,6 +2,7 @@ const ItemAzyk = require('../models/itemAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const DistributerAzyk = require('../models/distributerAzyk');
 const SubCategoryAzyk = require('../models/subCategoryAzyk');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const mongoose = require('mongoose');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
@@ -29,11 +30,13 @@ const type = `
     weight: Float
     size: Float
     priotiry: Int
+    del: String
   }
 `;
 
 const query = `
     items(subCategory: ID!, search: String!, sort: String!, filter: String!): [Item]
+    itemsTrash(search: String!): [Item]
     brands(organization: ID!, search: String!, sort: String!): [Item]
     brandOrganizations(search: String!, sort: String!, filter: String!): [Organization]
     item(_id: ID!): Item
@@ -46,12 +49,31 @@ const mutation = `
     addItem( priotiry: Int, apiece: Boolean, packaging: Int!, stock: Int!, weight: Float!, size: Float!, name: String!, deliveryDays: [String], info: String!, image: Upload, price: Float!, subCategory: ID!, organization: ID!, hit: Boolean!, latest: Boolean!): Data
     setItem(_id: ID!, priotiry: Int, apiece: Boolean, packaging: Int, stock: Int, weight: Float, size: Float, name: String, info: String, deliveryDays: [String], image: Upload, price: Float, subCategory: ID, organization: ID, hit: Boolean, latest: Boolean): Data
     deleteItem(_id: [ID]!): Data
+    restoreItem(_id: [ID]!): Data
     onoffItem(_id: [ID]!): Data
     favoriteItem(_id: [ID]!): Data
     addFavoriteItem(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    itemsTrash: async(parent, {search}, {user}) => {
+        if('admin'===user.role){
+            let items =  await ItemAzyk.find({
+                del: 'deleted'
+            })
+                .populate('subCategory')
+                .populate({ path: 'organization',
+                    match: {del: {$ne: 'deleted'}} })
+                .sort('-priotiry')
+                items = items.filter(
+                    item => (
+                            (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (item.info.toLowerCase()).includes(search.toLowerCase())
+                        )
+                        && item.organization)
+                return items
+        }
+    },
     items: async(parent, {subCategory, search, sort, filter}, {user}) => {
         if(['admin', 'суперагент'].includes(user.role)){
             if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
@@ -93,7 +115,18 @@ const resolvers = {
             let organizations = await DistributerAzyk.findOne({
                 distributer: user.organization
             })
+                .populate({path: 'organizations', match: {del: {$ne: 'deleted'}, status: 'active'}})
                 .distinct('organizations')
+            organizations = organizations.filter(
+                organization => (
+                    organization
+                )
+            )
+            organizations = organizations.map(
+                organization => (
+                    organization._id
+                )
+            )
             organizations = [...organizations, user.organization]
             let items =  await ItemAzyk.find({
                 ...(filter.length===0?{}:{subCategory: filter}),
@@ -112,7 +145,7 @@ const resolvers = {
             )
             return items
         }
-        else  if(user.role==='client'||user.role===undefined){
+        else  if(user.role==='client'){
             if(subCategory!=='all'&&mongoose.Types.ObjectId.isValid(subCategory)){
                 let items =  await ItemAzyk.find({
                     status: 'active',
@@ -182,16 +215,19 @@ const resolvers = {
     },
     favorites: async(parent, {search}, {user}) => {
        let items =  await ItemAzyk.find({
-           name: {'$regex': search, '$options': 'i'},
-           info: {'$regex': search, '$options': 'i'},
            status: 'active',
            favorite: user._id,
            del: {$ne: 'deleted'}
        })
            .populate('subCategory')
-           .populate({ path: 'organization', match: {name: {'$regex': search, '$options': 'i'}} })
+           .populate({ path: 'organization', match: { match: {status: 'active'}} })
            .sort('-createdAt')
-        items = items.filter(item => (item.organization))
+        items = items.filter(item => (
+                (item.name.toLowerCase()).includes(search.toLowerCase()) ||
+                (item.info.toLowerCase()).includes(search.toLowerCase()) ||
+                (item.organization.toLowerCase()).includes(search.toLowerCase())
+            )
+            && item.organization)
         return items
     },
     item: async(parent, {_id}) => {
@@ -385,6 +421,7 @@ const resolversMutation = {
                 objects[i].status = 'deactive'
                 objects[i].save()
                 await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
+                await Integrate1CAzyk.deleteMany({organization: objects[i].organization, item: objects[i]._id})
             }
         }
         return {data: 'OK'}

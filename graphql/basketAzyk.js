@@ -64,7 +64,8 @@ const resolversMutation = {
         if(['суперагент','агент', 'client'].includes(user.role)){
             let basket = await BasketAzyk.findOne(
                 user.client?
-                    {item: item, client: user.client}:
+                    {item: item, client: user.client}
+                    :
                     {item: item, agent: user.employment}
                 );
             if(!basket){

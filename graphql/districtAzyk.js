@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const ClientAzyk = require('../models/clientAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const OrderAzyk = require('../models/orderAzyk');
+const AgentRouteAzyk = require('../models/agentRouteAzyk');
 
 const type = `
   type District {
@@ -46,7 +47,8 @@ const resolvers = {
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
                 )
                 return districts
             }
@@ -62,7 +64,8 @@ const resolvers = {
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase()))
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
                 )
                 return districts
             }
@@ -82,7 +85,9 @@ const resolvers = {
             districts = districts.filter(
                 district => (
                     (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase())
+                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
+                    (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                    (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
                 )
             )
             return districts
@@ -102,6 +107,7 @@ const resolvers = {
             districts = districts.filter(
                 district => (
                     (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                    (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
                     (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase())
                 )
             )
@@ -115,7 +121,6 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({organization: organization==='super'?null:organization})
                 .distinct('client')
-            clients = clients.flat()
             if(organization!=='super')
                 organization = await OrganizationAzyk.findOne({_id: organization})
             if(organization==='super'||organization.accessToClient)
@@ -232,6 +237,7 @@ const resolversMutation = {
         for(let i=0; i<objects.length; i++){
             if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())) {
                 await DistrictAzyk.deleteMany({_id: objects[i]._id})
+                await AgentRouteAzyk.deleteMany({district: objects[i]._id})
             }
         }
         return {data: 'OK'}
