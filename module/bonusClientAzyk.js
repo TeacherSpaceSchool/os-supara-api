@@ -23,7 +23,7 @@ module.exports.addBonusToClient = async(client, organization, cash) => {
                 bonusClient.addedBonus += bonus.bonus
                 bonusClient.added = true
             }
-            bonusClient.save();
+            await bonusClient.save();
         }
     }
 }

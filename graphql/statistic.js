@@ -1550,7 +1550,7 @@ const resolversMutation = {
                         if(!district.client.includes(districts[keys1[i]][i1]))
                             district.client.push(districts[keys1[i]][i1])
                     }*/
-                    district.save()
+                    await district.save()
                 }
             }
             await deleteFile(filename)

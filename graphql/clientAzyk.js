@@ -736,12 +736,12 @@ const resolversMutation = {
                 let objectUser = await UserAzyk.findById(object.user)
                 if(newPass)objectUser.password = newPass
                 if(login)objectUser.login = login.trim()
-                objectUser.save()
+                await objectUser.save()
                 if(objectUser._id.toString()===user._id.toString())
                     await createJwtGQL(res, objectUser)
             }
 
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },
@@ -760,7 +760,7 @@ const resolversMutation = {
                 }
                 objects[i].del = 'deleted'
                 objects[i].sync = []
-                objects[i].save()
+                await objects[i].save()
                 let districts = await DistrictAzyk.find({client: objects[i]._id, })
                 for(let i1=0; i1<districts.length; i1++) {
                     let agentRoutes = await AgentRouteAzyk.find({district: districts[i1]._id, })
@@ -770,7 +770,7 @@ const resolversMutation = {
                         }
                     }
                     districts[i1].client.splice(districts[i1].client.indexOf(objects[i]._id), 1)
-                    districts[i1].save()
+                    await districts[i1].save()
                 }
                 await BasketAzyk.deleteMany({client: objects[i]._id})
                 await Integrate1CAzyk.deleteMany({client: objects[i]._id})
@@ -791,7 +791,7 @@ const resolversMutation = {
                 }
                 objects[i].del = null
                 objects[i].sync = []
-                objects[i].save()
+                await objects[i].save()
             }
         }
         return {data: 'OK'}

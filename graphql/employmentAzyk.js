@@ -288,14 +288,14 @@ const resolversMutation = {
                 if(login)objectUser.login = login.trim()
                 if(newPass)objectUser.password = newPass
                 if(role)objectUser.role = role
-                objectUser.save()
+                await objectUser.save()
                 if(objectUser._id.toString()===user._id.toString())
                     await createJwtGQL(res, objectUser)
             }
             if(name)object.name = name
             if(email)object.email = email
             if(phone)object.phone = phone
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },
@@ -329,7 +329,7 @@ const resolversMutation = {
                         if(district.manager.toString()===objects[i]._id.toString())district.manager=null
                         else if(district.ecspeditor.toString()===objects[i]._id.toString())district.ecspeditor=null
                         else if(district.agent.toString()===objects[i]._id.toString())district.agent=null
-                        district.save()
+                        await district.save()
                     }
                 }
             }

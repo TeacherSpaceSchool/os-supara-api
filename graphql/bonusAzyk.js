@@ -99,7 +99,7 @@ const resolversMutation = {
             if('admin'===user.role||(['организация', 'менеджер'].includes(user.role)&&bonusFind.organization.toString()===user.organization.toString())) {
                 if(target) bonusFind.target = target;
                 if(bonus) bonusFind.bonus = bonus;
-                bonusFind.save();
+                await bonusFind.save();
             }
         }
         return {data: 'OK'};

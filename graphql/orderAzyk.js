@@ -1575,7 +1575,7 @@ const resolversMutation = {
                     let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
                     usedBonus = bonusClient.addedBonus;
                     bonusClient.addedBonus = 0
-                    bonusClient.save();
+                    await bonusClient.save();
                 }
                 else
                     usedBonus=0
@@ -1645,7 +1645,7 @@ const resolversMutation = {
                         objectOrder.allTonnage+=Math.round(baskets[ii].count*(baskets[ii].item.weight?baskets[ii].item.weight:0))
                         objectOrder.allSize+=Math.round(baskets[ii].count*(baskets[ii].item.size?baskets[ii].item.size:0))
                         objectOrder.allPrice+=Math.round(baskets[ii].count*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
-                        objectOrder.save()
+                        await objectOrder.save()
                     }
                     else {
                         objectOrder = new OrderAzyk({
@@ -1674,7 +1674,7 @@ const resolversMutation = {
                 objectInvoice.taken = false
                 objectInvoice.sync = 0
                 objectInvoice.orders = objectInvoice.orders.map(order=>order._id)
-                objectInvoice.save()
+                await objectInvoice.save()
             }
             let newInvoice = await InvoiceAzyk.findOne({_id: objectInvoice._id})
                 .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
@@ -1693,7 +1693,7 @@ const resolversMutation = {
                 let object = await ItemAzyk.findOne({_id: baskets[i].item})
                 let index = object.basket.indexOf(user._id)
                 object.basket.splice(index, 1)
-                object.save()
+                await object.save()
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
         }
@@ -1704,7 +1704,7 @@ const resolversMutation = {
             let objects = await InvoiceAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 objects[i].del = 'deleted'
-                objects[i].save()
+                await objects[i].save()
                 let district = await DistrictAzyk.findOne({
                     organization: objects[i].organization,
                     client: objects[i].client
@@ -1727,7 +1727,7 @@ const resolversMutation = {
             let objects = await InvoiceAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 objects[i].del = null
-                objects[i].save()
+                await objects[i].save()
             }
         }
         return {data: 'OK'};
@@ -1892,7 +1892,7 @@ const resolversMutation = {
                     route.status = 'выполнен';
                 else
                     route.status = 'выполняется';
-                route.save();
+                await route.save();
             }
         }
 

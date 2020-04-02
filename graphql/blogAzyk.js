@@ -72,7 +72,7 @@ const resolversMutation = {
             }
             if(text)object.text = text
             if(title)object.title = title
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },

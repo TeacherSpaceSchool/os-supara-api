@@ -970,16 +970,23 @@ const resolvers = {
 
 const resolversMutation = {
     addReturned: async(parent, {info, address, organization, client, items}, {user}) => {
+        let dateStart = new Date()
+        if(dateStart.getHours()<3)
+            dateStart.setDate(dateStart.getDate() - 1)
+        dateStart.setHours(3, 0, 0, 0)
+        let dateEnd = new Date(dateStart)
+        dateEnd.setDate(dateEnd.getDate() + 1)
         let distributers = await DistributerAzyk.find({
             organizations: organization
         })
+        let objectReturned = await ReturnedAzyk.findOne({
+            organization: organization,
+            client: client,
+            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+            del: {$ne: 'deleted'},
+            cancelForwarder: null
+        }).sort('-createdAt')
         let district = null;
-        let allPrice = 0
-        let allTonnage = 0
-        let allSize = 0
-        let number = randomstring.generate({length: 12, charset: 'numeric'});
-        while (await ReturnedAzyk.findOne({number: number}))
-            number = randomstring.generate({length: 12, charset: 'numeric'});
         if(distributers.length>0){
             for(let i=0; i<distributers.length; i++){
                 let findDistrict = await DistrictAzyk.findOne({
@@ -998,24 +1005,52 @@ const resolversMutation = {
             if(findDistrict)
                 district = findDistrict
         }
-        for(let i = 0; i< items.length; i++){
-            allPrice+=items[i].allPrice
-            allSize+=items[i].allSize
-            allTonnage+=items[i].allTonnage
+        let allPrice = 0
+        let allTonnage = 0
+        let allSize = 0
+        if(!objectReturned){
+            let number = randomstring.generate({length: 12, charset: 'numeric'});
+            while (await ReturnedAzyk.findOne({number: number}))
+                number = randomstring.generate({length: 12, charset: 'numeric'});
+            for(let i = 0; i< items.length; i++){
+                allPrice+=items[i].allPrice
+                allSize+=items[i].allSize
+                allTonnage+=items[i].allTonnage
+            }
+            objectReturned = new ReturnedAzyk({
+                items: items,
+                client: client,
+                allPrice: allPrice,
+                allTonnage: allTonnage,
+                allSize: allSize,
+                number: number,
+                info: info,
+                address: address,
+                organization: organization,
+                distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
+            });
+            objectReturned = await ReturnedAzyk.create(objectReturned);
         }
-        let objectReturned = new ReturnedAzyk({
-            items: items,
-            client: client,
-            allPrice: allPrice,
-            allTonnage: allTonnage,
-            allSize: allSize,
-            number: number,
-            info: info,
-            address: address,
-            organization: organization,
-            distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
-        });
-        objectReturned = await ReturnedAzyk.create(objectReturned);
+        else{
+            for(let i = 0; i< items.length; i++){
+                let have = false
+                for(let i1=0; i1<objectReturned.items.length; i1++) {
+                    if(items[i]._id===objectReturned.items[i1]._id){
+                        objectReturned.items[i1].count+=items[i].count
+                        objectReturned.items[i1].allPrice+=items[i].allPrice
+                        objectReturned.items[i1].allTonnage+=items[i].allTonnage
+                        objectReturned.items[i1].allSize+=items[i].allSize
+                        have = true
+                    }
+                }
+                if(!have)
+                    objectReturned.items.push(items[i])
+                objectReturned.allPrice+=items[i].allPrice
+                objectReturned.allSize+=items[i].allSize
+                objectReturned.allTonnage+=items[i].allTonnage
+            }
+            await objectReturned.save()
+        }
         pubsub.publish(RELOAD_RETURNED, { reloadReturned: {
             who: user.role==='admin'?null:user._id,
             agent: district?district.agent:null,
@@ -1036,7 +1071,7 @@ const resolversMutation = {
                     client: objects[i].client
                 })
                 objects[i].del = 'deleted'
-                objects[i].save()
+                await objects[i].save()
                 pubsub.publish(RELOAD_RETURNED, { reloadReturned: {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,

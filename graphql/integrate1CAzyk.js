@@ -422,7 +422,7 @@ const resolversMutation = {
             object.agent = agent
             object.item = item
             object.ecspeditor = ecspeditor
-            object.save();
+            await object.save();
             return await Integrate1CAzyk
                 .findOne({_id: object._id})
                 .populate('agent')
@@ -454,7 +454,7 @@ const resolversMutation = {
                         })
                         if(integrate1CAzyk) {
                             integrate1CAzyk.guid = rows[i][1]
-                            integrate1CAzyk.save()
+                            await integrate1CAzyk.save()
                         }
                         else {
                             let _object = new Integrate1CAzyk({

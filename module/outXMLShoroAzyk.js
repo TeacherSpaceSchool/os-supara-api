@@ -29,7 +29,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                     amount: returned.items[i].allPrice
                 })
         }
-        outXMLReturnedShoroAzyk.save()
+        await outXMLReturnedShoroAzyk.save()
         await ReturnedAzyk.updateMany({_id: returned._id}, {sync: 1})
     }
     else {
@@ -95,7 +95,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     amount: Math.round(invoice.orders[i].count*(invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price))
                 })
         }
-        outXMLShoroAzyk.save()
+        await outXMLShoroAzyk.save()
         await InvoiceAzyk.updateMany({_id: invoice._id}, {sync: 1})
     }
     else {
@@ -149,7 +149,7 @@ module.exports.cancelOutXMLReturnedShoroAzyk = async(returned) => {
         .findOne({returned: returned._id})
     if(outXMLReturnedShoroAzyk){
         outXMLReturnedShoroAzyk.status = 'del'
-        outXMLReturnedShoroAzyk.save()
+        await outXMLReturnedShoroAzyk.save()
     }
 }
 
@@ -158,7 +158,7 @@ module.exports.cancelOutXMLShoroAzyk = async(invoice) => {
         .findOne({invoice: invoice._id})
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status = 'del'
-        outXMLShoroAzyk.save()
+        await outXMLShoroAzyk.save()
     }
 }
 
@@ -167,7 +167,7 @@ module.exports.checkOutXMLShoroAzyk = async(guid) => {
         .findOne({guid: guid})
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status = 'check'
-        outXMLShoroAzyk.save()
+        await outXMLShoroAzyk.save()
         await InvoiceAzyk.updateMany({_id: outXMLShoroAzyk.invoice}, {sync: 2})
     }
 }
@@ -177,7 +177,7 @@ module.exports.checkOutXMLReturnedShoroAzyk = async(guid) => {
         .findOne({guid: guid})
     if(outXMLReturnedShoroAzyk){
         outXMLReturnedShoroAzyk.status = 'check'
-        outXMLReturnedShoroAzyk.save()
+        await outXMLReturnedShoroAzyk.save()
         await ReturnedAzyk.updateMany({_id: outXMLReturnedShoroAzyk.returned}, {sync: 2})
     }
 }

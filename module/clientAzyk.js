@@ -7,6 +7,6 @@ module.exports.reductionToClient = async() => {
     for(let i = 0; i<clients.length;i++){
         if(clients[i].city===null)clients[i].city = ''
         if(clients[i].notification===null)clients[i].notification = (await SubscriberAzyk.find({user: clients[i].user})).length>0
-        clients[i].save();
+        await clients[i].save();
     }
 }

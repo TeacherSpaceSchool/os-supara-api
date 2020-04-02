@@ -140,7 +140,7 @@ const resolversMutation = {
         if(['admin', 'организация', 'менеджер', 'агент', 'суперагент'].includes(user.role)) {
             if(name)object.name = name
             if(clients)object.clients = clients
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },

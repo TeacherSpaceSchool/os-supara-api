@@ -398,7 +398,7 @@ const resolversMutation = {
             if(user.role==='admin'){
                 object.organization = organization === undefined ? object.organization : organization;
             }
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },
@@ -407,7 +407,7 @@ const resolversMutation = {
         for(let i=0; i<objects.length; i++){
             if(user.role==='admin'|| (['организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
-                objects[i].save()
+                await objects[i].save()
                 await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
             }
         }
@@ -419,7 +419,7 @@ const resolversMutation = {
             if(user.role==='admin'||(['организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
                 objects[i].del = 'deleted'
                 objects[i].status = 'deactive'
-                objects[i].save()
+                await objects[i].save()
                 await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
                 await Integrate1CAzyk.deleteMany({organization: objects[i].organization, item: objects[i]._id})
             }
@@ -434,7 +434,7 @@ const resolversMutation = {
                 objects[i].favorite.push(user._id)
             else
                 objects[i].favorite.splice(index, 1)
-            objects[i].save()
+            await objects[i].save()
         }
         return {data: 'OK'}
     },
@@ -444,7 +444,7 @@ const resolversMutation = {
             let index = objects[i].favorite.indexOf(user._id)
             if(index===-1)
                 objects[i].favorite.push(user._id)
-            objects[i].save()
+            await objects[i].save()
         }
         return {data: 'OK'}
     }

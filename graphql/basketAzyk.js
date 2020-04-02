@@ -84,13 +84,13 @@ const resolversMutation = {
                 basket.count = count;
                 if(consignment)
                     basket.consignment = consignment
-                basket.save();
+                await basket.save();
             }
             let object = await ItemAzyk.findOne({_id: item})
             let index = object.basket.indexOf(user._id)
             if(index===-1){
                 object.basket.push(user._id)
-                object.save()
+                await object.save()
             }
         }
         return {data: 'OK'};
@@ -104,7 +104,7 @@ const resolversMutation = {
         if(object) {
             object.count = count;
             if(consignment) object.consignment = consignment
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },
@@ -122,7 +122,7 @@ const resolversMutation = {
                 let object = await ItemAzyk.findOne({_id: basket.item})
                 let index = object.basket.indexOf(user._id)
                 object.basket.splice(index, 1)
-                object.save()
+                await object.save()
                 await BasketAzyk.deleteOne({_id: basket._id})
             }
         }

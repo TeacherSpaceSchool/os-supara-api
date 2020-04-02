@@ -162,7 +162,7 @@ const resolversMutation = {
             if(consignation!=undefined) object.consignation = consignation
             if(accessToClient!=undefined) object.accessToClient = accessToClient
             if(minimumOrder!=undefined) object.minimumOrder = minimumOrder
-            object.save();
+            await object.save();
         }
         return {data: 'OK'}
     },
@@ -184,7 +184,7 @@ const resolversMutation = {
                 for(let i1=0; i1<_id.length; i1++) {
                     distributers[i].organizations.splice(_id[i1], 1)
                 }
-                distributers[i].save()
+                await distributers[i].save()
             }
             await AdsAzyk.deleteMany({organization: {$in: _id}})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
@@ -207,7 +207,7 @@ const resolversMutation = {
                 items = items.map(element=>element._id)
                 await BasketAzyk.deleteMany({item: {$in: items}})
                 await ItemAzyk.updateMany({organization: objects[i]._id}, {status: objects[i].status})
-                objects[i].save()
+                await objects[i].save()
             }
         }
         return {data: 'OK'}
