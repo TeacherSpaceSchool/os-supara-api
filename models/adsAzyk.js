@@ -8,6 +8,7 @@ const AdsAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
+    del: String,
     title: String
 }, {
     timestamps: true

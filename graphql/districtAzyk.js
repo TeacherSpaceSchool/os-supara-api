@@ -34,6 +34,23 @@ const mutation = `
 
 const resolvers = {
     districts: async(parent, {organization, search, sort}, {user}) => {
+        let clients
+        if(search.length>0){
+            clients = await ClientAzyk
+                .find({
+                    del: {$ne: 'deleted'},
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {email: {'$regex': search, '$options': 'i'}},
+                        {city: {'$regex': search, '$options': 'i'}},
+                        {info: {'$regex': search, '$options': 'i'}},
+                        {device: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}},
+                        {phone: {'$regex': search, '$options': 'i'}}
+                    ]
+                }).distinct('_id')
+            clients = clients.map(client=>client.toString())
+            }
         if(user.role==='admin'){
             if(organization==='super'){
                 let districts = await DistrictAzyk.find({organization: null})
@@ -42,14 +59,16 @@ const resolvers = {
                     .populate('organization')
                     .populate('manager')
                     .sort(sort)
-                districts = districts.filter(
-                    district =>
-                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
-                )
+                if(search.length>0)
+                    districts = districts.filter(
+                        district =>
+                            (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase())) ||
+                            ((district.client.filter(client => clients.includes(client.toString()))).length)
+                    )
                 return districts
             }
             else {
@@ -59,14 +78,15 @@ const resolvers = {
                     .populate('organization')
                     .populate('manager')
                     .sort(sort)
-                districts = districts.filter(
-                    district =>
-                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
-                )
+                if(search.length>0)
+                    districts = districts.filter(
+                        district => (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (district.agent && district.agent.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.organization && district.organization.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                            (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase())) ||
+                            ((district.client.filter(client => clients.includes(client.toString()))).length)
+                    )
                 return districts
             }
         }
@@ -82,14 +102,16 @@ const resolvers = {
                 .populate('organization')
                 .populate('manager')
                 .sort(sort)
-            districts = districts.filter(
-                district => (
-                    (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
-                    (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase()))
+            if(search.length>0)
+                districts = districts.filter(
+                    district => (
+                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase())) ||
+                        ((district.client.filter(client => clients.includes(client.toString()))).length)
+                    )
                 )
-            )
             return districts
         }
         else if(['менеджер'].includes(user.role)){
@@ -104,13 +126,15 @@ const resolvers = {
                 .populate('organization')
                 .populate('manager')
                 .sort(sort)
-            districts = districts.filter(
-                district => (
-                    (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                    (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
-                    (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase())
+            if(search.length>0)
+                districts = districts.filter(
+                    district => (
+                        (district.name.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
+                        (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
+                        ((district.client.filter(client => clients.includes(client.toString()))).length)
+                    )
                 )
-            )
             return districts
         }
     },
@@ -224,7 +248,22 @@ const resolversMutation = {
         let object = await DistrictAzyk.findById(_id)
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             if(name)object.name = name
-            if(client)object.client = client
+            if(client){
+                let objectAgentRouteAzyk = await AgentRouteAzyk.find({district: object._id})
+                for(let i=0; i<object.client.length; i++) {
+                    if(!client.includes(object.client[i])){
+                        for(let i1=0; i1<objectAgentRouteAzyk.length; i1++) {
+                            for(let i2=0; i2<objectAgentRouteAzyk[i1].clients.length; i2++) {
+                                let index = objectAgentRouteAzyk[i1].clients[i2].indexOf(object.client[i])
+                                if(index!==-1)
+                                    objectAgentRouteAzyk[i1].clients[i2].splice(index, 1)
+
+                            }
+                        }
+                    }
+                }
+                object.client = client
+            }
             if(agent)object.agent = agent
             if(ecspeditor)object.ecspeditor = ecspeditor
             if(manager)object.manager = manager

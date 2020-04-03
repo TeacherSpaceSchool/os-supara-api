@@ -166,6 +166,12 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
+    restoreOrganization: async(parent, { _id }, {user}) => {
+        if(user.role==='admin'){
+            await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: null, status: 'active'})
+        }
+        return {data: 'OK'}
+    },
     deleteOrganization: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
             let items = await ItemAzyk.find({organization: {$in: _id}})

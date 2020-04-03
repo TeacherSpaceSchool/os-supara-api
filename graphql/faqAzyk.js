@@ -7,6 +7,7 @@ const type = `
     url: String
     title: String
     video: String
+    typex: String
     createdAt: Date
   }
 `;
@@ -16,24 +17,32 @@ const query = `
 `;
 
 const mutation = `
-    addFaq(file: Upload, title: String!, video: String): Data
-    setFaq(_id: ID!, file: Upload, title: String, video: String): Data
+    addFaq(file: Upload, title: String!, typex: String!, video: String): Data
+    setFaq(_id: ID!, file: Upload, title: String, typex: String, video: String): Data
     deleteFaq(_id: [ID]!): Data
 `;
 
 const resolvers = {
-    faqs: async(parent, {search}) => {
-        return await FaqAzyk.find({
-            title: {'$regex': search, '$options': 'i'}
+    faqs: async(parent, {search}, {user}) => {
+        let typex = ''
+        if(user.role==='client')
+            typex='клиенты'
+        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role))
+            typex='сотрудники'
+        let res =  await FaqAzyk.find({
+            title: {'$regex': search, '$options': 'i'},
         }).sort('title')
+        res = res.filter(res=>res.typex.includes(typex))
+        return res
     }
 };
 
 const resolversMutation = {
-    addFaq: async(parent, {file, title, video}, {user}) => {
+    addFaq: async(parent, {file, title, video, typex}, {user}) => {
         if(user.role==='admin') {
             let _object = new FaqAzyk({
-                title: title
+                title: title,
+                typex: typex
             });
             if (file) {
                 let {stream, filename} = await file;
@@ -45,7 +54,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setFaq: async(parent, {_id, file, title, video}, {user}) => {
+    setFaq: async(parent, {_id, file, title, video, typex}, {user}) => {
         if(user.role==='admin') {
             let object = await FaqAzyk.findById(_id)
             if (file) {
@@ -56,6 +65,7 @@ const resolversMutation = {
             }
             if(title) object.title = title
             if(video) object.video = video
+            if(typex) object.typex = typex
             object.save();
         }
         return {data: 'OK'}

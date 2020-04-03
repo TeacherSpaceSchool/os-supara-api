@@ -5,6 +5,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrderAzyk'
     }],
+    adss: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'AdsAzyk'
+        }],
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ClientAzyk'

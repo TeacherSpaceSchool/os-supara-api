@@ -9,12 +9,14 @@ const type = `
     url: String
     title: String
     createdAt: Date
+    del: String
     organization: Organization
   }
 `;
 
 const query = `
     adss(search: String!, organization: ID!): [Ads]
+    adssTrash(search: String!, organization: ID!): [Ads]
     adsOrganizations: [Organization]
     ads: Ads
 `;
@@ -22,18 +24,27 @@ const query = `
 const mutation = `
     addAds(image: Upload!, url: String!, title: String!, organization: ID!): Data
     setAds(_id: ID!, image: Upload, url: String, title: String): Data
+    restoreAds(_id: [ID]!): Data
     deleteAds(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    adssTrash: async(parent, {search, organization}) => {
+        return await AdsAzyk.find({
+            del: 'deleted',
+            title: {'$regex': search, '$options': 'i'},
+            organization: organization
+        }).sort('-createdAt')
+    },
     adss: async(parent, {search, organization}) => {
         return await AdsAzyk.find({
+            del: {$ne: 'deleted'},
             title: {'$regex': search, '$options': 'i'},
             organization: organization
         }).sort('-createdAt')
     },
     adsOrganizations: async() => {
-        let organizations = await AdsAzyk.find().distinct('organization')
+        let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
         organizations = await OrganizationAzyk.find({
             _id: {$in: organizations},
             status: 'active',
@@ -77,13 +88,20 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
+    restoreAds: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            await AdsAzyk.updateMany({_id: {$in: _id}}, {del: null})
+        }
+        return {data: 'OK'}
+    },
     deleteAds: async(parent, { _id }, {user}) => {
         if(['организация', 'admin'].includes(user.role)){
             let objects = await AdsAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)
             }
-            await AdsAzyk.deleteMany({_id: {$in: _id}})
+            await AdsAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted'})
+
         }
         return {data: 'OK'}
     }

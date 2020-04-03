@@ -1085,6 +1085,12 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
+    restoreReturneds: async(parent, {_id}, {user}) => {
+        if(user.role==='admin'){
+            await ReturnedAzyk.updateMany({_id: {$in: _id}}, {del: null})
+        }
+        return {data: 'OK'};
+    },
     setReturned: async(parent, {items, returned, confirmationForwarder, cancelForwarder}, {user}) => {
         let object = await ReturnedAzyk.findOne({_id: returned})
             .populate({

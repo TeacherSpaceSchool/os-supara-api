@@ -426,6 +426,12 @@ const resolversMutation = {
         }
         return {data: 'OK'}
     },
+    restoreItem: async(parent, { _id }, {user}) => {
+        if(user.role==='admin') {
+            await ItemAzyk.updateMany({_id: {$in: _id}}, {del: null, status: 'active'})
+        }
+        return {data: 'OK'}
+    },
     favoriteItem: async(parent, { _id }, {user}) => {
         let objects = await ItemAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){

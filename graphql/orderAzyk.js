@@ -6,6 +6,7 @@ const DistrictAzyk = require('../models/districtAzyk');
 const RouteAzyk = require('../models/routeAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const ClientAzyk = require('../models/clientAzyk');
+const AdsAzyk = require('../models/adsAzyk');
 const mongoose = require('mongoose');
 const ItemAzyk = require('../models/itemAzyk');
 const { addBonusToClient } = require('../module/bonusClientAzyk');
@@ -64,6 +65,7 @@ const type = `
     editor: String
     distributer: Organization
     del: String
+    adss: [Ads],
   }
   type HistoryOrder {
     createdAt: Date
@@ -110,12 +112,13 @@ const query = `
     invoice(_id: ID!): Invoice
     sortInvoice: [Sort]
     filterInvoice: [Filter]
+    isOrderToday(organization: ID!): Boolean
 `;
 
 const mutation = `
     addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!, client: ID!): Data
     setOrder(orders: [OrderInput], invoice: ID): Invoice
-    setInvoice(taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean, paymentConsignation: Boolean): Data
+    setInvoice(adss: [ID], taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean, paymentConsignation: Boolean): Data
     deleteOrders(_id: [ID]!): Data
     restoreOrders(_id: [ID]!): Data
     approveOrders(invoices: [ID]!, route: ID): Data
@@ -198,7 +201,8 @@ const resolvers = {
                     del: {$ne: 'deleted'},
                     taken: true,
                     ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                    ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                    ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                     client: user.client,
                     ...(search.length>0?{
                             $or: [
@@ -225,7 +229,8 @@ const resolvers = {
                     del: {$ne: 'deleted'},
                     taken: true,
                     ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                    ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                    ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                     ...(search.length>0?{
                             $or: [
                                 {number: {'$regex': search, '$options': 'i'}},
@@ -251,6 +256,8 @@ const resolvers = {
                 {
                     del: {$ne: 'deleted'},
                     taken: true,
+                    ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                    ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                     $and: [
                         ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
                         {
@@ -274,7 +281,6 @@ const resolvers = {
                                 })
                         }
                     ],
-                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                 })
                 .populate({
                     path: 'orders'
@@ -289,7 +295,8 @@ const resolvers = {
                 {
                     del: {$ne: 'deleted'},
                     taken: true,
-                    ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                    ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                    ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                     client: {$in: clients},
                     $and: [
                         ...(date === '' ? []:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]),
@@ -347,7 +354,8 @@ const resolvers = {
                 {
                     del: {$ne: 'deleted'},
                     taken: true,
-                    ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                    ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                    ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                     client: {$in: clients},
                     $and: [
                         {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
@@ -436,7 +444,8 @@ const resolvers = {
                         $match:{
                             del: {$ne: 'deleted'},
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -497,6 +506,16 @@ const resolvers = {
                             as: 'distributer'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
+                        }
+                    },
                     {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
@@ -555,7 +574,8 @@ const resolvers = {
                         $match: {
                             del: {$ne: 'deleted'},
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             client: user.client,
                             ...(search.length>0?{
                                     $or: [
@@ -664,6 +684,16 @@ const resolvers = {
                             path : '$distributer'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -692,7 +722,8 @@ const resolvers = {
                         $match: {
                             del: {$ne: 'deleted'},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -725,6 +756,16 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
                         }
                     },
                     { $lookup:
@@ -831,8 +872,9 @@ const resolvers = {
                     {
                         $match: {
                             del: {$ne: 'deleted'},
-                            ...(filter !== 'консигнации' ? {} : {consignmentPrice: {$gt: 0}}),
                             client: {$in: clients},
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             $and: [
                                 {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
                                 {
@@ -936,6 +978,16 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { ads: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}}
+                            ],
+                            as: 'adss'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: EmploymentAzyk.collection.collectionName,
                             let: { agent: '$agent' },
                             pipeline: [
@@ -962,8 +1014,9 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
                             client: {$in: clients},
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             $and: [
                                 ...(date===''?[] :[{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]),
                                 {
@@ -1080,6 +1133,16 @@ const resolvers = {
                             path : '$distributer'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -1089,7 +1152,8 @@ const resolvers = {
                     {
                         $match:{
                             del: {$ne: 'deleted'},
-                            ...(filter!=='консигнации'?{}:{ consignmentPrice: { $gt: 0 }}),
+                            ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                            ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(
                                 date===''?{
                                     $and: [
@@ -1232,6 +1296,16 @@ const resolvers = {
                             path : '$distributer'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -1325,6 +1399,16 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: AdsAzyk.collection.collectionName,
+                            let: { adss: '$adss' },
+                            pipeline: [
+                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                            ],
+                            as: 'adss'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrderAzyk.collection.collectionName,
                             let: { order: '$orders' },
                             pipeline: [
@@ -1373,6 +1457,26 @@ const resolvers = {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             let historyOrders =  await HistoryOrderAzyk.find({invoice: invoice})
             return historyOrders
+        }
+    },
+    isOrderToday: async(parent, {organization}, {user}) => {
+        if('client'===user.role){
+            let dateStart = new Date()
+            if(dateStart.getHours()<3)
+                dateStart.setDate(dateStart.getDate() - 1)
+            dateStart.setHours(3, 0, 0, 0)
+            let dateEnd = new Date(dateStart)
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            let objectInvoice = await InvoiceAzyk.findOne({
+                organization: organization,
+                client: user.client,
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                del: {$ne: 'deleted'},
+                cancelClient: null,
+                cancelForwarder: null
+            }).sort('-createdAt')
+            console.log(objectInvoice)
+            return !!objectInvoice
         }
     },
     invoicesForRouting: async(parent, { organization }, {user}) => {
@@ -1492,7 +1596,7 @@ const resolvers = {
                 name: 'Все',
                 value: ''
             },
-            {
+            /*{
                 name: 'Обработка',
                 value: 'обработка'
             },
@@ -1507,13 +1611,18 @@ const resolvers = {
             {
                 name: 'Выполнен',
                 value: 'выполнен'
+            },*/
+            {
+                name: 'Консигнации',
+                value: 'консигнации'
+            },
+            {
+                name: 'Акции',
+                value: 'акция'
             }
         ]
         if(user.role)
-            filter.push({
-                name: 'Консигнации',
-                value: 'консигнации'
-            })
+            filter.push()
         return filter
     },
 };
@@ -1623,6 +1732,7 @@ const resolversMutation = {
                     number: number,
                     agent: user.employment,
                     organization: organization,
+                    adss: [],
                     distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
                 });
                 if(usedBonus>0) {
@@ -1837,13 +1947,17 @@ const resolversMutation = {
         } });
         return resInvoice
     },
-    setInvoice: async(parent, {taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
+    setInvoice: async(parent, {adss, taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
         let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = ['admin', 'суперагент'].includes(user.role)
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
         let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
         let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&[order.item.organization.toString(), object.distributer?object.distributer.toString():'lol'].includes(user.organization.toString());
+        console.log(adss)
+        if(adss!=undefined&&(admin||undefinedClient||employment)) {
+            object.adss = adss
+        }
         if(paymentConsignation!=undefined&&(admin||undefinedClient||employment)){
             object.paymentConsignation = paymentConsignation
         }
