@@ -511,7 +511,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
@@ -689,7 +689,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
@@ -763,7 +763,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
@@ -979,9 +979,9 @@ const resolvers = {
                     { $lookup:
                         {
                             from: AdsAzyk.collection.collectionName,
-                            let: { ads: '$adss' },
+                            let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}}
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}}
                             ],
                             as: 'adss'
                         }
@@ -1138,7 +1138,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
@@ -1301,7 +1301,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
@@ -1402,7 +1402,7 @@ const resolvers = {
                             from: AdsAzyk.collection.collectionName,
                             let: { adss: '$adss' },
                             pipeline: [
-                                { $match: {$expr: {$in:['$_id', '$$ads']}}},
+                                { $match: {$expr: {$in:['$_id', '$$adss']}}},
                             ],
                             as: 'adss'
                         }
