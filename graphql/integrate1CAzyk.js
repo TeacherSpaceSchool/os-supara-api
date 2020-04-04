@@ -418,18 +418,28 @@ const resolversMutation = {
         if(user.role==='admin') {
             let object = await Integrate1CAzyk.findById(_id)
             if(guid)object.guid = guid
+            let updateClient = undefined
+            if(object.client||client)
+                updateClient = object.client?object.client:client
             object.client = client
             object.agent = agent
             object.item = item
             object.ecspeditor = ecspeditor
             await object.save();
-            return await Integrate1CAzyk
+            let res = await Integrate1CAzyk
                 .findOne({_id: object._id})
                 .populate('agent')
                 .populate('client')
                 .populate('ecspeditor')
                 .populate('organization')
                 .populate('item')
+            if(updateClient) {
+                let client = await ClientAzyk
+                    .findOne({_id: updateClient})
+                client.sync.splice(client.sync.indexOf(res.organization.name), 1)
+                await client.save()
+            }
+            return res
         }
         return null
     },

@@ -3,6 +3,7 @@ const { RedisPubSub } = require('graphql-redis-subscriptions');
 const pubsub = new RedisPubSub();
 module.exports.pubsub = pubsub;
 const AdsAzyk = require('./adsAzyk');
+const IntegrateOutShoroAzyk = require('./integrateOutShoroAzyk');
 const DistributerAzyk = require('./distributerAzyk');
 const BlogAzyk = require('./blogAzyk');
 const CategoryAzyk = require('./categoryAzyk');
@@ -54,6 +55,7 @@ const typeDefs = gql`
     ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
     ${AdsAzyk.type}
+    ${IntegrateOutShoroAzyk.type}
     ${SubscriberAzyk.type}
     ${NotificationStatisticAzyk.type}
     ${FaqAzyk.type}
@@ -82,6 +84,7 @@ const typeDefs = gql`
         ${AgentRouteAzyk.mutation}
         ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
+        ${IntegrateOutShoroAzyk.mutation}
         ${SubscriberAzyk.mutation}
         ${NotificationStatisticAzyk.mutation}
         ${FaqAzyk.mutation}
@@ -117,6 +120,7 @@ const typeDefs = gql`
         ${OrganizationAzyk.query}
         ${AgentHistoryGeoAzyk.query}
         ${AdsAzyk.query}
+        ${IntegrateOutShoroAzyk.query}
         ${SubscriberAzyk.query}
         ${NotificationStatisticAzyk.query}
         ${CategoryAzyk.query}
@@ -170,6 +174,7 @@ const resolvers = {
         ...AgentHistoryGeoAzyk.resolvers,
         ...BlogAzyk.resolvers,
         ...AdsAzyk.resolvers,
+        ...IntegrateOutShoroAzyk.resolvers,
         ...SubscriberAzyk.resolvers,
         ...NotificationStatisticAzyk.resolvers,
         ...PassportAzyk.resolvers,
@@ -202,6 +207,7 @@ const resolvers = {
         ...ReturnedAzyk.resolversMutation,
         ...BlogAzyk.resolversMutation,
         ...AdsAzyk.resolversMutation,
+        ...IntegrateOutShoroAzyk.resolversMutation,
         ...SubscriberAzyk.resolversMutation,
         ...NotificationStatisticAzyk.resolversMutation,
         ...EmploymentAzyk.resolversMutation,
@@ -229,19 +235,23 @@ const run = (app)=>{
         subscriptions: {
             keepAlive: 1000,
             onConnect: async (connectionParams) => {
-                if (connectionParams.authorization) {
+                if (connectionParams&&connectionParams.authorization) {
                     let user = await verifydeuserGQL({headers: {authorization: connectionParams.authorization}}, {})
                     return {
                         user: user,
                     }
                 }
-                throw new Error('Missing auth token!');
+                else return {
+                    user: {}
+                }
+                //throw new Error('Missing auth token!');
             },
             onDisconnect: (webSocket, context) => {
                 // ...
             },
         },
         context: async (ctx) => {
+            //console.log(ctx)
             if (ctx.connection) {
                 return ctx.connection.context;
             }

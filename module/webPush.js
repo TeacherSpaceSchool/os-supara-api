@@ -55,16 +55,27 @@ module.exports.sendWebPush = async(title, message, user) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberAzykCalls).then((pushResults) => {
+                q.allSettled(parallelSubscriberAzykCalls).then(async(pushResults) => {
                     try{
                         let delivered = 0;
                         let failed = 0;
                         for(let i=0; i<pushResults.length; i++){
+                            let endpoint = pushResults[i].reason?pushResults[i].reason.endpoint:pushResults[i].value?pushResults[i].value.endpoint:undefined
+                            let subscriberAzyk = await SubscriberAzyk.findOne({endpoint: endpoint})
                             if(pushResults[i].state === 'rejected'||pushResults[i].reason){
                                 failed+=1
+                                if(subscriberAzyk){
+                                    subscriberAzyk.status = 'провалено'
+                                    await subscriberAzyk.save()
+                                }
                             }
-                            else
-                                delivered+=1
+                            else {
+                                delivered += 1
+                                if(subscriberAzyk){
+                                    subscriberAzyk.status = 'доставлено'
+                                    await subscriberAzyk.save()
+                                }
+                            }
                         }
                         let _object = new NotificationStatisticAzyk({
                             title: title,
@@ -72,7 +83,7 @@ module.exports.sendWebPush = async(title, message, user) => {
                             delivered: delivered,
                             failed: failed,
                         });
-                        NotificationStatisticAzyk.create(_object)
+                        await NotificationStatisticAzyk.create(_object)
                     } catch (err) {
                         console.error(err)
                     }
@@ -123,16 +134,27 @@ module.exports.sendWebPush = async(title, message, user) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberAzykCalls).then((pushResults) => {
+                q.allSettled(parallelSubscriberAzykCalls).then(async (pushResults) => {
                     try{
                         let delivered = 0;
                         let failed = 0;
                         for(let i=0; i<pushResults.length; i++){
+                            let endpoint = pushResults[i].reason?pushResults[i].reason.endpoint:pushResults[i].value?pushResults[i].value.endpoint:undefined
+                            let subscriberAzyk = await SubscriberAzyk.findOne({endpoint: endpoint})
                             if(pushResults[i].state === 'rejected'||pushResults[i].reason){
                                 failed+=1
+                                if(subscriberAzyk){
+                                    subscriberAzyk.status = 'провалено'
+                                    await subscriberAzyk.save()
+                                }
                             }
-                            else
-                                delivered+=1
+                            else {
+                                delivered += 1
+                                if(subscriberAzyk){
+                                    subscriberAzyk.status = 'доставлено'
+                                    await subscriberAzyk.save()
+                                }
+                            }
                         }
                         let _object = new NotificationStatisticAzyk({
                             title: title,
@@ -140,7 +162,7 @@ module.exports.sendWebPush = async(title, message, user) => {
                             delivered: delivered,
                             failed: failed,
                         });
-                        NotificationStatisticAzyk.create(_object)
+                        await NotificationStatisticAzyk.create(_object)
                     } catch (err) {
                         console.error(err)
                     }

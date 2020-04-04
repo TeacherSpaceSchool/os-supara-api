@@ -16,7 +16,7 @@ const type = `
 
 const query = `
     adss(search: String!, organization: ID!): [Ads]
-    adssTrash(search: String!, organization: ID!): [Ads]
+    adssTrash(search: String!): [Ads]
     adsOrganizations: [Organization]
     ads: Ads
 `;
@@ -29,11 +29,10 @@ const mutation = `
 `;
 
 const resolvers = {
-    adssTrash: async(parent, {search, organization}) => {
+    adssTrash: async(parent, {search}) => {
         return await AdsAzyk.find({
             del: 'deleted',
-            title: {'$regex': search, '$options': 'i'},
-            organization: organization
+            title: {'$regex': search, '$options': 'i'}
         }).sort('-createdAt')
     },
     adss: async(parent, {search, organization}) => {

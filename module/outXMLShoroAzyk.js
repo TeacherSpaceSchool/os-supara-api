@@ -162,42 +162,45 @@ module.exports.cancelOutXMLShoroAzyk = async(invoice) => {
     }
 }
 
-module.exports.checkOutXMLShoroAzyk = async(guid) => {
+module.exports.checkOutXMLShoroAzyk = async(guid, exc) => {
     let outXMLShoroAzyk = await OutXMLShoroAzyk
         .findOne({guid: guid})
     if(outXMLShoroAzyk){
-        outXMLShoroAzyk.status = 'check'
+        outXMLShoroAzyk.status =  exc?'error':'check'
         await outXMLShoroAzyk.save()
-        await InvoiceAzyk.updateMany({_id: outXMLShoroAzyk.invoice}, {sync: 2})
+        await InvoiceAzyk.updateMany({_id: outXMLShoroAzyk.invoice}, !exc?{sync: 2}:{exc: exc})
     }
 }
 
-module.exports.checkOutXMLReturnedShoroAzyk = async(guid) => {
+module.exports.checkOutXMLReturnedShoroAzyk = async(guid, exc) => {
     let outXMLReturnedShoroAzyk = await OutXMLReturnedShoroAzyk
         .findOne({guid: guid})
     if(outXMLReturnedShoroAzyk){
-        outXMLReturnedShoroAzyk.status = 'check'
+        outXMLReturnedShoroAzyk.status = exc?'error':'check'
         await outXMLReturnedShoroAzyk.save()
-        await ReturnedAzyk.updateMany({_id: outXMLReturnedShoroAzyk.returned}, {sync: 2})
+        await ReturnedAzyk.updateMany({_id: outXMLReturnedShoroAzyk.returned}, !exc?{sync: 2}:{exc: exc})
     }
 }
 
-module.exports.checkOutXMLClientShoroAzyk = async(guid) => {
-    let organization = await OrganizationAzyk
-        .findOne({name: 'ЗАО «ШОРО»'})
-    let guidClient = await Integrate1CAzyk
-        .findOne({guid: guid, organization: organization._id})
-    if(guidClient){
-        let client = await ClientAzyk
-            .findOne({_id: guidClient.client})
-        client.sync.push('ЗАО «ШОРО»')
+module.exports.checkOutXMLClientShoroAzyk = async(guid, exc) => {
+    if(!exc) {
+        let organization = await OrganizationAzyk
+            .findOne({name: 'ЗАО «ШОРО»'})
+        let guidClient = await Integrate1CAzyk
+            .findOne({guid: guid, organization: organization._id})
+        if (guidClient) {
+            let client = await ClientAzyk
+                .findOne({_id: guidClient.client})
+            client.sync.push('ЗАО «ШОРО»')
+            await client.save()
+        }
     }
 }
 
 module.exports.getOutXMLShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'sales');
     let outXMLShoros = await OutXMLShoroAzyk
-        .find({status: {$ne: 'check'}})
+        .find({$and: [{status: {$ne: 'check'}}, {status: {$ne: 'error'}}]})
         .populate({path: 'invoice'})
         .sort('date')
         .limit(20)
@@ -244,7 +247,7 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
                         sync: {$ne: 'ЗАО «ШОРО»'}
                     }
                 },
-            { $limit : 20 },
+            { $limit : 100 },
                 { $lookup:
                     {
                         from: UserAzyk.collection.collectionName,
@@ -290,7 +293,7 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
 module.exports.getOutXMLReturnedShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'returned');
     let outXMLReturnedShoros = await OutXMLReturnedShoroAzyk
-        .find({status: {$ne: 'check'}})
+        .find({$and: [{status: {$ne: 'check'}}, {status: {$ne: 'error'}}]})
         .populate({path: 'returned'})
         .sort('date')
         .limit(20)

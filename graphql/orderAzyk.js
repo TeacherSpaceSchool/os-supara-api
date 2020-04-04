@@ -1475,7 +1475,6 @@ const resolvers = {
                 cancelClient: null,
                 cancelForwarder: null
             }).sort('-createdAt')
-            console.log(objectInvoice)
             return !!objectInvoice
         }
     },
@@ -1954,7 +1953,6 @@ const resolversMutation = {
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
         let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
         let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&[order.item.organization.toString(), object.distributer?object.distributer.toString():'lol'].includes(user.organization.toString());
-        console.log(adss)
         if(adss!=undefined&&(admin||undefinedClient||employment)) {
             object.adss = adss
         }
@@ -1970,18 +1968,23 @@ const resolversMutation = {
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'обработка', returned: 0})
                 object.confirmationForwarder = false
                 object.confirmationClient = false
+                object.dateDelivery = null
                 object.sync = object.sync!==0?1:0
             }
         }
         if(object.taken&&confirmationClient!=undefined&&(admin||undefinedClient||client)){
             object.confirmationClient = confirmationClient
-            if(!confirmationClient)
+            if(!confirmationClient) {
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'принят'})
+                object.dateDelivery = null
+            }
         }
         if(object.taken&&confirmationForwarder!=undefined&&(admin||employment)){
             object.confirmationForwarder = confirmationForwarder
-            if(!confirmationForwarder)
+            if(!confirmationForwarder) {
                 await OrderAzyk.updateMany({_id: {$in: object.orders}}, {status: 'принят'})
+                object.dateDelivery = null
+            }
         }
         if(object.taken&&object.confirmationForwarder&&object.confirmationClient){
             await addBonusToClient(object.client, order.item.organization, object.allPrice)
@@ -2141,11 +2144,12 @@ const resolversSubscription = {
             () => pubsub.asyncIterator(RELOAD_ORDER),
             (payload, variables, {user} ) => {
                 return (
-                    ['admin', 'суперагент'].includes(user.role)||
+                    user._id.toString()!==payload.reloadOrder.who&&
+                    (['admin', 'суперагент'].includes(user.role)||
                     (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
                     (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                     (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                    (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString()))
                 )
             },
         )

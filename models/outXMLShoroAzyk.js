@@ -8,6 +8,7 @@ const outXMLShoroSchema = mongoose.Schema({
     client: String,
     agent: String,
     forwarder: String,
+    exc: String,
     invoice: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'InvoiceAzyk'

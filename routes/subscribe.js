@@ -10,7 +10,6 @@ router.post('/register', async (req, res) => {
         let subscriptionModel;
         let number = req.body.number
         subscriptionModel = await SubscriberAzyk.findOne({$or: [{number: number}, {endpoint: req.body.endpoint}]})
-
         if(subscriptionModel){
             if(user) subscriptionModel.user = user._id
             subscriptionModel.endpoint = req.body.endpoint
@@ -39,7 +38,7 @@ router.post('/register', async (req, res) => {
                     error: 'Technical error occurred'
                 });
             } else {
-                console.error('Subscription saved');
+                console.log('Subscription saved');
                 res.send(subscriptionModel.number)
             }
         });
@@ -50,8 +49,10 @@ router.post('/unregister', async (req, res) => {
     let subscriptionModel = await SubscriberAzyk.findOne({number: req.body.number}).populate({ path: 'user'})
     if(subscriptionModel.user&&subscriptionModel.user.role==='client'&&(await SubscriberAzyk.find({user: subscriptionModel.user._id})).length===1){
         let client = await ClientAzyk.findOne({user: subscriptionModel.user._id})
-        client.notification = false
-        client.save()
+        if(client) {
+            client.notification = false
+            client.save()
+        }
     }
     subscriptionModel.user = null
     subscriptionModel.save()

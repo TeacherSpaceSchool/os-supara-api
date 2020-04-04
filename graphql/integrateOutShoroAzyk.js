@@ -1,111 +1,268 @@
 const OutXMLShoroAzyk = require('../models/outXMLShoroAzyk');
 const OutXMLReturnedShoroAzyk = require('../models/outXMLReturnedShoroAzyk');
-const OrganizationAzyk = require('../models/organizationAzyk');
-const { saveImage, deleteFile, urlMain } = require('../module/const');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
+const DistrictAzyk = require('../models/districtAzyk');
+const InvoiceAzyk = require('../models/invoiceAzyk');
+const ReturnedAzyk = require('../models/returnedAzyk');
 
 const type = `
-  type Ads {
+  type OutXMLShoro{
     _id: ID
-    image: String
-    url: String
-    title: String
     createdAt: Date
-    del: String
-    organization: Organization
+    guid: String
+    date: Date
+    number: String
+    client: String
+    agent: String
+    forwarder: String
+    invoice: Invoice
+    status: String
+    exc: String
+  }
+  type OutXMLReturnedShoro{
+    _id: ID
+    createdAt: Date
+    guid: String
+    date: Date
+    number: String
+    client: String
+    agent: String
+    forwarder: String
+    returned: Returned
+    status: String
+    exc: String
   }
 `;
 
 const query = `
-    adss(search: String!, organization: ID!): [Ads]
-    adssTrash(search: String!, organization: ID!): [Ads]
-    adsOrganizations: [Organization]
-    ads: Ads
+    outXMLShoros(search: String!, filter: String!, skip: Int): [OutXMLShoro]
+    statisticOutXMLShoros: [String]
+    outXMLReturnedShoros(search: String!, filter: String!, skip: Int): [OutXMLReturnedShoro]
+    statisticOutXMLReturnedShoros: [String]
+    filterOutXMLShoro: [Filter]
 `;
 
 const mutation = `
-    addAds(image: Upload!, url: String!, title: String!, organization: ID!): Data
-    setAds(_id: ID!, image: Upload, url: String, title: String): Data
-    restoreAds(_id: [ID]!): Data
-    deleteAds(_id: [ID]!): Data
+    setDateOutXMLShoro(_id: ID!, date: String!): Data
+    restoreOutXMLShoro(_id: ID!): OutXMLShoro
+    deleteOutXMLShoro(_id: ID!): Data
+    deleteOutXMLShoroAll: Data
+    setDateOutXMLReturnedShoro(_id: ID!, date: String!): Data
+    restoreOutXMLReturnedShoro(_id: ID!): OutXMLReturnedShoro
+    deleteOutXMLReturnedShoro(_id: ID!): Data
+    deleteOutXMLReturnedShoroAll: Data
 `;
 
 const resolvers = {
-    adssTrash: async(parent, {search, organization}) => {
-        return await AdsAzyk.find({
-            del: 'deleted',
-            title: {'$regex': search, '$options': 'i'},
-            organization: organization
-        }).sort('-createdAt')
+    outXMLShoros: async(parent, {search, filter, skip}, {user}) => {
+        if('admin'===user.role){
+            let outXMLShoro = await OutXMLShoroAzyk
+                .find({
+                    status: {'$regex': filter, '$options': 'i'},
+                    number: {'$regex': search, '$options': 'i'}
+                })
+                .sort('-createdAt')
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?15:10000000000)
+            return outXMLShoro
+        }
+        else return []
     },
-    adss: async(parent, {search, organization}) => {
-        return await AdsAzyk.find({
-            del: {$ne: 'deleted'},
-            title: {'$regex': search, '$options': 'i'},
-            organization: organization
-        }).sort('-createdAt')
+    statisticOutXMLShoros: async(parent, ctx, {user}) => {
+        if('admin'===user.role){
+            let outXMLShoro = await OutXMLShoroAzyk
+                .find()
+            let procces = 0;
+            let error = 0;
+            let check = 0;
+            for(let i=0; i<outXMLShoro.length; i++){
+                if(outXMLShoro[i].status==='check')
+                    check+=1
+                else if(['update', 'create', 'del'].includes(outXMLShoro[i].status))
+                    procces+=1
+                else if(outXMLShoro[i].status==='error')
+                    error+=1
+            }
+
+            return [procces, check, error]
+        }
+        else return []
     },
-    adsOrganizations: async() => {
-        let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
-        organizations = await OrganizationAzyk.find({
-            _id: {$in: organizations},
-            status: 'active',
-            del: {$ne: 'deleted'}}).sort('name')
-        return organizations
+    statisticOutXMLReturnedShoros: async(parent, ctx, {user}) => {
+        if('admin'===user.role){
+            let outXMLReturnedShoroAzyk = await OutXMLReturnedShoroAzyk
+                .find()
+            let procces = 0;
+            let error = 0;
+            let check = 0;
+            for(let i=0; i<outXMLReturnedShoroAzyk.length; i++){
+                if(outXMLReturnedShoroAzyk[i].status==='check')
+                    check+=1
+                else if(['update', 'create', 'del'].includes(outXMLReturnedShoroAzyk[i].status))
+                    procces+=1
+                else if(outXMLReturnedShoroAzyk[i].status==='error')
+                    error+=1
+            }
+
+            return [procces, check, error]
+        }
+        else return []
     },
-    ads: async() => {
-        let ads = await AdsAzyk.findRandom().limit(1)
-        return ads[0]
+    outXMLReturnedShoros: async(parent, {search, filter, skip}, {user}) => {
+        if('admin'===user.role){
+            let outXMLShoro = await OutXMLReturnedShoroAzyk
+                .find({
+                    status: {'$regex': filter, '$options': 'i'},
+                    number: {'$regex': search, '$options': 'i'}
+                })
+                .sort('-createdAt')
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?15:10000000000)
+            return outXMLShoro
+        }
+        else return []
+    },
+    filterOutXMLShoro: async(parent, ctx, {user}) => {
+        if('admin'===user.role)
+            return [
+                {
+                    name: 'Все',
+                    value: ''
+                },
+                {
+                    name: 'Создан',
+                    value: 'create'
+                },
+                {
+                    name: 'Обновлен',
+                    value: 'update'
+                },
+                {
+                    name: 'На удаление',
+                    value: 'del'
+                },
+                {
+                    name: 'Выполнен',
+                    value: 'check'
+                },
+                {
+                    name: 'Ошибка',
+                    value: 'error'
+                }
+            ]
+        else return []
     }
 };
 
 const resolversMutation = {
-    addAds: async(parent, {image, url, title, organization}, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
-            let { stream, filename } = await image;
-            filename = await saveImage(stream, filename)
-            let _object = new AdsAzyk({
-                image: urlMain+filename,
-                url: url,
-                title: title,
-                organization: organization
-            });
-            if(['организация'].includes(user.role)) _object.organization = user.organization
-            await AdsAzyk.create(_object)
-        }
-        return {data: 'OK'};
-    },
-    setAds: async(parent, {_id, image, url, title}, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
-            let object = await AdsAzyk.findById(_id)
-            if (image) {
-                let {stream, filename} = await image;
-                await deleteFile(object.image)
-                filename = await saveImage(stream, filename)
-                object.image = urlMain + filename
-            }
-            if(url) object.url = url
-            if(title) object.title = title
-            object.save();
-        }
-        return {data: 'OK'}
-    },
-    restoreAds: async(parent, { _id }, {user}) => {
+    setDateOutXMLShoro: async(parent, {_id, date}, {user}) => {
         if('admin'===user.role){
-            await AdsAzyk.updateMany({_id: {$in: _id}}, {del: null})
+            let object = await OutXMLShoroAzyk.findById(_id)
+            object.date = new Date(date)
+            object.status = 'update'
+            await object.save();
         }
         return {data: 'OK'}
     },
-    deleteAds: async(parent, { _id }, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
-            let objects = await AdsAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
-                await deleteFile(objects[i].image)
+    restoreOutXMLShoro: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            let object = await OutXMLShoroAzyk.findById(_id)
+            let invoice = await InvoiceAzyk.find({_id: object.invoice})
+            let guidClient = await Integrate1CAzyk
+                .findOne({client: invoice.client, organization: invoice.organization})
+            if(guidClient) {
+                let district = await DistrictAzyk
+                    .findOne({client: invoice.client, organization: invoice.organization})
+                if(district) {
+                    let guidAgent = await Integrate1CAzyk
+                        .findOne({agent: district.agent})
+                    let guidEcspeditor = await Integrate1CAzyk
+                        .findOne({ecspeditor: district.ecspeditor})
+                    if (guidAgent && guidEcspeditor) {
+                        invoice.sync = 1
+                        await invoice.save()
+                        object.client = guidClient.guid
+                        object.agent = guidAgent.guid
+                        object.forwarder = guidEcspeditor.guid
+                        if(['check', 'error'].includes(object.status))
+                            object.status = 'update'
+                    }
+                }
             }
-            await AdsAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted'})
-
+            await object.save();
+            return object
+        }
+    },
+    deleteOutXMLShoro: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            let object = await OutXMLShoroAzyk.findOne({_id: _id, status: {$ne: 'check'}})
+            await InvoiceAzyk.updateMany({_id: object._id}, {sync: 0});
+            await OutXMLShoroAzyk.deleteMany({_id: _id})
         }
         return {data: 'OK'}
-    }
+    },
+    deleteOutXMLShoroAll: async(parent, ctx, {user}) => {
+        if('admin'===user.role){
+            let objects = await OutXMLShoroAzyk.find({status: {$ne: 'check'}}).distinct('_id')
+            await InvoiceAzyk.updateMany({_id: {$in: objects}}, {sync: 0});
+            await OutXMLShoroAzyk.deleteMany({status: {$ne: 'check'}})
+        }
+        return {data: 'OK'}
+    },
+    setDateOutXMLReturnedShoro: async(parent, {_id, date}, {user}) => {
+        if('admin'===user.role){
+            let object = await OutXMLReturnedShoroAzyk.findById(_id)
+            object.date = new Date(date)
+            object.status = 'update'
+            await object.save();
+        }
+        return {data: 'OK'}
+    },
+    restoreOutXMLReturnedShoro: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            let object = await OutXMLReturnedShoroAzyk.findById(_id)
+            let returned = await ReturnedAzyk.find({_id: object.returned})
+            let guidClient = await Integrate1CAzyk
+                .findOne({client: returned.client, organization: returned.organization})
+            if(guidClient) {
+                let district = await DistrictAzyk
+                    .findOne({client: returned.client, organization: returned.organization})
+                if(district) {
+                    let guidAgent = await Integrate1CAzyk
+                        .findOne({agent: district.agent})
+                    let guidEcspeditor = await Integrate1CAzyk
+                        .findOne({ecspeditor: district.ecspeditor})
+                    if (guidAgent && guidEcspeditor) {
+                        returned.sync = 1
+                        await returned.save()
+                        object.client = guidClient.guid
+                        object.agent = guidAgent.guid
+                        object.forwarder = guidEcspeditor.guid
+                        if(['check', 'error'].includes(object.status))
+                            object.status = 'update'
+                    }
+                }
+            }
+            await object.save();
+            return object
+        }
+    },
+    deleteOutXMLReturnedShoro: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            let object = await OutXMLReturnedShoroAzyk.findOne({_id: _id, status: {$ne: 'check'}})
+            await ReturnedAzyk.updateMany({_id: object._id}, {sync: 0});
+            await OutXMLReturnedShoroAzyk.deleteMany({_id: _id})
+        }
+        return {data: 'OK'}
+    },
+    deleteOutXMLReturnedShoroAll: async(parent, ctx, {user}) => {
+        if('admin'===user.role){
+            let objects = await OutXMLReturnedShoroAzyk.find({status: {$ne: 'check'}}).distinct('_id')
+            await ReturnedAzyk.updateMany({_id: {$in: objects}}, {sync: 0});
+            await OutXMLReturnedShoroAzyk.deleteMany({status: {$ne: 'check'}})
+        }
+        return {data: 'OK'}
+    },
 };
 
 module.exports.resolversMutation = resolversMutation;

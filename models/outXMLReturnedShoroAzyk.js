@@ -8,6 +8,7 @@ const outXMLReturnedShoroSchema = mongoose.Schema({
     client: String,
     agent: String,
     forwarder: String,
+    exc: String,
     returned: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ReturnedAzyk'

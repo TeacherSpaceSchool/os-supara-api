@@ -1191,10 +1191,11 @@ const resolversSubscription = {
             () => pubsub.asyncIterator(RELOAD_RETURNED),
             (payload, variables, {user} ) => {
                 return (
-                    ['admin', 'суперагент'].includes(user.role)||
+                    user._id.toString()!==payload.reloadOrder.who&&
+                    (['admin', 'суперагент'].includes(user.role)||
                     (user.employment&&payload.reloadReturned.agent&&payload.reloadReturned.agent.toString()===user.employment.toString())||
                     (user.employment&&payload.reloadReturned.manager&&payload.reloadReturned.manager.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadReturned.organization&&'организация'===user.role&&payload.reloadReturned.organization.toString()===user.organization.toString())
+                    (user.organization&&payload.reloadReturned.organization&&'организация'===user.role&&payload.reloadReturned.organization.toString()===user.organization.toString()))
                 )
             },
         )

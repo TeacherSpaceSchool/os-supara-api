@@ -50,7 +50,7 @@ router.post('/shoro/put/returned/confirm', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');
     try{
         for(let i=0;i<req.body.elements[0].elements.length;i++) {
-            await checkOutXMLReturnedShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
+            await checkOutXMLReturnedShoroAzyk(req.body.elements[0].elements[i].attributes.guid, req.body.elements[0].elements[i].attributes.exc)
         }
          await res.status(200);
         await res.end('success')
@@ -67,7 +67,7 @@ router.post('/shoro/put/sales/confirm', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');
     try{
         for(let i=0;i<req.body.elements[0].elements.length;i++) {
-            await checkOutXMLShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
+            await checkOutXMLShoroAzyk(req.body.elements[0].elements[i].attributes.guid, req.body.elements[0].elements[i].attributes.exc)
         }
         await res.status(200);
         await res.end('success')
@@ -84,7 +84,7 @@ router.post('/shoro/put/client/confirm', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');
     try{
         for(let i=0;i<req.body.elements[0].elements.length;i++) {
-            await checkOutXMLClientShoroAzyk(req.body.elements[0].elements[i].attributes.guid)
+            await checkOutXMLClientShoroAzyk(req.body.elements[0].elements[i].attributes.guid, req.body.elements[0].elements[i].attributes.exc)
         }
         await res.status(200);
         await res.end('success')
