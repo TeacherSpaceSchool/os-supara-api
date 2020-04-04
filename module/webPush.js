@@ -96,6 +96,7 @@ module.exports.sendWebPush = async(title, message, user) => {
             if (err) {
                 console.error('Error occurred while getting subscriptions');
             } else {
+                console.log(subscriptions)
                 let parallelSubscriberAzykCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
                         const pushSubscriberAzyk = {

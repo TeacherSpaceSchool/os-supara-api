@@ -7,7 +7,6 @@ const SubscriberAzyk = require('../models/subscriberAzyk');
 router.get('/admin', async (req, res) => {
     let user = await UserAzyk.findOne({role: 'admin'})
     if(user){
-        console.log(await UserAzyk.find({role: 'admin'}))
         sendWebPush('AZYK.STORE', 'Не забудьте сделать свой заказ', user._id)
         res.json('Push triggered');
     }
