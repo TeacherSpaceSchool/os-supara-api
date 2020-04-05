@@ -214,7 +214,8 @@ module.exports.getOutXMLShoroAzyk = async() => {
         item.att('agent', outXMLShoros[i].agent)
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
-        item.att('coment', outXMLShoros[i].invoice.info?outXMLShoros[i].invoice.info:'')
+        item.att('coment', /*outXMLShoros[i].invoice.info?outXMLShoros[i].invoice.info:''*/
+            `${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`)
 
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){
             item.ele('product')
@@ -247,7 +248,7 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
                         sync: {$ne: 'ЗАО «ШОРО»'}
                     }
                 },
-            { $limit : 100 },
+            //{ $limit : 100 },
                 { $lookup:
                     {
                         from: UserAzyk.collection.collectionName,
@@ -307,7 +308,8 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         item.att('agent', outXMLReturnedShoros[i].agent)
         item.att('forwarder', outXMLReturnedShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLReturnedShoros[i].date))
-        item.att('coment', outXMLReturnedShoros[i].returned.info?outXMLReturnedShoros[i].returned.info:'')
+        item.att('coment',/* outXMLReturnedShoros[i].returned.info?outXMLReturnedShoros[i].returned.info:''*/
+            `${outXMLReturnedShoros[i].returned.address[2]?`${outXMLReturnedShoros[i].returned.address[2]}, `:''}${outXMLReturnedShoros[i].returned.address[0]}`)
         for(let ii=0;ii<outXMLReturnedShoros[i].data.length;ii++){
             item.ele('product')
                 .att('guid', outXMLReturnedShoros[i].data[ii].guid)

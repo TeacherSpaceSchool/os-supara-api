@@ -192,7 +192,7 @@ const resolversMutation = {
                 }
                 await distributers[i].save()
             }
-            await AdsAzyk.deleteMany({organization: {$in: _id}})
+            await OrganizationAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})

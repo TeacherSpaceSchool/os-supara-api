@@ -1,11 +1,11 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
+const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const ItemAzyk = require('../models/itemAzyk');
-const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const UserAzyk = require('../models/userAzyk');
 const ExcelJS = require('exceljs');
 const randomstring = require('randomstring');
@@ -51,6 +51,7 @@ const query = `
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
+    checkIntegrateClient(organization: ID, type: String, document: Upload): Statistic
 `;
 
 const mutation = `
@@ -59,6 +60,128 @@ const mutation = `
    `;
 
 const resolvers = {
+    checkIntegrateClient: async(parent, { organization, type, document }, {user}) => {
+        if(user.role==='admin'){
+            if(type!=='отличая от 1С') {
+                let statistic = [];
+                let problem;
+                let data = await Integrate1CAzyk.find(
+                    {
+                        organization: organization,
+                        client: {$ne: null},
+                    }
+                )
+                    .populate({
+                        path: 'client'
+                    })
+                    .lean()
+                for (let i = 0; i < data.length; i++) {
+                    if (type === 'повторяющиеся guid') {
+                        problem = (
+                            data.filter(element => {
+                                return element.guid === data[i].guid
+                            })
+                        ).length > 1
+                    }
+                    else if (type === 'повторящиеся клиенты') {
+                        problem = (
+                            data.filter(element => {
+                                return element.client._id.toString() === data[i].client._id.toString()
+                            })
+                        ).length > 1
+                    }
+                    else {
+                        if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
+                            let address = data[i].client.address[0][0].toLowerCase()
+                            let market = data[i].client.address[0][2].toLowerCase()
+                            while (address.includes(' '))
+                                address = address.replace(' ', '')
+                            while (address.includes('-'))
+                                address = address.replace('-', '')
+                            while (market.includes(' '))
+                                market = market.replace(' ', '')
+                            while (market.includes('-'))
+                                market = market.replace('-', '')
+                            problem = (data.filter(element => {
+                                if (element.client.address && element.client.address[0] && element.client.address[0][0] && element.client.address[0][2]) {
+                                    let address1 = element.client.address[0][0].toLowerCase()
+                                    let market1 = element.client.address[0][2].toLowerCase()
+                                    while (address1.includes(' '))
+                                        address1 = address1.replace(' ', '')
+                                    while (address1.includes('-'))
+                                        address1 = address1.replace('-', '')
+                                    while (market1.includes(' '))
+                                        market1 = market1.replace(' ', '')
+                                    while (market1.includes('-'))
+                                        market1 = market1.replace('-', '')
+                                    return address1 === address || market1 === market
+                                }
+                                else return false
+                            })).length > 1
+                        }
+                    }
+                    if (problem) {
+                        statistic.push({
+                            _id: null, data: [
+                                data[i].guid,
+                                `${data[i].client.name}${data[i].client.address && data[i].client.address[0] ? ` (${data[i].client.address[0][2] ? `${data[i].client.address[0][2]}, ` : ''}${data[i].client.address[0][0]})` : ''}`,
+                            ]
+                        })
+                    }
+                }
+                return {
+                    columns: ['GUID', 'клиент'],
+                    row: statistic
+                };
+            }
+            else if(document) {
+                let {stream, filename} = await document;
+                filename = await saveFile(stream, filename);
+                let xlsxpath = path.join(app.dirname, 'public', filename)
+                let rows = await readXlsxFile(xlsxpath);
+                let statistic = [];
+                let problem;
+                for (let i = 0; i < rows.length; i++) {
+                    let integrate1CAzyk = await Integrate1CAzyk.findOne({
+                        organization: organization,
+                        guid: rows[i][0]
+                    })
+                        .populate({
+                            path: 'client'
+                        })
+                        .lean()
+                    if(integrate1CAzyk&&integrate1CAzyk.client.address[0]&&integrate1CAzyk.client.address[0][2]) {
+                        let market = rows[i][1].toString().toLowerCase()
+                        while (market.includes(' '))
+                            market = market.replace(' ', '')
+                        while (market.includes('-'))
+                            market = market.replace('-', '')
+                        let market1 = integrate1CAzyk.client.address[0][2].toLowerCase()
+                        while (market1.includes(' '))
+                            market1 = market1.replace(' ', '')
+                        while (market1.includes('-'))
+                            market1 = market1.replace('-', '')
+                        problem = market!==market1
+                        if (problem) {
+                            statistic.push({
+                                _id: null, data: [
+                                    integrate1CAzyk.guid,
+                                    integrate1CAzyk.client.address[0][2],
+                                    rows[i][1]
+                                ]
+                            })
+                        }
+                    }
+                }
+                await deleteFile(filename)
+                return {
+                    columns: ['GUID', 'AZYK.STORE', '1C'],
+                    row: statistic
+                };
+
+            }
+        }
+    },
     checkOrder: async(parent, { company, today }, {user}) => {
         if(user.role==='admin'){
             let tomorrow = new Date(today)
