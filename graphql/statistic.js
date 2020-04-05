@@ -87,20 +87,15 @@ const resolvers = {
                         sortStatistic[data[i].client._id.toString()].push(data[i])
                     }
                     else {
-                        if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
-                            let address = data[i].client.address[0][0].toLowerCase()
+                        if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][2]) {
                             let market = data[i].client.address[0][2].toLowerCase()
-                            while (address.includes(' '))
-                                address = address.replace(' ', '')
-                            while (address.includes('-'))
-                                address = address.replace('-', '')
                             while (market.includes(' '))
                                 market = market.replace(' ', '');
                             while (market.includes('-'))
                                 market = market.replace('-', '');
-                            if(!sortStatistic[`${address}${market}`])
-                                sortStatistic[`${address}${market}`] = []
-                            sortStatistic[`${address}${market}`].push(data[i])
+                            if(!sortStatistic[market])
+                                sortStatistic[market] = []
+                            sortStatistic[market].push(data[i])
                         }
                     }
                 }
