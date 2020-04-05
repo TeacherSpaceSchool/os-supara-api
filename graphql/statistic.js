@@ -79,7 +79,7 @@ const resolvers = {
                     if (type === 'повторяющиеся guid') {
                         problem = 0
                         for (let i1 = 0; i1 < data.length; i1++) {
-                            if(element.guid === data[i].guid)
+                            if(data[i1].guid === data[i].guid)
                                 problem += 1
                         }
                     }
