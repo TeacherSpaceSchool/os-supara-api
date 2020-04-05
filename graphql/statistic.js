@@ -133,13 +133,13 @@ const resolvers = {
                     }
                 }
                 if (type === 'повторяющиеся guid') {
-                    data = data.sort(function (a, b) {
-                        return a.data[0] - b.data[0]
+                    statistic = statistic.sort(function (a, b) {
+                        return a[0] - b[0]
                     });
                 }
                 else {
-                    data = data.sort(function (a, b) {
-                        return a.data[1] - b.data[1]
+                    statistic = statistic.sort(function (a, b) {
+                        return a[1] - b[1]
                     });
                 }
 
