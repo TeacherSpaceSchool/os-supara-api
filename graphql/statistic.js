@@ -89,7 +89,6 @@ const resolvers = {
                             if(data[i1].client._id.toString() === data[i].client._id.toString())
                                 problem += 1
                         }
-                        problem = problem>1
                     }
                     else {
                         if (data[i].client.address && data[i].client.address[0]/* && data[i].client.address[0][0]*/ && data[i].client.address[0][2]) {
@@ -120,9 +119,9 @@ const resolvers = {
                                         problem += 1
                                 }
                             }
-                            problem = problem>1
                         }
                     }
+                    problem = problem>1
                     if (problem) {
                         statistic.push({
                             _id: null, data: [
