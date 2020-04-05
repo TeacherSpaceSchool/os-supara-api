@@ -64,7 +64,7 @@ const resolvers = {
         if(user.role==='admin'){
             if(type!=='отличая от 1С') {
                 let statistic = [];
-                let problem;
+                let sortStatistic = {};
                 let data = await Integrate1CAzyk.find(
                     {
                         organization: organization,
@@ -77,72 +77,58 @@ const resolvers = {
                     .lean()
                 for (let i = 0; i < data.length; i++) {
                     if (type === 'повторяющиеся guid') {
-                        problem = 0
-                        for (let i1 = 0; i1 < data.length; i1++) {
-                            if(data[i1].guid === data[i].guid)
-                                problem += 1
-                        }
+                        if(!sortStatistic[data[i].guid])
+                            sortStatistic[data[i].guid] = []
+                        sortStatistic[data[i].guid].push(data[i])
                     }
                     else if (type === 'повторящиеся клиенты') {
-                        problem = 0
-                        for (let i1 = 0; i1 < data.length; i1++) {
-                            if(data[i1].client._id.toString() === data[i].client._id.toString())
-                                problem += 1
-                        }
+                        if(!sortStatistic[data[i].client._id.toString()])
+                            sortStatistic[data[i].client._id.toString()] = []
+                        sortStatistic[data[i].client._id.toString()].push(data[i])
                     }
                     else {
-                        if (data[i].client.address && data[i].client.address[0]/* && data[i].client.address[0][0]*/ && data[i].client.address[0][2]) {
-                            problem = 0
-                            //let address = data[i].client.address[0][0].toLowerCase()
+                        if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
+                            let address = data[i].client.address[0][0].toLowerCase()
                             let market = data[i].client.address[0][2].toLowerCase()
-                            /*while (address.includes(' '))
-                                                           address = address.replace(' ', '')
-                                                       while (address.includes('-'))
-                                                           address = address.replace('-', '')*/
+                            while (address.includes(' '))
+                                address = address.replace(' ', '')
+                            while (address.includes('-'))
+                                address = address.replace('-', '')
                             while (market.includes(' '))
                                 market = market.replace(' ', '');
                             while (market.includes('-'))
                                 market = market.replace('-', '');
-                            for(let i1 = 0; i1 < data.length; i1++) {
-                                if (data[i1].client.address && data[i1].client.address[0]/* && data[i1].client.address[0][0]*/ && data[i1].client.address[0][2]) {
-                                    //let address1 = element.client.address[0][0].toLowerCase()
-                                    let market1 = data[i1].client.address[0][2].toLowerCase()
-                                    /*while (address1.includes(' '))
-                                                                               address1 = address1.replace(' ', '')
-                                                                           while (address1.includes('-'))
-                                                                                address1 = address1.replace('-', '')*/
-                                    while (market1.includes(' '))
-                                        market1 = market1.replace(' ', '')
-                                    while (market1.includes('-'))
-                                        market1 = market1.replace('-', '')
-                                    if (/*address1 === address ||*/market1 === market)
-                                        problem += 1
-                                }
-                            }
+                            if(!sortStatistic[`${address}${market}`])
+                                sortStatistic[`${address}${market}`] = []
+                            sortStatistic[`${address}${market}`].push(data[i])
                         }
                     }
-                    problem = problem>1
-                    if (problem) {
-                        statistic.push({
-                            _id: null, data: [
-                                data[i].guid,
-                                `${data[i].client.address && data[i].client.address[0] ? `${data[i].client.address[0][2] ? `${data[i].client.address[0][2]}, ` : ''}${data[i].client.address[0][0]}` : ''}`,
-                            ]
-                        })
+                }
+                const keys = Object.keys(sortStatistic)
+                for (let i = 0; i < keys.length; i++) {
+                    if(sortStatistic[keys[i]].length>1){
+                        for (let i1 = 0; i1 < sortStatistic[keys[i]].length; i1++) {
+                            statistic.push({
+                                _id: null, data: [
+                                    sortStatistic[keys[i]][i1].guid,
+                                    `${sortStatistic[keys[i]][i1].client.address && sortStatistic[keys[i]][i1].client.address[0] ? `${sortStatistic[keys[i]][i1].client.address[0][2] ? `${sortStatistic[keys[i]][i1].client.address[0][2]}, ` : ''}${sortStatistic[keys[i]][i1].client.address[0][0]}` : ''}`,
+                                ]
+                            })
+                        }
                     }
                 }
-                /*
-                if (type === 'повторяющиеся guid') {
-                    statistic = statistic.sort(function (a, b) {
-                        return a[0] - b[0]
-                    });
-                }
-                else {
-                    statistic = statistic.sort(function (a, b) {
-                        return a[1] - b[1]
-                    });
-                }
-                */
+
+                    if (type === 'повторяющиеся guid') {
+                        statistic = statistic.sort(function (a, b) {
+                            return a.data[0] - b.data[0]
+                        });
+                    }
+                    else {
+                        statistic = statistic.sort(function (a, b) {
+                            return a.data[1] - b.data[1]
+                        });
+                    }
+
                 return {
                     columns: ['GUID', 'клиент'],
                     row: statistic
