@@ -92,29 +92,29 @@ const resolvers = {
                     }
                     else {
                         if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
-                            let address = data[i].client.address[0][0].toLowerCase()
+                            //let address = data[i].client.address[0][0].toLowerCase()
                             let market = data[i].client.address[0][2].toLowerCase()
-                            while (address.includes(' '))
+                            /*while (address.includes(' '))
                                 address = address.replace(' ', '')
                             while (address.includes('-'))
-                                address = address.replace('-', '')
+                                address = address.replace('-', '')*/
                             while (market.includes(' '))
                                 market = market.replace(' ', '')
                             while (market.includes('-'))
                                 market = market.replace('-', '')
                             problem = (data.filter(element => {
-                                if (element.client.address && element.client.address[0] && element.client.address[0][0] && element.client.address[0][2]) {
-                                    let address1 = element.client.address[0][0].toLowerCase()
+                                if (element.client.address && element.client.address[0] && element.client.address[0][0]/* && element.client.address[0][2]*/) {
+                                    //let address1 = element.client.address[0][0].toLowerCase()
                                     let market1 = element.client.address[0][2].toLowerCase()
-                                    while (address1.includes(' '))
+                                    /*while (address1.includes(' '))
                                         address1 = address1.replace(' ', '')
                                     while (address1.includes('-'))
-                                        address1 = address1.replace('-', '')
+                                        address1 = address1.replace('-', '')*/
                                     while (market1.includes(' '))
                                         market1 = market1.replace(' ', '')
                                     while (market1.includes('-'))
                                         market1 = market1.replace('-', '')
-                                    return address1 === address || market1 === market
+                                    return /*address1 === address ||*/ market1 === market
                                 }
                                 else return false
                             })).length > 1
