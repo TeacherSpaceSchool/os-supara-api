@@ -84,15 +84,16 @@ const resolvers = {
                         ).length > 1
                     }
                     else if (type === 'повторящиеся клиенты') {
-                        problem = false
+                        problem = 0
                         for (let i1 = 0; i1 < data.length; i1++) {
                             if(data[i1].client._id.toString() === data[i].client._id.toString())
-                                problem=true
+                                problem += 1
                         }
+                        problem = problem>1
                     }
                     else {
                         if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
-                            problem = false
+                            problem = 0
                             //let address = data[i].client.address[0][0].toLowerCase()
                             let market = data[i].client.address[0][2].toLowerCase()
                             /*while (address.includes(' '))
@@ -104,21 +105,19 @@ const resolvers = {
                             while (market.includes('-'))
                                 market = market.replace('-', '');
                             for(let i1 = 0; i1 < data.length; i1++) {
-                                if (data[i1].client.address && data[i1].client.address[0] && data[i1].client.address[0][0]/* && element.client.address[0][2]*/) {
-                                    //let address1 = element.client.address[0][0].toLowerCase()
-                                    let market1 = data[i1].client.address[0][2].toLowerCase()
-                                    /*while (address1.includes(' '))
-                                        address1 = address1.replace(' ', '')
-                                    while (address1.includes('-'))
+                                //let address1 = element.client.address[0][0].toLowerCase()
+                                let market1 = data[i1].client.address[0][2].toLowerCase()
+                                /*while (address1.includes(' '))
+                                       address1 = address1.replace(' ', '')
+                                   while (address1.includes('-'))
                                         address1 = address1.replace('-', '')*/
-                                    while (market1.includes(' '))
-                                        market1 = market1.replace(' ', '')
-                                    while (market1.includes('-'))
-                                        market1 = market1.replace('-', '')
-                                    if(/*address1 === address ||*/market1 === market)
-                                        problem=true
-                                }
-                                else return false
+                                while (market1.includes(' '))
+                                    market1 = market1.replace(' ', '')
+                                while (market1.includes('-'))
+                                    market1 = market1.replace('-', '')
+                                if(/*address1 === address ||*/market1 === market)
+                                    problem += 1
+                                problem = problem>1
                             }
                         }
                     }
