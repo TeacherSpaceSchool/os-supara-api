@@ -131,6 +131,7 @@ const resolvers = {
                         })
                     }
                 }
+                /*
                 if (type === 'повторяющиеся guid') {
                     statistic = statistic.sort(function (a, b) {
                         return a[0] - b[0]
@@ -141,7 +142,7 @@ const resolvers = {
                         return a[1] - b[1]
                     });
                 }
-
+                */
                 return {
                     columns: ['GUID', 'клиент'],
                     row: statistic
