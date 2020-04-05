@@ -127,11 +127,22 @@ const resolvers = {
                         statistic.push({
                             _id: null, data: [
                                 data[i].guid,
-                                `${data[i].client.name}${data[i].client.address && data[i].client.address[0] ? ` (${data[i].client.address[0][2] ? `${data[i].client.address[0][2]}, ` : ''}${data[i].client.address[0][0]})` : ''}`,
+                                `${data[i].client.address && data[i].client.address[0] ? `${data[i].client.address[0][2] ? `${data[i].client.address[0][2]}, ` : ''}${data[i].client.address[0][0]}` : ''}`,
                             ]
                         })
                     }
                 }
+                if (type === 'повторяющиеся guid') {
+                    data = data.sort(function (a, b) {
+                        return a.data[0] - b.data[0]
+                    });
+                }
+                else {
+                    data = data.sort(function (a, b) {
+                        return a.data[1] - b.data[1]
+                    });
+                }
+
                 return {
                     columns: ['GUID', 'клиент'],
                     row: statistic
@@ -169,7 +180,8 @@ const resolvers = {
                             statistic.push({
                                 _id: null, data: [
                                     integrate1CAzyk.guid,
-                                    integrate1CAzyk.client.address[0][2],
+                                    //integrate1CAzyk.client.address[0][2],
+                                    `${integrate1CAzyk.client.address && integrate1CAzyk.client.address[0] ? `${integrate1CAzyk.client.address[0][2] ? `${integrate1CAzyk.client.address[0][2]}, ` : ''}${integrate1CAzyk.client.address[0][0]}` : ''}`,
                                     rows[i][1]
                                 ]
                             })
