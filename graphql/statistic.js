@@ -84,14 +84,15 @@ const resolvers = {
                         ).length > 1
                     }
                     else if (type === 'повторящиеся клиенты') {
-                        problem = (
-                            data.filter(element => {
-                                return element.client._id.toString() === data[i].client._id.toString()
-                            })
-                        ).length > 1
+                        problem = false
+                        for (let i1 = 0; i1 < data.length; i1++) {
+                            if(data[i1].client._id.toString() === data[i].client._id.toString())
+                                problem=true
+                        }
                     }
                     else {
                         if (data[i].client.address && data[i].client.address[0] && data[i].client.address[0][0] && data[i].client.address[0][2]) {
+                            problem = false
                             //let address = data[i].client.address[0][0].toLowerCase()
                             let market = data[i].client.address[0][2].toLowerCase()
                             /*while (address.includes(' '))
@@ -99,13 +100,13 @@ const resolvers = {
                             while (address.includes('-'))
                                 address = address.replace('-', '')*/
                             while (market.includes(' '))
-                                market = market.replace(' ', '')
+                                market = market.replace(' ', '');
                             while (market.includes('-'))
-                                market = market.replace('-', '')
-                            problem = (data.filter(element => {
-                                if (element.client.address && element.client.address[0] && element.client.address[0][0]/* && element.client.address[0][2]*/) {
+                                market = market.replace('-', '');
+                            for(let i1 = 0; i1 < data.length; i1++) {
+                                if (data[i1].client.address && data[i1].client.address[0] && data[i1].client.address[0][0]/* && element.client.address[0][2]*/) {
                                     //let address1 = element.client.address[0][0].toLowerCase()
-                                    let market1 = element.client.address[0][2].toLowerCase()
+                                    let market1 = data[i1].client.address[0][2].toLowerCase()
                                     /*while (address1.includes(' '))
                                         address1 = address1.replace(' ', '')
                                     while (address1.includes('-'))
@@ -114,10 +115,11 @@ const resolvers = {
                                         market1 = market1.replace(' ', '')
                                     while (market1.includes('-'))
                                         market1 = market1.replace('-', '')
-                                    return /*address1 === address ||*/ market1 === market
+                                    if(/*address1 === address ||*/market1 === market)
+                                        problem=true
                                 }
                                 else return false
-                            })).length > 1
+                            }
                         }
                     }
                     if (problem) {
