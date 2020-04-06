@@ -167,8 +167,9 @@ module.exports.checkOutXMLShoroAzyk = async(guid, exc) => {
         .findOne({guid: guid})
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status =  exc?'error':'check'
+        outXMLShoroAzyk.exc =  exc?exc:null
         await outXMLShoroAzyk.save()
-        await InvoiceAzyk.updateMany({_id: outXMLShoroAzyk.invoice}, !exc?{sync: 2}:{exc: exc})
+        await InvoiceAzyk.updateMany({_id: outXMLShoroAzyk.invoice}, !exc?{sync: 2}:{})
     }
 }
 
@@ -177,8 +178,9 @@ module.exports.checkOutXMLReturnedShoroAzyk = async(guid, exc) => {
         .findOne({guid: guid})
     if(outXMLReturnedShoroAzyk){
         outXMLReturnedShoroAzyk.status = exc?'error':'check'
+        outXMLReturnedShoroAzyk.exc =  exc?exc:null
         await outXMLReturnedShoroAzyk.save()
-        await ReturnedAzyk.updateMany({_id: outXMLReturnedShoroAzyk.returned}, !exc?{sync: 2}:{exc: exc})
+        await ReturnedAzyk.updateMany({_id: outXMLReturnedShoroAzyk.returned}, !exc?{sync: 2}:{})
     }
 }
 

@@ -167,7 +167,7 @@ const resolversMutation = {
     restoreOutXMLShoro: async(parent, { _id }, {user}) => {
         if('admin'===user.role){
             let object = await OutXMLShoroAzyk.findById(_id)
-            let invoice = await InvoiceAzyk.find({_id: object.invoice})
+            let invoice = await InvoiceAzyk.findOne({_id: object.invoice})
             let guidClient = await Integrate1CAzyk
                 .findOne({client: invoice.client, organization: invoice.organization})
             if(guidClient) {
@@ -184,8 +184,7 @@ const resolversMutation = {
                         object.client = guidClient.guid
                         object.agent = guidAgent.guid
                         object.forwarder = guidEcspeditor.guid
-                        if(['check', 'error'].includes(object.status))
-                            object.status = 'update'
+                        object.status = 'update'
                     }
                 }
             }
@@ -221,7 +220,7 @@ const resolversMutation = {
     restoreOutXMLReturnedShoro: async(parent, { _id }, {user}) => {
         if('admin'===user.role){
             let object = await OutXMLReturnedShoroAzyk.findById(_id)
-            let returned = await ReturnedAzyk.find({_id: object.returned})
+            let returned = await ReturnedAzyk.findOne({_id: object.returned})
             let guidClient = await Integrate1CAzyk
                 .findOne({client: returned.client, organization: returned.organization})
             if(guidClient) {
@@ -238,8 +237,7 @@ const resolversMutation = {
                         object.client = guidClient.guid
                         object.agent = guidAgent.guid
                         object.forwarder = guidEcspeditor.guid
-                        if(['check', 'error'].includes(object.status))
-                            object.status = 'update'
+                        object.status = 'update'
                     }
                 }
             }
