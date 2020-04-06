@@ -242,30 +242,32 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
         .distinct('client')
     let outXMLShoros = await ClientAzyk
         .aggregate([
+            { $lookup:
                 {
-                    $match:{
-                        _id: {$in: integrate1Cs},
-                        sync: {$ne: 'ЗАО «ШОРО»'}
-                    }
-                },
-            //{ $limit : 100 },
-                { $lookup:
-                    {
-                        from: UserAzyk.collection.collectionName,
-                        let: { user: '$user' },
-                        pipeline: [
-                            { $match: {$expr:{$eq:['$$user', '$_id']}} },
-                        ],
-                        as: 'user'
-                    }
-                },
-                {
-                    $unwind:{
-                        preserveNullAndEmptyArrays : true,
-                        path : '$user'
-                    }
-                },
-            ])
+                    from: UserAzyk.collection.collectionName,
+                    let: { user: '$user' },
+                    pipeline: [
+                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                    ],
+                    as: 'user'
+                }
+            },
+            {
+                $unwind:{
+                    preserveNullAndEmptyArrays : true,
+                    path : '$user'
+                }
+            },
+            {
+                $match:{
+                    _id: {$in: integrate1Cs},
+                    sync: {$ne: 'ЗАО «ШОРО»'},
+                    'user.status': 'active',
+                    del: {$ne: 'deleted'}
+                }
+            },
+            { $limit : 100 },
+        ])
     for(let i=0;i<outXMLShoros.length;i++){
         let guidClient = await Integrate1CAzyk
             .findOne({client: outXMLShoros[i]._id, organization: organization._id})
