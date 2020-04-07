@@ -832,3 +832,24 @@ info [Tue Apr 07 2020 01:05:25 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 0
 info [Tue Apr 07 2020 01:07:16 GMT+0600 (GMT+06:00)]  out client start: Tue Apr 07 2020 01:07:15 GMT+0600 (GMT+06:00); time: 1.049; url: /integrate/shoro/out/client
 info [Tue Apr 07 2020 01:07:46 GMT+0600 (GMT+06:00)]  put client start: Tue Apr 07 2020 01:07:46 GMT+0600 (GMT+06:00); time: 0.075; url: /shoro/put/client/confirm
 info [Tue Apr 07 2020 01:07:50 GMT+0600 (GMT+06:00)]  out client start: Tue Apr 07 2020 01:07:49 GMT+0600 (GMT+06:00); time: 0.533; url: /integrate/shoro/out/client
+info [Tue Apr 07 2020 01:08:02 GMT+0600 (GMT+06:00)]  put client start: Tue Apr 07 2020 01:08:02 GMT+0600 (GMT+06:00); time: 0.01; url: /shoro/put/client/confirm
+info [Tue Apr 07 2020 01:08:05 GMT+0600 (GMT+06:00)]  out client start: Tue Apr 07 2020 01:08:04 GMT+0600 (GMT+06:00); time: 0.466; url: /integrate/shoro/out/client
+info [Tue Apr 07 2020 01:08:18 GMT+0600 (GMT+06:00)]  put client start: Tue Apr 07 2020 01:08:18 GMT+0600 (GMT+06:00); time: 0; url: /shoro/put/client/confirm
+info [Tue Apr 07 2020 01:08:21 GMT+0600 (GMT+06:00)]  out client start: Tue Apr 07 2020 01:08:20 GMT+0600 (GMT+06:00); time: 0.508; url: /integrate/shoro/out/client
+
+
+
+
+
+
+
+
+info [Tue Apr 07 2020 17:48:56 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 07 2020 17:48:56 GMT+0600 (GMT+06:00); time: 0.068; url: /integrate/shoro/out/sales
+
+
+info [Tue Apr 07 2020 23:40:17 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 07 2020 23:40:16 GMT+0600 (GMT+06:00); time: 0.036; url: /integrate/shoro/out/sales
+info [Tue Apr 07 2020 23:41:19 GMT+0600 (GMT+06:00)]  put returned start: Tue Apr 07 2020 23:41:19 GMT+0600 (GMT+06:00); time: 0.003; url: /shoro/put/returned/confirm
+info [Tue Apr 07 2020 23:41:21 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 07 2020 23:41:21 GMT+0600 (GMT+06:00); time: 0.015; url: /integrate/shoro/out/sales
+info [Tue Apr 07 2020 23:41:22 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 07 2020 23:41:22 GMT+0600 (GMT+06:00); time: 0.007; url: /integrate/shoro/out/sales
+info [Tue Apr 07 2020 23:41:34 GMT+0600 (GMT+06:00)]  put sales start: Tue Apr 07 2020 23:41:34 GMT+0600 (GMT+06:00); time: 0.026; url: /shoro/put/sales/confirm
+info [Tue Apr 07 2020 23:41:36 GMT+0600 (GMT+06:00)]  out sales start: Tue Apr 07 2020 23:41:36 GMT+0600 (GMT+06:00); time: 0.005; url: /integrate/shoro/out/sales

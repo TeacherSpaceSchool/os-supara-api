@@ -84,7 +84,7 @@ const resolvers = {
                     error+=1
             }
 
-            return [procces, check, error]
+            return [check, procces, error]
         }
         else return []
     },

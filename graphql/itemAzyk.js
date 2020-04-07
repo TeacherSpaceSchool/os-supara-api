@@ -252,7 +252,7 @@ const resolvers = {
                 del: {$ne: 'deleted'}
             }).sort(sort)
         }
-        else if(user.role==='агент'){
+        else if(['организация', 'менеджер', 'агент'].includes(user.role)){
             brandOrganizations = await DistributerAzyk.findOne({
                 distributer: user.organization
             }).distinct('organizations')

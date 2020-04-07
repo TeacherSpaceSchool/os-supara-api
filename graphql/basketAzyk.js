@@ -61,7 +61,7 @@ const resolvers = {
 
 const resolversMutation = {
     addBasket: async(parent, {item, count, consignment}, {user}) => {
-        if(['суперагент','агент', 'client'].includes(user.role)){
+        if(['суперагент','организация', 'менеджер', 'агент', 'client'].includes(user.role)){
             let basket = await BasketAzyk.findOne(
                 user.client?
                     {item: item, client: user.client}

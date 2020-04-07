@@ -190,7 +190,7 @@ module.exports.checkOutXMLClientShoroAzyk = async(guid, exc) => {
             .findOne({name: 'ЗАО «ШОРО»'})
         let guidClient = await Integrate1CAzyk
             .findOne({guid: guid, organization: organization._id})
-        if (guidClient) {
+        if (guidClient&&!exc) {
             let client = await ClientAzyk
                 .findOne({_id: guidClient.client})
             client.sync.push('ЗАО «ШОРО»')
