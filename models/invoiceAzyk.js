@@ -49,6 +49,7 @@ const InvoiceAzykSchema = mongoose.Schema({
     },
     taken: Boolean,
     del: String,
+    district: String,
     editor: String,
     agent: {
         type: mongoose.Schema.Types.ObjectId,

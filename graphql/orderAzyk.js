@@ -49,6 +49,7 @@ const type = `
     info: String,
     address: [String]
     paymentMethod: String
+    district: String
     number: String
     confirmationForwarder: Boolean
     confirmationClient: Boolean
@@ -1732,6 +1733,7 @@ const resolversMutation = {
                     agent: user.employment,
                     organization: organization,
                     adss: [],
+                    district:  district?district.name:null,
                     distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
                 });
                 if(usedBonus>0) {

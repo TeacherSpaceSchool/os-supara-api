@@ -767,13 +767,13 @@ const resolversMutation = {
                     let agentRoutes = await AgentRouteAzyk.find({district: districts[i1]._id, })
                     for(let i2=0; i2<agentRoutes.length; i2++) {
                         for(let i3=0; i3<7; i3++) {
-                            index = agentRoutes[i2].clients[i3].indexOf(objects[i]._id)
+                            index = agentRoutes[i2].clients[i3].indexOf(objects[i]._id.toString())
                             if(index!==-1)
                                 agentRoutes[i2].clients[i3].splice(index, 1)
                         }
                         await agentRoutes[i2].save()
                     }
-                    index = districts[i1].client.indexOf(objects[i]._id)
+                    index = districts[i1].client.indexOf(objects[i]._id.toString())
                     if(index!==-1)
                         districts[i1].client.splice(index, 1)
                     await districts[i1].save()
