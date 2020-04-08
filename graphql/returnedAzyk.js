@@ -45,6 +45,7 @@ const type = `
     organization: Organization
     agent: Employment 
     del: String
+    district: String
   }
   type HistoryReturned {
     createdAt: Date
@@ -1124,6 +1125,7 @@ const resolversMutation = {
                 info: info,
                 address: address,
                 organization: organization,
+                district:  district?district.name:null,
                 distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
             });
             if(user.employment)
