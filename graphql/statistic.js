@@ -1092,10 +1092,14 @@ const resolvers = {
                         .populate({
                             path: 'orders'
                         })
+                        .populate({
+                            path: 'client'
+                        })
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
                         for(let i2=0; i2<data[i1].orders.length; i2++) {
                             data[i1].orders[i2].invoice = data[i1]._id
+                            data[i1].orders[i2].client = data[i1].client
                         }
                     }
                     data = data.reduce((acc, val) => acc.concat(val.orders), []);
@@ -1141,10 +1145,14 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
+                    .populate({
+                        path: 'client'
+                    })
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
                     for(let i2=0; i2<data[i1].orders.length; i2++) {
                         data[i1].orders[i2].invoice = data[i1]._id
+                        data[i1].orders[i2].client = data[i1].client
                     }
                 }
                 data = data.reduce((acc, val) => acc.concat(val.orders), []);
