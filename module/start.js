@@ -1,6 +1,7 @@
 const { startCategoryAzyk } = require('../module/categoryAzyk');
 const { startSubCategoryAzyk } = require('../module/subCategoryAzyk');
 const { reductionToBonus } = require('../module/bonusAzyk');
+const { reductionToAgentRoute } = require('../module/agentRouteAzyk');
 const { reductionToClient } = require('../module/clientAzyk');
 const { reductionInvoices } = require('../module/invoiceAzyk');
 const { startClientRedis } = require('../module/redis');
@@ -64,6 +65,7 @@ let start = async () => {
     await reductionToUser()
     await startResetBonusesClient()
     await startReminderClient();
+    await reductionToAgentRoute();
     await createAdmin();
 }
 

@@ -41,6 +41,10 @@ const ReturnedAzykSchema = mongoose.Schema({
         ref: 'OrganizationAzyk',
         default: null
     },
+    agent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
 }, {
     timestamps: true
 });

@@ -249,17 +249,15 @@ const resolversMutation = {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
             if(name)object.name = name
             if(client){
-                let objectAgentRouteAzyk = await AgentRouteAzyk.find({district: object._id})
+                let objectAgentRouteAzyk = await AgentRouteAzyk.findOne({district: object._id})
                 for(let i=0; i<object.client.length; i++) {
                     if(!client.includes(object.client[i])){
-                        for(let i1=0; i1<objectAgentRouteAzyk.length; i1++) {
-                            for(let i2=0; i2<objectAgentRouteAzyk[i1].clients.length; i2++) {
-                                let index = objectAgentRouteAzyk[i1].clients[i2].indexOf(object.client[i])
-                                if(index!==-1)
-                                    objectAgentRouteAzyk[i1].clients[i2].splice(index, 1)
-
+                        for(let i2=0; i2<7; i2++) {
+                            let index = objectAgentRouteAzyk.clients[i2].indexOf(object.client[i])
+                            if(index!==-1)
+                                objectAgentRouteAzyk.clients[i2].splice(index, 1)
                             }
-                        }
+                        await objectAgentRouteAzyk[i1].save()
                     }
                 }
                 object.client = client

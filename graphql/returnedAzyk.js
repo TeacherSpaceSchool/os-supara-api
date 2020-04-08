@@ -43,6 +43,7 @@ const type = `
     editor: String
     distributer: Organization
     organization: Organization
+    agent: Employment 
     del: String
   }
   type HistoryReturned {
@@ -190,6 +191,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
                         }
                     },
                     { $lookup:
@@ -483,6 +500,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { distributer: '$distributer' },
                             pipeline: [
@@ -591,6 +624,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { organization: '$organization' },
                             pipeline: [
@@ -677,6 +726,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
                         }
                     },
                     { $lookup:
@@ -803,6 +868,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { organization: '$organization' },
                             pipeline: [
@@ -901,6 +982,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : false, // this remove the object which is null
                             path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
                         }
                     },
                     { $lookup:
@@ -1029,6 +1126,8 @@ const resolversMutation = {
                 organization: organization,
                 distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
             });
+            if(user.employment)
+                objectReturned.agent = user.employment
             objectReturned = await ReturnedAzyk.create(objectReturned);
         }
         else{

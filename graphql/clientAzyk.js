@@ -765,9 +765,10 @@ const resolversMutation = {
                 for(let i1=0; i1<districts.length; i1++) {
                     let agentRoutes = await AgentRouteAzyk.find({district: districts[i1]._id, })
                     for(let i2=0; i2<agentRoutes.length; i2++) {
-                        for(let i3=0; i3<agentRoutes[i2].clients.length; i3++) {
+                        for(let i3=0; i3<7; i3++) {
                             agentRoutes[i2].clients[i3].splice(agentRoutes[i2].clients[i3].indexOf(objects[i]._id), 1)
                         }
+                        await agentRoutes[i2].save()
                     }
                     districts[i1].client.splice(districts[i1].client.indexOf(objects[i]._id), 1)
                     await districts[i1].save()
