@@ -1,5 +1,6 @@
 const OutXMLShoroAzyk = require('../models/outXMLShoroAzyk');
 const OutXMLReturnedShoroAzyk = require('../models/outXMLReturnedShoroAzyk');
+const OutXMLClientShoroAzyk = require('../models/outXMLClientShoroAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
@@ -32,9 +33,18 @@ const type = `
     status: String
     exc: String
   }
+  type OutXMLClientShoroSchema{
+    _id: ID
+    createdAt: Date
+    guid: String
+    client: Client
+    exc: String
+  }
 `;
 
 const query = `
+    outXMLClientShoros(skip: Int): [OutXMLClientShoroSchema]
+    statisticOutXMLClientShoros: [String]
     outXMLShoros(search: String!, filter: String!, skip: Int): [OutXMLShoro]
     statisticOutXMLShoros: [String]
     outXMLReturnedShoros(search: String!, filter: String!, skip: Int): [OutXMLReturnedShoro]
@@ -43,6 +53,7 @@ const query = `
 `;
 
 const mutation = `
+    deleteOutXMLClientShoro(_id: ID!): Data
     setDateOutXMLShoro(_id: ID!, date: String!): Data
     restoreOutXMLShoro(_id: ID!): OutXMLShoro
     deleteOutXMLShoro(_id: ID!): Data
@@ -85,6 +96,26 @@ const resolvers = {
             }
 
             return [check, procces, error]
+        }
+        else return []
+    },
+    outXMLClientShoros: async(parent, {skip}, {user}) => {
+        if('admin'===user.role){
+            let outXMLShoro = await OutXMLClientShoroAzyk
+                .find()
+                .populate('client')
+                .sort('-createdAt')
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?15:10000000000)
+            return outXMLShoro
+        }
+        else return []
+    },
+    statisticOutXMLClientShoros: async(parent, ctx, {user}) => {
+        if('admin'===user.role){
+            let outXMLShoro = await OutXMLClientShoroAzyk
+                .count()
+            return [outXMLShoro]
         }
         else return []
     },
@@ -155,6 +186,12 @@ const resolvers = {
 };
 
 const resolversMutation = {
+    deleteOutXMLClientShoro: async(parent, { _id }, {user}) => {
+        if('admin'===user.role){
+            await OutXMLClientShoroAzyk.deleteMany({_id: _id})
+        }
+        return {data: 'OK'}
+    },
     setDateOutXMLShoro: async(parent, {_id, date}, {user}) => {
         if('admin'===user.role){
             let object = await OutXMLShoroAzyk.findById(_id)

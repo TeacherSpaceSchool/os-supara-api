@@ -1,5 +1,6 @@
 const OutXMLShoroAzyk = require('../models/outXMLShoroAzyk');
 const OutXMLReturnedShoroAzyk = require('../models/outXMLReturnedShoroAzyk');
+const OutXMLClientShoroAzyk = require('../models/outXMLClientShoroAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const UserAzyk = require('../models/userAzyk');
@@ -185,17 +186,23 @@ module.exports.checkOutXMLReturnedShoroAzyk = async(guid, exc) => {
 }
 
 module.exports.checkOutXMLClientShoroAzyk = async(guid, exc) => {
-    if(!exc) {
-        let organization = await OrganizationAzyk
-            .findOne({name: 'ЗАО «ШОРО»'})
-        let guidClient = await Integrate1CAzyk
-            .findOne({guid: guid, organization: organization._id})
-        if (guidClient&&!exc) {
-            let client = await ClientAzyk
-                .findOne({_id: guidClient.client})
-            client.sync.push('ЗАО «ШОРО»')
-            await client.save()
-        }
+    let organization = await OrganizationAzyk
+        .findOne({name: 'ЗАО «ШОРО»'})
+    let guidClient = await Integrate1CAzyk
+        .findOne({guid: guid, organization: organization._id})
+    if (guidClient&&!exc) {
+        let client = await ClientAzyk
+            .findOne({_id: guidClient.client})
+        client.sync.push('ЗАО «ШОРО»')
+        await client.save()
+    }
+    else if (guidClient&&exc) {
+        let object = new OutXMLClientShoroAzyk({
+            guid: guidClient.guid,
+            client: guidClient.client,
+            exc: exc
+        });
+        await OutXMLClientShoroAzyk.create(object);
     }
 }
 
@@ -242,6 +249,9 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
             organization: organization._id
         })
         .distinct('client')
+    let outXMLClientShoroAzyks =  await OutXMLClientShoroAzyk
+        .find()
+        .distinct('client')
     let outXMLShoros = await ClientAzyk
         .aggregate([
             { $lookup:
@@ -262,7 +272,10 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
             },
             {
                 $match:{
-                    _id: {$in: integrate1Cs},
+                    $and: [
+                        {_id: {$nin: outXMLClientShoroAzyks}},
+                        {_id: {$in: integrate1Cs}}
+                    ],
                     sync: {$ne: 'ЗАО «ШОРО»'},
                     'user.status': 'active',
                     del: {$ne: 'deleted'}
