@@ -1100,7 +1100,7 @@ const resolvers = {
                     }
                     data = data.reduce((acc, val) => acc.concat(val.orders), []);
                     for(let i1=0; i1<data.length; i1++) {
-                        if (data[i].client.name&&!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                             if (data[i1].status === 'отмена') {
                                 if (!statistic[districts[i]._id].cancel.includes(data[i1].invoice)) {
                                     statistic[districts[i]._id].cancel.push(data[i1].invoice)
@@ -1149,7 +1149,7 @@ const resolvers = {
                 }
                 data = data.reduce((acc, val) => acc.concat(val.orders), []);
                 for(let i1=0; i1<data.length; i1++) {
-                    if (data[i1].client.name&&!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
+                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                         if (data[i1].status === 'отмена') {
                             if (!statistic['without'].cancel.includes(data[i1].invoice)) {
                                 statistic['without'].cancel.push(data[i1].invoice)
