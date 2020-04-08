@@ -762,15 +762,20 @@ const resolversMutation = {
                 objects[i].sync = []
                 await objects[i].save()
                 let districts = await DistrictAzyk.find({client: objects[i]._id, })
+                let index
                 for(let i1=0; i1<districts.length; i1++) {
                     let agentRoutes = await AgentRouteAzyk.find({district: districts[i1]._id, })
                     for(let i2=0; i2<agentRoutes.length; i2++) {
                         for(let i3=0; i3<7; i3++) {
-                            agentRoutes[i2].clients[i3].splice(agentRoutes[i2].clients[i3].indexOf(objects[i]._id), 1)
+                            index = agentRoutes[i2].clients[i3].indexOf(objects[i]._id)
+                            if(index!==-1)
+                                agentRoutes[i2].clients[i3].splice(index, 1)
                         }
                         await agentRoutes[i2].save()
                     }
-                    districts[i1].client.splice(districts[i1].client.indexOf(objects[i]._id), 1)
+                    index = districts[i1].client.indexOf(objects[i]._id)
+                    if(index!==-1)
+                        districts[i1].client.splice(index, 1)
                     await districts[i1].save()
                 }
                 await BasketAzyk.deleteMany({client: objects[i]._id})
