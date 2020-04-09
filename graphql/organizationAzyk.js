@@ -11,6 +11,7 @@ const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
+const UserAzyk = require('../models/userAzyk');
 const AdsAzyk = require('../models/adsAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
 
@@ -178,7 +179,9 @@ const resolversMutation = {
             items = items.map(element=>element._id)
             await BasketAzyk.deleteMany({item: {$in: items}})
             await ItemAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted', status: 'deactive'})
-            await EmploymentAzyk.deleteMany({organization: {$in: _id}})
+            let users = await EmploymentAzyk.find({organization: {$in: _id}}).distinct('user')
+            await UserAzyk.updateMany({_id: {$in: users}}, {status: 'deactive'})
+            await EmploymentAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
             await Integrate1CAzyk.deleteMany({organization: {$in: _id}})
             await AgentRouteAzyk.deleteMany({organization: {$in: _id}})
             await DistrictAzyk.deleteMany({organization: {$in: _id}})

@@ -78,7 +78,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
     }
 }
 
-module.exports.setOutXMLShoroAzyk = async(invoice) => {
+module.exports.setOutXMLShoroAzyk = async(invoice, ) => {
     let outXMLShoroAzyk = await OutXMLShoroAzyk
         .findOne({invoice: invoice._id})
     if(outXMLShoroAzyk){
@@ -142,6 +142,24 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                 }
             }
         }
+    }
+}
+
+module.exports.setOutXMLShoroAzykLogic = async(invoices, forwarder, track) => {
+    if(track!=undefined||forwarder) {
+        let guidEcspeditor
+        if(forwarder){
+            guidEcspeditor = await Integrate1CAzyk
+                .findOne({ecspeditor: forwarder})
+        }
+        await OutXMLShoroAzyk.updateMany(
+            {invoice: {$in: invoices}},
+            {
+                status: 'update',
+                ...(track!=undefined?{track: track}:{}),
+                ...(guidEcspeditor?{forwarder: guidEcspeditor.guid}:{})
+            })
+        await InvoiceAzyk.updateMany({_id: {$in: invoices}}, {sync: 1})
     }
 }
 
@@ -221,6 +239,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
         item.att('guid', outXMLShoros[i].guid)
         item.att('client', outXMLShoros[i].client)
         item.att('agent', outXMLShoros[i].agent)
+        item.att('track', outXMLShoros[i].track?outXMLShoros[i].track:1)
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
         item.att('coment', /*outXMLShoros[i].invoice.info?outXMLShoros[i].invoice.info:''*/

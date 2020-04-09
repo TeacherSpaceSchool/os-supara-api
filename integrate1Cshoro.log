@@ -1062,3 +1062,29 @@ info [Thu Apr 09 2020 03:09:24 GMT+0600 (GMT+06:00)]  out client start: Thu Apr 
 
 
 
+info [Thu Apr 09 2020 15:07:16 GMT+0600 (GMT+06:00)]  out sales start: Thu Apr 09 2020 15:07:16 GMT+0600 (GMT+06:00); time: 0.031; url: /integrate/shoro/out/sales
+info [Thu Apr 09 2020 15:08:07 GMT+0600 (GMT+06:00)]  put sales start: Thu Apr 09 2020 15:08:07 GMT+0600 (GMT+06:00); time: 0.019; url: /shoro/put/sales/confirm
+info [Thu Apr 09 2020 15:08:10 GMT+0600 (GMT+06:00)]  out sales start: Thu Apr 09 2020 15:08:10 GMT+0600 (GMT+06:00); time: 0.01; url: /integrate/shoro/out/sales
+info [Thu Apr 09 2020 15:08:30 GMT+0600 (GMT+06:00)]  put sales start: Thu Apr 09 2020 15:08:30 GMT+0600 (GMT+06:00); time: 0.006; url: /shoro/put/sales/confirm
+
+
+
+
+info [Fri Apr 10 2020 00:26:10 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:26:10 GMT+0600 (GMT+06:00); time: 0.52; url: /integrate/shoro/out/sales
+info [Fri Apr 10 2020 00:32:18 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:32:18 GMT+0600 (GMT+06:00); time: 0.014; url: /integrate/shoro/out/sales
+
+
+info [Fri Apr 10 2020 00:37:19 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:37:19 GMT+0600 (GMT+06:00); time: 0.019; url: /integrate/shoro/out/sales
+info [Fri Apr 10 2020 00:37:20 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:37:20 GMT+0600 (GMT+06:00); time: 0.005; url: /integrate/shoro/out/sales
+info [Fri Apr 10 2020 00:37:20 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:37:20 GMT+0600 (GMT+06:00); time: 0.006; url: /integrate/shoro/out/sales
+info [Fri Apr 10 2020 00:37:51 GMT+0600 (GMT+06:00)]  out sales start: Fri Apr 10 2020 00:37:51 GMT+0600 (GMT+06:00); time: 0.009; url: /integrate/shoro/out/sales
+
+
+
+
+
+
+
+
+
+

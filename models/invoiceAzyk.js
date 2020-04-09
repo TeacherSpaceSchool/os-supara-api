@@ -47,6 +47,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    track: {
+        type: Number,
+        default: 1
+    },
     taken: Boolean,
     del: String,
     district: String,

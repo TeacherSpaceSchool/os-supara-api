@@ -46,6 +46,7 @@ const query = `
     statisticClientActivity: Statistic
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String): Statistic
+    statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
     checkOrder(company: String, today: Date!): Statistic
     statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String): ChartStatisticAll
     activeItem(organization: ID!): [Item]
@@ -1122,7 +1123,7 @@ const resolvers = {
                         }
                     }
                 }
-                
+
                 if (!statistic['without']) statistic['without'] = {
                     profit: 0,
                     cancel: [],
@@ -1219,6 +1220,243 @@ const resolvers = {
             ]
             return {
                 columns: [company?'район':'организация', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                row: data
+            };
+        }
+    },
+    statisticAgents: async(parent, { company, dateStart, dateType }, {user}) => {
+        if(user.role==='admin'){
+            let dateEnd
+            if(dateStart){
+                dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
+            }
+            let statistic = {}, data = []
+
+            if(!company) {
+                data = await InvoiceAzyk.find(
+                    {
+                        $and: [
+                            dateStart ? {createdAt: {$gte: dateStart}} : {},
+                            dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                        ],
+                        taken: true,
+                        del: {$ne: 'deleted'}
+                    }
+                )
+                    .populate({
+                        path: 'orders'
+                    })
+                    .populate({
+                        path: 'organization'
+                    })
+                    .populate({
+                        path: 'client'
+                    })
+                    .populate({path: 'agent',populate: [{path: 'user'}]})
+                    .lean()
+                for (let i = 0; i < data.length; i++) {
+                    for (let ii = 0; ii < data[i].orders.length; ii++) {
+                        data[i].orders[ii].organization = data[i].organization
+                        data[i].orders[ii].client = data[i].client
+                        data[i].orders[ii].agent = data[i].agent
+                        data[i].orders[ii].invoice = data[i]._id
+                    }
+                }
+                data = data.reduce((acc, val) => acc.concat(val.orders), []);
+
+                for(let i=0; i<data.length; i++) {
+                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                        let type = data[i].agent&&!data[i].agent.user.role.includes('супер')?'оффлайн':'онлайн'
+                        let id = `${type}${data[i].organization._id}`
+                        if (!statistic[id]) statistic[id] = {
+                            profit: 0,
+                            cancel: [],
+                            complet: [],
+                            consignmentPrice: 0,
+                            organization: `${data[i].organization.name} ${type}`
+                        }
+                        if (data[i].status === 'отмена') {
+                            if (!statistic[id].cancel.includes(data[i].invoice)) {
+                                statistic[id].cancel.push(data[i].invoice)
+                            }
+                        }
+                        else {
+                            if(!statistic[id].complet.includes(data[i].invoice)) {
+                                statistic[id].complet.push(data[i].invoice)
+                            }
+                            statistic[id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
+                            if (data[i].consignmentPrice) {
+                                statistic[id].consignmentPrice += data[i].consignmentPrice
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                let agents = await EmploymentAzyk.find({organization: company,
+                    del: {$ne: 'deleted'}}).populate('user')
+                agents = agents.filter(agent=>agent.user.role==='агент')
+                for(let i=0; i<agents.length; i++) {
+                    if (!statistic[agents[i]._id]) statistic[agents[i]._id] = {
+                        profit: 0,
+                        cancel: [],
+                        complet: [],
+                        consignmentPrice: 0,
+                        organization: agents[i].name
+                    }
+                    data = await InvoiceAzyk.find(
+                        {
+                            $and: [
+                                dateStart ? {createdAt: {$gte: dateStart}} : {},
+                                dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                            ],
+                            del: {$ne: 'deleted'},
+                            taken: true,
+                            agent: agents[i]._id,
+                            organization: agents[i].organization,
+                        }
+                    )
+                        .populate({
+                            path: 'orders'
+                        })
+                        .populate({
+                            path: 'client'
+                        })
+                        .lean()
+                    for(let i1=0; i1<data.length; i1++) {
+                        for(let i2=0; i2<data[i1].orders.length; i2++) {
+                            data[i1].orders[i2].invoice = data[i1]._id
+                            data[i1].orders[i2].client = data[i1].client
+                        }
+                    }
+                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                    for(let i1=0; i1<data.length; i1++) {
+                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
+                            if (data[i1].status === 'отмена') {
+                                if (!statistic[agents[i]._id].cancel.includes(data[i1].invoice)) {
+                                    statistic[agents[i]._id].cancel.push(data[i1].invoice)
+                                }
+                            }
+                            else {
+                                if(!statistic[agents[i]._id].complet.includes(data[i1].invoice)) {
+                                    statistic[agents[i]._id].complet.push(data[i1].invoice)
+                                }
+                                statistic[agents[i]._id].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
+                                if (data[i1].consignmentPrice) {
+                                    statistic[agents[i]._id].consignmentPrice += data[i1].consignmentPrice
+                                }
+                            }
+                        }
+                    }
+                }
+
+                statistic['without'] = {
+                    profit: 0,
+                    cancel: [],
+                    complet: [],
+                    consignmentPrice: 0,
+                    organization: 'Онлайн'
+                }
+                data = await InvoiceAzyk.find(
+                    {
+                        $and: [
+                            dateStart ? {createdAt: {$gte: dateStart}} : {},
+                            dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                        ],
+                        ...{del: {$ne: 'deleted'}},
+                        taken: true,
+                        agent: null,
+                        organization: company,
+                    }
+                )
+                    .populate({
+                        path: 'orders'
+                    })
+                    .populate({
+                        path: 'client'
+                    })
+                    .lean()
+                for(let i1=0; i1<data.length; i1++) {
+                    for(let i2=0; i2<data[i1].orders.length; i2++) {
+                        data[i1].orders[i2].invoice = data[i1]._id
+                        data[i1].orders[i2].client = data[i1].client
+                    }
+                }
+                data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                for(let i1=0; i1<data.length; i1++) {
+                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
+                        if (data[i1].status === 'отмена') {
+                            if (!statistic['without'].cancel.includes(data[i1].invoice)) {
+                                statistic['without'].cancel.push(data[i1].invoice)
+                            }
+                        }
+                        else {
+                            if(!statistic['without'].complet.includes(data[i1].invoice)) {
+                                statistic['without'].complet.push(data[i1].invoice)
+                            }
+                            statistic['without'].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
+                            if (data[i1].consignmentPrice) {
+                                statistic['without'].consignmentPrice += data[i1].consignmentPrice
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            const keys = Object.keys(statistic)
+            data = []
+
+            let profitAll = 0
+            let consignmentPriceAll = 0
+            let completAll = 0
+            let cancelAll = 0
+
+            for(let i=0; i<keys.length; i++){
+                profitAll += statistic[keys[i]].profit
+                consignmentPriceAll += statistic[keys[i]].consignmentPrice
+                completAll += statistic[keys[i]].complet.length
+                cancelAll += statistic[keys[i]].cancel.length
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].organization,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].complet.length,
+                        statistic[keys[i]].consignmentPrice,
+                        statistic[keys[i]].cancel.length,
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[0] - a.data[0]
+            });
+            data = [
+                {
+                    _id: null,
+                    data: [
+                        data.length,
+                        profitAll,
+                        completAll,
+                        consignmentPriceAll,
+                        cancelAll,
+                    ]
+                },
+                ...data
+            ]
+            return {
+                columns: [company?'агент':'агент', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
                 row: data
             };
         }
@@ -1550,7 +1788,8 @@ const resolvers = {
             if(organization==='super'){
                 let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}})
                     .distinct('_id')
-                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                employments = await EmploymentAzyk.find({user: {$in: employments},
+                    del: {$ne: 'deleted'}})
                 worksheet = await workbook.addWorksheet('Агенты');
                 worksheet.getColumn(1).width = 30;
                 worksheet.getCell('A1').font = {bold: true, size: 14};

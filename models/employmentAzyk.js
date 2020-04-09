@@ -12,6 +12,7 @@ const EmploymentAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
+    del: String,
 }, {
     timestamps: true
 });

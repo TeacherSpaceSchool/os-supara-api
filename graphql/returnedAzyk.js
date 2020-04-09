@@ -1262,10 +1262,10 @@ const resolversMutation = {
         await object.save();
         if(object.organization.name==='ЗАО «ШОРО»'){
             if(object.confirmationForwarder) {
-                setOutXMLReturnedShoroAzyk(object)
+                await setOutXMLReturnedShoroAzyk(object)
             }
             else if(object.cancelForwarder) {
-                cancelOutXMLReturnedShoroAzyk(object)
+                await cancelOutXMLReturnedShoroAzyk(object)
             }
         }
         let objectHistoryReturned = new HistoryReturnedAzyk({

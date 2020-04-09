@@ -42,7 +42,9 @@ const resolvers = {
             if(organization==='super'){
                 let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}})
                     .distinct('_id')
-                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                employments = await EmploymentAzyk.find({
+                    user: {$in: employments},
+                    del: {$ne: 'deleted'}})
                     .populate({ path: 'user' })
                     .populate({ path: 'organization'})
                     .sort(sort)
@@ -60,7 +62,8 @@ const resolvers = {
                 return employments
             }
             else if(mongoose.Types.ObjectId.isValid(organization)){
-                let employments = await EmploymentAzyk.find({organization: organization})
+                let employments = await EmploymentAzyk.find({organization: organization,
+                    del: {$ne: 'deleted'}})
                     .populate({ path: 'user', match: {role: filter.length===0?{'$regex': '', '$options': 'i'}:filter } })
                     .populate({ path: 'organization'})
                     .sort(sort)
@@ -80,7 +83,8 @@ const resolvers = {
         }
         else if(user.role==='организация'){
             let employments = await EmploymentAzyk.find({
-                organization: user.organization
+                organization: user.organization,
+                del: {$ne: 'deleted'}
             })
                 .populate({ path: 'user', match: {role: filter.length===0?{'$regex': '', '$options': 'i'}:filter } })
                 .populate({ path: 'organization' })
@@ -100,7 +104,8 @@ const resolvers = {
                 .find({manager: user.employment})
                 .distinct('agent')
             employments = await EmploymentAzyk.find({
-                _id: {$in: employments}
+                _id: {$in: employments},
+                del: {$ne: 'deleted'}
             })
                 .populate({ path: 'user'})
                 .populate({ path: 'organization' })
@@ -119,7 +124,8 @@ const resolvers = {
     ecspeditors: async(parent, {_id}, {user}) => {
         if (user.role === 'admin') {
             if(mongoose.Types.ObjectId.isValid(_id)) {
-                let employments = await EmploymentAzyk.find({organization: _id})
+                let employments = await EmploymentAzyk.find({organization: _id,
+                    del: {$ne: 'deleted'}})
                     .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
                     .populate({path: 'organization'})
                 employments = employments.filter(employment => (employment.user))
@@ -129,7 +135,8 @@ const resolvers = {
         }
         else if (['организация', 'менеджер'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
-                organization: user.organization
+                organization: user.organization,
+                del: {$ne: 'deleted'}
             })
                 .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
                 .populate({path: 'organization'})
@@ -140,7 +147,8 @@ const resolvers = {
     managers: async(parent, {_id}, {user}) => {
         if (user.role === 'admin') {
             if(mongoose.Types.ObjectId.isValid(_id)) {
-                let employments = await EmploymentAzyk.find({organization: _id})
+                let employments = await EmploymentAzyk.find({organization: _id,
+                    del: {$ne: 'deleted'}})
                     .populate({path: 'user', match: {role: 'менеджер', status: 'active'}})
                     .populate({path: 'organization'})
                 employments = employments.filter(employment => (employment.user))
@@ -149,7 +157,8 @@ const resolvers = {
             else if(_id === 'super'){
                 let employments = await UserAzyk.find({role: 'суперменеджер', status: 'active'})
                     .distinct('_id')
-                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                employments = await EmploymentAzyk.find({user: {$in: employments},
+                    del: {$ne: 'deleted'}})
                     .populate({ path: 'user' })
                     .populate({ path: 'organization'})
                 return employments
@@ -158,7 +167,8 @@ const resolvers = {
         }
         else if (['организация', 'менеджер'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
-                organization: user.organization
+                organization: user.organization,
+                del: {$ne: 'deleted'}
             })
                 .populate({path: 'user', match: {role: 'менеджер', status: 'active'}})
                 .populate({path: 'organization'})
@@ -169,7 +179,8 @@ const resolvers = {
     agents: async(parent, {_id}, {user}) => {
         if (user.role === 'admin') {
             if(mongoose.Types.ObjectId.isValid(_id)) {
-                let employments = await EmploymentAzyk.find({organization: _id})
+                let employments = await EmploymentAzyk.find({organization: _id,
+                    del: {$ne: 'deleted'}})
                     .populate({path: 'user', match: {role: 'агент', status: 'active'}})
                     .populate({path: 'organization'})
                 employments = employments.filter(employment => (employment.user))
@@ -178,7 +189,8 @@ const resolvers = {
             else if(_id === 'super'){
                 let employments = await UserAzyk.find({role: 'суперагент', status: 'active'})
                     .distinct('_id')
-                employments = await EmploymentAzyk.find({user: {$in: employments}})
+                employments = await EmploymentAzyk.find({user: {$in: employments},
+                    del: {$ne: 'deleted'}})
                     .populate({ path: 'user' })
                     .populate({ path: 'organization'})
                 return employments
@@ -187,7 +199,8 @@ const resolvers = {
         }
         else if (['организация', 'менеджер'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
-                organization: user.organization
+                organization: user.organization,
+                del: {$ne: 'deleted'}
             })
                 .populate({path: 'user', match: {role: 'агент', status: 'active'}})
                 .populate({path: 'organization'})
@@ -303,8 +316,8 @@ const resolversMutation = {
             let objects = await EmploymentAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
-                    await UserAzyk.deleteMany({_id: objects[i].user._id})
-                    await EmploymentAzyk.deleteMany({_id: objects[i]._id})
+                    await EmploymentAzyk.updateMany({_id: objects[i]._id}, {del: 'deleted'})
+                    await UserAzyk.updateMany({_id: objects[i]._id}, {status: 'deactive'})
                     await Integrate1CAzyk.deleteMany({
                             organization: objects[i].organization,
                             $or:

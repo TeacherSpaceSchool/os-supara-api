@@ -13,7 +13,7 @@ const { addBonusToClient } = require('../module/bonusClientAzyk');
 const randomstring = require('randomstring');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
-const { setOutXMLShoroAzyk, cancelOutXMLShoroAzyk } = require('../module/outXMLShoroAzyk');
+const { setOutXMLShoroAzyk, cancelOutXMLShoroAzyk, setOutXMLShoroAzykLogic } = require('../module/outXMLShoroAzyk');
 const BonusAzyk = require('../models/bonusAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
@@ -46,6 +46,7 @@ const type = `
     client: Client
     allPrice: Int 
     consignmentPrice: Int
+    track: Int
     info: String,
     address: [String]
     paymentMethod: String
@@ -120,6 +121,7 @@ const mutation = `
     addOrders(info: String, usedBonus: Boolean, paymentMethod: String, address: [[String]], organization: ID!, client: ID!): Data
     setOrder(orders: [OrderInput], invoice: ID): Invoice
     setInvoice(adss: [ID], taken: Boolean, invoice: ID!, confirmationClient: Boolean, confirmationForwarder: Boolean, cancelClient: Boolean, cancelForwarder: Boolean, paymentConsignation: Boolean): Data
+    setInvoicesLogic(track: Int, forwarder: ID, invoices: [ID]!): Data
     deleteOrders(_id: [ID]!): Data
     restoreOrders(_id: [ID]!): Data
     approveOrders(invoices: [ID]!, route: ID): Data
@@ -1800,11 +1802,13 @@ const resolversMutation = {
                 manager: district?district.manager:undefined,
                 type: 'ADD'
             } });
-            for(let i = 0; i< baskets.length; i++){
-                let object = await ItemAzyk.findOne({_id: baskets[i].item})
-                let index = object.basket.indexOf(user._id)
-                object.basket.splice(index, 1)
-                await object.save()
+            if(user.client) {
+                for (let i = 0; i < baskets.length; i++) {
+                    let object = await ItemAzyk.findOne({_id: baskets[i].item})
+                    let index = object.basket.indexOf(user._id)
+                    object.basket.splice(index, 1)
+                    await object.save()
+                }
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
         }
@@ -1841,6 +1845,10 @@ const resolversMutation = {
                 await objects[i].save()
             }
         }
+        return {data: 'OK'};
+    },
+    setInvoicesLogic: async(parent, {track, forwarder, invoices}, {user}) => {
+        await setOutXMLShoroAzykLogic(invoices, forwarder, track)
         return {data: 'OK'};
     },
     setOrder: async(parent, {orders, invoice}, {user}) => {
@@ -1927,10 +1935,10 @@ const resolversMutation = {
         await HistoryOrderAzyk.create(objectHistoryOrder);
         if(resInvoice.orders[0].item.organization.name==='ЗАО «ШОРО»'){
             if(resInvoice.orders[0].status==='принят') {
-                setOutXMLShoroAzyk(resInvoice)
+                await setOutXMLShoroAzyk(resInvoice)
             }
             else if(resInvoice.orders[0].status==='отмена') {
-                cancelOutXMLShoroAzyk(resInvoice)
+                await cancelOutXMLShoroAzyk(resInvoice)
             }
         }
         let district = await DistrictAzyk.findOne({

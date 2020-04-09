@@ -106,7 +106,7 @@ const resolvers = {
                 districts = districts.filter(
                     district => (
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
-                        (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.agent&&district.agent.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
                         (district.manager && district.manager.name.toLowerCase().includes(search.toLowerCase())) ||
                         ((district.client.filter(client => clients.includes(client.toString()))).length)
@@ -131,7 +131,7 @@ const resolvers = {
                     district => (
                         (district.name.toLowerCase()).includes(search.toLowerCase()) ||
                         (district.ecspeditor && district.ecspeditor.name.toLowerCase().includes(search.toLowerCase())) ||
-                        (district.agent&&district.agent.toLowerCase()).includes(search.toLowerCase()) ||
+                        (district.agent&&district.agent.name.toLowerCase()).includes(search.toLowerCase()) ||
                         ((district.client.filter(client => clients.includes(client.toString()))).length)
                     )
                 )

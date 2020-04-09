@@ -55,7 +55,8 @@ const resolvers = {
                     name: {'$regex': search, '$options': 'i'}
                 }).distinct('_id')
                 _employments = await EmploymentAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    name: {'$regex': search, '$options': 'i'},
+                    del: {$ne: 'deleted'}
                 }).distinct('_id')
             }
             let integrate1Cs =  await Integrate1CAzyk.aggregate(
@@ -114,7 +115,8 @@ const resolvers = {
                     name: {'$regex': search, '$options': 'i'}
                 }).distinct('_id')
                 _employments = await EmploymentAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    name: {'$regex': search, '$options': 'i'},
+                    del: {$ne: 'deleted'}
                 }).distinct('_id')
             }
             let integrate1Cs =  await Integrate1CAzyk.aggregate(
@@ -270,6 +272,7 @@ const resolvers = {
             ecspeditors = await EmploymentAzyk.find({
                 organization: organization,
                 _id: {$nin: ecspeditors},
+                del: {$ne: 'deleted'}
             })
                 .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
             ecspeditors = ecspeditors.filter(ecspeditor => (ecspeditor.user))
@@ -288,6 +291,7 @@ const resolvers = {
             agents = await EmploymentAzyk.find({
                 organization: organization,
                 _id: {$nin: agents},
+                del: {$ne: 'deleted'},
             })
                 .populate({path: 'user', match: {role: 'агент', status: 'active'}})
             agents = agents.filter(agent => (agent.user))

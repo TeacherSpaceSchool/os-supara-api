@@ -86,11 +86,13 @@ const resolversMutation = {
                     basket.consignment = consignment
                 await basket.save();
             }
-            let object = await ItemAzyk.findOne({_id: item})
-            let index = object.basket.indexOf(user._id)
-            if(index===-1){
-                object.basket.push(user._id)
-                await object.save()
+            if(user.client) {
+                let object = await ItemAzyk.findOne({_id: item})
+                let index = object.basket.indexOf(user._id)
+                if (index === -1) {
+                    object.basket.push(user._id)
+                    await object.save()
+                }
             }
         }
         return {data: 'OK'};
