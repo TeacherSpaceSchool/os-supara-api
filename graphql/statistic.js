@@ -1366,7 +1366,7 @@ const resolvers = {
                     cancel: [],
                     complet: [],
                     consignmentPrice: 0,
-                    organization: 'Онлайн'
+                    organization: 'AZYK.STORE'
                 }
                 data = await InvoiceAzyk.find(
                     {

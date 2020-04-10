@@ -230,7 +230,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
         .find({$and: [{status: {$ne: 'check'}}, {status: {$ne: 'error'}}]})
         .populate({path: 'invoice'})
         .sort('date')
-        .limit(20)
+        //.limit(20)
     for(let i=0;i<outXMLShoros.length;i++){
         let item = result
             .ele('item')
@@ -242,8 +242,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
         item.att('track', outXMLShoros[i].track?outXMLShoros[i].track:1)
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
-        item.att('coment', /*outXMLShoros[i].invoice.info?outXMLShoros[i].invoice.info:''*/
-            `${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`)
+        item.att('coment', `${outXMLShoros[i].invoice.info} ${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`)
 
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){
             item.ele('product')
@@ -333,7 +332,7 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         .find({$and: [{status: {$ne: 'check'}}, {status: {$ne: 'error'}}]})
         .populate({path: 'returned'})
         .sort('date')
-        .limit(20)
+        //.limit(20)
     for(let i=0;i<outXMLReturnedShoros.length;i++){
         let item = result
             .ele('item')
@@ -344,8 +343,7 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         item.att('agent', outXMLReturnedShoros[i].agent)
         item.att('forwarder', outXMLReturnedShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLReturnedShoros[i].date))
-        item.att('coment',/* outXMLReturnedShoros[i].returned.info?outXMLReturnedShoros[i].returned.info:''*/
-            `${outXMLReturnedShoros[i].returned.address[2]?`${outXMLReturnedShoros[i].returned.address[2]}, `:''}${outXMLReturnedShoros[i].returned.address[0]}`)
+        item.att('coment', `${outXMLReturnedShoros[i].returned.info} ${outXMLReturnedShoros[i].returned.address[2]?`${outXMLReturnedShoros[i].returned.address[2]}, `:''}${outXMLReturnedShoros[i].returned.address[0]}`)
         for(let ii=0;ii<outXMLReturnedShoros[i].data.length;ii++){
             item.ele('product')
                 .att('guid', outXMLReturnedShoros[i].data[ii].guid)
