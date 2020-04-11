@@ -133,7 +133,7 @@ const resolvers = {
             }
             else return []
         }
-        else if (['организация', 'менеджер'].includes(user.role)) {
+        else if (['организация', 'менеджер', 'агент'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
                 organization: user.organization,
                 del: {$ne: 'deleted'}
