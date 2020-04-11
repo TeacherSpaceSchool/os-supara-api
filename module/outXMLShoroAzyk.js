@@ -398,23 +398,5 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
 }
 
 module.exports.reductionOutXMLShoroAzyk = async() => {
-    let dateStart = new Date('04.12.2020')
-    dateStart.setHours(3, 0, 0, 0)
-    let dateEnd = new Date(dateStart)
-    dateEnd.setDate(dateEnd.getDate() + 1)
-    let date1 = new Date('04.13.2020')
-    let invoices = await OutXMLShoroAzyk.find({$and: [{date: {$gte: dateStart}}, {date: {$lt: dateEnd}}]})
-    console.log('reductionOutXMLShoroAzyk:',invoices.length)
-    for (let i = 0; i < invoices.length; i++) {
-        invoices[i].date = date1
-        invoices[i].status = 'update'
-        await invoices[i].save()
-    }
-    let returned = await OutXMLReturnedShoroAzyk.find({$and: [{date: {$gte: dateStart}}, {date: {$lt: dateEnd}}]})
-    console.log('reductionOutXMLReturnedShoroAzyk:',returned.length)
-    for (let i = 0; i < returned.length; i++) {
-        returned[i].date = date1
-        invoices[i].status = 'update'
-        await returned[i].save()
-    }
+    //lol
 }
