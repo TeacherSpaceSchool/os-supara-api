@@ -8,6 +8,7 @@ const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const ReturnedAzyk = require('../models/returnedAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const AdsAzyk = require('../models/adsAzyk');
 const { pdDDMMYYYY } = require('../module/const');
 const uuidv1 = require('uuid/v1.js');
 const xml = require('xml');
@@ -98,6 +99,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice, ) => {
                     amount: Math.round(invoice.orders[i].count*(invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price))
                 })
         }
+        outXMLShoroAzyk.adss = invoice.adss.map(ads=>ads._id)
         await outXMLShoroAzyk.save()
         await InvoiceAzyk.updateMany({_id: invoice._id}, {sync: 1})
     }
@@ -127,7 +129,8 @@ module.exports.setOutXMLShoroAzyk = async(invoice, ) => {
                         agent: guidAgent.guid,
                         forwarder: guidEcspeditor.guid,
                         invoice: invoice._id,
-                        status: 'create'
+                        status: 'create',
+                        adss: invoice.adss.map(ads=>ads._id)
                     });
                     for (let i = 0; i < invoice.orders.length; i++) {
                         let guidItem = await Integrate1CAzyk
@@ -164,6 +167,24 @@ module.exports.setOutXMLShoroAzykLogic = async(invoices, forwarder, track) => {
                 ...(guidEcspeditor?{forwarder: guidEcspeditor.guid}:{})
             })
         await InvoiceAzyk.updateMany({_id: {$in: invoices}}, {sync: 1})
+    }
+}
+
+module.exports.setOutXMLReturnedShoroAzykLogic = async(returneds, forwarder, track) => {
+    if(track!=undefined||forwarder) {
+        let guidEcspeditor
+        if(forwarder){
+            guidEcspeditor = await Integrate1CAzyk
+                .findOne({ecspeditor: forwarder})
+        }
+        await OutXMLReturnedShoroAzyk.updateMany(
+            {returned: {$in: returneds}},
+            {
+                status: 'update',
+                ...(track!=undefined?{track: track}:{}),
+                ...(guidEcspeditor?{forwarder: guidEcspeditor.guid}:{})
+            })
+        await ReturnedAzyk.updateMany({_id: {$in: returneds}}, {sync: 1})
     }
 }
 
@@ -256,6 +277,19 @@ module.exports.getOutXMLShoroAzyk = async() => {
                 .att('price', outXMLShoros[i].data[ii].price)
                 .att('amount', outXMLShoros[i].data[ii].amount)
         }
+        for(let ii=0;ii<outXMLShoros[i].adss.length;ii++){
+            let ads = await AdsAzyk.findOne({
+                _id: outXMLShoros[i].adss[ii]
+            }).populate('item')
+            let guidItem = await Integrate1CAzyk
+                .findOne({item: ads.item._id})
+            item.ele('product')
+                .att('guid', guidItem.guid)
+                .att('package', Math.round(ads.count / (ads.item.packaging ? ads.item.packaging : 1)))
+                .att('qty',  ads.count)
+                .att('price', 1)
+                .att('amount', 1)
+        }
     }
     result = result.end({ pretty: true})
     return result
@@ -347,6 +381,7 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         item.att('agent', outXMLReturnedShoros[i].agent)
         item.att('forwarder', outXMLReturnedShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLReturnedShoros[i].date))
+        item.att('track', outXMLReturnedShoros[i].track?outXMLReturnedShoros[i].track:1)
         item.att('coment', `${outXMLReturnedShoros[i].returned.info} ${outXMLReturnedShoros[i].returned.address[2]?`${outXMLReturnedShoros[i].returned.address[2]}, `:''}${outXMLReturnedShoros[i].returned.address[0]}`)
         for(let ii=0;ii<outXMLReturnedShoros[i].data.length;ii++){
             item.ele('product')

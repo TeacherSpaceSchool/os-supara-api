@@ -4,14 +4,13 @@ const EmploymentAzyk = require('../models/employmentAzyk');
 const DistributerAzyk = require('../models/distributerAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const ClientAzyk = require('../models/clientAzyk');
-const mongoose = require('mongoose');
-const ItemAzyk = require('../models/itemAzyk');
 const randomstring = require('randomstring');
-const { setOutXMLReturnedShoroAzyk, cancelOutXMLReturnedShoroAzyk } = require('../module/outXMLShoroAzyk');
+const { setOutXMLReturnedShoroAzyk, cancelOutXMLReturnedShoroAzyk, setOutXMLReturnedShoroAzykLogic } = require('../module/outXMLShoroAzyk');
 const { pubsub } = require('./index');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_RETURNED = 'RELOAD_RETURNED';
 const HistoryReturnedAzyk = require('../models/historyReturnedAzyk');
+const mongoose = require('mongoose');
 
 const type = `
   type ReturnedItems {
@@ -76,6 +75,7 @@ const type = `
 `;
 
 const query = `
+    returnedsFromDistrict(organization: ID!, district: ID!, date: String!): [Returned]
     returneds(search: String!, sort: String!, date: String!, skip: Int): [Returned]
     returnedsSimpleStatistic(search: String!, date: String): [String]
     returnedsTrash(search: String!, skip: Int): [Returned]
@@ -85,6 +85,7 @@ const query = `
 `;
 
 const mutation = `
+     setReturnedLogic(track: Int, forwarder: ID, returneds: [ID]!): Data
     addReturned(info: String, address: [[String]], organization: ID!, items: [ReturnedItemsInput], client: ID!): Data
     setReturned(items: [ReturnedItemsInput], returned: ID, confirmationForwarder: Boolean, cancelForwarder: Boolean): Returned
     deleteReturneds(_id: [ID]!): Data
@@ -439,6 +440,370 @@ const resolvers = {
         }
         return [lengthList.toString(), price.toString(), tonnage.toString(), size.toString()]
     },
+    returnedsFromDistrict: async(parent, {organization, district, date}, {user}) =>  {
+        let dateStart;
+        let dateEnd;
+        dateStart = new Date(date)
+        dateStart.setHours(3, 0, 0, 0)
+        dateEnd = new Date(dateStart)
+        dateEnd.setDate(dateEnd.getDate() + 1)
+        let _clients = await DistrictAzyk.findOne({
+            _id: district
+        }).distinct('client');
+        if(user.role==='admin') {
+            let returneds =  await ReturnedAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            del: {$ne: 'deleted'},
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            confirmationForwarder: true,
+                            client: {$in: _clients},
+                            $or: [
+                                {organization: new mongoose.Types.ObjectId(organization)},
+                                {distributer: new mongoose.Types.ObjectId(organization)},
+                            ]
+                        }
+                    },
+                    { $sort : {createdAt: -1} },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : false,
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
+                ]);
+            return returneds
+        }
+        else if(user.role==='агент'){
+            let now = new Date()
+            now.setDate(now.getDate() + 1)
+            now.setHours(3, 0, 0, 0)
+            let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+            if(differenceDates>3) {
+                dateStart = new Date()
+                dateEnd = new Date(dateStart)
+                dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
+            }
+            _clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
+            let returneds =  await ReturnedAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            confirmationForwarder: true,
+                            del: {$ne: 'deleted'},
+                            client: {$in: _clients},
+                            $or: [
+                                {organization: user.organization},
+                                {distributer: user.organization},
+                            ]
+                        }
+                    },
+                    { $sort : {createdAt: -1} },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
+                ])
+            return returneds
+        }
+        else if(user.role==='менеджер'){
+            _clients = await DistrictAzyk
+                .find({manager: user.employment})
+                .distinct('client')
+            let returneds =  await ReturnedAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            confirmationForwarder: true,
+                            del: {$ne: 'deleted'},
+                            client: {$in: _clients},
+                            $or: [
+                                {organization: organization},
+                                {distributer: organization},
+                            ]
+                        }
+                    },
+                    { $sort : {createdAt: -1} },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                ])
+            return returneds
+        }
+        else if('организация'===user.role) {
+            let returneds =  await ReturnedAzyk.aggregate(
+                [
+                    {
+                        $match:{
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            confirmationForwarder: true,
+                            del: {$ne: 'deleted'},
+                            client: {$in: _clients},
+                            $or: [
+                                {organization: organization},
+                                {distributer: organization},
+                            ]
+                        }
+                    },
+                    { $sort : {createdAt: -1} },
+                    { $lookup:
+                        {
+                            from: ClientAzyk.collection.collectionName,
+                            let: { client: '$client' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$client', '$_id']}} },
+                            ],
+                            as: 'client'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : false, // this remove the object which is null
+                            path : '$client'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { agent: '$agent' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$agent', '$_id']}} },
+                            ],
+                            as: 'agent'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { distributer: '$distributer' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$distributer', '$_id']}} },
+                            ],
+                            as: 'distributer'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                ])
+            return returneds
+        }
+    },
+    returnedHistorys: async(parent, {returned}, {user}) => {
+        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+            let historyReturneds =  await HistoryReturnedAzyk.find({returned: returned})
+            return historyReturneds
+        }
+    },
     returneds: async(parent, {search, sort, date, skip}, {user}) => {
         let dateStart;
         let dateEnd;
@@ -781,24 +1146,6 @@ const resolvers = {
             return returneds
         }
         else if(user.role==='менеджер'){
-            if(date!=='') {
-                let now = new Date()
-                now.setHours(3, 0, 0, 0)
-                now.setDate(now.getDate() + 1)
-                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
-                if(differenceDates>3) {
-                    dateStart = new Date()
-                    dateEnd = new Date(dateStart)
-                    dateEnd.setDate(dateEnd.getDate() - 3)
-                }
-            }
-            else {
-                dateEnd = new Date()
-                dateEnd.setHours(3, 0, 0, 0)
-                dateEnd.setDate(dateEnd.getDate() + 1)
-                dateStart = new Date(dateEnd)
-                dateStart.setDate(dateStart.getDate() - 3)
-            }
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
@@ -1037,12 +1384,6 @@ const resolvers = {
             return returneds
         }
     },
-    returnedHistorys: async(parent, {returned}, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)){
-            let historyReturneds =  await HistoryReturnedAzyk.find({returned: returned})
-            return historyReturneds
-        }
-    },
     sortReturned: async() => {
         let sort = [
             {
@@ -1190,6 +1531,10 @@ const resolversMutation = {
         if(user.role==='admin'){
             await ReturnedAzyk.updateMany({_id: {$in: _id}}, {del: null})
         }
+        return {data: 'OK'};
+    },
+    setReturnedLogic: async(parent, {track, forwarder, returneds}, {user}) => {
+        await setOutXMLReturnedShoroAzykLogic(returneds, forwarder, track)
         return {data: 'OK'};
     },
     setReturned: async(parent, {items, returned, confirmationForwarder, cancelForwarder}, {user}) => {

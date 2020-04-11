@@ -1,6 +1,7 @@
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const OrderAzyk = require('../models/orderAzyk');
+const ReturnedAzyk = require('../models/returnedAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
@@ -46,6 +47,7 @@ const query = `
     statisticClientActivity: Statistic
     statisticItem(company: String, dateStart: Date, dateType: String): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String): Statistic
+    statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
     checkOrder(company: String, today: Date!): Statistic
     statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String): ChartStatisticAll
@@ -1220,6 +1222,157 @@ const resolvers = {
             ]
             return {
                 columns: [company?'район':'организация', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                row: data
+            };
+        }
+    },
+    statisticReturned: async(parent, { company, dateStart, dateType }, {user}) => {
+        if(user.role==='admin'){
+            let dateEnd
+            if(dateStart){
+                dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
+            }
+            let statistic = {}, data = []
+
+            if(!company) {
+                data = await ReturnedAzyk.find(
+                    {
+                        $and: [
+                            dateStart ? {createdAt: {$gte: dateStart}} : {},
+                            dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                        ],
+                        confirmationForwarder: true,
+                        del: {$ne: 'deleted'}
+                    }
+                )
+                    .populate({
+                        path: 'organization'
+                    })
+                    .populate({
+                        path: 'client'
+                    })
+                    .lean()
+
+                for(let i=0; i<data.length; i++) {
+                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                        if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
+                            profit: 0,
+                            complet: 0,
+                            organization: data[i].organization.name
+                        }
+                        statistic[data[i].organization._id].complet+=1
+                        statistic[data[i].organization._id].profit += data[i].allPrice
+                    }
+                }
+            }
+            else {
+                let districts = await DistrictAzyk.find({organization: company})
+                let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
+                for(let i=0; i<districts.length; i++) {
+                    if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
+                        profit: 0,
+                        complet: 0,
+                        organization: districts[i].name
+                    }
+                    data = await ReturnedAzyk.find(
+                        {
+                            $and: [
+                                dateStart ? {createdAt: {$gte: dateStart}} : {},
+                                dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                            ],
+                            del: {$ne: 'deleted'},
+                            confirmationForwarder: true,
+                            client: {$in: districts[i].client},
+                            organization: districts[i].organization,
+                        }
+                    )
+                        .populate({
+                            path: 'client'
+                        })
+                        .lean()
+                    for(let i1=0; i1<data.length; i1++) {
+                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
+                            statistic[districts[i]._id].complet+=1
+                            statistic[districts[i]._id].profit += data[i1].allPrice
+                        }
+                    }
+                }
+
+                if (!statistic['without']) statistic['without'] = {
+                    profit: 0,
+                    complet: 0,
+                    organization: 'Прочие'
+                }
+                data = await ReturnedAzyk.find(
+                    {
+                        $and: [
+                            dateStart ? {createdAt: {$gte: dateStart}} : {},
+                            dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                        ],
+                        ...{del: {$ne: 'deleted'}},
+                        confirmationForwarder: true,
+                        client: {$nin: withDistricts},
+                        organization: company,
+                    }
+                )
+                    .populate({
+                        path: 'client'
+                    })
+                    .lean()
+                for(let i1=0; i1<data.length; i1++) {
+                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
+                        statistic['without'].complet+=1
+                        statistic['without'].profit += data[i1].allPrice
+                    }
+                }
+
+            }
+
+            const keys = Object.keys(statistic)
+            data = []
+
+            let profitAll = 0
+            let completAll = 0
+
+            for(let i=0; i<keys.length; i++){
+                profitAll += statistic[keys[i]].profit
+                completAll += statistic[keys[i]].complet
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].organization,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].complet,
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[1] - a.data[1]
+            });
+            data = [
+                {
+                    _id: null,
+                    data: [
+                        data.length,
+                        profitAll,
+                        completAll
+                    ]
+                },
+                ...data
+            ]
+            return {
+                columns: [company?'район':'организация', 'сумма(сом)', 'выполнен(шт)'],
                 row: data
             };
         }

@@ -9,6 +9,10 @@ const outXMLShoroSchema = mongoose.Schema({
     agent: String,
     forwarder: String,
     exc: String,
+    adss: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdsAzyk'
+    }],
     track: {
         type: Number,
         default: 1

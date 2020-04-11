@@ -1656,8 +1656,8 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             client: {$in: _clients},
                             $or: [
-                                {organization: user.organization},
-                                {distributer: user.organization},
+                                {organization: new mongoose.Types.ObjectId(organization)},
+                                {distributer: new mongoose.Types.ObjectId(organization)},
                             ]
                         }
                     },
@@ -1766,23 +1766,14 @@ const resolvers = {
             return invoices
         }
         else if(user.role==='агент'){
-            if(date!=='') {
-                let now = new Date()
-                now.setDate(now.getDate() + 1)
-                now.setHours(3, 0, 0, 0)
-                let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
-                if(differenceDates>3) {
-                    dateStart = new Date()
-                    dateEnd = new Date(dateStart)
-                    dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
-                }
-            }
-            else {
-                dateEnd = new Date()
-                dateEnd.setDate(dateEnd.getDate() + 1)
-                dateEnd.setHours(3, 0, 0, 0)
-                dateStart = new Date(dateEnd)
-                dateStart.setDate(dateStart.getDate() - 3)
+            let now = new Date()
+            now.setDate(now.getDate() + 1)
+            now.setHours(3, 0, 0, 0)
+            let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+            if(differenceDates>3) {
+                dateStart = new Date()
+                dateEnd = new Date(dateStart)
+                dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
             }
             _clients = await DistrictAzyk
                 .find({agent: user.employment})
@@ -2457,6 +2448,7 @@ const resolversMutation = {
             })
             .populate({path: 'agent'})
             .populate({path: 'distributer'})
+            .populate({path: 'adss'})
         if(user.role==='admin'){
             editor = 'админ'
         }
@@ -2506,7 +2498,7 @@ const resolversMutation = {
         return resInvoice
     },
     setInvoice: async(parent, {adss, taken, invoice, confirmationClient, confirmationForwarder, cancelClient, cancelForwarder, paymentConsignation}, {user}) => {
-        let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client')
+        let object = await InvoiceAzyk.findOne({_id: invoice}).populate('client').populate('order')
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = ['admin', 'суперагент'].includes(user.role)
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()

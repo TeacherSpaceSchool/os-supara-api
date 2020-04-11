@@ -5,11 +5,11 @@ const OrderAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ItemAzyk'
     },
+    count: Number,
     client: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ClientAzyk'
     },
-    count: Number,
     consignment: {
         type: Number,
         default: 0
@@ -39,7 +39,11 @@ const OrderAzykSchema = mongoose.Schema({
     setRoute: {
         type: Boolean,
         default: false
-    }
+    },
+    ads: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'AdsAzyk'
+    },
 }, {
     timestamps: true
 });

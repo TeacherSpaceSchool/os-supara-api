@@ -13,6 +13,10 @@ const outXMLReturnedShoroSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ReturnedAzyk'
     },
+    track: {
+        type: Number,
+        default: 1
+    },
     status: String
 }, {
     timestamps: true

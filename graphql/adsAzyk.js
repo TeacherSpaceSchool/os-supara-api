@@ -10,6 +10,8 @@ const type = `
     title: String
     createdAt: Date
     del: String
+    item: Item
+    count: Int
     organization: Organization
   }
 `;
@@ -22,8 +24,8 @@ const query = `
 `;
 
 const mutation = `
-    addAds(image: Upload!, url: String!, title: String!, organization: ID!): Data
-    setAds(_id: ID!, image: Upload, url: String, title: String): Data
+    addAds(image: Upload!, url: String!, title: String!, organization: ID!, item: ID, count: Int): Data
+    setAds(_id: ID!, image: Upload, url: String, title: String, item: ID, count: Int): Data
     restoreAds(_id: [ID]!): Data
     deleteAds(_id: [ID]!): Data
 `;
@@ -33,14 +35,14 @@ const resolvers = {
         return await AdsAzyk.find({
             del: 'deleted',
             title: {'$regex': search, '$options': 'i'}
-        }).sort('-createdAt')
+        }).populate('item').sort('-createdAt')
     },
     adss: async(parent, {search, organization}) => {
         return await AdsAzyk.find({
             del: {$ne: 'deleted'},
             title: {'$regex': search, '$options': 'i'},
             organization: organization
-        }).sort('-createdAt')
+        }).populate('item').sort('-createdAt')
     },
     adsOrganizations: async() => {
         let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
@@ -57,7 +59,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addAds: async(parent, {image, url, title, organization}, {user}) => {
+    addAds: async(parent, {image, url, title, organization, item, count}, {user}) => {
         if(['организация', 'admin'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
@@ -65,16 +67,20 @@ const resolversMutation = {
                 image: urlMain+filename,
                 url: url,
                 title: title,
-                organization: organization
+                organization: organization,
+                item: item
             });
+            if(count)
+                _object.count = count
             if(['организация'].includes(user.role)) _object.organization = user.organization
             await AdsAzyk.create(_object)
         }
         return {data: 'OK'};
     },
-    setAds: async(parent, {_id, image, url, title}, {user}) => {
+    setAds: async(parent, {_id, image, url, title, item, count}, {user}) => {
         if(['организация', 'admin'].includes(user.role)){
             let object = await AdsAzyk.findById(_id)
+            object.item = item
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
@@ -83,6 +89,7 @@ const resolversMutation = {
             }
             if(url) object.url = url
             if(title) object.title = title
+            if(count) object.count = count
             object.save();
         }
         return {data: 'OK'}
