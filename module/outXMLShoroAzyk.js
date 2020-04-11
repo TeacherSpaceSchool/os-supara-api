@@ -81,7 +81,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
     }
 }
 
-module.exports.setOutXMLShoroAzyk = async(invoice, ) => {
+module.exports.setOutXMLShoroAzyk = async(invoice) => {
     let outXMLShoroAzyk = await OutXMLShoroAzyk
         .findOne({invoice: invoice._id})
     if(outXMLShoroAzyk){
@@ -281,14 +281,16 @@ module.exports.getOutXMLShoroAzyk = async() => {
             let ads = await AdsAzyk.findOne({
                 _id: outXMLShoros[i].adss[ii]
             }).populate('item')
-            let guidItem = await Integrate1CAzyk
-                .findOne({item: ads.item._id})
-            item.ele('product')
-                .att('guid', guidItem.guid)
-                .att('package', Math.round(ads.count / (ads.item.packaging ? ads.item.packaging : 1)))
-                .att('qty',  ads.count)
-                .att('price', 1)
-                .att('amount', 1)
+            if(ads.item) {
+                let guidItem = await Integrate1CAzyk
+                    .findOne({item: ads.item._id})
+                item.ele('product')
+                    .att('guid', guidItem.guid)
+                    .att('package', Math.round(ads.count / (ads.item.packaging ? ads.item.packaging : 1)))
+                    .att('qty', ads.count)
+                    .att('price', 1)
+                    .att('amount', 1)
+            }
         }
     }
     result = result.end({ pretty: true})
