@@ -46,6 +46,14 @@ const ReturnedAzykSchema = mongoose.Schema({
         ref: 'EmploymentAzyk'
     },
     district: String,
+    track: {
+        type: Number,
+        default: 1
+    },
+    forwarder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
 }, {
     timestamps: true
 });

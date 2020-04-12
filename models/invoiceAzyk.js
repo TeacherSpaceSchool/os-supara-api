@@ -51,6 +51,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: Number,
         default: 1
     },
+    forwarder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmploymentAzyk'
+    },
     taken: Boolean,
     del: String,
     district: String,

@@ -166,7 +166,11 @@ module.exports.setOutXMLShoroAzykLogic = async(invoices, forwarder, track) => {
                 ...(track!=undefined?{track: track}:{}),
                 ...(guidEcspeditor?{forwarder: guidEcspeditor.guid}:{})
             })
-        await InvoiceAzyk.updateMany({_id: {$in: invoices}}, {sync: 1})
+        await InvoiceAzyk.updateMany({_id: {$in: invoices}}, {
+            sync: 1,
+            ...(track!=undefined?{track: track}:{}),
+            ...(guidEcspeditor?{forwarder: forwarder}:{})
+        })
     }
 }
 
@@ -184,7 +188,11 @@ module.exports.setOutXMLReturnedShoroAzykLogic = async(returneds, forwarder, tra
                 ...(track!=undefined?{track: track}:{}),
                 ...(guidEcspeditor?{forwarder: guidEcspeditor.guid}:{})
             })
-        await ReturnedAzyk.updateMany({_id: {$in: returneds}}, {sync: 1})
+        await ReturnedAzyk.updateMany({_id: {$in: returneds}},{
+            sync: 1,
+            ...(track!=undefined?{track: track}:{}),
+            ...(guidEcspeditor?{forwarder: forwarder}:{})
+        })
     }
 }
 

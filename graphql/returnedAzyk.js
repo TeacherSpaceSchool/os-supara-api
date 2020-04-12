@@ -45,6 +45,8 @@ const type = `
     agent: Employment 
     del: String
     district: String
+    track: Int
+    forwarder: Employment
   }
   type HistoryReturned {
     createdAt: Date
@@ -209,6 +211,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
                         }
                     },
                     { $lookup:
@@ -500,6 +518,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { distributer: '$distributer' },
                             pipeline: [
@@ -595,6 +629,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { distributer: '$distributer' },
                             pipeline: [
@@ -641,8 +691,8 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             client: {$in: _clients},
                             $or: [
-                                {organization: organization},
-                                {distributer: organization},
+                                {organization: user.organization},
+                                {distributer: user.organization},
                             ]
                         }
                     },
@@ -677,6 +727,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
                         }
                     },
                     { $lookup:
@@ -724,8 +790,8 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             client: {$in: _clients},
                             $or: [
-                                {organization: organization},
-                                {distributer: organization},
+                                {organization: user.organization},
+                                {distributer: user.organization},
                             ]
                         }
                     },
@@ -760,6 +826,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
                         }
                     },
                     { $lookup:
@@ -878,6 +960,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
                         }
                     },
                     { $lookup:
@@ -1006,6 +1104,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { organization: '$organization' },
                             pipeline: [
@@ -1108,6 +1222,22 @@ const resolvers = {
                         $unwind:{
                             preserveNullAndEmptyArrays : true,
                             path : '$agent'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
                         }
                     },
                     { $lookup:
@@ -1232,6 +1362,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { organization: '$organization' },
                             pipeline: [
@@ -1350,6 +1496,22 @@ const resolvers = {
                     },
                     { $lookup:
                         {
+                            from: EmploymentAzyk.collection.collectionName,
+                            let: { forwarder: '$forwarder' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$forwarder', '$_id']}} },
+                            ],
+                            as: 'forwarder'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$forwarder'
+                        }
+                    },
+                    { $lookup:
+                        {
                             from: OrganizationAzyk.collection.collectionName,
                             let: { organization: '$organization' },
                             pipeline: [
@@ -1408,7 +1570,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addReturned: async(parent, {info, address, organization, client, items}, {user}) => {
+    addReturned: async(parent, {info, address, organization, client, items}, {user}) =>     {
         let dateStart = new Date()
         if(dateStart.getHours()<3)
             dateStart.setDate(dateStart.getDate() - 1)
@@ -1467,6 +1629,8 @@ const resolversMutation = {
                 address: address,
                 organization: organization,
                 district:  district?district.name:null,
+                track: 1,
+                forwarder: district?district.ecspeditor:null,
                 distributer: district&&district.organization.toString()!==organization.toString()?district.organization:null
             });
             if(user.employment)
