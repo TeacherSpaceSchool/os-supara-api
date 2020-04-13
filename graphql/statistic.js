@@ -8,6 +8,7 @@ const EmploymentAzyk = require('../models/employmentAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const UserAzyk = require('../models/userAzyk');
+const AdsAzyk = require('../models/adsAzyk');
 const ExcelJS = require('exceljs');
 const randomstring = require('randomstring');
 const app = require('../app');
@@ -46,6 +47,7 @@ const query = `
     statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticClientActivity(online: Boolean): Statistic
     statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
+    statisticAdss(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
@@ -687,7 +689,6 @@ const resolvers = {
             ).distinct('client')
             data = await ClientAzyk.find(
                 {
-                    del: {$ne: 'deleted'},
                     $or: [
                         {lastActive: {$ne: null}},
                         {_id: {$in: data}}
@@ -897,6 +898,117 @@ const resolvers = {
             ]
             return {
                 columns: ['клиент', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                row: data
+            };
+        }
+    },
+    statisticAdss: async(parent, { company, dateStart, dateType, online }, {user}) => {
+        if(user.role==='admin'){
+            let dateEnd
+            if(dateStart){
+                dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
+            }
+
+            let statistic = {}
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
+            let adss = await AdsAzyk.find({ ...(company==='all'?{}:{ organization: company }),}).distinct('_id')
+            let findData = await InvoiceAzyk.find(
+                {
+                    $and: [
+                        dateStart?{createdAt: {$gte: dateStart}}:{},
+                        dateEnd?{createdAt: {$lt: dateEnd}}:{}
+                    ],
+                    ...(company==='all'?{}:{ organization: company }),
+                    adss: {$elemMatch: {$in: adss}},
+                    del: {$ne: 'deleted'},
+                    taken: true,
+                    agent: {$nin: agents},
+                }
+            )
+                .populate({
+                    path: 'orders'
+                })
+                .populate({
+                    path: 'client'
+                })
+                .populate({
+                    path: 'adss'
+                })
+                .lean()
+            let data = []
+            console.log(findData)
+            for(let i=0; i<findData.length; i++) {
+                for(let i1=0; i1<findData[i].adss.length; i1++) {
+                    for(let i2=0; i2<findData[i].orders.length; i2++) {
+                        findData[i].orders[i2].invoice = findData[i]._id
+                        findData[i].orders[i2].client = findData[i].client
+                        findData[i].orders[i2].ads = findData[i].adss[i1]
+                        data.push(findData[i].orders[i2])
+                    }
+                }
+            }
+            for(let i=0; i<data.length; i++) {
+                if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                    if (!statistic[data[i].ads._id]) statistic[data[i].ads._id] = {
+                        profit: 0,
+                        complet: [],
+                        ads: data[i].ads.title
+                    }
+                    if(!statistic[data[i].ads._id].complet.includes(data[i].invoice)) {
+                        statistic[data[i].ads._id].complet.push(data[i].invoice)
+                    }
+                    statistic[data[i].ads._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
+                }
+            }
+            const keys = Object.keys(statistic)
+            data = []
+
+            let profitAll = 0
+            let completAll = 0
+
+            for(let i=0; i<keys.length; i++){
+                profitAll += statistic[keys[i]].profit
+                completAll += statistic[keys[i]].complet.length
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].ads,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].complet.length,
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[1] - a.data[1]
+            });
+            data = [
+                {
+                    _id: null,
+                    data: [
+                        data.length,
+                        profitAll,
+                        completAll,
+                    ]
+                },
+                ...data
+            ]
+            return {
+                columns: ['акция', 'прибыль(сом)', 'выполнен(шт)'],
                 row: data
             };
         }
@@ -1500,8 +1612,7 @@ const resolvers = {
                 }
             }
             else {
-                let agents = await EmploymentAzyk.find({organization: company,
-                    del: {$ne: 'deleted'}}).populate('user')
+                let agents = await EmploymentAzyk.find({organization: company}).populate('user')
                 agents = agents.filter(agent=>agent.user.role==='агент')
                 for(let i=0; i<agents.length; i++) {
                     if (!statistic[agents[i]._id]) statistic[agents[i]._id] = {
