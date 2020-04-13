@@ -171,11 +171,11 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        {
+                        /*{
                             $match:{
                                 'user.status': 'active'
                             }
-                        },
+                        },*/
                     ])
             return [(clients.length).toString()]
         }
@@ -218,11 +218,11 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        {
+                        /*{
                             $match:{
                                 'user.status': 'active'
                             }
-                        }
+                        }*/
                     ])
             return [(clients.length).toString()]
         } else if(['организация'].includes(user.role)) {
@@ -263,11 +263,12 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
-                            {
+                           /* {
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            }])
+                            }*/
+                           ])
                 clients = clients.length
             }
             else {
@@ -308,11 +309,12 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
-                            {
+                            /*{
                                 $match:{
                                     'user.status': 'active'
                                 }
-                            }])
+                            }*/
+                            ])
                 clients = clients.length
             }
             return [clients.toString()]
@@ -462,6 +464,14 @@ const resolvers = {
                                     ]
                                 }
                             },
+                           /* {
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },*/
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -478,14 +488,6 @@ const resolvers = {
                                     path : '$user'
                                 }
                             },
-                            {
-                                $match:{
-                                    'user.status': 'active'
-                                }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 }
                         ])
                 return clients
             }
@@ -514,6 +516,14 @@ const resolvers = {
                                 ]
                             }
                         },
+                        /*{
+                            $match:{
+                                'user.status': 'active'
+                            }
+                        },*/
+                        { $sort : _sort },
+                        { $skip : skip!=undefined?skip:0 },
+                        { $limit : skip!=undefined?15:10000000000 },
                         { $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
@@ -530,14 +540,6 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        {
-                            $match:{
-                                'user.status': 'active'
-                            }
-                        },
-                        { $sort : _sort },
-                        { $skip : skip!=undefined?skip:0 },
-                        { $limit : skip!=undefined?15:10000000000 }
                     ])
             return clients
         }
@@ -563,6 +565,14 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            /*{
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },*/
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -578,15 +588,7 @@ const resolvers = {
                                     preserveNullAndEmptyArrays : true, // this remove the object which is null
                                     path : '$user'
                                 }
-                            },
-                            {
-                                $match:{
-                                    'user.status': 'active'
-                                }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 }
+                            }
                         ])
             else {
                 clients = await OrderAzyk.find({organization: user.organization}).distinct('client')
@@ -609,6 +611,14 @@ const resolvers = {
                                     ]
                                 }
                             },
+                            /*{
+                                $match:{
+                                    'user.status': 'active'
+                                }
+                            },*/
+                            { $sort : _sort },
+                            { $skip : skip!=undefined?skip:0 },
+                            { $limit : skip!=undefined?15:10000000000 },
                             { $lookup:
                                 {
                                     from: UserAzyk.collection.collectionName,
@@ -624,15 +634,7 @@ const resolvers = {
                                     preserveNullAndEmptyArrays : true, // this remove the object which is null
                                     path : '$user'
                                 }
-                            },
-                            {
-                                $match:{
-                                    'user.status': 'active'
-                                }
-                            },
-                            { $sort : _sort },
-                            { $skip : skip!=undefined?skip:0 },
-                            { $limit : skip!=undefined?15:10000000000 }
+                            }
                         ])
             }
             return clients

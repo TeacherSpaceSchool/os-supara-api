@@ -43,14 +43,14 @@ const type = `
 const query = `
     unloadingOrders(organization: ID!, dateStart: Date!): Data
     unloadingClients(organization: ID!): Data
-    statisticClient(company: String, dateStart: Date, dateType: String): Statistic
-    statisticClientActivity: Statistic
-    statisticItem(company: String, dateStart: Date, dateType: String): Statistic
-    statisticOrder(company: String, dateStart: Date, dateType: String): Statistic
+    statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
+    statisticClientActivity(online: Boolean): Statistic
+    statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
+    statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
     checkOrder(company: String, today: Date!): Statistic
-    statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String): ChartStatisticAll
+    statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String, online: Boolean): ChartStatisticAll
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
@@ -243,12 +243,17 @@ const resolvers = {
             };
         }
     },
-    statisticOrderChart: async(parent, { company, dateStart, dateType, type }, {user}) => {
+    statisticOrderChart: async(parent, { company, dateStart, dateType, type, online }, {user}) => {
         if(user.role==='admin'){
             let result = []
             let dateEnd
             let profit=0
             let profitAll=0
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
             if(dateStart){
                 let organizations
                 let districts
@@ -257,7 +262,8 @@ const resolvers = {
                     organizations = await InvoiceAzyk.find(
                         {
                             del: {$ne: 'deleted'},
-                            taken: true
+                            taken: true,
+                            agent: {$nin: agents}
                         }
                     ).distinct('organization')
                     organizations = await OrganizationAzyk.find(
@@ -299,7 +305,8 @@ const resolvers = {
                                         ],
                                         del: {$ne: 'deleted'},
                                         taken: true,
-                                        organization: organizations[i]._id
+                                        organization: organizations[i]._id,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -337,7 +344,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         client: {$in: districts[i].client},
-                                        organization: districts[i].organization
+                                        organization: districts[i].organization,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -372,7 +380,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         client: {$nin: withoutDistricts},
-                                        organization: company
+                                        organization: company,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -418,7 +427,8 @@ const resolvers = {
                                         ],
                                         del: {$ne: 'deleted'},
                                         taken: true,
-                                        organization: organizations[i1]._id
+                                        organization: organizations[i1]._id,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -455,7 +465,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         client: {$in: districts[i1].client},
-                                        organization: districts[i1].organization
+                                        organization: districts[i1].organization,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -490,7 +501,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         client: {$nin: withoutDistricts},
-                                        organization: company
+                                        organization: company,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -537,6 +549,7 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         organization: organizations[i1]._id,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -573,7 +586,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         taken: true,
                                         client: {$in: districts[i1].client},
-                                        organization: districts[i1].organization
+                                        organization: districts[i1].organization,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -608,7 +622,8 @@ const resolvers = {
                                         del: {$ne: 'deleted'},
                                         client: {$nin: withoutDistricts},
                                         organization: company,
-                                        taken: true
+                                        taken: true,
+                                        agent: {$nin: agents}
                                     }
                                 )
                                     .populate({
@@ -639,7 +654,7 @@ const resolvers = {
             };
         }
     },
-    statisticClientActivity: async(parent, ctx , {user}) => {
+    statisticClientActivity: async(parent, { online } , {user}) => {
         if(user.role==='admin'){
             let now = new Date()
             now.setDate(now.getDate() + 1)
@@ -657,11 +672,17 @@ const resolvers = {
             let lastActive;
             let lastOrder;
 
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
             let statistic = {}
             let data = await InvoiceAzyk.find(
                 {
                     taken: true,
-                    del: {$ne: 'deleted'}
+                    del: {$ne: 'deleted'},
+                    agent: {$nin: agents}
                 }
             ).distinct('client')
             data = await ClientAzyk.find(
@@ -679,7 +700,8 @@ const resolvers = {
                     let invoice = await InvoiceAzyk.findOne({
                         client: data[i]._id,
                         del: {$ne: 'deleted'},
-                        taken: true
+                        taken: true,
+                        agent: {$nin: agents}
                     })
                         .sort('-createdAt')
                         .lean()
@@ -758,7 +780,7 @@ const resolvers = {
             };
         }
     },
-    statisticClient: async(parent, { company, dateStart, dateType }, {user}) => {
+    statisticClient: async(parent, { company, dateStart, dateType, online  }, {user}) => {
         if(user.role==='admin'){
             let dateEnd
             if(dateStart){
@@ -774,6 +796,11 @@ const resolvers = {
                 else
                     dateEnd.setMonth(dateEnd.getMonth() + 1)
             }
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
 
             let statistic = {}
             let data = await InvoiceAzyk.find(
@@ -784,7 +811,8 @@ const resolvers = {
                     ],
                     del: {$ne: 'deleted'},
                     taken: true,
-                    ...(company==='all'?{}:{ organization: company })
+                    ...(company==='all'?{}:{ organization: company }),
+                    agent: {$nin: agents}
                 }
             )
                 .populate({
@@ -873,7 +901,7 @@ const resolvers = {
             };
         }
     },
-    statisticItem: async(parent, { company, dateStart, dateType }, {user}) => {
+    statisticItem: async(parent, { company, dateStart, dateType, online }, {user}) => {
         if(user.role==='admin'){
             let dateEnd
             if(dateStart){
@@ -892,6 +920,11 @@ const resolvers = {
             }
 
             let statistic = {}
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
             let data = await InvoiceAzyk.find(
                 {
                     $and: [
@@ -901,6 +934,7 @@ const resolvers = {
                     ...(company==='all'?{}:{ organization: company }),
                     del: {$ne: 'deleted'},
                     taken: true,
+                    agent: {$nin: agents},
                 }
             )
                 .populate({
@@ -994,7 +1028,7 @@ const resolvers = {
             };
         }
     },
-    statisticOrder: async(parent, { company, dateStart, dateType }, {user}) => {
+    statisticOrder: async(parent, { company, dateStart, dateType, online }, {user}) => {
         if(user.role==='admin'){
             let dateEnd
             if(dateStart){
@@ -1012,6 +1046,12 @@ const resolvers = {
                     dateEnd.setMonth(dateEnd.getMonth() + 1)
             }
             let statistic = {}, data = []
+            let agents = []
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+            }
+            console.log(online)
 
             if(!company) {
                 data = await InvoiceAzyk.find(
@@ -1021,7 +1061,8 @@ const resolvers = {
                             dateEnd ? {createdAt: {$lt: dateEnd}} : {}
                         ],
                         taken: true,
-                        del: {$ne: 'deleted'}
+                        del: {$ne: 'deleted'},
+                        agent: {$nin: agents}
                     }
                 )
                     .populate({
@@ -1090,6 +1131,7 @@ const resolvers = {
                             taken: true,
                             client: {$in: districts[i].client},
                             organization: districts[i].organization,
+                            agent: {$nin: agents},
                         }
                     )
                         .populate({
@@ -1143,6 +1185,7 @@ const resolvers = {
                         taken: true,
                         client: {$nin: withDistricts},
                         organization: company,
+                        agent: {$nin: agents},
                     }
                 )
                     .populate({

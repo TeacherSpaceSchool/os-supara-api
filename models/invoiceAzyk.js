@@ -55,7 +55,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EmploymentAzyk'
     },
-    taken: Boolean,
+    taken: {
+        type: Boolean,
+        default: false
+    },
     del: String,
     district: String,
     editor: String,

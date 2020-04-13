@@ -2508,6 +2508,8 @@ const resolversMutation = {
                 .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
                 .populate({path: 'client',populate: [{path: 'user'}]})
                 .populate({path: 'agent'})
+                .populate({path: 'distributer'})
+                .populate({path: 'forwarder'})
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                 who: user.role==='admin'?null:user._id,
                 agent: district?district.agent:undefined,
@@ -2562,8 +2564,45 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setInvoicesLogic: async(parent, {track, forwarder, invoices}) => {
+    setInvoicesLogic: async(parent, {track, forwarder, invoices}, {user}) => {
         await setOutXMLShoroAzykLogic(invoices, forwarder, track)
+        let resInvoices = await InvoiceAzyk.find({_id: {$in: invoices}})
+            .populate({
+                path: 'orders',
+                populate: {
+                    path: 'item',
+                    populate: [
+                        {path: 'organization'}
+                    ]
+                }
+            })
+            .populate({
+                path: 'client',
+                populate: [
+                    {path: 'user'}
+                ]
+            })
+            .populate({path: 'agent'})
+            .populate({path: 'distributer'})
+            .populate({path: 'adss'})
+            .populate({path: 'forwarder'})
+        if(resInvoices.length>0){
+            let district = await DistrictAzyk.findOne({
+                organization: resInvoices[0].organization,
+                client: resInvoices[0].client._id
+            })
+            for(let i=0; i<resInvoices.length; i++){
+                pubsub.publish(RELOAD_ORDER, { reloadOrder: {
+                    who: user.role==='admin'?null:user._id,
+                    client: resInvoices[i].client._id,
+                    agent: district?district.agent:undefined,
+                    organization: resInvoices[i].organization,
+                    invoice: resInvoices[i],
+                    manager: district?district.manager:undefined,
+                    type: 'SET'
+                } });
+            }
+        }
         return {data: 'OK'};
     },
     setOrder: async(parent, {orders, invoice}, {user}) => {
@@ -2624,6 +2663,7 @@ const resolversMutation = {
             .populate({path: 'agent'})
             .populate({path: 'distributer'})
             .populate({path: 'adss'})
+            .populate({path: 'forwarder'})
         if(user.role==='admin'){
             editor = 'админ'
         }
