@@ -285,7 +285,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
                 .att('price', outXMLShoros[i].data[ii].price)
                 .att('amount', outXMLShoros[i].data[ii].amount)
         }
-        for(let ii=0;ii<outXMLShoros[i].adss.length;ii++){
+        /*for(let ii=0;ii<outXMLShoros[i].adss.length;ii++){
             let ads = await AdsAzyk.findOne({
                 _id: outXMLShoros[i].adss[ii]
             }).populate('item')
@@ -299,7 +299,7 @@ module.exports.getOutXMLShoroAzyk = async() => {
                     .att('price', 1)
                     .att('amount', 1)
             }
-        }
+        }*/
     }
     result = result.end({ pretty: true})
     return result
