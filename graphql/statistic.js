@@ -2089,55 +2089,57 @@ const resolvers = {
                     .populate({
                         path : 'client'
                     })
-                let worksheet;
-                worksheet = await workbook.addWorksheet(`Район ${districts[x].name}`);
-                worksheet.getColumn(1).width = 30;
-                worksheet.getColumn(2).width = 20;
-                worksheet.getColumn(3).width = 15;
-                worksheet.getColumn(4).width = 15;
-                worksheet.getColumn(5).width = 15;
-                let row = 1;
-                for(let i = 0; i<data.length;i++){
-                    if(i!==0) {
-                        row += 2;
-                    }
-                    worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
-                    worksheet.getCell(`A${row}`).value = `Акция${i+1}`;
-                    row += 1;
-                    worksheet.getCell(`A${row}`).font = {bold: true};
-                    worksheet.getCell(`A${row}`).value = 'Клиент:';
-                    worksheet.getCell(`B${row}`).value = data[i].client.name;
-                    row+=1;
-                    worksheet.getCell(`A${row}`).font = {bold: true};
-                    worksheet.getCell(`A${row}`).value = 'Адрес:';
-                    worksheet.getCell(`B${row}`).value = data[i].address;
-                    for(let i1=0; i1<data[i].client.phone.length; i1++) {
-                        row+=1;
-                        if(!i1) {
-                            worksheet.getCell(`A${row}`).font = {bold: true};
-                            worksheet.getCell(`A${row}`).value = 'Телефон:';
+                if (data.length>0){
+                    let worksheet;
+                    worksheet = await workbook.addWorksheet(`Район ${districts[x].name}`);
+                    worksheet.getColumn(1).width = 30;
+                    worksheet.getColumn(2).width = 20;
+                    worksheet.getColumn(3).width = 15;
+                    worksheet.getColumn(4).width = 15;
+                    worksheet.getColumn(5).width = 15;
+                    let row = 1;
+                    for(let i = 0; i<data.length;i++){
+                        if(i!==0) {
+                            row += 2;
                         }
-                        worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
-                    }
-                    row+=1;
-                    for(let i1=0; i1<data[i].adss.length; i1++) {
+                        worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
+                        worksheet.getCell(`A${row}`).value = `Акция${i+1}`;
+                        row += 1;
                         worksheet.getCell(`A${row}`).font = {bold: true};
-                        worksheet.getCell(`A${row}`).value = 'Акция:';
-                        worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].title}`;
+                        worksheet.getCell(`A${row}`).value = 'Клиент:';
+                        worksheet.getCell(`B${row}`).value = data[i].client.name;
                         row+=1;
-                        if(data[i].adss[i1].item){
-                            worksheet.getCell(`A${row}`).font = {bold: true};
-                            worksheet.getCell(`A${row}`).value = 'Товар:';
-                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].item.name}`;
+                        worksheet.getCell(`A${row}`).font = {bold: true};
+                        worksheet.getCell(`A${row}`).value = 'Адрес:';
+                        worksheet.getCell(`B${row}`).value = data[i].address;
+                        for(let i1=0; i1<data[i].client.phone.length; i1++) {
                             row+=1;
+                            if(!i1) {
+                                worksheet.getCell(`A${row}`).font = {bold: true};
+                                worksheet.getCell(`A${row}`).value = 'Телефон:';
+                            }
+                            worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
+                        }
+                        row+=1;
+                        for(let i1=0; i1<data[i].adss.length; i1++) {
                             worksheet.getCell(`A${row}`).font = {bold: true};
-                            worksheet.getCell(`A${row}`).value = 'Количество:';
-                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count}`;
+                            worksheet.getCell(`A${row}`).value = 'Акция:';
+                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].title}`;
                             row+=1;
-                            worksheet.getCell(`A${row}`).font = {bold: true};
-                            worksheet.getCell(`A${row}`).value = 'Упаковок:';
-                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count/(data[i].adss[i1].item.packaging ? data[i].adss[i1].item.packaging : 1)}`;
-                            row+=1;
+                            if(data[i].adss[i1].item){
+                                worksheet.getCell(`A${row}`).font = {bold: true};
+                                worksheet.getCell(`A${row}`).value = 'Товар:';
+                                worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].item.name}`;
+                                row+=1;
+                                worksheet.getCell(`A${row}`).font = {bold: true};
+                                worksheet.getCell(`A${row}`).value = 'Количество:';
+                                worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count}`;
+                                row+=1;
+                                worksheet.getCell(`A${row}`).font = {bold: true};
+                                worksheet.getCell(`A${row}`).value = 'Упаковок:';
+                                worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count/(data[i].adss[i1].item.packaging ? data[i].adss[i1].item.packaging : 1)}`;
+                                row+=1;
+                            }
                         }
                     }
                 }
