@@ -2111,7 +2111,7 @@ const resolvers = {
                         row+=1;
                         worksheet.getCell(`A${row}`).font = {bold: true};
                         worksheet.getCell(`A${row}`).value = 'Адрес:';
-                        worksheet.getCell(`B${row}`).value = data[i].address;
+                        worksheet.getCell(`B${row}`).value = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`;
                         for(let i1=0; i1<data[i].client.phone.length; i1++) {
                             row+=1;
                             if(!i1) {
