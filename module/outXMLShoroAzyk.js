@@ -9,6 +9,7 @@ const InvoiceAzyk = require('../models/invoiceAzyk');
 const ReturnedAzyk = require('../models/returnedAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const AdsAzyk = require('../models/adsAzyk');
+const OutXMLAdsShoroAzyk = require('../models/outXMLAdsShoroAzyk');
 const { pdDDMMYYYY } = require('../module/const');
 const uuidv1 = require('uuid/v1.js');
 const xml = require('xml');
@@ -267,13 +268,15 @@ module.exports.getOutXMLShoroAzyk = async() => {
             .ele('item')
         if(outXMLShoros[i].status==='del')
             item.att('del', '1')
+        if(outXMLShoros[i].promo===1)
+            item.att('promo', '1')
         item.att('guid', outXMLShoros[i].guid)
         item.att('client', outXMLShoros[i].client)
         item.att('agent', outXMLShoros[i].agent)
         item.att('track', outXMLShoros[i].track?outXMLShoros[i].track:1)
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
-        item.att('coment', `${outXMLShoros[i].invoice.info} ${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`)
+        item.att('coment', outXMLShoros[i].invoice?`${outXMLShoros[i].invoice.info} ${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`:'')
 
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){
             item.ele('product')
@@ -388,6 +391,88 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
     return result
 }
 
-module.exports.reductionOutXMLShoroAzyk = async() => {
-    //lol
+module.exports.reductionOutAdsXMLShoroAzyk = async() => {
+    let dateXml = new Date()
+    if(dateXml.getDay()===0)
+        dateXml.setDate(dateXml.getDate() + 1)
+    let dateStart = new Date()
+    //dateStart.setDate(dateStart.getDate() - 1)
+    dateStart.setHours(3, 0, 0, 0)
+    let dateEnd = new Date(dateStart)
+    dateEnd.setHours(3, 0, 0, 0)
+    dateEnd.setDate(dateEnd.getDate() + 1)
+    let guidItems = {}
+    let organization = await OrganizationAzyk
+        .findOne({name: 'ЗАО «ШОРО»'})
+    let districts = await DistrictAzyk.find({
+        organization: organization._id
+    })
+    for(let i=0;i<districts.length;i++) {
+        let outXMLAdsShoroAzyk = await OutXMLAdsShoroAzyk.findOne({district: districts[i]._id})
+        if(outXMLAdsShoroAzyk) {
+            let guidAgent = await Integrate1CAzyk
+                .findOne({agent: districts[i].agent})
+            let guidEcspeditor = await Integrate1CAzyk
+                .findOne({ecspeditor: districts[i].ecspeditor})
+            if (guidAgent && guidEcspeditor) {
+                let newOutXMLShoroAzyk = new OutXMLShoroAzyk({
+                    data: [],
+                    guid: await uuidv1(),
+                    date: dateXml,
+                    number: `акции ${districts[i].name}`,
+                    client: outXMLAdsShoroAzyk.guid,
+                    agent: guidAgent.guid,
+                    forwarder: guidEcspeditor.guid,
+                    invoice: null,
+                    status: 'create',
+                    promo: 1
+                });
+                let orders = await InvoiceAzyk.find(
+                    {
+                        $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        organization: organization._id,
+                        adss: {$ne: []},
+                        client: {$in: districts[i].client}
+                    }
+                )
+                    .populate({
+                        path: 'adss'
+                    })
+                let itemsData = {}
+                for (let i1 = 0; i1 < orders.length; i1++) {
+                    for (let i2 = 0; i2 < orders[i1].adss.length; i2++) {
+                        if(orders[i1].adss[i2].item){
+                            if(!guidItems[orders[i1].adss[i2].item])
+                                guidItems[orders[i1].adss[i2].item] = await Integrate1CAzyk.findOne({item: orders[i1].adss[i2].item}).populate('item')
+                            if (guidItems[orders[i1].adss[i2].item]){
+                                if(!itemsData[guidItems[orders[i1].adss[i2].item].guid])
+                                    itemsData[guidItems[orders[i1].adss[i2].item].guid] = {
+                                        guid: guidItems[orders[i1].adss[i2].item].guid,
+                                        qt: 0,
+                                        price: (guidItems[orders[i1].adss[i2].item].item.stock ? guidItems[orders[i1].adss[i2].item].item.stock : guidItems[orders[i1].adss[i2].item].item.price),
+                                        amount: 0,
+                                        package: (guidItems[orders[i1].adss[i2].item].item.packaging ? guidItems[orders[i1].adss[i2].item].item.packaging : 1)
+                                    }
+                                itemsData[guidItems[orders[i1].adss[i2].item].guid].qt+=orders[i1].adss[i2].count
+                            }
+                        }
+                    }
+                }
+                itemsData = Object.values(itemsData)
+                itemsData = itemsData.map(itemData=>{
+                    return {
+                        guid: itemData.guid,
+                        package: Math.round(itemData.qt / itemData.package),
+                        qt: itemData.qt,
+                        price: itemData.price,
+                        amount: Math.round(itemData.qt * itemData.price)
+                    }
+                })
+                newOutXMLShoroAzyk.data = itemsData
+                await OutXMLShoroAzyk.create(newOutXMLShoroAzyk);
+            }
+        }
+    }
 }

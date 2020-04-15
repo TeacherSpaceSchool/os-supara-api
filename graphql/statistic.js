@@ -57,6 +57,7 @@ const query = `
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
     checkIntegrateClient(organization: ID, type: String, document: Upload): Statistic
+    unloadingAdsOrders(organization: ID!, dateStart: Date!): Data
 `;
 
 const mutation = `
@@ -2041,6 +2042,108 @@ const resolvers = {
                     ]);
                 }
             }
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingAdsOrders: async(parent, { organization, dateStart }, {user}) => {
+        if(['admin', 'организация'].includes(user.role)){
+            let workbook = new ExcelJS.Workbook();
+            let dateEnd
+            if(dateStart){
+                dateStart = new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+                dateEnd.setDate(dateEnd.getDate() + 1)
+            }
+            if(user.organization)
+                organization = user.organization
+            let districts = await DistrictAzyk.find({
+                organization: organization
+            })
+            for(let x=0;x<districts.length;x++) {
+                let data = await InvoiceAzyk.find(
+                    {
+                        $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        organization: organization,
+                        adss: {$ne: []},
+                        client: {$in: districts[x].client}
+                    }
+                )
+                    .populate({
+                        path: 'adss',
+                        populate : [
+                            {
+                                path : 'item',
+                            }
+                        ]
+                    })
+                    .populate({
+                        path : 'client'
+                    })
+                let worksheet;
+                worksheet = await workbook.addWorksheet(`Район ${districts[x].name}`);
+                worksheet.getColumn(1).width = 30;
+                worksheet.getColumn(2).width = 20;
+                worksheet.getColumn(3).width = 15;
+                worksheet.getColumn(4).width = 15;
+                worksheet.getColumn(5).width = 15;
+                let row = 1;
+                for(let i = 0; i<data.length;i++){
+                    if(i!==0) {
+                        row += 2;
+                    }
+                    worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
+                    worksheet.getCell(`A${row}`).value = `Акция${i+1}`;
+                    row += 1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Клиент:';
+                    worksheet.getCell(`B${row}`).value = data[i].client.name;
+                    row+=1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Адрес:';
+                    worksheet.getCell(`B${row}`).value = data[i].address;
+                    for(let i1=0; i1<data[i].client.phone.length; i1++) {
+                        row+=1;
+                        if(!i1) {
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Телефон:';
+                        }
+                        worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
+                    }
+                    row+=1;
+                    for(let i1=0; i1<data[i].adss.length; i1++) {
+                        worksheet.getCell(`A${row}`).font = {bold: true};
+                        worksheet.getCell(`A${row}`).value = 'Акция:';
+                        worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].title}`;
+                        row+=1;
+                        if(data[i].adss[i1].item){
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Товар:';
+                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].item.name}`;
+                            row+=1;
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Количество:';
+                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count}`;
+                            row+=1;
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Упаковок:';
+                            worksheet.getCell(`B${row}`).value = `${data[i].adss[i1].count/(data[i].adss[i1].item.packaging ? data[i].adss[i1].item.packaging : 1)}`;
+                            row+=1;
+                        }
+                    }
+                }
+
+            }
+
             let xlsxname = `${randomstring.generate(20)}.xlsx`;
             let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
             if (!await fs.existsSync(xlsxdir)){

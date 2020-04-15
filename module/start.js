@@ -7,7 +7,6 @@ const { reductionInvoices } = require('../module/invoiceAzyk');
 const { startClientRedis } = require('../module/redis');
 const { reductionToUser, createAdmin } = require('../module/user');
 const subscriberAzyk = require('../models/subscriberAzyk');
-const { reductionOutXMLShoroAzyk } = require('../module/outXMLShoroAzyk');
 const { Worker, isMainThread,  workerData, parentPort } = require('worker_threads');
 
 let startResetBonusesClient = async () => {
@@ -40,6 +39,21 @@ let startResetUnloading = async () => {
     }
 }
 
+let startOutXMLShoroAzyk = async () => {
+    if(isMainThread) {
+        let w = new Worker('./thread/outXMLShoroAzyk.js', {workerData: 0});
+        w.on('message', (msg) => {
+            console.log('OutXMLShoroAzyk: '+msg);
+        })
+        w.on('error', console.error);
+        w.on('exit', (code) => {
+            if(code !== 0)
+                console.error(new Error(`OutXMLShoroAzyk stopped with exit code ${code}`))
+        });
+        console.log('OutXMLShoroAzyk '+w.threadId+ ' run')
+    }
+}
+
 let startReminderClient = async () => {
     if(isMainThread) {
         let w = new Worker('./thread/reminderClient.js', {workerData: 0});
@@ -68,7 +82,7 @@ let start = async () => {
     await startReminderClient();
     await reductionToAgentRoute();
     await createAdmin();
-    await reductionOutXMLShoroAzyk()
+    await startOutXMLShoroAzyk();
 }
 
 module.exports.start = start;
