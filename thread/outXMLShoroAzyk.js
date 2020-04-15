@@ -4,7 +4,7 @@ const { reductionOutAdsXMLShoroAzyk } = require('../module/outXMLShoroAzyk');
 const cron = require('node-cron');
 connectDB.connect()
 if(!isMainThread) {
-    cron.schedule('1 1 * * *', async() => {
+    cron.schedule('20 1 * * *', async() => {
         await reductionOutAdsXMLShoroAzyk()
     });
 }
