@@ -6,7 +6,7 @@ const { reductionToClient } = require('../module/clientAzyk');
 const { reductionInvoices } = require('../module/invoiceAzyk');
 const { startClientRedis } = require('../module/redis');
 const { reductionToUser, createAdmin } = require('../module/user');
-const subscriberAzyk = require('../models/subscriberAzyk');
+const { reductionOutAdsXMLShoroAzyk } = require('../module/outXMLShoroAzyk');
 const { Worker, isMainThread,  workerData, parentPort } = require('worker_threads');
 
 let startResetBonusesClient = async () => {
@@ -83,6 +83,7 @@ let start = async () => {
     await reductionToAgentRoute();
     await createAdmin();
     await startOutXMLShoroAzyk();
+    //await reductionOutAdsXMLShoroAzyk()
 }
 
 module.exports.start = start;

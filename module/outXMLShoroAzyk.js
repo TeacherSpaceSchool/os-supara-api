@@ -398,7 +398,7 @@ module.exports.reductionOutAdsXMLShoroAzyk = async() => {
     let dateStart = new Date()
     dateStart.setDate(dateStart.getDate() - 1)
     dateStart.setHours(3, 0, 0, 0)
-    let dateEnd = new Date(dateStart)
+    let dateEnd = new Date()
     dateEnd.setHours(3, 0, 0, 0)
     //dateEnd.setDate(dateEnd.getDate() + 1)
     let guidItems = {}
