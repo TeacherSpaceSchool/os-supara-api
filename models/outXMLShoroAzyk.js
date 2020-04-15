@@ -5,18 +5,15 @@ const outXMLShoroSchema = mongoose.Schema({
     guid: String,
     date: Date,
     number: String,
-    client: String,
     agent: String,
     forwarder: String,
     exc: String,
-    adss: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'AdsAzyk'
-    }],
+    client: String,
     track: {
         type: Number,
         default: 1
     },
+    promo: Number,
     invoice: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'InvoiceAzyk'

@@ -5,6 +5,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const OrderAzyk = require('../models/orderAzyk');
 const AgentRouteAzyk = require('../models/agentRouteAzyk');
+const OutXMLAdsShoroAzyk = require('../models/outXMLAdsShoroAzyk');
 
 const type = `
   type District {
@@ -275,6 +276,7 @@ const resolversMutation = {
             if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())) {
                 await DistrictAzyk.deleteMany({_id: objects[i]._id})
                 await AgentRouteAzyk.deleteMany({district: objects[i]._id})
+                await OutXMLAdsShoroAzyk.deleteMany({district: objects[i]._id})
             }
         }
         return {data: 'OK'}

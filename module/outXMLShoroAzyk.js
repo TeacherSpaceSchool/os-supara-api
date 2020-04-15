@@ -99,7 +99,6 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     amount: Math.round(invoice.orders[i].count*(invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price))
                 })
         }
-        outXMLShoroAzyk.adss = invoice.adss.map(ads=>ads._id)
         await outXMLShoroAzyk.save()
         await InvoiceAzyk.updateMany({_id: invoice._id}, {sync: 1})
     }
@@ -130,7 +129,6 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                         forwarder: guidEcspeditor.guid,
                         invoice: invoice._id,
                         status: 'create',
-                        adss: invoice.adss.map(ads=>ads._id)
                     });
                     for (let i = 0; i < invoice.orders.length; i++) {
                         let guidItem = await Integrate1CAzyk
@@ -285,21 +283,6 @@ module.exports.getOutXMLShoroAzyk = async() => {
                 .att('price', outXMLShoros[i].data[ii].price)
                 .att('amount', outXMLShoros[i].data[ii].amount)
         }
-        /*for(let ii=0;ii<outXMLShoros[i].adss.length;ii++){
-            let ads = await AdsAzyk.findOne({
-                _id: outXMLShoros[i].adss[ii]
-            }).populate('item')
-            if(ads.item) {
-                let guidItem = await Integrate1CAzyk
-                    .findOne({item: ads.item._id})
-                item.ele('product')
-                    .att('guid', guidItem.guid)
-                    .att('package', Math.round(ads.count / (ads.item.packaging ? ads.item.packaging : 1)))
-                    .att('qty', ads.count)
-                    .att('price', 1)
-                    .att('amount', 1)
-            }
-        }*/
     }
     result = result.end({ pretty: true})
     return result

@@ -6,6 +6,7 @@ const AdsAzyk = require('./adsAzyk');
 const IntegrateOutShoroAzyk = require('./integrateOutShoroAzyk');
 const DistributerAzyk = require('./distributerAzyk');
 const BlogAzyk = require('./blogAzyk');
+const OutXMLAdsAzyk = require('./outXMLAdsAzyk');
 const CategoryAzyk = require('./categoryAzyk');
 const SubCategoryAzyk = require('./subCategoryAzyk');
 const ReturnedAzyk = require('./returnedAzyk');
@@ -65,6 +66,7 @@ const typeDefs = gql`
     ${OrganizationAzyk.type}
     ${AgentHistoryGeoAzyk.type}
     ${BlogAzyk.type}
+    ${OutXMLAdsAzyk.type}
     ${PassportAzyk.type}
     ${CategoryAzyk.type}
     ${SubCategoryAzyk.type}
@@ -97,6 +99,7 @@ const typeDefs = gql`
         ${SubCategoryAzyk.mutation}
         ${ReturnedAzyk.mutation}
         ${BlogAzyk.mutation}
+        ${OutXMLAdsAzyk.mutation}
         ${PassportAzyk.mutation}
         ${EmploymentAzyk.mutation}
         ${ItemAzyk.mutation}
@@ -127,6 +130,7 @@ const typeDefs = gql`
         ${SubCategoryAzyk.query}
         ${ReturnedAzyk.query}
         ${BlogAzyk.query}
+        ${OutXMLAdsAzyk.query}
         ${PassportAzyk.query}
         ${EmploymentAzyk.query}
         ${ItemAzyk.query}
@@ -173,6 +177,7 @@ const resolvers = {
         ...OrganizationAzyk.resolvers,
         ...AgentHistoryGeoAzyk.resolvers,
         ...BlogAzyk.resolvers,
+        ...OutXMLAdsAzyk.resolvers,
         ...AdsAzyk.resolvers,
         ...IntegrateOutShoroAzyk.resolvers,
         ...SubscriberAzyk.resolvers,
@@ -206,6 +211,7 @@ const resolvers = {
         ...SubCategoryAzyk.resolversMutation,
         ...ReturnedAzyk.resolversMutation,
         ...BlogAzyk.resolversMutation,
+        ...OutXMLAdsAzyk.resolversMutation,
         ...AdsAzyk.resolversMutation,
         ...IntegrateOutShoroAzyk.resolversMutation,
         ...SubscriberAzyk.resolversMutation,
