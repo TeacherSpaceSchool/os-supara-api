@@ -1,5 +1,6 @@
 const NotificationStatisticAzyk = require('../models/notificationStatisticAzyk');
 const {sendWebPush} = require('../module/webPush');
+const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
   type NotificationStatistic {
@@ -7,6 +8,9 @@ const type = `
     createdAt: Date
     title: String
     text: String
+    tag: String
+    url: String
+    icon: String
     delivered: Int
     failed: Int
   }
@@ -17,7 +21,7 @@ const query = `
 `;
 
 const mutation = `
-    addNotificationStatistic(text: String!, title: String!): Data
+    addNotificationStatistic(icon: Upload, text: String!, title: String!, tag: String, url: String): Data
 `;
 
 const resolvers = {
@@ -26,7 +30,9 @@ const resolvers = {
             return await NotificationStatisticAzyk.find({
                 $or: [
                     {title: {'$regex': search, '$options': 'i'}},
-                    {text: {'$regex': search, '$options': 'i'}}
+                    {text: {'$regex': search, '$options': 'i'}},
+                    {tag: {'$regex': search, '$options': 'i'}},
+                    {url: {'$regex': search, '$options': 'i'}}
                 ]
             }).sort('-createdAt')
         else
@@ -35,9 +41,15 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addNotificationStatistic: async(parent, {text, title}, {user}) => {
+    addNotificationStatistic: async(parent, {text, title, tag , url, icon}, {user}) => {
         if('admin'===user.role){
-            sendWebPush(title, text, 'all')
+            let payload = {title: title, message: text, user: 'all', tag: tag, url: url}
+            if(icon){
+                let { stream, filename } = await icon;
+                filename = await saveImage(stream, filename)
+                payload.icon = urlMain+filename
+            }
+            sendWebPush(payload)
         }
         return {data: 'OK'};
     }

@@ -4,13 +4,13 @@ const q = require('q');
 const webPush = require('web-push');
 const keys = require((process.env.URL).trim()==='https://azyk.store'?'./../config/keys_prod':'./../config/keys_dev');
 
-module.exports.sendWebPush = async(title, message, user) => {
+module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
     const payload = {
-        title: title,
-        message: message,
-        url: 'https://azyk.store',
-        icon: 'https://azyk.store/static/192x192.png',
-        tag: 'AZYK.STORE',
+        title: title?title:title,
+        message: message?message:message,
+        url: url?url:'https://azyk.store',
+        icon: icon?icon:'https://azyk.store/static/192x192.png',
+        tag: tag?tag:'AZYK.STORE',
     };
     if(user==='all'){
         SubscriberAzyk.find({}, (err, subscriptions) => {
@@ -78,8 +78,11 @@ module.exports.sendWebPush = async(title, message, user) => {
                             }
                         }
                         let _object = new NotificationStatisticAzyk({
-                            title: title,
-                            text: message,
+                            tag: payload.tag,
+                            url: payload.url,
+                            icon: payload.icon,
+                            title: payload.title,
+                            text: payload.message,
                             delivered: delivered,
                             failed: failed,
                         });
@@ -157,8 +160,11 @@ module.exports.sendWebPush = async(title, message, user) => {
                             }
                         }
                         let _object = new NotificationStatisticAzyk({
-                            title: title,
-                            text: message,
+                            tag: payload.tag,
+                            url: payload.url,
+                            icon: payload.icon,
+                            title: payload.title,
+                            text: payload.message,
                             delivered: delivered,
                             failed: failed,
                         });

@@ -7,7 +7,7 @@ const SubscriberAzyk = require('../models/subscriberAzyk');
 router.get('/admin', async (req, res) => {
     let user = await UserAzyk.findOne({role: 'admin'})
     if(user){
-        sendWebPush('AZYK.STORE', 'Не забудьте сделать свой заказ', user._id)
+        sendWebPush({title: 'AZYK.STORE', message: 'Не забудьте сделать свой заказ', user: user._id})
         res.json('Push triggered');
     }
     else {
@@ -16,7 +16,7 @@ router.get('/admin', async (req, res) => {
 });
 
 router.get('/all', (req, res) => {
-        sendWebPush('AZYK.STORE', 'Не забудьте сделать свой заказ', 'all')
+        sendWebPush({title: 'AZYK.STORE', message: 'Не забудьте сделать свой заказ', user: 'all'})
         res.json('Push triggered');
 });
 module.exports = router;

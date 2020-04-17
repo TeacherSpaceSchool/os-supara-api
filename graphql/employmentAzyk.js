@@ -1,8 +1,6 @@
 const EmploymentAzyk = require('../models/employmentAzyk');
 const UserAzyk = require('../models/userAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
-const BasketAzyk = require('../models/basketAzyk');
-const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const { createJwtGQL } = require('../module/passport');
 const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const mongoose = require('mongoose')
@@ -11,6 +9,7 @@ const type = `
   type Employment {
     _id: ID
     name: String
+    del: String
     createdAt: Date
     email: String
     phone: [String]
@@ -21,6 +20,7 @@ const type = `
 
 const query = `
     employments(organization: ID, search: String!, sort: String!, filter: String!): [Employment]
+    employmentsTrash(search: String!,): [Employment]
     employment(_id: ID!): Employment
     ecspeditors(_id: ID): [Employment]
     agents(_id: ID): [Employment]
@@ -33,10 +33,34 @@ const mutation = `
     addEmployment(name: String!, email: String!, phone: [String]!, login: String!, password: String!, role: String!, organization: ID): Data
     setEmployment(_id: ID!, name: String, email: String, newPass: String, role: String, phone: [String], login: String, ): Data
     deleteEmployment(_id: [ID]!): Data
+    restoreEmployment(_id: [ID]!): Data
     onoffEmployment(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    employmentsTrash: async(parent, {search}, {user}) => {
+        if(user.role==='admin') {
+            let employments = await EmploymentAzyk.find({
+                del: 'deleted'
+            })
+                .populate({path: 'user'})
+                .populate({path: 'organization'})
+                .sort('-createdAt')
+            employments = employments.filter(
+                employment => {
+                    return (
+                        employment.user &&
+                        (((employment.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
+                            (employment.name.toLowerCase()).includes(search.toLowerCase()) ||
+                            (employment.email.toLowerCase()).includes(search.toLowerCase()) ||
+                            (employment.user.role.toLowerCase()).includes(search.toLowerCase()))
+                    )
+                }
+            )
+            return employments
+        }
+        else return []
+    },
     employments: async(parent, {organization, search, sort, filter}, {user}) => {
         if(user.role==='admin'){
             if(organization==='super'){
@@ -313,22 +337,12 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteEmployment: async(parent, { _id }, {user}) => {
-            let objects = await EmploymentAzyk.find({_id: {$in: _id}})
-            for(let i=0; i<objects.length; i++){
-                if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
-                    await EmploymentAzyk.updateMany({_id: objects[i]._id}, {del: 'deleted'})
-                    await UserAzyk.updateMany({_id: objects[i]._id}, {status: 'deactive'})
-                    await Integrate1CAzyk.deleteMany({
-                            organization: objects[i].organization,
-                            $or:
-                                [
-                                    {manager: objects[i]._id},
-                                    {agent: objects[i]._id},
-                                    {ecspeditor: objects[i]._id}
-                                ]
-                        }
-                    )
-                    let district = await DistrictAzyk.findOne({
+        let objects = await EmploymentAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
+                await EmploymentAzyk.update({_id: objects[i]._id}, {del: 'deleted'})
+                await UserAzyk.update({_id: objects[i].user}, {status: 'deactive'})
+                await Integrate1CAzyk.deleteOne({
                         organization: objects[i].organization,
                         $or:
                             [
@@ -336,16 +350,35 @@ const resolversMutation = {
                                 {agent: objects[i]._id},
                                 {ecspeditor: objects[i]._id}
                             ]
-                    })
-                    if(district){
-                        await AgentRouteAzyk.deleteMany({district: district._id})
-                        if(district.manager.toString()===objects[i]._id.toString())district.manager=null
-                        else if(district.ecspeditor.toString()===objects[i]._id.toString())district.ecspeditor=null
-                        else if(district.agent.toString()===objects[i]._id.toString())district.agent=null
-                        await district.save()
                     }
+                )
+                let district = await DistrictAzyk.findOne({
+                    organization: objects[i].organization,
+                    $or:
+                        [
+                            {manager: objects[i]._id},
+                            {agent: objects[i]._id},
+                            {ecspeditor: objects[i]._id}
+                        ]
+                })
+                if(district){
+                    if(district.manager.toString()===objects[i]._id.toString())district.manager=null
+                    else if(district.ecspeditor.toString()===objects[i]._id.toString())district.ecspeditor=null
+                    else if(district.agent.toString()===objects[i]._id.toString())district.agent=null
+                    await district.save()
                 }
             }
+        }
+        return {data: 'OK'}
+    },
+    restoreEmployment: async(parent, { _id }, {user}) => {
+        let objects = await EmploymentAzyk.find({_id: {$in: _id}})
+        for(let i=0; i<objects.length; i++){
+            if(user.role==='admin'){
+                await EmploymentAzyk.update({_id: objects[i]._id}, {del: null})
+                await UserAzyk.update({_id: objects[i].user}, {status: 'active'})
+            }
+        }
         return {data: 'OK'}
     },
     onoffEmployment: async(parent, { _id }, {user}) => {

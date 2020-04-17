@@ -1,4 +1,5 @@
 const AgentHistoryGeoAzyk = require('../models/agentHistoryGeoAzyk');
+const EmploymentAzyk = require('../models/employmentAzyk');
 const {getGeoDistance, pdDDMMYYHHMM} = require('../module/const');
 
 const type = `
@@ -12,7 +13,7 @@ const type = `
 `;
 
 const query = `
-    agentHistoryGeos(agent: ID!, date: String): Statistic
+    agentHistoryGeos(organization: ID, agent: ID, date: String): Statistic
 `;
 
 const mutation = `
@@ -20,15 +21,22 @@ const mutation = `
 `;
 
 const resolvers = {
-    agentHistoryGeos: async(parent, {agent, date}) => {
+    agentHistoryGeos: async(parent, {organization, agent, date}) => {
         let dateStart = date?new Date(date):new Date()
         dateStart.setHours(3, 0, 0, 0)
         let dateEnd = new Date(dateStart)
         dateEnd.setDate(dateEnd.getDate() + 1)
         let data = []
+
+
+        let agents = []
+        if(!agent){
+            agents = await EmploymentAzyk.find({organization: organization}).distinct('_id')
+        }
+
         let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-            agent: agent
+            ...(agent?{agent: agent}:{agent: {$in: agents}})
         })
             .populate('client')
             .sort('-createdAt')

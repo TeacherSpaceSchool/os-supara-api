@@ -45,7 +45,7 @@ const query = `
     unloadingOrders(organization: ID!, dateStart: Date!): Data
     unloadingClients(organization: ID!): Data
     statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
-    statisticClientActivity(online: Boolean): Statistic
+    statisticClientActivity(organization: ID, online: Boolean): Statistic
     statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticAdss(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
@@ -254,8 +254,8 @@ const resolvers = {
             let profitAll=0
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
             if(dateStart){
                 let organizations
@@ -268,20 +268,140 @@ const resolvers = {
                             taken: true,
                             agent: {$nin: agents}
                         }
-                    ).distinct('organization')
+                    ).distinct('organization').lean()
                     organizations = await OrganizationAzyk.find(
                         {
                             _id: {$in: organizations}
                         }
-                    )
+                    ).lean()
                 }
                 else {
-                    districts = await DistrictAzyk.find({organization: company})
+                    districts = await DistrictAzyk.find({organization: company}).lean()
                     withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 }
                 dateStart = new Date(dateStart)
                 dateStart.setHours(3, 0, 0, 0)
-                if(dateType==='day') {
+                if(dateType==='time') {
+                    for(let x=0; x<8; x++){
+                        dateEnd = new Date(dateStart)
+                        dateEnd.setHours(dateStart.getHours() + 3)
+                        if(!company) {
+                            for (let i = 0; i < organizations.length; i++) {
+                                if (!result[i])
+                                    result[i] = {
+                                        label: organizations[i].name,
+                                        data: []
+                                    }
+                                let data = await InvoiceAzyk.find(
+                                    {
+                                        $and: [
+                                            {createdAt: {$gte: dateStart}},
+                                            {createdAt: {$lt: dateEnd}}
+                                        ],
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
+                                        organization: organizations[i]._id,
+                                        agent: {$nin: agents}
+                                    }
+                                )
+                                    .populate({
+                                        path: 'orders'
+                                    })
+                                    .lean()
+                                profit = 0
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
+                                    }
+                                }
+                                else
+                                    profit = data.length
+                                profitAll+=profit
+                                result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}:00-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}:00`, profit])
+                            }
+                        }
+                        else {
+                            for (let i = 0; i < districts.length; i++) {
+                                if (!result[i])
+                                    result[i] = {
+                                        label: districts[i].name,
+                                        data: []
+                                    }
+                                let data = await InvoiceAzyk.find(
+                                    {
+                                        $and: [
+                                            {createdAt: {$gte: dateStart}},
+                                            {createdAt: {$lt: dateEnd}}
+                                        ],
+                                        del: {$ne: 'deleted'},
+                                        taken: true,
+                                        client: {$in: districts[i].client},
+                                        organization: districts[i].organization,
+                                        agent: {$nin: agents}
+                                    }
+                                )
+                                    .populate({
+                                        path: 'orders'
+                                    })
+                                    .lean()
+                                profit = 0
+                                if(type=='money') {
+                                    data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                    for (let i1 = 0; i1 < data.length; i1++) {
+                                        if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                            profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                        }
+                                    }
+                                }
+                                else
+                                    profit = data.length
+                                profitAll+=profit
+                                result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}:00-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}:00`, profit])
+                            }
+                            if (!result[districts.length])
+                                result[districts.length] = {
+                                    label: 'Прочие',
+                                    data: []
+                                }
+                            let data = await InvoiceAzyk.find(
+                                {
+                                    $and: [
+                                        {createdAt: {$gte: dateStart}},
+                                        {createdAt: {$lt: dateEnd}}
+                                    ],
+                                    del: {$ne: 'deleted'},
+                                    taken: true,
+                                    client: {$nin: withoutDistricts},
+                                    organization: company,
+                                    agent: {$nin: agents}
+                                }
+                            )
+                                .populate({
+                                    path: 'orders'
+                                })
+                                .lean()
+                            profit = 0
+                            if(type=='money') {
+                                data = data.reduce((acc, val) => acc.concat(val.orders), []);
+                                for (let i1 = 0; i1 < data.length; i1++) {
+                                    if (!['обработка', 'отмена'].includes(data[i1].status)) {
+                                        profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice / data[i1].count))
+                                    }
+                                }
+                            }
+                            else
+                                profit = data.length
+                            profitAll+=profit
+                            result[districts.length].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}:00-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}:00`, profit])
+
+                        }
+                        dateStart = dateEnd
+                    }
+                }
+                else if(dateType==='day') {
                     let today = new Date();
                     let month = 31;
                     if(today.getDate()===dateStart.getDate()&&today.getMonth()===dateStart.getMonth()&&today.getFullYear()===dateStart.getFullYear()){
@@ -657,37 +777,43 @@ const resolvers = {
             };
         }
     },
-    statisticClientActivity: async(parent, { online } , {user}) => {
+    statisticClientActivity: async(parent, { online, organization } , {user}) => {
         if(user.role==='admin'){
             let now = new Date()
             now.setDate(now.getDate() + 1)
             now.setHours(3, 0, 0, 0)
+
             let allActive = 0;
+            let noActive = 0;
             let todayActive = 0;
             let weekActive = 0;
             let monthActive = 0;
+            let lastActive;
+
             let allOrder = 0;
             let noOrder = 0;
-            let noActive = 0;
             let todayOrder = 0;
             let weekOrder = 0;
             let monthOrder = 0;
-            let lastActive;
             let lastOrder;
 
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({
+                    user: {$in: agents},
+                    ...(organization?{organization: organization}:{})
+                }).distinct('_id').lean()
             }
             let statistic = {}
             let data = await InvoiceAzyk.find(
                 {
                     taken: true,
                     del: {$ne: 'deleted'},
-                    agent: {$nin: agents}
+                    agent: {$nin: agents},
+                    ...(organization?{organization: organization}:{})
                 }
-            ).distinct('client')
+            ).distinct('client').lean()
             data = await ClientAzyk.find(
                 {
                     $or: [
@@ -703,7 +829,8 @@ const resolvers = {
                         client: data[i]._id,
                         del: {$ne: 'deleted'},
                         taken: true,
-                        agent: {$nin: agents}
+                        agent: {$nin: agents},
+                        ...(organization?{organization: organization}:{})
                     })
                         .sort('-createdAt')
                         .lean()
@@ -715,12 +842,10 @@ const resolvers = {
                         allActive+=1
                         if(lastActive===0)
                             todayActive+=1
-                        else {
-                            if (lastActive < 7)
-                                weekActive += 1
-                            if (lastActive < 31)
-                                monthActive += 1
-                        }
+                        if (lastActive < 7)
+                            weekActive += 1
+                        if (lastActive < 31)
+                            monthActive += 1
                     }
                     if(lastOrder===9999)
                         noOrder+=1
@@ -728,12 +853,10 @@ const resolvers = {
                         allOrder+=1
                         if(lastOrder===0)
                             todayOrder+=1
-                        else {
-                            if(lastOrder<7)
-                                weekOrder += 1
-                            if (lastOrder < 31)
-                                    monthOrder += 1
-                        }
+                        if(lastOrder<7)
+                            weekOrder += 1
+                        if (lastOrder < 31)
+                            monthOrder += 1
                     }
                     statistic[data[i]._id] = {
                         lastOrder: lastOrder,
@@ -800,8 +923,8 @@ const resolvers = {
             }
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
 
             let statistic = {}
@@ -924,10 +1047,10 @@ const resolvers = {
             let statistic = {}
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
-            let adss = await AdsAzyk.find({ ...(company==='all'?{}:{ organization: company }),}).distinct('_id')
+            let adss = await AdsAzyk.find({ ...(company==='all'?{}:{ organization: company }),}).distinct('_id').lean()
             let findData = await InvoiceAzyk.find(
                 {
                     $and: [
@@ -952,7 +1075,6 @@ const resolvers = {
                 })
                 .lean()
             let data = []
-            console.log(findData)
             for(let i=0; i<findData.length; i++) {
                 for(let i1=0; i1<findData[i].adss.length; i1++) {
                     for(let i2=0; i2<findData[i].orders.length; i2++) {
@@ -1035,8 +1157,8 @@ const resolvers = {
             let statistic = {}
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
             let data = await InvoiceAzyk.find(
                 {
@@ -1161,8 +1283,8 @@ const resolvers = {
             let statistic = {}, data = []
             let agents = []
             if(online){
-                agents = await UserAzyk.find({role: 'агент'}).distinct('_id')
-                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
             console.log(online)
 
@@ -1224,7 +1346,7 @@ const resolvers = {
                 }
             }
             else {
-                let districts = await DistrictAzyk.find({organization: company})
+                let districts = await DistrictAzyk.find({organization: company}).lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
@@ -1433,7 +1555,7 @@ const resolvers = {
                 }
             }
             else {
-                let districts = await DistrictAzyk.find({organization: company})
+                let districts = await DistrictAzyk.find({organization: company}).lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
@@ -1613,7 +1735,7 @@ const resolvers = {
                 }
             }
             else {
-                let agents = await EmploymentAzyk.find({organization: company}).populate('user')
+                let agents = await EmploymentAzyk.find({organization: company}).populate('user').lean()
                 agents = agents.filter(agent=>agent.user.role==='агент')
                 for(let i=0; i<agents.length; i++) {
                     if (!statistic[agents[i]._id]) statistic[agents[i]._id] = {
@@ -1777,18 +1899,18 @@ const resolvers = {
                         organization: organization,
                         taken: true,
                     }
-                ).distinct('orders')
+                ).distinct('orders').lean()
             data = data.reduce((acc, val) => acc.concat(val), []);
             data = await OrderAzyk.find(
                 {
                     _id: {$in: data},
                 }
-            ).distinct('item')
+            ).distinct('item').lean()
             data = await ItemAzyk.find(
                 {
                     _id: {$in: data}
                 }
-            )
+            ).lean()
             return data;
         }
     },
@@ -1799,18 +1921,18 @@ const resolvers = {
                     del: {$ne: 'deleted'},
                     taken: true
                 }
-            ).distinct('organization')
+            ).distinct('organization').lean()
             data = await OrganizationAzyk.find(
                 {
                     _id: {$in: data}
                 }
-            )
+            ).lean()
             return data;
         }
     },
     statisticClientGeo: async(parent, { organization, item }, {user}) => {
         if(user.role==='admin'){
-            let clients = await ClientAzyk.find({del: {$ne: 'deleted'}, organization: null})
+            let clients = await ClientAzyk.find({del: {$ne: 'deleted'}, organization: null}).lean()
             let address = []
             let good = 0
             let excellent = 0
@@ -1941,7 +2063,7 @@ const resolvers = {
                 })
                 .populate({
                     path : 'client'
-                })
+                }).lean()
             let worksheet;
             let orders = {};
             for(let i = 0; i<data.length;i++){
@@ -2066,7 +2188,7 @@ const resolvers = {
                 organization = user.organization
             let districts = await DistrictAzyk.find({
                 organization: organization
-            })
+            }).lean()
             for(let x=0;x<districts.length;x++) {
                 let data = await InvoiceAzyk.find(
                     {
@@ -2089,6 +2211,7 @@ const resolvers = {
                     .populate({
                         path : 'client'
                     })
+                    .lean()
                 if (data.length>0){
                     let worksheet;
                     worksheet = await workbook.addWorksheet(`Район ${districts[x].name}`);
@@ -2163,7 +2286,7 @@ const resolvers = {
                 {
                     ...{del: {$ne: 'deleted'}}
                 }
-            )
+            ).lean()
             data = data.filter(data =>{
                 return(data.name.length>0&&data.address[0]&&!(data.name.toLowerCase()).includes('агент')&&!(data.name.toLowerCase()).includes('agent'))
             })
@@ -2198,10 +2321,10 @@ const resolvers = {
                 ]);
             }
             if(organization==='super'){
-                let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}})
+                let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}}).lean()
                     .distinct('_id')
                 employments = await EmploymentAzyk.find({user: {$in: employments},
-                    del: {$ne: 'deleted'}})
+                    del: {$ne: 'deleted'}}).lean()
                 worksheet = await workbook.addWorksheet('Агенты');
                 worksheet.getColumn(1).width = 30;
                 worksheet.getCell('A1').font = {bold: true, size: 14};

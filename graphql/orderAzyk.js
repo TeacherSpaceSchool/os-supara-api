@@ -139,13 +139,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         let invoices = [];
         if(user.role==='admin') {
@@ -189,13 +189,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         let invoices = [];
         if(filter !== 'обработка'){
@@ -434,13 +434,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
@@ -1424,13 +1424,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
