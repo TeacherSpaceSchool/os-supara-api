@@ -31,6 +31,7 @@ const type = `
     accessToClient: Boolean
     consignation: Boolean
     del: String
+    priotiry: Int
   }
 `;
 
@@ -43,8 +44,8 @@ const query = `
 `;
 
 const mutation = `
-    addOrganization(minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!): Data
-    setOrganization(_id: ID!, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean): Data
+    addOrganization(priotiry: Int, minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!): Data
+    setOrganization(_id: ID!, priotiry: Int, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean): Data
     restoreOrganization(_id: [ID]!): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
@@ -57,20 +58,25 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'},
                 status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                 del: {$ne: 'deleted'}
-            }).sort(sort)
+            })
+                .sort('-priotiry')
+                .sort(sort)
         } else
             return await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'},
                 status: 'active',
                 del: {$ne: 'deleted'}
-            }).sort(sort)
+            })
+                .sort('-priotiry')
+                .sort(sort)
     },
     organizationsTrash: async(parent, {search}, {user}) => {
         if(user.role==='admin'){
             return await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'},
                 del: 'deleted'
-            }).sort('-createdAt')
+            })
+                .sort('-createdAt')
         }
     },
     organization: async(parent, {_id}) => {
@@ -119,7 +125,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrganization: async(parent, {info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
+    addOrganization: async(parent, {priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
@@ -134,7 +140,8 @@ const resolversMutation = {
                 minimumOrder: minimumOrder,
                 reiting: 0,
                 accessToClient: accessToClient,
-                consignation: consignation
+                consignation: consignation,
+                priotiry: priotiry
             });
             objectOrganization = await OrganizationAzyk.create(objectOrganization)
             let objectBonus = new BonusAzyk({
@@ -146,7 +153,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setOrganization: async(parent, {_id, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
+    setOrganization: async(parent, {_id, priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
         if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
@@ -160,6 +167,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
+            if(priotiry!=undefined) object.priotiry = priotiry
             if(consignation!=undefined) object.consignation = consignation
             if(accessToClient!=undefined) object.accessToClient = accessToClient
             if(minimumOrder!=undefined) object.minimumOrder = minimumOrder

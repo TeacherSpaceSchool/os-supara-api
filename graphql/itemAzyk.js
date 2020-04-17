@@ -250,7 +250,9 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'},
                 status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                 del: {$ne: 'deleted'}
-            }).sort(sort)
+            })
+                .sort('-priotiry')
+                .sort(sort)
         }
         else if(['организация', 'менеджер', 'агент'].includes(user.role)){
             brandOrganizations = await DistributerAzyk.findOne({
@@ -262,7 +264,9 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'},
                 status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
                 del: {$ne: 'deleted'}
-            }).sort(sort)
+            })
+                .sort('-priotiry')
+                .sort(sort)
         }
         else
             return await OrganizationAzyk.find({
@@ -270,7 +274,9 @@ const resolvers = {
                 name: {'$regex': search, '$options': 'i'},
                 status: 'active',
                 del: {$ne: 'deleted'}
-            }).sort(sort)
+            })
+                .sort('-priotiry')
+                .sort(sort)
     },
     sortItem: async(parent, ctx, {user}) => {
         let sort = [

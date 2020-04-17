@@ -1286,8 +1286,6 @@ const resolvers = {
                 agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
                 agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id').lean()
             }
-            console.log(online)
-
             if(!company) {
                 data = await InvoiceAzyk.find(
                     {
