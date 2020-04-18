@@ -2133,7 +2133,6 @@ const resolvers = {
                             agent: agents[i]._id,
                         }
                     ).sort('createdAt').lean()
-                console.log(orders)
                 data.push({
                     _id: agents[i]._id,
                     data: [
@@ -2144,7 +2143,6 @@ const resolvers = {
                 })
 
             }
-            console.log(data)
             return {
                 columns: ['агент', 'начало', 'конец'],
                 row: data

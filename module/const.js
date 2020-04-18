@@ -117,6 +117,7 @@ const pdHHMM = (date) =>
 
 module.exports.getGeoDistance = getGeoDistance;
 module.exports.checkInt = checkInt;
+module.exports.pdHHMM = pdHHMM;
 module.exports.pdDDMMYYYY = pdDDMMYYYY;
 module.exports.pdDDMMYYHHMM = pdDDMMYYHHMM;
 module.exports.skip = skip;
