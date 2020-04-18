@@ -962,8 +962,8 @@ const resolvers = {
                         invoice: [],
                         item: data[i].item.name
                     }
-                    if (!statistic[data[i].item._id].client.includes(data[i].client.toString())) {
-                        statistic[data[i].item._id].client.push(data[i].client.toString())
+                    if (!statistic[data[i].item._id].client.includes(data[i].client._id.toString())) {
+                        statistic[data[i].item._id].client.push(data[i].client._id.toString())
                     }
                     if (!statistic[data[i].item._id].invoice.includes(data[i].invoice.toString())) {
                         statistic[data[i].item._id].invoice.push(data[i].invoice.toString())
