@@ -962,11 +962,11 @@ const resolvers = {
                         invoice: [],
                         item: data[i].item.name
                     }
-                    if (!statistic[data[i].item._id].client.includes(data[i].client)) {
-                        statistic[data[i].item._id].client.push(data[i].client)
+                    if (!statistic[data[i].item._id].client.includes(data[i].client.toString())) {
+                        statistic[data[i].item._id].client.push(data[i].client.toString())
                     }
-                    if (!statistic[data[i].item._id].invoice.includes(data[i].invoice)) {
-                        statistic[data[i].item._id].invoice.push(data[i].invoice)
+                    if (!statistic[data[i].item._id].invoice.includes(data[i].invoice.toString())) {
+                        statistic[data[i].item._id].invoice.push(data[i].invoice.toString())
                     }
                 }
             }
@@ -1029,8 +1029,8 @@ const resolvers = {
                     ).lean()
                     clients = []
                     for(let i1=0; i1<orders.length; i1++) {
-                        if(!clients.includes(orders[i1].client))
-                            clients.push(orders[i1].client)
+                        if(!clients.includes(orders[i1].client.toString()))
+                            clients.push(orders[i1].client.toString())
                     }
                     allClients += clients.length
                     allOrders += orders.length
@@ -1059,8 +1059,8 @@ const resolvers = {
                     ).lean()
                     clients = []
                     for(let i1=0; i1<orders.length; i1++) {
-                        if(!clients.includes(orders[i1].client))
-                            clients.push(orders[i1].client)
+                        if(!clients.includes(orders[i1].client.toString()))
+                            clients.push(orders[i1].client.toString())
                     }
                     allClients += clients.length
                     allOrders += orders.length
@@ -1084,8 +1084,8 @@ const resolvers = {
                 ).lean()
                 clients = []
                 for(let i1=0; i1<orders.length; i1++) {
-                    if(!clients.includes(orders[i1].client))
-                        clients.push(orders[i1].client)
+                    if(!clients.includes(orders[i1].client.toString()))
+                        clients.push(orders[i1].client.toString())
                 }
                 allClients += clients.length
                 allOrders += orders.length
@@ -1179,12 +1179,12 @@ const resolvers = {
                             client: `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`
                         }
                     if (data[i].status === 'отмена') {
-                        if(!statistic[data[i].client._id].cancel.includes(data[i].invoice)) {
-                            statistic[data[i].client._id].cancel.push(data[i].invoice)
+                        if(!statistic[data[i].client._id].cancel.includes(data[i].invoice.toString())) {
+                            statistic[data[i].client._id].cancel.push(data[i].invoice.toString())
                         }
                     } else {
-                        if(!statistic[data[i].client._id].complet.includes(data[i].invoice)) {
-                            statistic[data[i].client._id].complet.push(data[i].invoice)
+                        if(!statistic[data[i].client._id].complet.includes(data[i].invoice.toString())) {
+                            statistic[data[i].client._id].complet.push(data[i].invoice.toString())
                         }
                         statistic[data[i].client._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
@@ -1305,8 +1305,8 @@ const resolvers = {
                         complet: [],
                         ads: data[i].ads.title
                     }
-                    if(!statistic[data[i].ads._id].complet.includes(data[i].invoice)) {
-                        statistic[data[i].ads._id].complet.push(data[i].invoice)
+                    if(!statistic[data[i].ads._id].complet.includes(data[i].invoice.toString())) {
+                        statistic[data[i].ads._id].complet.push(data[i].invoice.toString())
                     }
                     statistic[data[i].ads._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
                 }
@@ -1415,13 +1415,13 @@ const resolvers = {
                         item: data[i].item.name
                     }
                     if (data[i].status === 'отмена') {
-                        if (!statistic[data[i].item._id].cancel.includes(data[i].invoice)) {
-                            statistic[data[i].item._id].cancel.push(data[i].invoice)
+                        if (!statistic[data[i].item._id].cancel.includes(data[i].invoice.toString())) {
+                            statistic[data[i].item._id].cancel.push(data[i].invoice.toString())
                         }
                     }
                     else {
-                        if(!statistic[data[i].item._id].complet.includes(data[i].invoice)) {
-                            statistic[data[i].item._id].complet.push(data[i].invoice)
+                        if(!statistic[data[i].item._id].complet.includes(data[i].invoice.toString())) {
+                            statistic[data[i].item._id].complet.push(data[i].invoice.toString())
                         }
                         statistic[data[i].item._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
                         if (data[i].consignmentPrice) {
@@ -1540,13 +1540,13 @@ const resolvers = {
                             organization: data[i].organization.name
                         }
                         if (data[i].status === 'отмена') {
-                            if (!statistic[data[i].organization._id].cancel.includes(data[i].invoice)) {
-                                statistic[data[i].organization._id].cancel.push(data[i].invoice)
+                            if (!statistic[data[i].organization._id].cancel.includes(data[i].invoice.toString())) {
+                                statistic[data[i].organization._id].cancel.push(data[i].invoice.toString())
                             }
                         }
                         else {
-                            if(!statistic[data[i].organization._id].complet.includes(data[i].invoice)) {
-                                statistic[data[i].organization._id].complet.push(data[i].invoice)
+                            if(!statistic[data[i].organization._id].complet.includes(data[i].invoice.toString())) {
+                                statistic[data[i].organization._id].complet.push(data[i].invoice.toString())
                             }
                             statistic[data[i].organization._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
                             if (data[i].consignmentPrice) {
@@ -1597,13 +1597,13 @@ const resolvers = {
                     for(let i1=0; i1<data.length; i1++) {
                         if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                             if (data[i1].status === 'отмена') {
-                                if (!statistic[districts[i]._id].cancel.includes(data[i1].invoice)) {
-                                    statistic[districts[i]._id].cancel.push(data[i1].invoice)
+                                if (!statistic[districts[i]._id].cancel.includes(data[i1].invoice.toString())) {
+                                    statistic[districts[i]._id].cancel.push(data[i1].invoice.toString())
                                 }
                             }
                             else {
-                                if(!statistic[districts[i]._id].complet.includes(data[i1].invoice)) {
-                                    statistic[districts[i]._id].complet.push(data[i1].invoice)
+                                if(!statistic[districts[i]._id].complet.includes(data[i1].invoice.toString())) {
+                                    statistic[districts[i]._id].complet.push(data[i1].invoice.toString())
                                 }
                                 statistic[districts[i]._id].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
                                 if (data[i1].consignmentPrice) {
@@ -1651,13 +1651,13 @@ const resolvers = {
                 for(let i1=0; i1<data.length; i1++) {
                     if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                         if (data[i1].status === 'отмена') {
-                            if (!statistic['without'].cancel.includes(data[i1].invoice)) {
-                                statistic['without'].cancel.push(data[i1].invoice)
+                            if (!statistic['without'].cancel.includes(data[i1].invoice.toString())) {
+                                statistic['without'].cancel.push(data[i1].invoice.toString())
                             }
                         }
                         else {
-                            if(!statistic['without'].complet.includes(data[i1].invoice)) {
-                                statistic['without'].complet.push(data[i1].invoice)
+                            if(!statistic['without'].complet.includes(data[i1].invoice.toString())) {
+                                statistic['without'].complet.push(data[i1].invoice.toString())
                             }
                             statistic['without'].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
                             if (data[i1].consignmentPrice) {
@@ -1929,13 +1929,13 @@ const resolvers = {
                             organization: `${data[i].organization.name} ${type}`
                         }
                         if (data[i].status === 'отмена') {
-                            if (!statistic[id].cancel.includes(data[i].invoice)) {
-                                statistic[id].cancel.push(data[i].invoice)
+                            if (!statistic[id].cancel.includes(data[i].invoice.toString())) {
+                                statistic[id].cancel.push(data[i].invoice.toString())
                             }
                         }
                         else {
-                            if(!statistic[id].complet.includes(data[i].invoice)) {
-                                statistic[id].complet.push(data[i].invoice)
+                            if(!statistic[id].complet.includes(data[i].invoice.toString())) {
+                                statistic[id].complet.push(data[i].invoice.toString())
                             }
                             statistic[id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
                             if (data[i].consignmentPrice) {
@@ -1985,13 +1985,13 @@ const resolvers = {
                     for(let i1=0; i1<data.length; i1++) {
                         if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                             if (data[i1].status === 'отмена') {
-                                if (!statistic[agents[i]._id].cancel.includes(data[i1].invoice)) {
-                                    statistic[agents[i]._id].cancel.push(data[i1].invoice)
+                                if (!statistic[agents[i]._id].cancel.includes(data[i1].invoice.toString())) {
+                                    statistic[agents[i]._id].cancel.push(data[i1].invoice.toString())
                                 }
                             }
                             else {
-                                if(!statistic[agents[i]._id].complet.includes(data[i1].invoice)) {
-                                    statistic[agents[i]._id].complet.push(data[i1].invoice)
+                                if(!statistic[agents[i]._id].complet.includes(data[i1].invoice.toString())) {
+                                    statistic[agents[i]._id].complet.push(data[i1].invoice.toString())
                                 }
                                 statistic[agents[i]._id].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
                                 if (data[i1].consignmentPrice) {
@@ -2038,13 +2038,13 @@ const resolvers = {
                 for(let i1=0; i1<data.length; i1++) {
                     if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                         if (data[i1].status === 'отмена') {
-                            if (!statistic['without'].cancel.includes(data[i1].invoice)) {
-                                statistic['without'].cancel.push(data[i1].invoice)
+                            if (!statistic['without'].cancel.includes(data[i1].invoice.toString())) {
+                                statistic['without'].cancel.push(data[i1].invoice.toString())
                             }
                         }
                         else {
-                            if(!statistic['without'].complet.includes(data[i1].invoice)) {
-                                statistic['without'].complet.push(data[i1].invoice)
+                            if(!statistic['without'].complet.includes(data[i1].invoice.toString())) {
+                                statistic['without'].complet.push(data[i1].invoice.toString())
                             }
                             statistic['without'].profit += (data[i1].allPrice - data[i1].returned * (data[i1].allPrice/data[i1].count))
                             if (data[i1].consignmentPrice) {
