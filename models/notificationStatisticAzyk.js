@@ -8,6 +8,14 @@ const NotificationStatisticAzykSchema = mongoose.Schema({
     text: String,
     delivered: Number,
     failed: Number,
+    click: {
+        type: Number,
+        default: 0
+    },
+    ips: {
+        type: [String],
+        default: []
+    },
     who: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserAzyk'

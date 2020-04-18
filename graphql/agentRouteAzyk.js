@@ -41,7 +41,7 @@ const resolvers = {
             )
             return agentRoutes
         }
-        if('организация'===user.role) {
+        else if('организация'===user.role) {
             let agentRoutes = await AgentRouteAzyk.find({organization: organization})
                 .populate('district')
                 .populate('organization')

@@ -14,7 +14,7 @@ const randomstring = require('randomstring');
 const app = require('../app');
 const fs = require('fs');
 const path = require('path');
-const { urlMain, saveFile, deleteFile, weekDay, pdDDMMYYHHMM } = require('../module/const');
+const { urlMain, saveFile, deleteFile, weekDay, pdDDMMYYHHMM, pdHHMM } = require('../module/const');
 const readXlsxFile = require('read-excel-file/node');
 
 const type = `
@@ -46,11 +46,14 @@ const query = `
     unloadingClients(organization: ID!): Data
     statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticClientActivity(organization: ID, online: Boolean): Statistic
+    statisticItemActivity(organization: ID, online: Boolean): Statistic
+    statisticOrganizationActivity(organization: ID, online: Boolean): Statistic
     statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticAdss(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
+    statisticAgentsWorkTime(organization: String, date: Date): Statistic
     checkOrder(company: String, today: Date!): Statistic
     statisticOrderChart(company: String, dateStart: Date, dateType: String, type: String, online: Boolean): ChartStatisticAll
     activeItem(organization: ID!): [Item]
@@ -110,7 +113,7 @@ const resolvers = {
                     if(sortStatistic[keys[i]].length>1){
                         for (let i1 = 0; i1 < sortStatistic[keys[i]].length; i1++) {
                             statistic.push({
-                                _id: null, data: [
+                                _id: `${i}${i1}`, data: [
                                     sortStatistic[keys[i]][i1].guid,
                                     `${sortStatistic[keys[i]][i1].client.address && sortStatistic[keys[i]][i1].client.address[0] ? `${sortStatistic[keys[i]][i1].client.address[0][2] ? `${sortStatistic[keys[i]][i1].client.address[0][2]}, ` : ''}${sortStatistic[keys[i]][i1].client.address[0][0]}` : ''}`,
                                 ]
@@ -165,7 +168,7 @@ const resolvers = {
                         problem = market!==market1
                         if (problem) {
                             statistic.push({
-                                _id: null, data: [
+                                _id: i, data: [
                                     integrate1CAzyk.guid,
                                     //integrate1CAzyk.client.address[0][2],
                                     `${integrate1CAzyk.client.address && integrate1CAzyk.client.address[0] ? `${integrate1CAzyk.client.address[0][2] ? `${integrate1CAzyk.client.address[0][2]}, ` : ''}${integrate1CAzyk.client.address[0][0]}` : ''}`,
@@ -221,7 +224,7 @@ const resolvers = {
                 if(problem||data[i].sync!==2) {
                     if(problem)repeat+=1
                     if(data[i].sync!==2)noSync+=1
-                    statistic.push({_id: null, data: [
+                    statistic.push({_id: i, data: [
                         data[i].number,
                         `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`,
                         data[i].organization.name,
@@ -232,7 +235,7 @@ const resolvers = {
             }
             statistic = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         repeat,
                         noSync
@@ -808,9 +811,9 @@ const resolvers = {
             let statistic = {}
             let data = await InvoiceAzyk.find(
                 {
+                    agent: {$nin: agents},
                     taken: true,
                     del: {$ne: 'deleted'},
-                    agent: {$nin: agents},
                     ...(organization?{organization: organization}:{})
                 }
             ).distinct('client').lean()
@@ -883,7 +886,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         allActive,//0
                         todayActive,//1
@@ -903,6 +906,216 @@ const resolvers = {
                 columns: ['клиент', 'активность', 'заказ'],
                 row: data
             };
+        }
+    },
+    statisticItemActivity: async(parent, { online, organization } , {user}) => {
+        if(user.role==='admin'){
+            let dateEnd = new Date()
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd.setHours(3, 0, 0, 0)
+            let dateStart = new Date(dateEnd)
+            dateStart.setDate(dateStart.getDate() - 7)
+            let agents = []
+            let statistic = {}
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({
+                    user: {$in: agents},
+                    ...(organization?{organization: organization}:{})
+                }).distinct('_id').lean()
+            }
+            let data = await InvoiceAzyk.find(
+                {
+                    $and: [
+                        dateStart?{createdAt: {$gte: dateStart}}:{},
+                        dateEnd?{createdAt: {$lt: dateEnd}}:{}
+                    ],
+                    ...(organization?{organization: organization}:{}),
+                    del: {$ne: 'deleted'},
+                    taken: true,
+                    agent: {$nin: agents},
+                }
+            )
+                .populate({
+                    path: 'orders',
+                    populate : [
+                        {
+                            path : 'item'
+                        }
+                    ]
+                })
+                .populate({
+                    path: 'client'
+                })
+                .lean()
+            for(let i=0; i<data.length; i++) {
+                for(let ii=0; ii<data[i].orders.length; ii++) {
+                    data[i].orders[ii].invoice = data[i]._id
+                    data[i].orders[ii].client = data[i].client
+                }
+            }
+            data = data.reduce((acc, val) => acc.concat(val.orders), []);
+            for(let i=0; i<data.length; i++) {
+                if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
+                    if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
+                        client: [],
+                        invoice: [],
+                        item: data[i].item.name
+                    }
+                    if (!statistic[data[i].item._id].client.includes(data[i].client)) {
+                        statistic[data[i].item._id].client.push(data[i].client)
+                    }
+                    if (!statistic[data[i].item._id].invoice.includes(data[i].invoice)) {
+                        statistic[data[i].item._id].invoice.push(data[i].invoice)
+                    }
+                }
+            }
+            const keys = Object.keys(statistic)
+            data = []
+
+            for(let i=0; i<keys.length; i++){
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].item,
+                        statistic[keys[i]].client.length,
+                        statistic[keys[i]].invoice.length,
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[1] - a.data[1]
+            });
+            return {
+                columns: ['товар', 'клиентов', 'заказов'],
+                row: data
+            };
+        }
+    },
+    statisticOrganizationActivity: async(parent, { online, organization } , {user}) => {
+        if(user.role==='admin'){
+            let dateEnd = new Date()
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd.setHours(3, 0, 0, 0)
+            let dateStart = new Date(dateEnd)
+            dateStart.setDate(dateStart.getDate() - 7)
+            let agents = []
+            let data = []
+            let organizations
+            let districts
+            let withoutDistricts
+            let clients
+            let orders
+            let allClients=0
+            let allOrders=0
+            if(online){
+                agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
+                agents = await EmploymentAzyk.find({
+                    user: {$in: agents},
+                    ...(organization?{organization: organization}:{})
+                }).distinct('_id').lean()
+            }
+            if(!organization){
+                organizations = await OrganizationAzyk.find().lean()
+                for(let i=0; i<organizations.length; i++) {
+                    orders = await InvoiceAzyk.find(
+                        {
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
+                            organization: organizations[i]._id,
+                            agent: {$nin: agents},
+                            del: {$ne: 'deleted'},
+                            taken: true
+                        }
+                    ).lean()
+                    clients = []
+                    for(let i1=0; i1<orders.length; i1++) {
+                        if(!clients.includes(orders[i1].client))
+                            clients.push(orders[i1].client)
+                    }
+                    allClients += clients.length
+                    allOrders += orders.length
+                    data.push({
+                        _id: organizations[i]._id,
+                        data: [
+                            organizations[i].name,
+                            clients.length,
+                            orders.length
+                        ]
+                    })
+                }
+            }
+            else {
+                districts = await DistrictAzyk.find({organization: organization}).lean()
+                withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
+                for(let i=0; i<districts.length; i++) {
+                    orders = await InvoiceAzyk.find(
+                        {
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
+                            organization: organization,
+                            client: {$in: districts[i].client},
+                            agent: {$nin: agents},
+                            taken: true
+                        }
+                    ).lean()
+                    clients = []
+                    for(let i1=0; i1<orders.length; i1++) {
+                        if(!clients.includes(orders[i1].client))
+                            clients.push(orders[i1].client)
+                    }
+                    allClients += clients.length
+                    allOrders += orders.length
+                    data.push({
+                        _id: districts[i]._id,
+                        data: [
+                            districts[i].name,
+                            clients.length,
+                            orders.length
+                        ]
+                    })
+                }
+                orders = await InvoiceAzyk.find(
+                    {
+                        $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
+                        organization: organization,
+                        client: {$nin: withoutDistricts},
+                        agent: {$nin: agents},
+                        taken: true
+                    }
+                ).lean()
+                clients = []
+                for(let i1=0; i1<orders.length; i1++) {
+                    if(!clients.includes(orders[i1].client))
+                        clients.push(orders[i1].client)
+                }
+                allClients += clients.length
+                allOrders += orders.length
+                data.push({
+                    _id: 'Прочие',
+                    data: [
+                        'Прочие',
+                        clients.length,
+                        orders.length
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[1] - a.data[1]
+            });
+            data = [
+                {
+                    _id: 'Всего',
+                    data: [
+                        allClients,
+                        allOrders
+                    ]
+                },
+                ...data
+            ]
+            data = {
+                columns: [organization?'район':'организация', 'клиенты', 'заказы'],
+                row: data
+            }
+            return data;
         }
     },
     statisticClient: async(parent, { company, dateStart, dateType, online  }, {user}) => {
@@ -1009,7 +1222,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1021,7 +1234,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: ['клиент', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                columns: ['клиент', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
                 row: data
             };
         }
@@ -1121,7 +1334,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1131,7 +1344,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: ['акция', 'прибыль(сом)', 'выполнен(шт)'],
+                columns: ['акция', 'выручка(сом)', 'выполнен(шт)'],
                 row: data
             };
         }
@@ -1246,7 +1459,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1258,7 +1471,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: ['товар', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                columns: ['товар', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
                 row: data
             };
         }
@@ -1485,7 +1698,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1497,7 +1710,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: [company?'район':'организация', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                columns: [company?'район':'организация', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
                 row: data
             };
         }
@@ -1638,7 +1851,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1872,7 +2085,7 @@ const resolvers = {
             });
             data = [
                 {
-                    _id: null,
+                    _id: 'All',
                     data: [
                         data.length,
                         profitAll,
@@ -1884,7 +2097,56 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: [company?'агент':'агент', 'прибыль(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                columns: [company?'агент':'агент', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                row: data
+            };
+        }
+    },
+    statisticAgentsWorkTime: async(parent, { organization, date }, {user}) => {
+        if(user.role==='admin'){
+            let dateStart = date?new Date(date):new Date()
+            dateStart.setHours(3, 0, 0, 0)
+            let dateEnd = new Date(dateStart)
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            let data = []
+            let agents = await UserAzyk.find({
+                ...(organization!=='super'?
+                        {$or: [{role: 'агент'}, {role: 'суперагент'}]}
+                    :
+                        {role: 'суперагент'}
+                )
+            }).distinct('_id').lean()
+            agents = await EmploymentAzyk.find({
+                ...(organization&&organization!=='super'?{organization: organization}:{}),
+                user: {$in: agents},
+                del: {$ne: 'deleted'}
+            }).lean()
+            for (let i = 0; i < agents.length; i++) {
+                let orders = await InvoiceAzyk.find(
+                        {
+                            $and: [
+                                {createdAt: {$gte: dateStart}},
+                                {createdAt: {$lt: dateEnd}}
+                            ],
+                            del: {$ne: 'deleted'},
+                            taken: true,
+                            agent: agents[i]._id,
+                        }
+                    ).sort('createdAt').lean()
+                console.log(orders)
+                data.push({
+                    _id: agents[i]._id,
+                    data: [
+                        agents[i].name,
+                        orders.length>0?pdHHMM(orders[0].createdAt):'-',
+                        orders.length>0?pdHHMM(orders[orders.length-1].createdAt):'-'
+                    ]
+                })
+
+            }
+            console.log(data)
+            return {
+                columns: ['агент', 'начало', 'конец'],
                 row: data
             };
         }

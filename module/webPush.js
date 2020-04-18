@@ -10,8 +10,19 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
         message: message?message:message,
         url: url?url:'https://azyk.store',
         icon: icon?icon:'https://azyk.store/static/192x192.png',
-        tag: tag?tag:'AZYK.STORE',
+        tag: tag?tag:'AZYK.STORE'
     };
+    let _object = new NotificationStatisticAzyk({
+        tag: payload.tag,
+        url: payload.url,
+        icon: payload.icon,
+        title: payload.title,
+        text: payload.message,
+        delivered: 0,
+        failed: 0,
+    });
+    _object = await NotificationStatisticAzyk.create(_object)
+    payload._id = _object._id
     if(user==='all'){
         SubscriberAzyk.find({}, (err, subscriptions) => {
             if (err) {
@@ -77,16 +88,9 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                                 }
                             }
                         }
-                        let _object = new NotificationStatisticAzyk({
-                            tag: payload.tag,
-                            url: payload.url,
-                            icon: payload.icon,
-                            title: payload.title,
-                            text: payload.message,
-                            delivered: delivered,
-                            failed: failed,
-                        });
-                        await NotificationStatisticAzyk.create(_object)
+                        _object.delivered = delivered
+                        _object.failed = failed
+                        await _object.save()
                     } catch (err) {
                         console.error(err)
                     }
@@ -159,16 +163,9 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                                 }
                             }
                         }
-                        let _object = new NotificationStatisticAzyk({
-                            tag: payload.tag,
-                            url: payload.url,
-                            icon: payload.icon,
-                            title: payload.title,
-                            text: payload.message,
-                            delivered: delivered,
-                            failed: failed,
-                        });
-                        await NotificationStatisticAzyk.create(_object)
+                        _object.delivered = delivered
+                        _object.failed = failed
+                        await _object.save()
                     } catch (err) {
                         console.error(err)
                     }

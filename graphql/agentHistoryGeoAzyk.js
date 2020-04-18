@@ -27,8 +27,6 @@ const resolvers = {
         let dateEnd = new Date(dateStart)
         dateEnd.setDate(dateEnd.getDate() + 1)
         let data = []
-
-
         let agents = []
         if(!agent){
             agents = await EmploymentAzyk.find({organization: organization}).distinct('_id')
@@ -42,22 +40,47 @@ const resolvers = {
             .populate('agent')
             .sort('-createdAt')
             .lean()
-        for(let i=0; i<agentHistoryGeoAzyks.length; i++){
-            data.push({
-                _id: agentHistoryGeoAzyks[i]._id,
-                data: [
-                    pdDDMMYYHHMM(agentHistoryGeoAzyks[i].createdAt),
-                    `${agentHistoryGeoAzyks[i].client.name}${agentHistoryGeoAzyks[i].client.address&&agentHistoryGeoAzyks[i].client.address[0]?` (${agentHistoryGeoAzyks[i].client.address[0][2]?`${agentHistoryGeoAzyks[i].client.address[0][2]}, `:''}${agentHistoryGeoAzyks[i].client.address[0][0]})`:''}`,
-                    `${getGeoDistance(...(agentHistoryGeoAzyks[i].geo.split(', ')), ...(agentHistoryGeoAzyks[i].client.address[0][1].split(', ')))} м`,
-                    agentHistoryGeoAzyks[i].agent.name
-                ]
-            })
+        if(!agent){
+            let dataKey = {}
+            for(let i=0; i<agentHistoryGeoAzyks.length; i++){
+                if (!dataKey[agentHistoryGeoAzyks[i].agent._id])
+                    dataKey[agentHistoryGeoAzyks[i].agent._id] = {
+                        count: 0,
+                        name: agentHistoryGeoAzyks[i].agent.name
+                    }
+                dataKey[agentHistoryGeoAzyks[i].agent._id].count+=1
+            }
+            const keys = Object.keys(dataKey)
+            for(let i=0; i<keys.length; i++){
+                data.push({
+                    data: [
+                        dataKey[keys[i]].name,
+                        dataKey[keys[i]].count,
+                    ]
+                })
+            }
+            return {
+                columns: ['агент', 'посещений'],
+                row: data
+            };
         }
-        return {
-            columns: ['дата', 'клиент', 'растояние', 'агент'],
-            row: data
-        };
-
+        else {
+            for(let i=0; i<agentHistoryGeoAzyks.length; i++){
+                data.push({
+                    _id: agentHistoryGeoAzyks[i]._id,
+                    data: [
+                        pdDDMMYYHHMM(agentHistoryGeoAzyks[i].createdAt),
+                        `${agentHistoryGeoAzyks[i].client.name}${agentHistoryGeoAzyks[i].client.address&&agentHistoryGeoAzyks[i].client.address[0]?` (${agentHistoryGeoAzyks[i].client.address[0][2]?`${agentHistoryGeoAzyks[i].client.address[0][2]}, `:''}${agentHistoryGeoAzyks[i].client.address[0][0]})`:''}`,
+                        `${getGeoDistance(...(agentHistoryGeoAzyks[i].geo.split(', ')), ...(agentHistoryGeoAzyks[i].client.address[0][1].split(', ')))} м`,
+                        agentHistoryGeoAzyks[i].agent.name
+                    ]
+                })
+            }
+            return {
+                columns: ['дата', 'клиент', 'растояние', 'агент'],
+                row: data
+            };
+        }
     },
 };
 
