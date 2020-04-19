@@ -398,22 +398,20 @@ const resolvers = {
         let consignmentPayment = 0;
         let lengthList = 0;
         for(let i=0; i<invoices.length; i++){
-            if(!invoices[i].cancelClient&&!invoices[i].cancelForwarder) {
-                if (invoices[i].allPrice) {
-                    for(let i1=0; i1<invoices[i].orders.length;i1++){
-                        price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
-                    }
+            if (invoices[i].allPrice) {
+                for(let i1=0; i1<invoices[i].orders.length;i1++){
+                    price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
                 }
-                if (invoices[i].allSize)
-                    size += invoices[i].allSize
-                lengthList += 1
-                if (invoices[i].allTonnage)
-                    tonnage += invoices[i].allTonnage
-                if (invoices[i].consignmentPrice)
-                    consignment += invoices[i].consignmentPrice
-                if (invoices[i].paymentConsignation)
-                    consignmentPayment += invoices[i].consignmentPrice
             }
+            if (invoices[i].allSize)
+                size += invoices[i].allSize
+            lengthList += 1
+            if (invoices[i].allTonnage)
+                tonnage += invoices[i].allTonnage
+            if (invoices[i].consignmentPrice)
+                consignment += invoices[i].consignmentPrice
+            if (invoices[i].paymentConsignation)
+                consignmentPayment += invoices[i].consignmentPrice
         }
         return [lengthList.toString(), price.toString(), consignment.toString(), consignmentPayment.toString(), tonnage.toString(), size.toString()]
     },

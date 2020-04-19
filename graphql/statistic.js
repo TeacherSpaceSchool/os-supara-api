@@ -1006,7 +1006,7 @@ const resolvers = {
             let withoutDistricts
             let clients
             let orders
-            let allClients=0
+            let allClients=[]
             let allOrders=0
             if(online){
                 agents = await UserAzyk.find({role: 'агент'}).distinct('_id').lean()
@@ -1031,8 +1031,9 @@ const resolvers = {
                     for(let i1=0; i1<orders.length; i1++) {
                         if(!clients.includes(orders[i1].client.toString()))
                             clients.push(orders[i1].client.toString())
+                        if(!allClients.includes(orders[i1].client.toString()))
+                            allClients.push(orders[i1].client.toString())
                     }
-                    allClients += clients.length
                     allOrders += orders.length
                     data.push({
                         _id: organizations[i]._id,
@@ -1043,8 +1044,10 @@ const resolvers = {
                         ]
                     })
                 }
+                allClients = allClients.length
             }
             else {
+                allClients = 0
                 districts = await DistrictAzyk.find({organization: organization}).lean()
                 withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
