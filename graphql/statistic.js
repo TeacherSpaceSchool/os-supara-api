@@ -2154,7 +2154,7 @@ const resolvers = {
     },
     activeItem: async(parent, { organization }, {user}) => {
         if(user.role==='admin'){
-            let data = await InvoiceAzyk.find(
+            let data/* = await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
                         organization: organization,
@@ -2166,10 +2166,11 @@ const resolvers = {
                 {
                     _id: {$in: data},
                 }
-            ).distinct('item').lean()
+            ).distinct('item').lean()*/
             data = await ItemAzyk.find(
                 {
-                    _id: {$in: data}
+                    /*_id: {$in: data}*/
+                    organization: organization
                 }
             ).lean()
             return data;
@@ -2177,15 +2178,15 @@ const resolvers = {
     },
     activeOrganization: async(parent, ctx, {user}) => {
         if(user.role==='admin'){
-            let data = await InvoiceAzyk.find(
+            let data/* = await InvoiceAzyk.find(
                 {
                     del: {$ne: 'deleted'},
                     taken: true
                 }
-            ).distinct('organization').lean()
+            ).distinct('organization').lean()*/
             data = await OrganizationAzyk.find(
                 {
-                    _id: {$in: data}
+                    /*_id: {$in: data}*/
                 }
             ).lean()
             return data;
@@ -2193,7 +2194,7 @@ const resolvers = {
     },
     statisticClientGeo: async(parent, { organization, item }, {user}) => {
         if(user.role==='admin'){
-            let clients = await ClientAzyk.find({del: {$ne: 'deleted'}, organization: null}).lean()
+            let clients = await ClientAzyk.find({del: {$ne: 'deleted'}}).lean()
             let address = []
             let good = 0
             let excellent = 0

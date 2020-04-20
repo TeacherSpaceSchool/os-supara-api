@@ -45,6 +45,7 @@ const resolvers = {
             for(let i=0; i<agentHistoryGeoAzyks.length; i++){
                 if (!dataKey[agentHistoryGeoAzyks[i].agent._id])
                     dataKey[agentHistoryGeoAzyks[i].agent._id] = {
+                        _id: agentHistoryGeoAzyks[i].agent._id,
                         count: 0,
                         name: agentHistoryGeoAzyks[i].agent.name
                     }
@@ -53,6 +54,7 @@ const resolvers = {
             const keys = Object.keys(dataKey)
             for(let i=0; i<keys.length; i++){
                 data.push({
+                    _id: dataKey[keys[i]]._id,
                     data: [
                         dataKey[keys[i]].name,
                         dataKey[keys[i]].count,

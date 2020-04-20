@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { sendWebPush } = require('../module/webPush');
 const UserAzyk = require('../models/userAzyk');
-const SubscriberAzyk = require('../models/subscriberAzyk');
 const NotificationStatisticAzyk = require('../models/notificationStatisticAzyk');
 
 router.get('/admin', async (req, res) => {
@@ -22,11 +21,11 @@ router.get('/all', (req, res) => {
 });
 
 router.post('/clicknotification', async (req, res) => {
-    let ip = JSON.stringify(req.ip)
+    //let ip = JSON.stringify(req.ip)
     let object = await NotificationStatisticAzyk.findOne({_id: req.body.notification})
-    if(object&&!object.ips.includes(ip)){
+    if(object/*&&!object.ips.includes(ip)*/){
         object.click+=1
-        object.ips.push(ip)
+        //object.ips.push(ip)
         await object.save()
     }
 });
