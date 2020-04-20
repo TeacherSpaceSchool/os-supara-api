@@ -2214,22 +2214,13 @@ const resolvers = {
                         else {
                             let invoice
                             if(item){
-                                invoice = await InvoiceAzyk.find({
-                                    organization: organization,
+                                invoice = await OrderAzyk.findOne({
                                     client: clients[x]._id,
-                                    del: {$ne: 'deleted'},
-                                    taken: true})
-                                    .populate({
-                                        path: 'orders',
-                                        populate : {
-                                            path : 'item',
-                                            match: { _id: item },
-                                        }
-                                    })
+                                    status: {$ne: 'отмена'},
+                                    item: item
+                                })
                                     .sort('-createdAt')
                                     .lean()
-                                invoice = invoice.filter(invoice => invoice.orders.length>0&&invoice.orders[0].item)
-                                invoice = invoice[0]
                             }
                             else if(organization){
                                 invoice = await InvoiceAzyk.findOne({
@@ -2238,9 +2229,6 @@ const resolvers = {
                                     del: {$ne: 'deleted'},
                                     taken: true
                                 })
-                                    .populate({
-                                        path: 'orders',
-                                    })
                                     .sort('-createdAt')
                                     .lean()
 
@@ -2251,9 +2239,6 @@ const resolvers = {
                                     del: {$ne: 'deleted'},
                                     taken: true
                                 })
-                                    .populate({
-                                        path: 'orders',
-                                    })
                                     .sort('-createdAt')
                             }
                             if(invoice) {
