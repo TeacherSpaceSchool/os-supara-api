@@ -761,7 +761,7 @@ const resolvers = {
                     {
                         $match: {
                             del: {$ne: 'deleted'},
-                            //client: {$in: clients},
+                            client: {$in: clients},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
