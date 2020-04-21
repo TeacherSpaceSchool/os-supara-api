@@ -122,7 +122,7 @@ const resolvers = {
                     .count({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
-                        _id: {$in: clients},
+                        //_id: {$in: clients},
                         $or: [
                             {name: {'$regex': search, '$options': 'i'}},
                             {email: {'$regex': search, '$options': 'i'}},
@@ -428,7 +428,7 @@ const resolvers = {
                     .find({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
-                        _id: {$in: clients},
+                        //_id: {$in: clients},
                         $or: [
                             {name: {'$regex': search, '$options': 'i'}},
                             {email: {'$regex': search, '$options': 'i'}},

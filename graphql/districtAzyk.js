@@ -247,7 +247,7 @@ const resolversMutation = {
     },
     setDistrict: async(parent, {_id, client, ecspeditor, name, agent, manager}, {user}) => {
         let object = await DistrictAzyk.findById(_id)
-        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+        if(object&&['admin', 'организация', 'менеджер'].includes(user.role)){
             if(name)object.name = name
             if(client){
                 let objectAgentRouteAzyk = await AgentRouteAzyk.findOne({district: object._id})
@@ -268,6 +268,7 @@ const resolversMutation = {
             if(agent)object.agent = agent
             if(ecspeditor)object.ecspeditor = ecspeditor
             if(manager)object.manager = manager
+            console.log(object.name)
             await object.save();
         }
         return {data: 'OK'}
