@@ -36,12 +36,11 @@ const resolvers = {
             else {
                 agents = await UserAzyk.find({role: 'суперагент'}).distinct('_id')
                 agents = await EmploymentAzyk.find({user: {$in: agents}}).distinct('_id')
-
-            }
+             }
         }
 
         let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
-            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+            //$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
             ...(agent?{agent: agent}:{agent: {$in: agents}})
         })
             .populate('client')
@@ -119,12 +118,23 @@ const resolvers = {
 const resolversMutation = {
     addAgentHistoryGeo: async(parent, {client, geo}, {user}) => {
         if(['агент', 'суперагент'].includes(user.role)){
-            let _object = new AgentHistoryGeoAzyk({
-                agent: user.employment,
+            let dateStart = new Date()
+            dateStart.setHours(3, 0, 0, 0)
+            let dateEnd = new Date(dateStart)
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            let _object = await AgentHistoryGeoAzyk.findOne({
+                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
                 client: client,
-                geo: geo
+                agent: user.employment
             })
-            await AgentHistoryGeoAzyk.create(_object)
+            if(!_object) {
+                _object = new AgentHistoryGeoAzyk({
+                    agent: user.employment,
+                    client: client,
+                    geo: geo
+                })
+                await AgentHistoryGeoAzyk.create(_object)
+            }
         }
         return {data: 'OK'};
     },

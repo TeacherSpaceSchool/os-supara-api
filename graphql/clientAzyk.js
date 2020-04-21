@@ -115,10 +115,14 @@ const resolvers = {
         }
         else if(user.role==='суперагент'){
             if(search.length>2) {
-                let clients = await ClientAzyk
+                let clients = await DistrictAzyk
+                    .find({agent: user.employment})
+                    .distinct('client')
+                clients = await ClientAzyk
                     .count({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
+                        _id: {$in: clients},
                         $or: [
                             {name: {'$regex': search, '$options': 'i'}},
                             {email: {'$regex': search, '$options': 'i'}},
@@ -416,11 +420,15 @@ const resolvers = {
             return clients
         }
         else if(user.role==='суперагент'){
-            if(search.length>2) {
-                let clients = await ClientAzyk
+            if(skip != undefined||search.length>2) {
+                let clients = await DistrictAzyk
+                    .find({agent: user.employment})
+                    .distinct('client')
+                clients = await ClientAzyk
                     .find({
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
+                        _id: {$in: clients},
                         $or: [
                             {name: {'$regex': search, '$options': 'i'}},
                             {email: {'$regex': search, '$options': 'i'}},

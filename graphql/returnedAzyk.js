@@ -1032,6 +1032,9 @@ const resolvers = {
                 dateStart = new Date(dateEnd)
                 dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
+            let clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
             let returneds =  await ReturnedAzyk.aggregate(
                 [
                     {
@@ -1048,7 +1051,8 @@ const resolvers = {
                                         {distributer: {$in: _organizations}},
                                     ]
                                 }
-                                :{})
+                                :{}),
+                            client: {$in: clients},
                         }
                     },
                     { $sort : _sort },

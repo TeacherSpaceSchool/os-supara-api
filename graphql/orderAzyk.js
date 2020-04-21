@@ -753,11 +753,15 @@ const resolvers = {
                 dateStart = new Date(dateEnd)
                 dateStart = new Date(dateStart.setDate(dateStart.getDate() - 3))
             }
+            let clients = await DistrictAzyk
+                .find({agent: user.employment})
+                .distinct('client')
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
                         $match: {
                             del: {$ne: 'deleted'},
+                            client: {$in: clients},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),

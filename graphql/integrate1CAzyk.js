@@ -49,21 +49,28 @@ const resolvers = {
             let _employments;
             if(search.length>0){
                 _items = await ItemAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    name: {'$regex': search, '$options': 'i'},
+                    del: {$ne: 'deleted'},
+                    ...(organization==='super'?{organization: null}:{organization: organization})
                 }).distinct('_id')
                 _clients = await ClientAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}}
+                    ],
+                    del: {$ne: 'deleted'}
                 }).distinct('_id')
                 _employments = await EmploymentAzyk.find({
                     name: {'$regex': search, '$options': 'i'},
-                    del: {$ne: 'deleted'}
+                    del: {$ne: 'deleted'},
+                    ...(organization==='super'?{organization: null}:{organization: organization})
                 }).distinct('_id')
             }
             let integrate1Cs =  await Integrate1CAzyk.aggregate(
                 [
                     {
                         $match:{
-                            organization: new mongoose.Types.ObjectId(organization),
+                            ...(organization==='super'?{organization: null}:{organization: new mongoose.Types.ObjectId(organization)}),
                             ...(
                                 filter==='агент'?
                                     {agent: {$ne: null}}
@@ -109,12 +116,19 @@ const resolvers = {
             let _employments;
             if(search.length>0){
                 _items = await ItemAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
+                    name: {'$regex': search, '$options': 'i'},
+                    del: {$ne: 'deleted'}
                 }).distinct('_id')
                 _clients = await ClientAzyk.find({
-                    name: {'$regex': search, '$options': 'i'}
+                    $or: [
+                        {name: {'$regex': search, '$options': 'i'}},
+                        {address: {$elemMatch: {$elemMatch: {'$regex': search, '$options': 'i'}}}}
+                    ],
+                    del: {$ne: 'deleted'}
                 }).distinct('_id')
                 _employments = await EmploymentAzyk.find({
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
                     name: {'$regex': search, '$options': 'i'},
                     del: {$ne: 'deleted'}
                 }).distinct('_id')
@@ -123,7 +137,7 @@ const resolvers = {
                 [
                     {
                         $match:{
-                            organization: new mongoose.Types.ObjectId(organization),
+                            ...(organization==='super'?{organization: null}:{organization: new mongoose.Types.ObjectId(organization)}),
                             ...(
                                 filter==='агент'?
                                     {agent: {$ne: null}}
@@ -262,53 +276,58 @@ const resolvers = {
         else return null
     },
     ecspeditorsIntegrate1C: async(parent, {organization}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+        if(user.role==='admin') {
             let ecspeditors =  await Integrate1CAzyk
                 .find({
-                    organization: organization,
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
                     ecspeditor: {$ne: null}
                 })
                 .distinct('ecspeditor')
             ecspeditors = await EmploymentAzyk.find({
-                organization: organization,
+                ...(organization==='super'?{organization: null}:{organization: organization}),
                 _id: {$nin: ecspeditors},
                 del: {$ne: 'deleted'}
             })
-                .populate({path: 'user', match: {role: 'экспедитор', status: 'active'}})
+                .populate({path: 'user', match: {
+                    ...(organization==='super'?{role: 'суперэкспедитор'}:{role: 'экспедитор'}),
+                    status: 'active'}})
             ecspeditors = ecspeditors.filter(ecspeditor => (ecspeditor.user))
             return ecspeditors
         }
         else return []
     },
     agentsIntegrate1C: async(parent, {organization}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+        if(user.role==='admin') {
             let agents =  await Integrate1CAzyk
                 .find({
-                    organization: organization,
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
                     agent: {$ne: null}
                 })
                 .distinct('agent')
             agents = await EmploymentAzyk.find({
-                organization: organization,
+                ...(organization==='super'?{organization: null}:{organization: organization}),
                 _id: {$nin: agents},
                 del: {$ne: 'deleted'},
             })
-                .populate({path: 'user', match: {role: 'агент', status: 'active'}})
+                .populate({path: 'user', match: {
+                    ...(organization==='super'?{role: 'суперагент'}:{role: 'агент'}),
+                    status: 'active'}})
             agents = agents.filter(agent => (agent.user))
             return agents
         }
         else return []
     },
     clientsIntegrate1C: async(parent, {organization}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(organization)&&user.role==='admin') {
+        if(user.role==='admin') {
             let clients =  await Integrate1CAzyk
                 .find({
-                    organization: organization,
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
                     client: {$ne: null}
                 })
                 .distinct('client')
-            organization = await OrganizationAzyk.findOne({_id: organization})
-            if(organization.accessToClient)
+            if(organization!=='super')
+                organization = await OrganizationAzyk.findOne({_id: organization})
+            if(organization.accessToClient||organization==='super')
                 clients = await ClientAzyk.find({
                     _id: {$nin: clients},
                     del: {$ne: 'deleted'}
@@ -318,12 +337,10 @@ const resolvers = {
                 let items = await ItemAzyk.find({organization: user.organization}).distinct('_id')
                 let clients1 = await OrderAzyk.find({item: {$in: items}}).distinct('client')
                 clients = await ClientAzyk.find({
-                    $or: [
-                        {$and: [
-                            {_id: {$in: clients1}},
-                            {_id: { $nin: clients}}
-                        ]},
-                        {organization: user.organization}],
+                    $and: [
+                        {_id: {$in: clients1}},
+                        {_id: { $nin: clients}}
+                    ],
                     del: {$ne: 'deleted'}
                 }).populate({
                     path: 'user',
@@ -404,7 +421,7 @@ const resolversMutation = {
                 client: client,
                 agent: agent,
                 ecspeditor: ecspeditor,
-                organization: organization,
+                ...(organization==='super'?{organization: null}:{organization: organization}),
                 guid: guid,
             });
             _object = await Integrate1CAzyk.create(_object)
@@ -459,11 +476,11 @@ const resolversMutation = {
             let xlsxpath = path.join(app.dirname, 'public', filename);
             let rows = await readXlsxFile(xlsxpath)
             for(let i = 0;i<rows.length;i++){
-                if(mongoose.Types.ObjectId.isValid(rows[i][0])) {
+                if(mongoose.Types.ObjectId.isValid(rows[i][0])&&rows[i][1]&&rows[i][1].length>0) {
                     let client = await ClientAzyk.findOne({_id: rows[i][0]})
                     if (client) {
                         let integrate1CAzyk = await Integrate1CAzyk.findOne({
-                            organization: organization,
+                            ...(organization==='super'?{organization: null}:{organization: organization}),
                             client: client._id
                         })
                         if(integrate1CAzyk) {
@@ -476,7 +493,7 @@ const resolversMutation = {
                                 client: client._id,
                                 agent: null,
                                 ecspeditor: null,
-                                organization: organization,
+                                ...(organization==='super'?{organization: null}:{organization: organization}),
                                 guid: rows[i][1],
                             });
                             await Integrate1CAzyk.create(_object)

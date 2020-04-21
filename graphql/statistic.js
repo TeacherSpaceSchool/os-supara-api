@@ -6,6 +6,7 @@ const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const UserAzyk = require('../models/userAzyk');
 const AdsAzyk = require('../models/adsAzyk');
@@ -44,6 +45,10 @@ const type = `
 const query = `
     unloadingOrders(organization: ID!, dateStart: Date!): Data
     unloadingClients(organization: ID!): Data
+    unloadingEmployments(organization: ID!): Data
+    unloadingDistricts(organization: ID!): Data
+    unloadingAgentRoutes(organization: ID!): Data
+    unloadingAdsOrders(organization: ID!, dateStart: Date!): Data
     statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticClientActivity(organization: ID, online: Boolean): Statistic
     statisticItemActivity(organization: ID, online: Boolean): Statistic
@@ -60,12 +65,12 @@ const query = `
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
     checkIntegrateClient(organization: ID, type: String, document: Upload): Statistic
-    unloadingAdsOrders(organization: ID!, dateStart: Date!): Data
 `;
 
 const mutation = `
     uploadingClients(document: Upload!, organization: ID!): Data
     uploadingDistricts(document: Upload!, organization: ID!): Data
+    uploadingAgentRoute(document: Upload!, agentRoute: ID!, ): Data
    `;
 
 const resolvers = {
@@ -2556,7 +2561,9 @@ const resolvers = {
             worksheet.getCell('E1').value = 'Телефон';
             for(let i = 0; i<data.length;i++){
                 let GUID = ''
-                let findGUID = await Integrate1CAzyk.findOne({organization: organization!=='super'?organization:undefined, client: data[i]._id})
+                let findGUID = await Integrate1CAzyk.findOne({
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
+                    client: data[i]._id})
                 if(findGUID)
                     GUID = findGUID.guid
                 worksheet.addRow([
@@ -2567,23 +2574,286 @@ const resolvers = {
                     data[i].phone.reduce((accumulator, currentValue, index) => accumulator + `${index!==0?', ':''}${currentValue}`, '')
                 ]);
             }
-            if(organization==='super'){
-                let employments = await UserAzyk.find({role: {'$regex': 'супер', '$options': 'i'}}).lean()
-                    .distinct('_id')
-                employments = await EmploymentAzyk.find({user: {$in: employments},
-                    del: {$ne: 'deleted'}}).lean()
-                worksheet = await workbook.addWorksheet('Агенты');
+
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingEmployments: async(parent, { organization }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let data = await EmploymentAzyk.find(
+                {
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
+                    ...{del: {$ne: 'deleted'}}
+                }
+            ).populate('user').lean()
+            let worksheet;
+            worksheet = await workbook.addWorksheet('Сотрудники');
+            worksheet.getColumn(1).width = 30;
+            worksheet.getCell('A1').font = {bold: true, size: 14};
+            worksheet.getCell('A1').value = 'ID';
+            worksheet.getColumn(2).width = 30;
+            worksheet.getCell('B1').font = {bold: true, size: 14};
+            worksheet.getCell('B1').value = 'GUID';
+            worksheet.getColumn(3).width = 30;
+            worksheet.getCell('C1').font = {bold: true, size: 14};
+            worksheet.getCell('C1').value = 'Имя';
+            worksheet.getColumn(4).width = 30;
+            worksheet.getCell('C1').font = {bold: true, size: 14};
+            worksheet.getCell('C1').value = 'Роль';
+            worksheet.getColumn(4).width = 30;
+            worksheet.getCell('E1').font = {bold: true, size: 14};
+            worksheet.getCell('E1').value = 'Телефон';
+            for(let i = 0; i<data.length;i++){
+                let GUID = ''
+                let findGUID = await Integrate1CAzyk.findOne({
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
+                    $or: [
+                        {agent: data[i]._id},
+                        {ecspeditor: data[i]._id},
+                        {manager: data[i]._id},
+                    ]
+                })
+                if(findGUID)
+                    GUID = findGUID.guid
+                worksheet.addRow([
+                    data[i]._id.toString(),
+                    GUID,
+                    data[i].name,
+                    data[i].user.role,
+                    data[i].phone.reduce((accumulator, currentValue, index) => accumulator + `${index!==0?', ':''}${currentValue}`, '')
+                ]);
+            }
+
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingDistricts: async(parent, { organization }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let data = await DistrictAzyk.find(
+                {
+                    ...(organization==='super'?{organization: null}:{organization: organization})
+                }
+            ).populate('client').lean()
+            let worksheet;
+            for(let i = 0; i<data.length;i++){
+                worksheet = await workbook.addWorksheet(data[i].name);
                 worksheet.getColumn(1).width = 30;
                 worksheet.getCell('A1').font = {bold: true, size: 14};
                 worksheet.getCell('A1').value = 'ID';
                 worksheet.getColumn(2).width = 30;
                 worksheet.getCell('B1').font = {bold: true, size: 14};
-                worksheet.getCell('B1').value = 'Имя';
-                for(let i = 0; i<employments.length;i++){
+                worksheet.getCell('B1').value = 'GUID';
+                worksheet.getColumn(3).width = 30;
+                worksheet.getCell('C1').font = {bold: true, size: 14};
+                worksheet.getCell('C1').value = 'Магазин';
+                worksheet.getColumn(4).width = 30;
+                worksheet.getCell('D1').font = {bold: true, size: 14};
+                worksheet.getCell('D1').value = 'Адрес';
+                worksheet.getColumn(5).width = 30;
+                worksheet.getCell('E1').font = {bold: true, size: 14};
+                worksheet.getCell('E1').value = 'Телефон';
+
+                for(let i1 = 0; i1<data[i].client.length;i1++){
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].client[i1]._id})
+                    if(findGUID)
+                        GUID = findGUID.guid
                     worksheet.addRow([
-                        employments[i]._id.toString(),
-                        employments[i].name
+                        data[i].client[i1]._id.toString(),
+                        GUID,
+                        data[i].client[i1].address[0][2],
+                        data[i].client[i1].address[0][0],
+                        data[i].client[i1].phone.reduce((accumulator, currentValue, index) => accumulator + `${index!==0?', ':''}${currentValue}`, '')
                     ]);
+                }
+            }
+
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingAgentRoutes: async(parent, { organization }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let data = await AgentRouteAzyk.find(
+                {
+                    ...(organization==='super'?{organization: null}:{organization: organization})
+                }
+            ).lean()
+            let worksheet;
+            for(let i = 0; i<data.length;i++){
+                worksheet = await workbook.addWorksheet(data[i].name);
+                worksheet.getColumn(1).width = 30;
+                worksheet.getCell('A1').font = {bold: true, size: 14};
+                worksheet.getCell('A1').value = 'ID';
+                worksheet.getColumn(2).width = 30;
+                worksheet.getCell('B1').font = {bold: true, size: 14};
+                worksheet.getCell('B1').value = 'GUID';
+                worksheet.getColumn(3).width = 30;
+                worksheet.getCell('C1').font = {bold: true, size: 14};
+                worksheet.getCell('C1').value = 'Магазин';
+                worksheet.getColumn(5).width = 30;
+                worksheet.getCell('E1').font = {bold: true, size: 14};
+                worksheet.getCell('E1').value = 'ID';
+                worksheet.getColumn(6).width = 30;
+                worksheet.getCell('F1').font = {bold: true, size: 14};
+                worksheet.getCell('F1').value = 'GUID';
+                worksheet.getColumn(7).width = 30;
+                worksheet.getCell('G1').font = {bold: true, size: 14};
+                worksheet.getCell('G1').value = 'Магазин';
+                worksheet.getColumn(9).width = 30;
+                worksheet.getCell('I1').font = {bold: true, size: 14};
+                worksheet.getCell('I1').value = 'ID';
+                worksheet.getColumn(10).width = 30;
+                worksheet.getCell('J1').font = {bold: true, size: 14};
+                worksheet.getCell('J1').value = 'GUID';
+                worksheet.getColumn(11).width = 30;
+                worksheet.getCell('K1').font = {bold: true, size: 14};
+                worksheet.getCell('K1').value = 'Магазин';
+                worksheet.getColumn(13).width = 30;
+                worksheet.getCell('M1').font = {bold: true, size: 14};
+                worksheet.getCell('M1').value = 'ID';
+                worksheet.getColumn(14).width = 30;
+                worksheet.getCell('N1').font = {bold: true, size: 14};
+                worksheet.getCell('N1').value = 'GUID';
+                worksheet.getColumn(15).width = 30;
+                worksheet.getCell('O1').font = {bold: true, size: 14};
+                worksheet.getCell('O1').value = 'Магазин';
+                worksheet.getColumn(17).width = 30;
+                worksheet.getCell('Q1').font = {bold: true, size: 14};
+                worksheet.getCell('Q1').value = 'ID';
+                worksheet.getColumn(18).width = 30;
+                worksheet.getCell('R1').font = {bold: true, size: 14};
+                worksheet.getCell('R1').value = 'GUID';
+                worksheet.getColumn(19).width = 30;
+                worksheet.getCell('S1').font = {bold: true, size: 14};
+                worksheet.getCell('S1').value = 'Магазин';
+                worksheet.getColumn(21).width = 30;
+                worksheet.getCell('U1').font = {bold: true, size: 14};
+                worksheet.getCell('U1').value = 'ID';
+                worksheet.getColumn(22).width = 30;
+                worksheet.getCell('V1').font = {bold: true, size: 14};
+                worksheet.getCell('V1').value = 'GUID';
+                worksheet.getColumn(23).width = 30;
+                worksheet.getCell('W1').font = {bold: true, size: 14};
+                worksheet.getCell('W1').value = 'Магазин';
+                worksheet.getColumn(25).width = 30;
+                worksheet.getCell('Y1').font = {bold: true, size: 14};
+                worksheet.getCell('Y1').value = 'ID';
+                worksheet.getColumn(26).width = 30;
+                worksheet.getCell('Z1').font = {bold: true, size: 14};
+                worksheet.getCell('Z1').value = 'GUID';
+                worksheet.getColumn(27).width = 30;
+                worksheet.getCell('AA1').font = {bold: true, size: 14};
+                worksheet.getCell('AA1').value = 'Магазин';
+                for(let i1 = 0; i1<data[i].clients[0].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[0][i1]}).populate('client')
+                    worksheet.getCell(`A${i1 + 2}`).value = data[i].clients[0][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`B${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`C${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[1].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[1][i1]}).populate('client')
+                    worksheet.getCell(`E${i1 + 2}`).value = data[i].clients[1][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`F${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`G${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[2].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[2][i1]}).populate('client')
+                    worksheet.getCell(`I${i1 + 2}`).value = data[i].clients[2][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`J${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`K${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[3].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[3][i1]}).populate('client')
+                    worksheet.getCell(`M${i1 + 2}`).value = data[i].clients[3][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`N${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`O${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[4].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[4][i1]}).populate('client')
+                    worksheet.getCell(`Q${i1 + 2}`).value = data[i].clients[4][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`Q${i1 + 2}`).value = findGUID.client._id;
+                        worksheet.getCell(`R${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`S${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[5].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[5][i1]}).populate('client')
+                    worksheet.getCell(`U${i1 + 2}`).value = data[i].clients[5][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`V${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`W${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
+                }
+                for(let i1 = 0; i1<data[i].clients[6].length;i1++) {
+                    let GUID = ''
+                    let findGUID = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        client: data[i].clients[6][i1]}).populate('client')
+                    worksheet.getCell(`Y${i1 + 2}`).value = data[i].clients[6][i1].toString();
+                    if(findGUID) {
+                        GUID = findGUID.guid
+                        worksheet.getCell(`Z${i1 + 2}`).value = GUID;
+                        worksheet.getCell(`AA${i1 + 2}`).value = findGUID.client.address[0][2];
+                    }
                 }
             }
 
@@ -2643,6 +2913,87 @@ const resolversMutation = {
             return ({data: 'OK'})
         }
     },
+    uploadingAgentRoute: async(parent, { document, agentRoute }, {user}) => {
+        if (user.role === 'admin') {
+            let {stream, filename} = await document;
+            filename = await saveFile(stream, filename);
+            let xlsxpath = path.join(app.dirname, 'public', filename);
+            let rows = await readXlsxFile(xlsxpath)
+            agentRoute = await AgentRouteAzyk.findOne({_id: agentRoute})
+            let integrate1CAzyk
+            if(agentRoute){
+                agentRoute.clients = [[],[],[],[],[],[],[]]
+                for (let i = 0; i < rows.length; i++) {
+                    if(rows[i][0]&&rows[i][0].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][0]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[0].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][1]&&rows[i][1].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][1]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[1].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][2]&&rows[i][2].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][2]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[2].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][3]&&rows[i][3].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][3]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[3].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][4]&&rows[i][4].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][4]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[4].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][5]&&rows[i][5].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][5]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[5].push(integrate1CAzyk.client)
+                        }
+                    }
+                    if(rows[i][6]&&rows[i][6].length>0){
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            organization: agentRoute.organization,
+                            guid: rows[i][6]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            agentRoute.clients[6].push(integrate1CAzyk.client)
+                        }
+                    }
+                }
+                agentRoute.save()
+            }
+            await deleteFile(filename)
+            return ({data: 'OK'})
+        }
+    },
     uploadingDistricts: async(parent, { document, organization }, {user}) => {
         if (user.role === 'admin') {
             let {stream, filename} = await document;
@@ -2654,34 +3005,17 @@ const resolversMutation = {
             let integrate1CAzyk
             for (let i = 0; i < rows.length; i++) {
                 if(!findEmployments[rows[i][0]]||!districts[findEmployments[rows[i][0]]]){
-                    if(organization!=='super') {
-                        integrate1CAzyk = await Integrate1CAzyk.findOne({
-                            organization: organization,
-                            guid: rows[i][0]
-                        })
-                        if (integrate1CAzyk && integrate1CAzyk.agent) {
-                            findEmployments[rows[i][0]] = integrate1CAzyk.agent
-                            districts[findEmployments[rows[i][0]]] = []
-                        }
-                    }
-                    else {
-                        findEmployments[rows[i][0]] = rows[i][0]
+                    integrate1CAzyk = await Integrate1CAzyk.findOne({
+                        ...(organization==='super'?{organization: null}:{organization: organization}),
+                        guid: rows[i][0]
+                    })
+                    if (integrate1CAzyk && integrate1CAzyk.agent) {
+                        findEmployments[rows[i][0]] = integrate1CAzyk.agent
                         districts[findEmployments[rows[i][0]]] = []
                     }
                 }
                 if(findEmployments[rows[i][0]]&&districts[findEmployments[rows[i][0]]]) {
-                    if(organization!=='super') {
-                        integrate1CAzyk = await Integrate1CAzyk.findOne({
-                            organization: organization,
-                            guid: rows[i][1]
-                        })
-                        if(integrate1CAzyk&&integrate1CAzyk.client) {
-                            districts[findEmployments[rows[i][0]]].push(integrate1CAzyk.client)
-                        }
-                    }
-                    else {
-                        districts[findEmployments[rows[i][0]]].push(rows[i][1])
-                    }
+                    districts[findEmployments[rows[i][0]]].push(rows[i][1])
 
                 }
             }
@@ -2689,15 +3023,20 @@ const resolversMutation = {
             let district;
             for (let i = 0; i < keys1.length; i++) {
                 district = await DistrictAzyk.findOne({
-                    organization: organization!=='super'?organization:undefined,
+                    ...(organization==='super'?{organization: null}:{organization: organization}),
                     agent: keys1[i]
                 })
                 if(district) {
-                    district.client = districts[keys1[i]]
-                    /*for (let i1 = 0; i1 < districts[keys1[i]].length; i1++) {
-                        if(!district.client.includes(districts[keys1[i]][i1]))
-                            district.client.push(districts[keys1[i]][i1])
-                    }*/
+                    district.client = []
+                    for (let i1 = 0; i1 < districts[keys1[i]].length; i1++) {
+                        integrate1CAzyk = await Integrate1CAzyk.findOne({
+                            ...(organization==='super'?{organization: null}:{organization: organization}),
+                            guid: districts[keys1[i]][i1]
+                        })
+                        if (integrate1CAzyk && integrate1CAzyk.client) {
+                            district.client.push(integrate1CAzyk.client)
+                        }
+                    }
                     await district.save()
                 }
             }

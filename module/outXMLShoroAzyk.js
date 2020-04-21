@@ -47,7 +47,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                 let guidEcspeditor = await Integrate1CAzyk
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
-                    let date = new Date()
+                    let date = new Date(returned.createdAt)
                     if(date.getHours()>3)
                         date.setDate(date.getDate() + 1)
                     if(date.getDay()===0)
@@ -115,7 +115,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                 let guidEcspeditor = await Integrate1CAzyk
                     .findOne({ecspeditor: district.ecspeditor})
                 if (guidAgent && guidEcspeditor) {
-                    let date = new Date()
+                    let date = new Date(invoice.createdAt)
                     if(date.getHours()>3)
                         date.setDate(date.getDate() + 1)
                     if(date.getDay()===0)
