@@ -2380,6 +2380,7 @@ const resolvers = {
 
 const resolversMutation = {
     addOrders: async(parent, {info, paymentMethod, address, organization, usedBonus, client, noSplit}, {user}) => {
+        console.time('order')
         if(user.client)
             client = user.client
         let baskets = await BasketAzyk.find(
@@ -2400,16 +2401,16 @@ const resolversMutation = {
             dateStart.setHours(3, 0, 0, 0)
             let dateEnd = new Date(dateStart)
             dateEnd.setDate(dateEnd.getDate() + 1)
-            let distributers = await DistributerAzyk.find({
-                organizations: organization
-            })
-                .lean()
             let superDistrict = await DistrictAzyk.findOne({
                 organization: null,
                 client: client
             })
                 .lean()
             let district = null;
+            let distributers = await DistributerAzyk.find({
+                organizations: organization
+            })
+                .lean()
             if(distributers.length>0){
                 for(let i=0; i<distributers.length; i++){
                     district = await DistrictAzyk.findOne({
@@ -2501,7 +2502,6 @@ const resolversMutation = {
                 if(usedBonus>0) {
                     objectInvoice.allPrice -= usedBonus
                     objectInvoice.usedBonus = usedBonus
-                    usedBonus = 0
                 }
                 objectInvoice = await InvoiceAzyk.create(objectInvoice);
             }
@@ -2546,7 +2546,9 @@ const resolversMutation = {
                 objectInvoice.confirmationClient = false
                 objectInvoice.taken = false
                 objectInvoice.sync = 0
-                objectInvoice.orders = objectInvoice.orders.map(order=>order._id)
+                for(let ii=0; ii<objectInvoice.orders.length;ii++) {
+                    objectInvoice.orders[ii] = objectInvoice.orders[ii]._id
+                }
                 let editor
                 if(user.role==='admin'){
                     editor = 'админ'
@@ -2562,14 +2564,6 @@ const resolversMutation = {
                 await objectInvoice.save();
                 let objectHistoryOrder = new HistoryOrderAzyk({
                     invoice: objectInvoice._id,
-                    orders: objectInvoice.orders.map(order=>{
-                        return {
-                            item: order.name,
-                            count: order.count,
-                            consignment: order.consignment,
-                            returned: order.returned
-                        }
-                    }),
                     editor: editor,
                 });
                 await HistoryOrderAzyk.create(objectHistoryOrder);
@@ -2601,6 +2595,7 @@ const resolversMutation = {
             }
             await BasketAzyk.deleteMany({_id: {$in: baskets.map(element=>element._id)}})
         }
+        console.timeEnd('order')
         return {data: 'OK'};
     },
     deleteOrders: async(parent, {_id}, {user}) => {
