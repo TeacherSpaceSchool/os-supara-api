@@ -2390,7 +2390,8 @@ const resolversMutation = {
             .populate({
                 path: 'item',
                 match: {organization: organization}
-            });
+            })
+            .lean();
         baskets = baskets.filter(basket => (basket.item))
         if(baskets.length>0){
             let dateStart = new Date()
@@ -2402,28 +2403,28 @@ const resolversMutation = {
             let distributers = await DistributerAzyk.find({
                 organizations: organization
             })
+                .lean()
             let superDistrict = await DistrictAzyk.findOne({
                 organization: null,
                 client: client
             })
+                .lean()
             let district = null;
             if(distributers.length>0){
                 for(let i=0; i<distributers.length; i++){
-                    let findDistrict = await DistrictAzyk.findOne({
+                    district = await DistrictAzyk.findOne({
                         organization: distributers[i].distributer,
                         client: client
                     })
-                    if(findDistrict)
-                        district = findDistrict
+                        .lean()
                 }
             }
             if(!district) {
-                let findDistrict = await DistrictAzyk.findOne({
+                district = await DistrictAzyk.findOne({
                     organization: organization,
                     client: client
                 })
-                if(findDistrict)
-                    district = findDistrict
+                    .lean()
             }
             let objectInvoice;
             if(!noSplit)
@@ -2434,10 +2435,12 @@ const resolversMutation = {
                     del: {$ne: 'deleted'},
                     cancelClient: null,
                     cancelForwarder: null
-                }).populate('client').sort('-createdAt')
+                })
+                    .populate('client')
+                    .sort('-createdAt')
             if(!objectInvoice){
                 if(usedBonus){
-                    let bonus = await BonusAzyk.findOne({organization: organization});
+                    let bonus = await BonusAzyk.findOne({organization: organization}).lean();
                     let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
                     usedBonus = bonusClient.addedBonus;
                     bonusClient.addedBonus = 0
@@ -2463,7 +2466,7 @@ const resolversMutation = {
                     orders.push(objectOrder);
                 }
                 let number = randomstring.generate({length: 12, charset: 'numeric'});
-                while (await InvoiceAzyk.findOne({number: number}))
+                while (await InvoiceAzyk.findOne({number: number}).lean())
                     number = randomstring.generate({length: 12, charset: 'numeric'});
                 let allPrice = 0
                 let allTonnage = 0
@@ -2552,7 +2555,7 @@ const resolversMutation = {
                     editor = `клиент ${objectInvoice.client.name}`
                 }
                 else{
-                    let employment = await EmploymentAzyk.findOne({user: user._id})
+                    let employment = await EmploymentAzyk.findOne({user: user._id}).lean()
                     editor = `${user.role} ${employment.name}`
                 }
                 objectInvoice.editor = editor
@@ -2577,6 +2580,7 @@ const resolversMutation = {
                 .populate({path: 'agent'})
                 .populate({path: 'distributer'})
                 .populate({path: 'forwarder'})
+                .lean()
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                 who: user.role==='admin'?null:user._id,
                 agent: district?district.agent:undefined,

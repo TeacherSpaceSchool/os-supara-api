@@ -205,6 +205,9 @@ const resolvers = {
             )
                 .populate({path: 'district', populate: [{path: 'client', populate: [{path: 'user'}]}]})
                 .lean()
+            console.log(
+                data.clients[0][1].toString()==data.district.client[0]._id.toString(),
+                data.clients[0].includes(data.district.client[0]._id.toString()))
             for(let i=0; i<data.district.client.length; i++) {
                 if(
                     data.district.client[i].user.status==='active'&&(
