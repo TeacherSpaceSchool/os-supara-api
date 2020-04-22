@@ -207,14 +207,15 @@ const resolvers = {
                 .lean()
             for(let i=0; i<data.district.client.length; i++) {
                 if(
-                    data.district.client[i].user.status==='active'&&
-                    !data.clients[0].includes(data.district.client[i]._id)&&
-                    !data.clients[1].includes(data.district.client[i]._id)&&
-                    !data.clients[2].includes(data.district.client[i]._id)&&
-                    !data.clients[3].includes(data.district.client[i]._id)&&
-                    !data.clients[4].includes(data.district.client[i]._id)&&
-                    !data.clients[5].includes(data.district.client[i]._id)&&
-                    !data.clients[6].includes(data.district.client[i]._id)
+                    data.district.client[i].user.status==='active'&&(
+                        !data.clients[0].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[1].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[2].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[3].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[4].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[5].toString().includes(data.district.client[i]._id)&&
+                        !data.clients[6].toString().includes(data.district.client[i]._id)
+                    )
                 ){
                     problem.push(
                         {
