@@ -17,6 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const { urlMain, saveFile, deleteFile, weekDay, pdDDMMYYHHMM, pdHHMM } = require('../module/const');
 const readXlsxFile = require('read-excel-file/node');
+const AgentHistoryGeoAzyk = require('../models/agentHistoryGeoAzyk');
 
 const type = `
     type Statistic {
@@ -48,6 +49,7 @@ const query = `
     unloadingEmployments(organization: ID!): Data
     unloadingDistricts(organization: ID!): Data
     unloadingAgentRoutes(organization: ID!): Data
+    checkAgentRoute(agentRoute: ID!): Statistic
     unloadingAdsOrders(organization: ID!, dateStart: Date!): Data
     statisticClient(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticClientActivity(organization: ID, online: Boolean): Statistic
@@ -64,6 +66,7 @@ const query = `
     activeItem(organization: ID!): [Item]
     activeOrganization: [Organization]
     statisticClientGeo(organization: ID, item: ID): [GeoStatistic]
+    statisticDevice: Statistic
     checkIntegrateClient(organization: ID, type: String, document: Upload): Statistic
 `;
 
@@ -190,6 +193,44 @@ const resolvers = {
                 };
 
             }
+        }
+    },
+    checkAgentRoute: async(parent, { agentRoute }, {user}) => {
+        if(user.role==='admin'){
+            let problem = []
+            let data = await AgentRouteAzyk.findOne(
+                {
+                    _id: agentRoute
+                }
+            )
+                .populate({path: 'district', populate: {path: 'client'}})
+                .lean()
+            for(let i=0; i<data.district.client.length; i++) {
+                if(
+                    !data.clients[0].includes(data.district.client[i]._id)&&
+                    !data.clients[1].includes(data.district.client[i]._id)&&
+                    !data.clients[2].includes(data.district.client[i]._id)&&
+                    !data.clients[3].includes(data.district.client[i]._id)&&
+                    !data.clients[4].includes(data.district.client[i]._id)&&
+                    !data.clients[5].includes(data.district.client[i]._id)&&
+                    !data.clients[6].includes(data.district.client[i]._id)
+                ){
+                    console.log(data.district.client[i])
+                    problem.push(
+                        {
+                            _id: data.district.client[i]._id,
+                            data: [
+                                data.district.client[i].name,
+                                data.district.client[i].address[0][2],
+                                data.district.client[i].address[0][0]
+                            ]
+                        })
+                }
+            }
+            return {
+                columns: ['клиент', 'магазин', 'адресс'],
+                row: problem
+            };
         }
     },
     checkOrder: async(parent, { company, today }, {user}) => {
@@ -2140,19 +2181,29 @@ const resolvers = {
                             taken: true,
                             agent: agents[i]._id,
                         }
-                    ).sort('createdAt').lean()
+                    )
+                    .sort('createdAt')
+                    .lean()
+                let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
+                    $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                    agent: agents[i]._id
+                })
+                    .lean()
                 data.push({
                     _id: agents[i]._id,
                     data: [
                         agents[i].name,
                         orders.length>0?pdHHMM(orders[0].createdAt):'-',
-                        orders.length>0?pdHHMM(orders[orders.length-1].createdAt):'-'
+                        orders.length>0?pdHHMM(orders[orders.length-1].createdAt):'-',
+                        orders.length,
+                        agentHistoryGeoAzyks.length
+
                     ]
                 })
 
             }
             return {
-                columns: ['агент', 'начало', 'конец'],
+                columns: ['агент', 'начало', 'конец', 'заказов', 'посещений'],
                 row: data
             };
         }

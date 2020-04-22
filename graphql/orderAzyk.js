@@ -84,6 +84,7 @@ const type = `
     who: ID
     client: ID
     agent: ID
+    superagent: ID
     manager: ID
     organization: ID
     invoice: Invoice
@@ -499,6 +500,7 @@ const resolvers = {
             }).distinct('_id').lean()
         }
         if(user.role==='admin') {
+        //    console.time('get BD')
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -643,6 +645,7 @@ const resolvers = {
                         }
                     },
                 ])
+            //console.timeEnd('get BD')
             return invoices
         }
         else if(user.role==='client'){
@@ -2399,6 +2402,10 @@ const resolversMutation = {
             let distributers = await DistributerAzyk.find({
                 organizations: organization
             })
+            let superDistrict = await DistrictAzyk.findOne({
+                organization: null,
+                client: client
+            })
             let district = null;
             if(distributers.length>0){
                 for(let i=0; i<distributers.length; i++){
@@ -2573,6 +2580,7 @@ const resolversMutation = {
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                 who: user.role==='admin'?null:user._id,
                 agent: district?district.agent:undefined,
+                superagent: superDistrict?superDistrict.agent:undefined,
                 client: client,
                 organization: organization,
                 invoice: newInvoice,
@@ -2601,10 +2609,15 @@ const resolversMutation = {
                     organization: objects[i].organization,
                     client: objects[i].client
                 })
+                let superDistrict = await DistrictAzyk.findOne({
+                    organization: null,
+                    client: objects[i].client
+                })
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,
                     agent: district?district.agent:undefined,
+                    superagent: superDistrict?superDistrict.agent:undefined,
                     organization: objects[i].organization,
                     invoice: {_id: objects[i]._id},
                     manager: district?district.manager:undefined,
@@ -2651,11 +2664,16 @@ const resolversMutation = {
                 organization: resInvoices[0].organization,
                 client: resInvoices[0].client._id
             })
+            let superDistrict = await DistrictAzyk.findOne({
+                organization: null,
+                client: resInvoices[0].client._id
+            })
             for(let i=0; i<resInvoices.length; i++){
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: resInvoices[i].client._id,
                     agent: district?district.agent:undefined,
+                    superagent: superDistrict?superDistrict.agent:undefined,
                     organization: resInvoices[i].organization,
                     invoice: resInvoices[i],
                     manager: district?district.manager:undefined,
@@ -2761,10 +2779,15 @@ const resolversMutation = {
             organization: resInvoice.organization,
             client: resInvoice.client._id
         })
+        let superDistrict = await DistrictAzyk.findOne({
+            organization: null,
+            client: resInvoice.client._id
+        })
         pubsub.publish(RELOAD_ORDER, { reloadOrder: {
             who: user.role==='admin'?null:user._id,
             client: resInvoice.client._id,
             agent: district?district.agent:undefined,
+            superagent: superDistrict?superDistrict.agent:undefined,
             organization: resInvoice.organization,
             invoice: resInvoice,
             manager: district?district.manager:undefined,
@@ -2971,11 +2994,14 @@ const resolversSubscription = {
             (payload, variables, {user} ) => {
                 return (
                     user._id.toString()!==payload.reloadOrder.who&&
-                    (['admin', 'суперагент'].includes(user.role)||
-                    (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
-                    (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
-                    (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString()))
+                    (
+                        'admin'===user.role||
+                        (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
+                        (user.employment&&payload.reloadOrder.superagent&&payload.reloadOrder.superagent.toString()===user.employment.toString())||
+                        (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
+                        (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
+                        (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                    )
                 )
             },
         )
