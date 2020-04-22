@@ -390,6 +390,64 @@ const resolvers = {
                     })
                     .lean()
             }
+            else if(user.role==='суперагент'){
+                if(date!=='') {
+                    let now = new Date()
+                    now.setDate(now.getDate() + 1)
+                    now.setHours(3, 0, 0, 0)
+                    let differenceDates = (now - dateStart) / (1000 * 60 * 60 * 24)
+                    if(differenceDates>3) {
+                        dateStart = new Date()
+                        dateEnd = new Date(dateStart)
+                        dateEnd = new Date(dateEnd.setDate(dateEnd.getDate() - 3))
+                    }
+                }
+                else {
+                    dateEnd = new Date()
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                    dateEnd.setHours(3, 0, 0, 0)
+                    dateStart = new Date(dateEnd)
+                    dateStart.setDate(dateStart.getDate() - 3)
+                }
+                let clients = await DistrictAzyk
+                    .find({agent: user.employment})
+                    .distinct('client')
+                invoices =  await InvoiceAzyk.find(
+                    {
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
+                        ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
+                        client: {$in: clients},
+                        $and: [
+                            {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
+                            {
+                                $or: [
+                                    {organization: user.organization},
+                                    {distributer: user.organization},
+                                ],
+                            },
+                            {
+                                ...(search.length>0?{
+                                        $or: [
+                                            {number: {'$regex': search, '$options': 'i'}},
+                                            {info: {'$regex': search, '$options': 'i'}},
+                                            {address: {'$regex': search, '$options': 'i'}},
+                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                            {client: {$in: _clients}},
+                                        ]
+                                    }
+                                    :{
+                                    })
+                            }
+                        ],
+                    }
+                )
+                    .populate({
+                        path: 'orders'
+                    })
+                    .lean()
+            }
         }
         let tonnage = 0;
         let size = 0;
@@ -761,7 +819,7 @@ const resolvers = {
                     {
                         $match: {
                             del: {$ne: 'deleted'},
-                            //client: {$in: clients},
+                            client: {$in: clients},
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),

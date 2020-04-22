@@ -40,7 +40,7 @@ const resolvers = {
         }
 
         let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
-            //$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
             ...(agent?{agent: agent}:{agent: {$in: agents}})
         })
             .populate('client')
