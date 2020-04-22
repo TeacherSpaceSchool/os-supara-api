@@ -203,10 +203,11 @@ const resolvers = {
                     _id: agentRoute
                 }
             )
-                .populate({path: 'district', populate: {path: 'client'}})
+                .populate({path: 'district', populate: [{path: 'client', populate: [{path: 'user'}]}]})
                 .lean()
             for(let i=0; i<data.district.client.length; i++) {
                 if(
+                    data.district.client[i].user.status==='active'&&
                     !data.clients[0].includes(data.district.client[i]._id)&&
                     !data.clients[1].includes(data.district.client[i]._id)&&
                     !data.clients[2].includes(data.district.client[i]._id)&&
@@ -215,7 +216,6 @@ const resolvers = {
                     !data.clients[5].includes(data.district.client[i]._id)&&
                     !data.clients[6].includes(data.district.client[i]._id)
                 ){
-                    console.log(data.district.client[i])
                     problem.push(
                         {
                             _id: data.district.client[i]._id,
