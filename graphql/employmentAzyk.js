@@ -352,7 +352,7 @@ const resolversMutation = {
                             ]
                     }
                 )
-                let district = await DistrictAzyk.findOne({
+                let district = await DistrictAzyk.find({
                     organization: objects[i].organization,
                     $or:
                         [
@@ -361,11 +361,12 @@ const resolversMutation = {
                             {ecspeditor: objects[i]._id}
                         ]
                 })
-                if(district){
-                    if(district.manager.toString()===objects[i]._id.toString())district.manager=null
-                    else if(district.ecspeditor.toString()===objects[i]._id.toString())district.ecspeditor=null
-                    else if(district.agent.toString()===objects[i]._id.toString())district.agent=null
-                    await district.save()
+                for(let i1=0; i1<district.length; i1++) {
+                    if(district[i1].manager.toString()===objects[i]._id.toString())district[i1].manager=null
+                    else if(district[i1].ecspeditor.toString()===objects[i]._id.toString())district[i1].ecspeditor=null
+                    else if(district[i1].agent.toString()===objects[i]._id.toString())district[i1].agent=null
+                    await district[i1].save()
+
                 }
             }
         }

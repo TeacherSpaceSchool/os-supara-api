@@ -1499,7 +1499,10 @@ const resolvers = {
                 }
             }
             else {
-                let districts = await DistrictAzyk.find(company!=='super'?{organization: company}:{organization: null}).lean()
+                let districts = await DistrictAzyk.find({
+                    ...(company!=='super'?{organization: company}:{organization: null}),
+                    name: {$ne: 'super'}
+                    }).lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
