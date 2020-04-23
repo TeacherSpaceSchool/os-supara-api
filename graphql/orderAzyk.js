@@ -1568,9 +1568,9 @@ const resolvers = {
                 .lean()
             if(['суперагент', 'admin'].includes(user.role))
                 return invoice
-            else if(user.client.toString()===invoice.client._id.toString())
+            else if(user.client&&user.client.toString()===invoice.client._id.toString())
                 return invoice
-            else if(['агент', 'организация', 'менеджер'].includes(user.role)&&user.organization.toString()===invoice.organization._id.toString())
+            else if(user.organization&&['агент', 'организация', 'менеджер'].includes(user.role)&&user.organization.toString()===invoice.organization._id.toString())
                 return invoice
         } else return null
     },
