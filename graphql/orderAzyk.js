@@ -140,13 +140,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         let invoices = [];
         if(user.role==='admin') {
@@ -168,10 +168,7 @@ const resolvers = {
                         :{})
                 }
             )
-                .populate({
-                    path: 'orders'
-                })
-                
+                .lean()
         }
         return [invoices.length.toString()]
     },
@@ -190,13 +187,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         let invoices = [];
         if(filter !== 'обработка'){
@@ -226,7 +223,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
             else if(user.role==='admin') {
                 invoices =  await InvoiceAzyk.find(
@@ -254,7 +252,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
             else if('организация'===user.role) {
                 invoices =  await InvoiceAzyk.find(
@@ -290,7 +289,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
             else if(user.role==='менеджер'){
                 let clients = await DistrictAzyk
@@ -331,7 +331,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
             else if(user.role==='агент'){
                 if(date!=='') {
@@ -355,6 +356,7 @@ const resolvers = {
                 let clients = await DistrictAzyk
                     .find({agent: user.employment})
                     .distinct('client')
+                    .lean()
                 invoices =  await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
@@ -389,7 +391,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
             else if(user.role==='суперагент'){
                 if(date!=='') {
@@ -413,6 +416,7 @@ const resolvers = {
                 let clients = await DistrictAzyk
                     .find({agent: user.employment})
                     .distinct('client')
+                    .lean()
                 invoices =  await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
@@ -447,7 +451,8 @@ const resolvers = {
                     .populate({
                         path: 'orders'
                     })
-                    
+                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .lean()
             }
         }
         let tonnage = 0;
@@ -491,25 +496,33 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         if(user.role==='admin') {
-        //    console.time('get BD')
+            console.time('get BD')
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
                         $match:{
-                            del: {$ne: 'deleted'},
+                            del: {$ne: 'deleted'}
+                        }
+                    },
+                    {
+                        $match:{
                             ...(date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
-                            ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
+                            ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {})
+                        }
+                    },
+                    {
+                        $match:{
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -645,7 +658,7 @@ const resolvers = {
                         }
                     },
                 ])
-            //console.timeEnd('get BD')
+            console.timeEnd('get BD')
             return invoices
         }
         else if(user.role==='client'){
@@ -817,6 +830,7 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
+                .lean()
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -986,6 +1000,7 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({agent: user.employment})
                 .distinct('client')
+                .lean()
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -1145,6 +1160,7 @@ const resolvers = {
             let clients = await DistrictAzyk
                 .find({manager: user.employment})
                 .distinct('client')
+                .lean()
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -1487,13 +1503,13 @@ const resolvers = {
         if(search.length>0){
             _organizations = await OrganizationAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _clients = await ClientAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
             _agents = await EmploymentAzyk.find({
                 name: {'$regex': search, '$options': 'i'}
-            }).distinct('_id')
+            }).distinct('_id').lean()
         }
         if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
@@ -1641,7 +1657,7 @@ const resolvers = {
     },
     orderHistorys: async(parent, {invoice}, {user}) => {
         if(['admin', 'организация', 'менеджер'].includes(user.role)){
-            let historyOrders =  await HistoryOrderAzyk.find({invoice: invoice})
+            let historyOrders =  await HistoryOrderAzyk.find({invoice: invoice}).lean()
             return historyOrders
         }
     },
@@ -1660,7 +1676,7 @@ const resolvers = {
                 del: {$ne: 'deleted'},
                 cancelClient: null,
                 cancelForwarder: null
-            }).sort('-createdAt')
+            }).sort('-createdAt').lean()
             return !!objectInvoice
         }
     },
@@ -1819,7 +1835,7 @@ const resolvers = {
         dateEnd.setDate(dateEnd.getDate() + 1)
         let _clients = await DistrictAzyk.findOne({
             _id: district
-        }).distinct('client');
+        }).distinct('client').lean();
         if(user.role==='admin') {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
@@ -1967,7 +1983,7 @@ const resolvers = {
             }
             _clients = await DistrictAzyk
                 .find({agent: user.employment})
-                .distinct('client')
+                .distinct('client').lean()
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -2105,7 +2121,7 @@ const resolvers = {
         else if(user.role==='менеджер'){
             _clients = await DistrictAzyk
                 .find({manager: user.employment})
-                .distinct('client')
+                .distinct('client').lean()
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -2391,7 +2407,7 @@ const resolversMutation = {
                 path: 'item',
                 match: {organization: organization}
             })
-            ;
+            .lean();
         baskets = baskets.filter(basket => (basket.item))
         if(baskets.length>0){
             let dateStart = new Date()
@@ -2404,19 +2420,19 @@ const resolversMutation = {
                 organization: null,
                 client: client
             })
-                
+                .lean()
             let district = null;
             let distributers = await DistributerAzyk.find({
                 organizations: organization
             })
-                
+                .lean()
             if(distributers.length>0){
                 for(let i=0; i<distributers.length; i++){
                     district = await DistrictAzyk.findOne({
                         organization: distributers[i].distributer,
                         client: client
                     })
-                        
+                        .lean()
                 }
             }
             if(!district) {
@@ -2424,7 +2440,7 @@ const resolversMutation = {
                     organization: organization,
                     client: client
                 })
-                    
+                    .lean()
             }
             let objectInvoice;
             if(!noSplit)
@@ -2440,7 +2456,7 @@ const resolversMutation = {
                     .sort('-createdAt')
             if(!objectInvoice){
                 if(usedBonus){
-                    let bonus = await BonusAzyk.findOne({organization: organization});
+                    let bonus = await BonusAzyk.findOne({organization: organization}).lean();
                     let bonusClient = await BonusClientAzyk.findOne({client: client, bonus: bonus._id})
                     usedBonus = bonusClient.addedBonus;
                     bonusClient.addedBonus = 0
@@ -2466,7 +2482,7 @@ const resolversMutation = {
                     orders.push(objectOrder);
                 }
                 let number = randomstring.generate({length: 12, charset: 'numeric'});
-                while (await InvoiceAzyk.findOne({number: number}))
+                while (await InvoiceAzyk.findOne({number: number}).lean())
                     number = randomstring.generate({length: 12, charset: 'numeric'});
                 let allPrice = 0
                 let allTonnage = 0
@@ -2556,7 +2572,7 @@ const resolversMutation = {
                     editor = `клиент ${objectInvoice.client.name}`
                 }
                 else{
-                    let employment = await EmploymentAzyk.findOne({user: user._id})
+                    let employment = await EmploymentAzyk.findOne({user: user._id}).lean()
                     editor = `${user.role} ${employment.name}`
                 }
                 objectInvoice.editor = editor
@@ -2573,7 +2589,7 @@ const resolversMutation = {
                 .populate({path: 'agent'})
                 .populate({path: 'distributer'})
                 .populate({path: 'forwarder'})
-                
+                .lean()
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                 who: user.role==='admin'?null:user._id,
                 agent: district?district.agent:undefined,
@@ -2605,11 +2621,11 @@ const resolversMutation = {
                 let district = await DistrictAzyk.findOne({
                     organization: objects[i].organization,
                     client: objects[i].client
-                })
+                }).lean()
                 let superDistrict = await DistrictAzyk.findOne({
                     organization: null,
                     client: objects[i].client
-                })
+                }).lean()
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,
@@ -2660,11 +2676,11 @@ const resolversMutation = {
             let district = await DistrictAzyk.findOne({
                 organization: resInvoices[0].organization,
                 client: resInvoices[0].client._id
-            })
+            }).lean()
             let superDistrict = await DistrictAzyk.findOne({
                 organization: null,
                 client: resInvoices[0].client._id
-            })
+            }).lean()
             for(let i=0; i<resInvoices.length; i++){
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
@@ -2775,11 +2791,11 @@ const resolversMutation = {
         let district = await DistrictAzyk.findOne({
             organization: resInvoice.organization,
             client: resInvoice.client._id
-        })
+        }).lean()
         let superDistrict = await DistrictAzyk.findOne({
             organization: null,
             client: resInvoice.client._id
-        })
+        }).lean()
         pubsub.publish(RELOAD_ORDER, { reloadOrder: {
             who: user.role==='admin'?null:user._id,
             client: resInvoice.client._id,
