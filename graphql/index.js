@@ -33,6 +33,7 @@ const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
+let logger = require('logger').createLogger('error.log');
 
 const typeDefs = gql`
     scalar Date
@@ -268,6 +269,7 @@ const run = (app)=>{
         },
         formatError: (err) => {
             console.error(err)
+            logger.info(err.message);
             return err;
         }
     })

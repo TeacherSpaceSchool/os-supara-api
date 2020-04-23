@@ -44,6 +44,7 @@ const type = `
     client: Client
     allPrice: Int 
     consignmentPrice: Int
+    returnedPrice: Int
     info: String,
     address: [String]
     paymentMethod: String
@@ -63,6 +64,7 @@ const type = `
     allSize: Float
     editor: String
     distributer: Organization
+    organization: Organization
     del: String
     adss: [Ads]
     track: Int
@@ -220,10 +222,7 @@ const resolvers = {
                             :{})
                     }
                 )
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
             else if(user.role==='admin') {
@@ -249,10 +248,7 @@ const resolvers = {
                             :{})
                     }
                 )
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
             else if('организация'===user.role) {
@@ -286,10 +282,7 @@ const resolvers = {
                             }
                         ],
                     })
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
             else if(user.role==='менеджер'){
@@ -328,10 +321,7 @@ const resolvers = {
 
                     }
                 )
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
             else if(user.role==='агент'){
@@ -388,10 +378,7 @@ const resolvers = {
                         ],
                     }
                 )
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
             else if(user.role==='суперагент'){
@@ -448,10 +435,7 @@ const resolvers = {
                         ],
                     }
                 )
-                    .populate({
-                        path: 'orders'
-                    })
-                    .select('allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
+                    .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
         }
@@ -463,9 +447,7 @@ const resolvers = {
         let lengthList = 0;
         for(let i=0; i<invoices.length; i++){
             if (invoices[i].allPrice) {
-                for(let i1=0; i1<invoices[i].orders.length;i1++){
-                    price += (invoices[i].orders[i1].allPrice - invoices[i].orders[i1].returned * (invoices[i].orders[i1].allPrice / invoices[i].orders[i1].count))
-                }
+                price += invoices[i].allPrice-invoices[i].returnedPrice
             }
             if (invoices[i].allSize)
                 size += invoices[i].allSize
@@ -599,6 +581,28 @@ const resolvers = {
                             as: 'distributer'
                         }
                     },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$distributer'
+                        }
+                    },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
                     { $lookup:
                         {
                             from: AdsAzyk.collection.collectionName,
@@ -608,55 +612,7 @@ const resolvers = {
                             ],
                             as: 'adss'
                         }
-                    },
-                    {
-                        $unwind:{
-                            preserveNullAndEmptyArrays : true,
-                            path : '$distributer'
-                        }
-                    },
-                    { $lookup:
-                        {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
-                            pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false,
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false,
-                                        path : '$item'
-                                    }
-                                },
-                            ],
-                            as: 'orders'
-                        }
-                    },
+                    }
                 ])
             console.timeEnd('get BD')
             return invoices
@@ -667,11 +623,15 @@ const resolvers = {
                     {
                         $match: {
                             del: {$ne: 'deleted'},
+                            client: user.client
+                        }
+                    },
+                    {
+                        $match: {
                             ...(date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
-                            client: user.client,
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -723,48 +683,6 @@ const resolvers = {
                     },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
-                            pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
-                            ],
-                            as: 'orders'
-                        }
-                    },
-                    { $lookup:
-                        {
                             from: ClientAzyk.collection.collectionName,
                             let: { client: '$client' },
                             pipeline: [
@@ -805,6 +723,22 @@ const resolvers = {
                             as: 'adss'
                         }
                     },
+                    { $lookup:
+                        {
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
+                            pipeline: [
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
+                            ],
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -837,6 +771,10 @@ const resolvers = {
                         $match: {
                             del: {$ne: 'deleted'},
                             client: {$in: clients},
+                        }
+                    },
+                    {
+                        $match: {
                             $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}],
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
@@ -935,46 +873,20 @@ const resolvers = {
                     },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
                         }
-                    }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
+                        }
+                    },
                 ])
             return invoices
         }
@@ -1007,6 +919,10 @@ const resolvers = {
                         $match: {
                             del: {$ne: 'deleted'},
                             client: {$in: clients},
+                        }
+                    },
+                    {
+                        $match: {
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
@@ -1039,44 +955,18 @@ const resolvers = {
                     { $limit : skip!=undefined?15:10000000000 },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -1167,6 +1057,10 @@ const resolvers = {
                         $match:{
                             del: {$ne: 'deleted'},
                             client: {$in: clients},
+                        }
+                    },
+                    {
+                        $match:{
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
@@ -1198,44 +1092,18 @@ const resolvers = {
                     { $limit : skip!=undefined?15:10000000000 },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -1324,53 +1192,29 @@ const resolvers = {
                             ...(filter === 'консигнации' ? {consignmentPrice: {$gt: 0}} : {}),
                             ...(filter === 'акция' ? {adss: {$ne: []}} : {}),
                             ...(filter === 'обработка' ? {taken: false, cancelClient: null, cancelForwarder: null} : {}),
-                            ...(
-                                date===''?{
-                                    $and: [
-                                        {
-                                            $or: [
-                                                {organization: user.organization},
-                                                {distributer: user.organization},
-                                            ]
-                                        },
-                                        {
-                                            ...(search.length>0?{
-                                                    $or: [
-                                                        {number: {'$regex': search, '$options': 'i'}},
-                                                        {info: {'$regex': search, '$options': 'i'}},
-                                                        {address: {'$regex': search, '$options': 'i'}},
-                                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                        {client: {$in: _clients}},
-                                                        {agent: {$in: _agents}}
-                                                    ]
-                                                }
-                                                :{
-                                                })
-                                        }
+                            $and: [
+                                ...(date===''?[]:[{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]),
+                                {
+                                    $or: [
+                                        {organization: user.organization},
+                                        {distributer: user.organization},
                                     ]
-                                }:{ $and: [
-                                    {createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}},
-                                    {
-                                        $or: [
-                                            {organization: user.organization},
-                                            {distributer: user.organization},
-                                        ]
-                                    },
-                                    {
-                                        ...(search.length>0?{
-                                                $or: [
-                                                    {number: {'$regex': search, '$options': 'i'}},
-                                                    {info: {'$regex': search, '$options': 'i'}},
-                                                    {address: {'$regex': search, '$options': 'i'}},
-                                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                    {client: {$in: _clients}},
-                                                    {agent: {$in: _agents}}
-                                                ]
-                                            }
-                                            :{
-                                            })
-                                    }
-                                ]}),
+                                },
+                                {
+                                    ...(search.length>0?{
+                                            $or: [
+                                                {number: {'$regex': search, '$options': 'i'}},
+                                                {info: {'$regex': search, '$options': 'i'}},
+                                                {address: {'$regex': search, '$options': 'i'}},
+                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                                {client: {$in: _clients}},
+                                                {agent: {$in: _agents}}
+                                            ]
+                                        }
+                                        :{
+                                        })
+                                }
+                            ]
                         }
                     },
                     { $sort : _sort },
@@ -1378,44 +1222,18 @@ const resolvers = {
                     { $limit : skip!=undefined?15:10000000000 },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -1517,6 +1335,10 @@ const resolvers = {
                     {
                         $match:{
                             del: 'deleted',
+                        }
+                    },
+                    {
+                        $match:{
                             ...(search.length>0?{
                                     $or: [
                                         {number: {'$regex': search, '$options': 'i'}},
@@ -1611,44 +1433,18 @@ const resolvers = {
                     },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false,
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false,
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                 ])
@@ -1745,10 +1541,7 @@ const resolvers = {
                 .populate({
                     path: 'orders',
                     populate: {
-                        path: 'item',
-                        populate: [
-                            {path: 'organization'}
-                        ]
+                        path: 'item'
                     }
                 })
                 .populate({
@@ -1757,9 +1550,28 @@ const resolvers = {
                         {path: 'user'}
                     ]
                 })
-            if (user.role === 'admin' || (user.role === 'client' && invoice.client._id.toString() === user.client.toString()) || (['организация', 'менеджер'].includes(user.role) && invoice.item.organization._id.toString() === user.organization.toString()))
+                .populate({
+                    path: 'agent',
+                })
+                .populate({
+                    path: 'forwarder',
+                })
+                .populate({
+                    path: 'distributer',
+                })
+                .populate({
+                    path: 'organization',
+                })
+                .populate({
+                    path: 'adss',
+                })
+                .lean()
+            if(['суперагент', 'admin'].includes(user.role))
                 return invoice
-            else return null
+            else if(user.client.toString()===invoice.client._id.toString())
+                return invoice
+            else if(['агент', 'организация', 'менеджер'].includes(user.role)&&user.organization.toString()===invoice.organization._id.toString())
+                return invoice
         } else return null
     },
     sortInvoice: async() => {
@@ -1928,44 +1740,18 @@ const resolvers = {
                     },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false,
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false,
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                 ])
@@ -2001,44 +1787,18 @@ const resolvers = {
                     { $sort : {createdAt: -1} },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -2139,44 +1899,18 @@ const resolvers = {
                     { $sort : {createdAt: -1} },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -2274,44 +2008,18 @@ const resolvers = {
                     { $sort : {createdAt: -1} },
                     { $lookup:
                         {
-                            from: OrderAzyk.collection.collectionName,
-                            let: { order: '$orders' },
+                            from: OrganizationAzyk.collection.collectionName,
+                            let: { organization: '$organization' },
                             pipeline: [
-                                { $match: {$expr:{$in:['$_id', '$$order']}} },
-                                { $lookup:
-                                    {
-                                        from: ItemAzyk.collection.collectionName,
-                                        let: { item: '$item' },
-                                        pipeline: [
-                                            { $match: {$expr:{$eq:['$$item', '$_id']}} },
-                                            { $lookup:
-                                                {
-                                                    from: OrganizationAzyk.collection.collectionName,
-                                                    let: { organization: '$organization' },
-                                                    pipeline: [
-                                                        { $match: {$expr:{$eq:['$$organization', '$_id']}} },
-                                                    ],
-                                                    as: 'organization'
-                                                }
-                                            },
-                                            {
-                                                $unwind:{
-                                                    preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                                    path : '$organization'
-                                                }
-                                            },
-                                        ],
-                                        as: 'item'
-                                    }
-                                },
-                                {
-                                    $unwind:{
-                                        preserveNullAndEmptyArrays : false, // this remove the object which is null
-                                        path : '$item'
-                                    }
-                                },
+                                { $match: {$expr:{$eq:['$$organization', '$_id']}} },
                             ],
-                            as: 'orders'
+                            as: 'organization'
+                        }
+                    },
+                    {
+                        $unwind:{
+                            preserveNullAndEmptyArrays : true,
+                            path : '$organization'
                         }
                     },
                     { $lookup:
@@ -2557,6 +2265,7 @@ const resolversMutation = {
                     objectInvoice.consignmentPrice+=Math.round(baskets[ii].consignment*(baskets[ii].item.stock?baskets[ii].item.stock:baskets[ii].item.price))
                 }
                 await OrderAzyk.updateMany({_id: {$in: objectInvoice.orders}}, {status: 'обработка', returned: 0})
+                objectInvoice.returnedPrice = 0
                 objectInvoice.confirmationForwarder = false
                 objectInvoice.confirmationClient = false
                 objectInvoice.taken = false
@@ -2584,10 +2293,11 @@ const resolversMutation = {
                 await HistoryOrderAzyk.create(objectHistoryOrder);
             }
             let newInvoice = await InvoiceAzyk.findOne({_id: objectInvoice._id})
-                .populate({path: 'orders',populate: {path: 'item',populate: [{path: 'organization'}]}})
+                .populate({path: 'orders',populate: {path: 'item'}})
                 .populate({path: 'client',populate: [{path: 'user'}]})
                 .populate({path: 'agent'})
                 .populate({path: 'distributer'})
+                .populate({path: 'organization'})
                 .populate({path: 'forwarder'})
                 .lean()
             pubsub.publish(RELOAD_ORDER, { reloadOrder: {
@@ -2656,10 +2366,7 @@ const resolversMutation = {
             .populate({
                 path: 'orders',
                 populate: {
-                    path: 'item',
-                    populate: [
-                        {path: 'organization'}
-                    ]
+                    path: 'item'
                 }
             })
             .populate({
@@ -2670,6 +2377,7 @@ const resolversMutation = {
             })
             .populate({path: 'agent'})
             .populate({path: 'distributer'})
+            .populate({path: 'organization'})
             .populate({path: 'adss'})
             .populate({path: 'forwarder'})
         if(resInvoices.length>0){
@@ -2706,6 +2414,7 @@ const resolversMutation = {
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
+            let returnedPrice = 0
             let consignmentPrice = 0
             for(let i=0; i<orders.length;i++){
                 await OrderAzyk.updateMany(
@@ -2719,6 +2428,7 @@ const resolversMutation = {
                         allSize: Math.round(orders[i].allSize),
                         allTonnage: Math.round(orders[i].allTonnage)
                     });
+                returnedPrice += Math.round(orders[i].returned * (orders[i].allPrice / orders[i].count))
                 allPrice += orders[i].allPrice
                 allTonnage += orders[i].allTonnage
                 allSize += orders[i].allSize
@@ -2733,16 +2443,14 @@ const resolversMutation = {
             object.consignmentPrice = Math.round(consignmentPrice)
             object.allSize = allSize
             object.orders = orders.map(order=>order._id)
+            object.returnedPrice = returnedPrice
             await object.save();
         }
         let resInvoice = await InvoiceAzyk.findOne({_id: invoice})
             .populate({
                 path: 'orders',
                 populate: {
-                    path: 'item',
-                    populate: [
-                        {path: 'organization'}
-                    ]
+                    path: 'item'
                 }
             })
             .populate({
@@ -2755,6 +2463,7 @@ const resolversMutation = {
             .populate({path: 'distributer'})
             .populate({path: 'adss'})
             .populate({path: 'forwarder'})
+            .populate({path: 'organization'})
         if(user.role==='admin'){
             editor = 'админ'
         }
@@ -2831,6 +2540,7 @@ const resolversMutation = {
                 object.confirmationForwarder = false
                 object.confirmationClient = false
                 object.dateDelivery = null
+                object.returnedPrice = 0
                 object.sync = object.sync!==0?1:0
             }
         }

@@ -18,6 +18,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    returnedPrice: {
+        type: Number,
+        default: 0
+    },
     allTonnage: {
         type: Number,
         default: 0
