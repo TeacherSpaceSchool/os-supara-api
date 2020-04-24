@@ -85,7 +85,6 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
 module.exports.setOutXMLShoroAzyk = async(invoice) => {
     let outXMLShoroAzyk = await OutXMLShoroAzyk
         .findOne({invoice: invoice._id})
-    console.log(outXMLShoroAzyk)
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status = 'update'
         outXMLShoroAzyk.data = []
