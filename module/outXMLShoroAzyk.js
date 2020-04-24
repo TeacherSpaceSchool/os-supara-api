@@ -85,6 +85,7 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
 module.exports.setOutXMLShoroAzyk = async(invoice) => {
     let outXMLShoroAzyk = await OutXMLShoroAzyk
         .findOne({invoice: invoice._id})
+    console.log(outXMLShoroAzyk)
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status = 'update'
         outXMLShoroAzyk.data = []
@@ -102,13 +103,14 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
         }
         await outXMLShoroAzyk.save()
         await InvoiceAzyk.updateMany({_id: invoice._id}, {sync: 1})
+        return 1
     }
     else {
         let guidClient = await Integrate1CAzyk
-            .findOne({client: invoice.client._id, organization: invoice.orders[0].item.organization._id})
+            .findOne({client: invoice.client._id, organization: invoice.organization._id})
         if(guidClient){
             let district = await DistrictAzyk
-                .findOne({client: invoice.client._id, organization: invoice.orders[0].item.organization._id})
+                .findOne({client: invoice.client._id, organization: invoice.organization._id})
             if(district) {
                 let guidAgent = await Integrate1CAzyk
                     .findOne({agent: district.agent})
@@ -145,10 +147,12 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     }
                     await OutXMLShoroAzyk.create(newOutXMLShoroAzyk);
                     await InvoiceAzyk.updateMany({_id: invoice._id}, {sync: 1})
+                    return 1
                 }
             }
         }
     }
+    return 0
 }
 
 module.exports.setOutXMLShoroAzykLogic = async(invoices, forwarder, track) => {
@@ -210,7 +214,9 @@ module.exports.cancelOutXMLShoroAzyk = async(invoice) => {
     if(outXMLShoroAzyk){
         outXMLShoroAzyk.status = 'del'
         await outXMLShoroAzyk.save()
+        return 1
     }
+    return 0
 }
 
 module.exports.checkOutXMLShoroAzyk = async(guid, exc) => {

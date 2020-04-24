@@ -2491,10 +2491,10 @@ const resolversMutation = {
         await HistoryOrderAzyk.create(objectHistoryOrder);
         if(resInvoice.organization.name==='ЗАО «ШОРО»'){
             if(resInvoice.orders[0].status==='принят') {
-                await setOutXMLShoroAzyk(resInvoice)
+                resInvoice.sync = await setOutXMLShoroAzyk(resInvoice)
             }
             else if(resInvoice.orders[0].status==='отмена') {
-                await cancelOutXMLShoroAzyk(resInvoice)
+                resInvoice.sync = await cancelOutXMLShoroAzyk(resInvoice)
             }
         }
         let district = await DistrictAzyk.findOne({
