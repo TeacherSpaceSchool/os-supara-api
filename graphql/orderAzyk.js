@@ -2489,7 +2489,7 @@ const resolversMutation = {
             editor: editor,
         });
         await HistoryOrderAzyk.create(objectHistoryOrder);
-        if(resInvoice.orders[0].item.organization.name==='ЗАО «ШОРО»'){
+        if(resInvoice.organization.name==='ЗАО «ШОРО»'){
             if(resInvoice.orders[0].status==='принят') {
                 await setOutXMLShoroAzyk(resInvoice)
             }

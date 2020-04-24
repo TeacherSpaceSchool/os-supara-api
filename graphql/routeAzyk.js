@@ -80,7 +80,7 @@ const resolvers = {
                         route.employment &&
                         (
                             (route.number.toLowerCase()).includes(search.toLowerCase()) ||
-                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                            (route.invoices[0].organization.name.toLowerCase()).includes(search.toLowerCase())
                         )
                 )
             return routes
@@ -122,7 +122,7 @@ const resolvers = {
                         route.employment &&
                         (
                             (route.number.toLowerCase()).includes(search.toLowerCase()) ||
-                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                            (route.invoices[0].organization.name.toLowerCase()).includes(search.toLowerCase())
                         )
                 )
 
@@ -168,7 +168,7 @@ const resolvers = {
                         route.employment &&
                         (
                             (route.number.toLowerCase()).includes(search.toLowerCase()) ||
-                            (route.invoices[0].orders[0].item.organization.name.toLowerCase()).includes(search.toLowerCase())
+                            (route.invoices[0].organization.name.toLowerCase()).includes(search.toLowerCase())
                         )
                 )
             return routes
