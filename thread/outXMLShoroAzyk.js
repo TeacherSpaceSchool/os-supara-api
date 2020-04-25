@@ -10,7 +10,7 @@ if(!isMainThread) {
             await reductionOutAdsXMLShoroAzyk()
         } catch (err) {
             let _object = new ModelsErrorAzyk({
-                data: err.message,
+                data: `${err.message} ${err.path?err.path:''}`,
             });
             ModelsErrorAzyk.create(_object)
             console.error(err)

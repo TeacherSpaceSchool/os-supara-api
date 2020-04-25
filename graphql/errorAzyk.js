@@ -18,9 +18,8 @@ const mutation = `
 
 const resolvers = {
     errors: async(parent, ctx, {user}) => {
-        console.log(await ErrorAzyk.find())
         if('admin'===user.role){
-            return await ErrorAzyk.find()
+            return await ErrorAzyk.find().sort('-createdAt')
         }
     }
 };

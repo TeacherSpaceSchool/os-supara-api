@@ -10,7 +10,7 @@ if(!isMainThread) {
             sendWebPush({title: 'AZYK.STORE', message: 'Не забудьте сделать свой заказ', user: 'all'})
         } catch (err) {
             let _object = new ModelsErrorAzyk({
-                data: err.message,
+                data: `${err.message} ${err.path?err.path:''}`,
             });
             ModelsErrorAzyk.create(_object)
             console.error(err)

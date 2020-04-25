@@ -34,6 +34,7 @@ const Integrate1CAzyk = require('./integrate1CAzyk');
 const ErrorAzyk = require('./errorAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
+//const logger = require('logger').createLogger('./public/error.log');
 const ModelsErrorAzyk = require('../models/errorAzyk');
 
 const typeDefs = gql`
@@ -276,8 +277,9 @@ const run = (app)=>{
         formatError: (err) => {
             console.error(err)
 
+            //logger.info(err.message);
             let _object = new ModelsErrorAzyk({
-                data: err.message,
+                data: `${err.message} ${err.path?err.path:''}`,
             });
             ModelsErrorAzyk.create(_object)
 

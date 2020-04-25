@@ -46,7 +46,7 @@ router.post('/register', async (req, res) => {
             });
         } catch (err) {
             let _object = new ModelsErrorAzyk({
-                data: err.message,
+                data: `${err.message} ${err.path?err.path:''}`,
             });
             ModelsErrorAzyk.create(_object)
             console.error(err)
@@ -70,7 +70,7 @@ router.post('/unregister', async (req, res) => {
         subscriptionModel.save()
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: err.message,
+            data: `${err.message} ${err.path?err.path:''}`,
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -90,7 +90,7 @@ router.post('/delete', async (req, res) => {
         await SubscriberAzyk.deleteMany({number: req.body.number})
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: err.message,
+            data: `${err.message} ${err.path?err.path:''}`,
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
