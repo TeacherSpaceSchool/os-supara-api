@@ -10,7 +10,7 @@ if(!isMainThread) {
             await BonusClientAzyk.updateMany({}, {current: 0, added: false});
         } catch (err) {
             let _object = new ModelsErrorAzyk({
-                data: `${err.message} ${err.path?err.path:''}`,
+                data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
             });
             ModelsErrorAzyk.create(_object)
             console.error(err)

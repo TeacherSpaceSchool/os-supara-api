@@ -279,7 +279,7 @@ const run = (app)=>{
 
             //logger.info(err.message);
             let _object = new ModelsErrorAzyk({
-                data: `${err.message} ${err.path?err.path:''}`,
+                data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
             });
             ModelsErrorAzyk.create(_object)
 
