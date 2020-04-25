@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const ErrorAzykSchema = mongoose.Schema({
-    data: String,
+    err: String,
+    path: String,
 }, {
     timestamps: true
 });

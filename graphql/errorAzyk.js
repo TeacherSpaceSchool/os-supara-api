@@ -4,7 +4,8 @@ const type = `
   type Error {
     _id: ID
     createdAt: Date
-    data: String
+    err: String
+    path: String
   }
 `;
 

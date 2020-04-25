@@ -13,7 +13,8 @@ router.get('/shoro/out/client', async (req, res, next) => {
         logger.info(`out client start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -31,7 +32,8 @@ router.get('/shoro/out/returned', async (req, res, next) => {
         logger.info(`out returned start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -49,7 +51,8 @@ router.get('/shoro/out/sales', async (req, res, next) => {
         logger.info(`out sales start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req._parsedOriginalUrl.pathname}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -70,7 +73,8 @@ router.post('/shoro/put/returned/confirm', async (req, res, next) => {
         logger.info(`put returned start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -91,7 +95,8 @@ router.post('/shoro/put/sales/confirm', async (req, res, next) => {
         logger.info(`put sales start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
@@ -112,7 +117,8 @@ router.post('/shoro/put/client/confirm', async (req, res, next) => {
         logger.info(`put client start: ${startDate}; time: ${(new Date() - startDate) / 1000}; url: ${req.route.path}`);
     } catch (err) {
         let _object = new ModelsErrorAzyk({
-            data: `Err: ${err.message}${err.path?` Path: ${err.path}`:''}`,
+            err: err.message,
+            path: err.path
         });
         ModelsErrorAzyk.create(_object)
         console.error(err)
