@@ -31,9 +31,10 @@ const SubscriberAzyk = require('./subscriberAzyk');
 const AgentRouteAzyk = require('./agentRouteAzyk');
 const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
+const ErrorAzyk = require('./errorAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
-let logger = require('logger').createLogger('error.log');
+const ModelsErrorAzyk = require('../models/errorAzyk');
 
 const typeDefs = gql`
     scalar Date
@@ -53,6 +54,7 @@ const typeDefs = gql`
         image: String
     }
     ${DistrictAzyk.type}
+    ${ErrorAzyk.type}
     ${AgentRouteAzyk.type}
     ${DistributerAzyk.type}
     ${Integrate1CAzyk.type}
@@ -84,6 +86,7 @@ const typeDefs = gql`
     type Mutation {
         ${Integrate1CAzyk.mutation}
         ${DistrictAzyk.mutation}
+        ${ErrorAzyk.mutation}
         ${AgentRouteAzyk.mutation}
         ${DistributerAzyk.mutation}
         ${AdsAzyk.mutation}
@@ -115,6 +118,7 @@ const typeDefs = gql`
     type Query {
         ${Integrate1CAzyk.query}
         ${DistrictAzyk.query}
+        ${ErrorAzyk.query}
         ${AgentRouteAzyk.query}
         ${DistributerAzyk.query}
         ${ClientAzyk.query}
@@ -169,6 +173,7 @@ const resolvers = {
     Query: {
         ...Integrate1CAzyk.resolvers,
         ...DistrictAzyk.resolvers,
+        ...ErrorAzyk.resolvers,
         ...AgentRouteAzyk.resolvers,
         ...DistributerAzyk.resolvers,
         ...FaqAzyk.resolvers,
@@ -201,6 +206,7 @@ const resolvers = {
         ...Integrate1CAzyk.resolversMutation,
         ...AgentRouteAzyk.resolversMutation,
         ...DistrictAzyk.resolversMutation,
+        ...ErrorAzyk.resolversMutation,
         ...DistributerAzyk.resolversMutation,
         ...FaqAzyk.resolversMutation,
         ...ClientAzyk.resolversMutation,
@@ -269,7 +275,12 @@ const run = (app)=>{
         },
         formatError: (err) => {
             console.error(err)
-            logger.info(err.message);
+
+            let _object = new ModelsErrorAzyk({
+                data: err.message,
+            });
+            ModelsErrorAzyk.create(_object)
+
             return err;
         }
     })

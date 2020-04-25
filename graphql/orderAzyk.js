@@ -487,7 +487,7 @@ const resolvers = {
             }).distinct('_id').lean()
         }
         if(user.role==='admin') {
-            console.time('get BD')
+            //console.time('get BD')
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -614,7 +614,7 @@ const resolvers = {
                         }
                     }
                 ])
-            console.timeEnd('get BD')
+            //console.timeEnd('get BD')
             return invoices
         }
         else if(user.role==='client'){

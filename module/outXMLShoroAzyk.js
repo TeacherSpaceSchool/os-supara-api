@@ -8,9 +8,9 @@ const Integrate1CAzyk = require('../models/integrate1CAzyk');
 const InvoiceAzyk = require('../models/invoiceAzyk');
 const ReturnedAzyk = require('../models/returnedAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
-const AdsAzyk = require('../models/adsAzyk');
+const EmploymentAzyk = require('../models/employmentAzyk');
 const OutXMLAdsShoroAzyk = require('../models/outXMLAdsShoroAzyk');
-const { pdDDMMYYYY } = require('../module/const');
+const { pdDDMMYYYY, checkInt } = require('../module/const');
 const uuidv1 = require('uuid/v1.js');
 const xml = require('xml');
 const builder = require('xmlbuilder');
@@ -71,7 +71,8 @@ module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
                                 guid: guidItem.guid,
                                 qt: returned.items[i].count,
                                 price: returned.items[i].price,
-                                amount: returned.items[i].allPrice
+                                amount: returned.items[i].allPrice,
+                                priotiry: returned.items[i].priotiry
                             })
                     }
                     await OutXMLReturnedShoroAzyk.create(newOutXMLReturnedShoroAzyk);
@@ -97,7 +98,8 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                     package: Math.round(invoice.orders[i].count/(invoice.orders[i].item.packaging?invoice.orders[i].item.packaging:1)),
                     qt:  invoice.orders[i].count,
                     price: (invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price),
-                    amount: Math.round(invoice.orders[i].count*(invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price))
+                    amount: Math.round(invoice.orders[i].count*(invoice.orders[i].item.stock?invoice.orders[i].item.stock:invoice.orders[i].item.price)),
+                    priotiry: invoice.orders[i].item.priotiry
                 })
         }
         await outXMLShoroAzyk.save()
@@ -141,7 +143,8 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                                 package: Math.round(invoice.orders[i].count / (invoice.orders[i].item.packaging ? invoice.orders[i].item.packaging : 1)),
                                 qt: invoice.orders[i].count,
                                 price: (invoice.orders[i].item.stock ? invoice.orders[i].item.stock : invoice.orders[i].item.price),
-                                amount: Math.round(invoice.orders[i].count * (invoice.orders[i].item.stock ? invoice.orders[i].item.stock : invoice.orders[i].item.price))
+                                amount: Math.round(invoice.orders[i].count * (invoice.orders[i].item.stock ? invoice.orders[i].item.stock : invoice.orders[i].item.price)),
+                                priotiry: invoice.orders[i].item.priotiry
                             })
                     }
                     await OutXMLShoroAzyk.create(newOutXMLShoroAzyk);
@@ -261,6 +264,10 @@ module.exports.checkOutXMLClientShoroAzyk = async(guid, exc) => {
     }
 }
 
+module.exports.checkOutXMLEmploymentShoroAzyk = async({guid, name}) => {
+
+}
+
 module.exports.getOutXMLShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'sales');
     let outXMLShoros = await OutXMLShoroAzyk
@@ -282,6 +289,10 @@ module.exports.getOutXMLShoroAzyk = async() => {
         item.att('forwarder', outXMLShoros[i].forwarder)
         item.att('date', pdDDMMYYYY(outXMLShoros[i].date))
         item.att('coment', outXMLShoros[i].invoice?`${outXMLShoros[i].invoice.info} ${outXMLShoros[i].invoice.address[2]?`${outXMLShoros[i].invoice.address[2]}, `:''}${outXMLShoros[i].invoice.address[0]}`:'')
+
+        outXMLShoros[i].data = outXMLShoros[i].data.sort(function (a, b) {
+            return checkInt(a.priotiry) - checkInt(b.priotiry)
+        });
 
         for(let ii=0;ii<outXMLShoros[i].data.length;ii++){
             item.ele('product')
@@ -384,6 +395,11 @@ module.exports.getOutXMLReturnedShoroAzyk = async() => {
         item.att('date', pdDDMMYYYY(outXMLReturnedShoros[i].date))
         item.att('track', outXMLReturnedShoros[i].track?outXMLReturnedShoros[i].track:1)
         item.att('coment', `${outXMLReturnedShoros[i].returned.info} ${outXMLReturnedShoros[i].returned.address[2]?`${outXMLReturnedShoros[i].returned.address[2]}, `:''}${outXMLReturnedShoros[i].returned.address[0]}`)
+
+        outXMLReturnedShoros[i].data = outXMLReturnedShoros[i].data.sort(function (a, b) {
+            return checkInt(a.priotiry) - checkInt(b.priotiry)
+        });
+
         for(let ii=0;ii<outXMLReturnedShoros[i].data.length;ii++){
             item.ele('product')
                 .att('guid', outXMLReturnedShoros[i].data[ii].guid)
@@ -459,7 +475,8 @@ module.exports.reductionOutAdsXMLShoroAzyk = async() => {
                                             qt: 0,
                                             price: (guidItems[orders[i1].adss[i2].item].item.stock ? guidItems[orders[i1].adss[i2].item].item.stock : guidItems[orders[i1].adss[i2].item].item.price),
                                             amount: 0,
-                                            package: (guidItems[orders[i1].adss[i2].item].item.packaging ? guidItems[orders[i1].adss[i2].item].item.packaging : 1)
+                                            package: (guidItems[orders[i1].adss[i2].item].item.packaging ? guidItems[orders[i1].adss[i2].item].item.packaging : 1),
+                                            priotiry: guidItems[orders[i1].adss[i2].item].item.priotiry
                                         }
                                     itemsData[guidItems[orders[i1].adss[i2].item].guid].qt += orders[i1].adss[i2].count
                                 }
@@ -473,6 +490,7 @@ module.exports.reductionOutAdsXMLShoroAzyk = async() => {
                             package: Math.round(itemData.qt / itemData.package),
                             qt: itemData.qt,
                             price: itemData.price,
+                            priotiry: itemData.priotiry,
                             amount: Math.round(itemData.qt * itemData.price)
                         }
                     })
