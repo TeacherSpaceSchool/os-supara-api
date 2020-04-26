@@ -264,10 +264,6 @@ module.exports.checkOutXMLClientShoroAzyk = async(guid, exc) => {
     }
 }
 
-module.exports.checkOutXMLEmploymentShoroAzyk = async({guid, name}) => {
-
-}
-
 module.exports.getOutXMLShoroAzyk = async() => {
     let result = builder.create('root').att('mode', 'sales');
     let outXMLShoros = await OutXMLShoroAzyk

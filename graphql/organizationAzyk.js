@@ -13,6 +13,7 @@ const ItemAzyk = require('../models/itemAzyk');
 const BasketAzyk = require('../models/basketAzyk');
 const UserAzyk = require('../models/userAzyk');
 const AdsAzyk = require('../models/adsAzyk');
+const PlanAzyk = require('../models/planAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -203,7 +204,6 @@ const resolversMutation = {
                 }
                 await distributers[i].save()
             }
-            await OrganizationAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
             let bonus = await BonusAzyk.find({organization: {$in: _id}});
             bonus = bonus.map(element=>element._id)
             await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
@@ -211,6 +211,8 @@ const resolversMutation = {
             await AutoAzyk.deleteMany({organization: {$in: _id}})
             await EquipmentAzyk.deleteMany({organization: {$in: _id}})
             await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted', status: 'deactive'})
+            await AdsAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
+            await PlanAzyk.deleteMany({organization: {$in: _id}})
         }
         return {data: 'OK'}
     },

@@ -131,7 +131,11 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteBasketAll: async(parent, ctx, { user }) => {
-        await BasketAzyk.deleteMany({agent: user.employment})
+        await BasketAzyk.deleteMany(
+            user.client ?
+                {client: user.client}
+                    :
+                { agent: user.employment})
         return {data: 'OK'}
     }
 };
