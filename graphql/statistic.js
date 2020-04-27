@@ -2358,7 +2358,7 @@ const resolvers = {
                 }
             }
             if(organization!=='super') {
-                organization = await OrganizationAzyk.findOne({_id: user.organization})
+                organization = await OrganizationAzyk.findOne({_id: organization})
             }
             else {
                 organization = await ContactAzyk.findOne()
