@@ -40,9 +40,10 @@ const resolvers = {
     organizationsWithoutDistributer: async(parent, { distributer }, {user}) => {
         if('admin'===user.role){
             let organizations = await DistributerAzyk
-                .findOne({distributer: distributer})
+                .findOne({distributer: distributer!=='super'?distributer:null})
                 .distinct('organizations')
-            organizations = [distributer, ...organizations]
+            if(distributer!=='super')
+                organizations = [distributer, ...organizations]
             organizations = await OrganizationAzyk
                 .find({_id: { $nin: organizations}, del: {$ne: 'deleted'}})
                 .sort('-name')
@@ -51,8 +52,13 @@ const resolvers = {
         }
     },
     distributer: async(parent, {_id}, {user}) => {
-        if(mongoose.Types.ObjectId.isValid(_id)&&user.role==='admin'){
-            return await DistributerAzyk.findOne({$or:[{_id: _id}, {distributer: _id}]})
+        if((mongoose.Types.ObjectId.isValid(_id)||_id==='super')&&user.role==='admin'){
+            return await DistributerAzyk.findOne(
+                _id!=='super'?
+                    {$or:[{_id: _id}, {distributer: _id}]}
+                    :
+                    {distributer: null}
+            )
                 .populate('organizations')
                 .populate('distributer')
         }
@@ -64,7 +70,7 @@ const resolversMutation = {
     addDistributer: async(parent, {distributer, organizations}, {user}) => {
         if(['admin'].includes(user.role)){
             let _object = new DistributerAzyk({
-                distributer: distributer,
+                distributer: distributer!=='super'?distributer:null,
                 organizations: organizations
             });
             await DistributerAzyk.create(_object)

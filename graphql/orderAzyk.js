@@ -2136,11 +2136,13 @@ const resolversMutation = {
                 .lean()
             if(distributers.length>0){
                 for(let i=0; i<distributers.length; i++){
-                    district = await DistrictAzyk.findOne({
-                        organization: distributers[i].distributer,
-                        client: client
-                    })
-                        .lean()
+                    if(distributers[i].distributer){
+                        district = await DistrictAzyk.findOne({
+                            organization: distributers[i].distributer,
+                            client: client
+                        })
+                            .lean()
+                    }
                 }
             }
             if(!district) {
@@ -2716,10 +2718,10 @@ const resolversSubscription = {
             () => pubsub.asyncIterator(RELOAD_ORDER),
             (payload, variables, {user} ) => {
                 return (
-                    user._id.toString()!==payload.reloadOrder.who&&
+                    user&&user.role&&user._id&&user._id.toString()!==payload.reloadOrder.who&&
                     (
                         'admin'===user.role||
-                        (user.client&&payload.reloadOrder.client.toString()===user.client.toString())||
+                        (user.client&&payload.reloadOrder.client&&payload.reloadOrder.client.toString()===user.client.toString())||
                         (user.employment&&payload.reloadOrder.superagent&&payload.reloadOrder.superagent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||

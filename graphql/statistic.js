@@ -4,12 +4,15 @@ const OrderAzyk = require('../models/orderAzyk');
 const ReturnedAzyk = require('../models/returnedAzyk');
 const ClientAzyk = require('../models/clientAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const ContactAzyk = require('../models/contactAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
 const AgentRouteAzyk = require('../models/agentRouteAzyk');
 const ItemAzyk = require('../models/itemAzyk');
 const UserAzyk = require('../models/userAzyk');
 const AdsAzyk = require('../models/adsAzyk');
+const {pdDDMMYYYY} = require('../module/const');
 const ExcelJS = require('exceljs');
 const randomstring = require('randomstring');
 const app = require('../app');
@@ -18,6 +21,7 @@ const path = require('path');
 const { urlMain, saveFile, deleteFile, weekDay, pdDDMMYYHHMM, pdHHMM } = require('../module/const');
 const readXlsxFile = require('read-excel-file/node');
 const AgentHistoryGeoAzyk = require('../models/agentHistoryGeoAzyk');
+const AutoAzyk = require('../models/autoAzyk');
 
 const type = `
     type Statistic {
@@ -44,6 +48,7 @@ const type = `
 `;
 
 const query = `
+    unloadingInvoices(organization: ID!, dateStart: Date!): Data
     unloadingOrders(organization: ID!, dateStart: Date!): Data
     unloadingClients(organization: ID!): Data
     unloadingEmployments(organization: ID!): Data
@@ -2179,43 +2184,11 @@ const resolvers = {
                 })
                 .populate({
                     path : 'client'
+                })
+                .populate({
+                    path : 'adss'
                 }).lean()
             let worksheet;
-            let orders = {};
-            for(let i = 0; i<data.length;i++){
-                let allPrice = 0
-                let consignmentPrice = 0
-                let address = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`
-                let client = `${data[i].client._id}${address}`
-                if(!orders[client]) {
-                    orders[client]= {
-                        client: data[i].client,
-                        address: address,
-                        orders: {},
-                        allPrice: 0,
-                        consignmentPrice: 0
-                    }
-                }
-                for(let i1 = 0; i1<data[i].orders.length; i1++) {
-                    if(!orders[client].orders[data[i].orders[i1].item._id]) {
-                        orders[client].orders[data[i].orders[i1].item._id] = {
-                            allPrice: 0,
-                            consignmentPrice: 0,
-                            count: 0,
-                            packaging: data[i].orders[i1].item.packaging,
-                            name: data[i].orders[i1].item.name
-                        }
-                    }
-                    orders[client].orders[data[i].orders[i1].item._id].allPrice += data[i].orders[i1].allPrice
-                    orders[client].orders[data[i].orders[i1].item._id].count += data[i].orders[i1].count
-                    orders[client].orders[data[i].orders[i1].item._id].consignmentPrice += data[i].orders[i1].consignmentPrice
-                    allPrice += data[i].orders[i1].allPrice
-                    consignmentPrice += data[i].orders[i1].consignmentPrice
-                }
-                orders[client].allPrice += allPrice
-                orders[client].consignmentPrice += consignmentPrice
-            }
-            const keys = Object.keys(orders)
             worksheet = await workbook.addWorksheet('Заказы');
             worksheet.getColumn(1).width = 30;
             worksheet.getColumn(2).width = 20;
@@ -2223,7 +2196,7 @@ const resolvers = {
             worksheet.getColumn(4).width = 15;
             worksheet.getColumn(5).width = 15;
             let row = 1;
-            for(let i = 0; i<keys.length;i++){
+            for(let i = 0; i<data.length;i++){
                 if(i!==0) {
                     row += 2;
                 }
@@ -2232,28 +2205,38 @@ const resolvers = {
                 row += 1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Клиент:';
-                worksheet.getCell(`B${row}`).value = orders[keys[i]].client.name;
+                worksheet.getCell(`B${row}`).value = data[i].client.name;
                 row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Адрес:';
-                worksheet.getCell(`B${row}`).value = orders[keys[i]].address;
-                for(let i1=0; i1<orders[keys[i]].client.phone.length; i1++) {
+                worksheet.getCell(`B${row}`).value = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`;
+                for(let i1=0; i1<data[i].client.phone.length; i1++) {
                     row+=1;
                     if(!i1) {
                         worksheet.getCell(`A${row}`).font = {bold: true};
                         worksheet.getCell(`A${row}`).value = 'Телефон:';
                     }
-                    worksheet.getCell(`B${row}`).value = orders[keys[i]].client.phone[i1];
+                    worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
+                }
+                if(data[i].adss) {
+                    for(let i1=0; i1<data[i].adss.length; i1++) {
+                        row+=1;
+                        if(!i1) {
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Акция:';
+                        }
+                        worksheet.getCell(`B${row}`).value = data[i].adss[i1].title;
+                    }
                 }
                 row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Сумма:';
-                worksheet.getCell(`B${row}`).value = `${orders[keys[i]].allPrice} сом`;
-                if(orders[keys[i]].consignmentPrice>0) {
+                worksheet.getCell(`B${row}`).value = `${data[i].allPrice} сом`;
+                if(data[i].consignmentPrice>0) {
                     row+=1;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Консигнации:';
-                    worksheet.getCell(`B${row}`).value = `${orders[keys[i]].consignmentPrice} сом`;
+                    worksheet.getCell(`B${row}`).value = `${data[i].consignmentPrice} сом`;
                 }
                 row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
@@ -2264,21 +2247,256 @@ const resolvers = {
                 worksheet.getCell(`C${row}`).value = 'Упаковок:';
                 worksheet.getCell(`D${row}`).font = {bold: true};
                 worksheet.getCell(`D${row}`).value = 'Сумма:';
-                if(orders[keys[i]].consignmentPrice>0) {
+                if(data[i].consignmentPrice>0) {
                     worksheet.getCell(`E${row}`).font = {bold: true};
                     worksheet.getCell(`E${row}`).value = 'Консигнации:';
                 }
-                const keys1 = Object.keys(orders[keys[i]].orders)
+                const keys1 = Object.keys(data[i].orders)
                 for(let i1=0; i1<keys1.length; i1++) {
                     row += 1;
                     worksheet.addRow([
-                        orders[keys[i]].orders[keys1[i1]].name,
-                        `${orders[keys[i]].orders[keys1[i1]].count} шт`,
-                        `${Math.round(orders[keys[i]].orders[keys1[i1]].count/(orders[keys[i]].orders[keys1[i1]].packaging?orders[keys[i]].orders[keys1[i1]].packaging:1))} уп`,
-                        `${orders[keys[i]].orders[keys1[i1]].allPrice} сом`,
-                        orders[keys[i]].orders[keys1[i1]].consignmentPrice>0?`${orders[keys[i]].orders[keys1[i1]].consignmentPrice} сом`:''
+                        data[i].orders[keys1[i1]].name,
+                        `${data[i].orders[keys1[i1]].count} шт`,
+                        `${Math.round(data[i].orders[keys1[i1]].count/(data[i].orders[keys1[i1]].packaging?data[i].orders[keys1[i1]].packaging:1))} уп`,
+                        `${data[i].orders[keys1[i1]].allPrice} сом`,
+                        data[i].orders[keys1[i1]].consignmentPrice>0?`${data[i].orders[keys1[i1]].consignmentPrice} сом`:''
                     ]);
                 }
+            }
+            let xlsxname = `${randomstring.generate(20)}.xlsx`;
+            let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
+            if (!await fs.existsSync(xlsxdir)){
+                await fs.mkdirSync(xlsxdir);
+            }
+            let xlsxpath = path.join(app.dirname, 'public', 'xlsx', xlsxname);
+            await workbook.xlsx.writeFile(xlsxpath);
+            return({data: urlMain + '/xlsx/' + xlsxname})
+        }
+    },
+    unloadingInvoices: async(parent, { organization, dateStart }, {user}) => {
+        if(user.role==='admin'){
+            let workbook = new ExcelJS.Workbook();
+            let dateEnd
+            if(dateStart){
+                dateStart = new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+                dateEnd.setDate(dateEnd.getDate() + 1)
+            }
+            let data = []
+            if(organization!=='super'){
+                data = await InvoiceAzyk.find(
+                    {
+                        $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        organization: organization
+                    }
+                )
+                    .populate({
+                        path: 'orders',
+                        populate : [
+                            {
+                                path : 'item',
+                            }
+                        ]
+                    })
+                    .populate({
+                        path : 'client'
+                    })
+                    .populate({
+                        path : 'forwarder'
+                    })
+                    .populate({
+                        path : 'agent'
+                    })
+                    .populate({
+                        path : 'adss'
+                    })
+                    .lean()
+            }
+            let distributers = await DistributerAzyk.findOne({
+                distributer: organization==='super'?null:organization
+            })
+            let clients = await DistrictAzyk.find({
+                organization: organization==='super'?null:organization,
+            }).distinct('client')
+            if(distributers){
+                for(let i = 0; i<distributers.organizations.length;i++) {
+                    data = [...(await InvoiceAzyk.find(
+                        {
+                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                            del: {$ne: 'deleted'},
+                            taken: true,
+                            organization: distributers.organizations[i],
+                            client: {$in: clients}
+                        }
+                    )
+                        .populate({
+                            path: 'orders',
+                            populate : [
+                                {
+                                    path : 'item',
+                                }
+                            ]
+                        })
+                        .populate({
+                            path : 'client'
+                        })
+                        .populate({
+                            path : 'forwarder'
+                        })
+                        .populate({
+                            path : 'agent'
+                        })
+                        .populate({
+                            path : 'adss'
+                        })
+                        .lean()),
+                        ...data
+                    ]
+                }
+            }
+            if(organization!=='super') {
+                organization = await OrganizationAzyk.findOne({_id: user.organization})
+            }
+            else {
+                organization = await ContactAzyk.findOne()
+            }
+            let worksheet;
+            let auto
+            for(let i = 0; i<data.length;i++){
+                worksheet = await workbook.addWorksheet(`Накладная ${data[i].number}`);
+                worksheet.getColumn(1).width = 25;
+                worksheet.getColumn(2).width = 15;
+                worksheet.getColumn(3).width = 15;
+                worksheet.getColumn(4).width = 15;
+                worksheet.getColumn(5).width = 15;
+                let row = 1;
+                let date = data[i].createdAt;
+                date = date.setDate(date.getDate() + 1)
+                worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
+                worksheet.getCell(`A${row}`).value = `Накладная №${data[i].number} от ${pdDDMMYYYY(date)}`;
+                row+=2;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Продавец:';
+                worksheet.getCell(`B${row}`).value = organization.name;
+                if(organization.address&&organization.address.length>0) {
+                    row += 1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Адрес продавца:';
+                    worksheet.getCell(`B${row}`).value = `${organization.address.toString()}`;
+                }
+                if(organization.phone&&organization.phone.length>0){
+                    row+=1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Телефон продавца:';
+                    worksheet.getCell(`B${row}`).value = organization.phone.toString();
+                }
+                row+=2;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Получатель:';
+                worksheet.getCell(`B${row}`).value = data[i].client.name;
+                row+=1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Адрес получателя:';
+                worksheet.getCell(`B${row}`).value = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`;
+                for(let i1=0; i1<data[i].client.phone.length; i1++) {
+                    row+=1;
+                    if(!i1) {
+                        worksheet.getCell(`A${row}`).font = {bold: true};
+                        worksheet.getCell(`A${row}`).value = 'Телефон получателя:';
+                    }
+                    worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
+                }
+                if(data[i].forwarder){
+                    row+=2;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = 'Экспедитор:';
+                    worksheet.getCell(`B${row}`).value = data[i].forwarder.name;
+                    if(data[i].forwarder.phone&&data[i].forwarder.phone.length>0) {
+                        worksheet.getCell(`C${row}`).font = {bold: true};
+                        worksheet.getCell(`C${row}`).value = 'Тел:';
+                        worksheet.getCell(`D${row}`).value = data[i].forwarder.phone.toString()
+                    }
+                    auto = await AutoAzyk.findOne({employment: data[i].forwarder._id})
+                    row+=1;
+                    worksheet.getCell(`A${row}`).font = {bold: true};
+                    worksheet.getCell(`A${row}`).value = '№ рейса:';
+                    worksheet.getCell(`B${row}`).value = data[i].track.toString();
+                    if(auto&&auto.number){
+                        worksheet.getCell(`C${row}`).font = {bold: true};
+                        worksheet.getCell(`C${row}`).value = '№ авто:';
+                        worksheet.getCell(`D${row}`).value = auto.number;
+                    }
+                }
+                row+=1;
+                if(data[i].adss) {
+                    for(let i1=0; i1<data[i].adss.length; i1++) {
+                        row+=1;
+                        if(!i1) {
+                            worksheet.getCell(`A${row}`).font = {bold: true};
+                            worksheet.getCell(`A${row}`).value = 'Акция:';
+                        }
+                        worksheet.getCell(`B${row}`).value = data[i].adss[i1].title;
+                    }
+                }
+                row+=2;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`A${row}`).value = 'Товар:';
+                worksheet.getCell(`B${row}`).font = {bold: true};
+                worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`B${row}`).value = 'Количество:';
+                worksheet.getCell(`C${row}`).font = {bold: true};
+                worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`C${row}`).value = 'Упаковок:';
+                worksheet.getCell(`D${row}`).font = {bold: true};
+                worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`D${row}`).value = 'Сумма:';
+                if(data[i].consignmentPrice>0) {
+                    worksheet.getCell(`E${row}`).font = {bold: true};
+                    worksheet.getCell(`E${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`E${row}`).value = 'Консигнации:';
+                }
+                for(let i1=0; i1<data[i].orders.length; i1++) {
+                    row += 1;
+                    worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`A${row}`).alignment = { wrapText: true };
+                    worksheet.getCell(`A${row}`).value = data[i].orders[i1].item.name;
+                    worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`B${row}`).value = `${data[i].orders[i1].count} шт`;
+                    worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`C${row}`).value = `${Math.round(data[i].orders[[i1]].count/(data[i].orders[[i1]].packaging?data[i].orders[[i1]].packaging:1))} уп`;
+                    worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`D${row}`).value = `${data[i].orders[[i1]].allPrice} сом`;
+                    if(data[i].orders[[i1]].consignmentPrice>0) {
+                        worksheet.getCell(`E${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                        worksheet.getCell(`E${row}`).value = `${data[i].orders[[i1]].consignmentPrice} сом`;
+                    }
+                }
+
+                row+=1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`A${row}`).value = 'Товаров:';
+                worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`B${row}`).value = `${data[i].orders.length} шт`;
+                worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`C${row}`).font = {bold: true};
+                worksheet.getCell(`C${row}`).value = 'Сумма:';
+                worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`D${row}`).value = `${data[i].allPrice} сом`;
+                row+=2;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Отпустил:';
+                worksheet.getCell(`B${row}`).border = {bottom: {style:'thin'}};
+                worksheet.getCell(`C${row}`).border = {bottom: {style:'thin'}};
+                row+=1;
+                worksheet.getCell(`A${row}`).font = {bold: true};
+                worksheet.getCell(`A${row}`).value = 'Получил:';
+                worksheet.getCell(`B${row}`).border = {bottom: {style:'thin'}};
+                worksheet.getCell(`C${row}`).border = {bottom: {style:'thin'}};
             }
             let xlsxname = `${randomstring.generate(20)}.xlsx`;
             let xlsxdir = path.join(app.dirname, 'public', 'xlsx');
