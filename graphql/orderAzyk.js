@@ -89,6 +89,7 @@ const type = `
     superagent: ID
     manager: ID
     organization: ID
+    distributer: ID
     invoice: Invoice
     type: String
   }
@@ -2309,6 +2310,7 @@ const resolversMutation = {
                 client: client,
                 organization: organization,
                 invoice: newInvoice,
+                distributer: district&&district.organization.toString()!==organization.toString()?district.organization:undefined,
                 manager: district?district.manager:undefined,
                 type: 'ADD'
             } });
@@ -2330,14 +2332,34 @@ const resolversMutation = {
             for(let i=0; i<objects.length; i++){
                 objects[i].del = 'deleted'
                 await objects[i].save()
-                let district = await DistrictAzyk.findOne({
-                    organization: objects[i].organization,
-                    client: objects[i].client
-                }).lean()
                 let superDistrict = await DistrictAzyk.findOne({
                     organization: null,
                     client: objects[i].client
-                }).lean()
+                })
+                    .lean();
+                let district = null;
+                let distributers = await DistributerAzyk.find({
+                    organizations: objects[i].organization
+                })
+                    .lean()
+                if(distributers.length>0){
+                    for(let i=0; i<distributers.length; i++){
+                        if(distributers[i].distributer){
+                            district = await DistrictAzyk.findOne({
+                                organization: distributers[i].distributer,
+                                client: objects[i].client
+                            })
+                                .lean()
+                        }
+                    }
+                }
+                if(!district) {
+                    district = await DistrictAzyk.findOne({
+                        organization: objects[i].organization,
+                        client: objects[i].client
+                    })
+                        .lean()
+                }
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: objects[i].client,
@@ -2345,6 +2367,7 @@ const resolversMutation = {
                     superagent: superDistrict?superDistrict.agent:undefined,
                     organization: objects[i].organization,
                     invoice: {_id: objects[i]._id},
+                    distributer: district&&district.organization.toString()!==objects[i].organization.toString()?district.organization:undefined,
                     manager: district?district.manager:undefined,
                     type: 'DELETE'
                 } });
@@ -2383,21 +2406,42 @@ const resolversMutation = {
             .populate({path: 'adss'})
             .populate({path: 'forwarder'})
         if(resInvoices.length>0){
-            let district = await DistrictAzyk.findOne({
-                organization: resInvoices[0].organization,
-                client: resInvoices[0].client._id
-            }).lean()
             let superDistrict = await DistrictAzyk.findOne({
                 organization: null,
                 client: resInvoices[0].client._id
-            }).lean()
+            })
+                .lean();
+            let district = null;
+            let distributers = await DistributerAzyk.find({
+                organizations: resInvoices[0].organization._id
+            })
+                .lean()
+            if(distributers.length>0){
+                for(let i=0; i<distributers.length; i++){
+                    if(distributers[i].distributer){
+                        district = await DistrictAzyk.findOne({
+                            organization: distributers[i].distributer,
+                            client: resInvoices[0].client._id
+                        })
+                            .lean()
+                    }
+                }
+            }
+            if(!district) {
+                district = await DistrictAzyk.findOne({
+                    organization: resInvoices[0].organization._id,
+                    client: resInvoices[0].client._id
+                })
+                    .lean()
+            }
             for(let i=0; i<resInvoices.length; i++){
                 pubsub.publish(RELOAD_ORDER, { reloadOrder: {
                     who: user.role==='admin'?null:user._id,
                     client: resInvoices[i].client._id,
                     agent: district?district.agent:undefined,
                     superagent: superDistrict?superDistrict.agent:undefined,
-                    organization: resInvoices[i].organization,
+                    organization: resInvoices[i].organization._id,
+                    distributer: district&&district.organization.toString()!==resInvoices[i].organization._id.toString()?district.organization:undefined,
                     invoice: resInvoices[i],
                     manager: district?district.manager:undefined,
                     type: 'SET'
@@ -2499,20 +2543,43 @@ const resolversMutation = {
                 resInvoice.sync = await cancelOutXMLShoroAzyk(resInvoice)
             }
         }
-        let district = await DistrictAzyk.findOne({
-            organization: resInvoice.organization,
-            client: resInvoice.client._id
-        }).lean()
+
         let superDistrict = await DistrictAzyk.findOne({
             organization: null,
             client: resInvoice.client._id
-        }).lean()
+        })
+            .lean();
+        let district = null;
+        let distributers = await DistributerAzyk.find({
+            organizations: resInvoice.organization._id
+        })
+            .lean()
+        if(distributers.length>0){
+            for(let i=0; i<distributers.length; i++){
+                if(distributers[i].distributer){
+                    district = await DistrictAzyk.findOne({
+                        organization: distributers[i].distributer,
+                        client: resInvoice.client._id
+                    })
+                        .lean()
+                }
+            }
+        }
+        if(!district) {
+            district = await DistrictAzyk.findOne({
+                organization: resInvoice.organization._id,
+                client: resInvoice.client._id
+            })
+                .lean()
+        }
+
         pubsub.publish(RELOAD_ORDER, { reloadOrder: {
             who: user.role==='admin'?null:user._id,
             client: resInvoice.client._id,
             agent: district?district.agent:undefined,
             superagent: superDistrict?superDistrict.agent:undefined,
-            organization: resInvoice.organization,
+            organization: resInvoice.organization._id,
+            distributer: district&&district.organization.toString()!==resInvoice.organization._id.toString()?district.organization:undefined,
             invoice: resInvoice,
             manager: district?district.manager:undefined,
             type: 'SET'
@@ -2725,6 +2792,7 @@ const resolversSubscription = {
                         (user.employment&&payload.reloadOrder.superagent&&payload.reloadOrder.superagent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
+                        (user.organization&&payload.reloadOrder.distributer&&'организация'===user.role&&payload.reloadOrder.distributer.toString()===user.organization.toString())||
                         (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString())
                     )
                 )

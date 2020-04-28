@@ -48,7 +48,7 @@ const type = `
 `;
 
 const query = `
-    unloadingInvoices(organization: ID!, dateStart: Date!): Data
+    unloadingInvoices(organization: ID!, forwarder: ID, dateStart: Date!, all: Boolean): Data
     unloadingOrders(organization: ID!, dateStart: Date!): Data
     unloadingClients(organization: ID!): Data
     unloadingEmployments(organization: ID!): Data
@@ -1254,14 +1254,10 @@ const resolvers = {
                 }
             )
                 .populate({
-                    path: 'client'
-                })
-                .populate({
                     path: 'adss'
                 })
                 .lean()
             for(let i=0; i<data.length; i++) {
-                if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     for(let i1=0; i1<data[i].adss.length; i1++) {
                         if (!statistic[data[i].adss[i1]._id]) statistic[data[i].adss[i1]._id] = {
                             profit: 0,
@@ -1272,8 +1268,6 @@ const resolvers = {
                             statistic[data[i].adss[i1]._id].complet.push(data[i]._id.toString())
                         statistic[data[i].adss[i1]._id].profit += data[i].allPrice - data[i].returnedPrice
                     }
-
-                }
             }
             const keys = Object.keys(statistic)
             data = []
@@ -1357,20 +1351,15 @@ const resolvers = {
                         }
                     ]
                 })
-                .populate({
-                    path: 'client'
-                })
                 .lean()
             for(let i=0; i<data.length; i++) {
                 for(let ii=0; ii<data[i].orders.length; ii++) {
                     data[i].orders[ii].invoice = data[i]._id
-                    data[i].orders[ii].client = data[i].client
                 }
             }
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
 
             for(let i=0; i<data.length; i++) {
-                if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
                         cancel: [],
@@ -1392,7 +1381,6 @@ const resolvers = {
                             statistic[data[i].item._id].consignmentPrice += data[i].consignmentPrice
                         }
                     }
-                }
             }
             const keys = Object.keys(statistic)
             data = []
@@ -1478,13 +1466,9 @@ const resolvers = {
                     .populate({
                         path: 'organization'
                     })
-                    .populate({
-                        path: 'client'
-                    })
                     .lean()
 
                 for(let i=0; i<data.length; i++) {
-                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                         if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
                             profit: 0,
                             cancel: [],
@@ -1499,8 +1483,6 @@ const resolvers = {
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                             statistic[data[i].organization._id].consignmentPrice += data[i].consignmentPrice
                         }
-
-                    }
                 }
             }
             else {
@@ -1530,19 +1512,14 @@ const resolvers = {
                             agent: {$nin: agents},
                         }
                     )
-                        .populate({
-                            path: 'client'
-                        })
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
-                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
-                            if(!statistic[districts[i]._id].complet.includes(data[i1]._id.toString())) {
-                                statistic[districts[i]._id].complet.push(data[i1]._id.toString())
-                            }
-                            statistic[districts[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
-                            if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
-                                statistic[districts[i]._id].consignmentPrice += data[i1].consignmentPrice
-                            }
+                       if(!statistic[districts[i]._id].complet.includes(data[i1]._id.toString())) {
+                           statistic[districts[i]._id].complet.push(data[i1]._id.toString())
+                       }
+                        statistic[districts[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
+                        if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
+                            statistic[districts[i]._id].consignmentPrice += data[i1].consignmentPrice
                         }
                     }
                 }
@@ -1567,13 +1544,8 @@ const resolvers = {
                         agent: {$nin: agents},
                     }
                 )
-                    .populate({
-                        path: 'client'
-                    })
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
-                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
-
                         if(!statistic['without'].complet.includes(data[i1]._id.toString()))
                             statistic['without'].complet.push(data[i1]._id.toString())
 
@@ -1581,8 +1553,6 @@ const resolvers = {
                         if (data[i1].consignmentPrice && !data[i1].paymentConsignation)
                             statistic['without'].consignmentPrice += data[i1].consignmentPrice
 
-
-                    }
                 }
 
             }
@@ -1662,13 +1632,9 @@ const resolvers = {
                     .populate({
                         path: 'organization'
                     })
-                    .populate({
-                        path: 'client'
-                    })
                     .lean()
 
                 for(let i=0; i<data.length; i++) {
-                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                         if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
                             profit: 0,
                             complet: 0,
@@ -1676,7 +1642,6 @@ const resolvers = {
                         }
                         statistic[data[i].organization._id].complet+=1
                         statistic[data[i].organization._id].profit += data[i].allPrice
-                    }
                 }
             }
             else {
@@ -1700,15 +1665,10 @@ const resolvers = {
                             organization: districts[i].organization,
                         }
                     )
-                        .populate({
-                            path: 'client'
-                        })
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
-                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                             statistic[districts[i]._id].complet+=1
                             statistic[districts[i]._id].profit += data[i1].allPrice
-                        }
                     }
                 }
 
@@ -1729,15 +1689,10 @@ const resolvers = {
                         organization: company,
                     }
                 )
-                    .populate({
-                        path: 'client'
-                    })
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
-                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
                         statistic['without'].complet+=1
                         statistic['without'].profit += data[i1].allPrice
-                    }
                 }
 
             }
@@ -1813,14 +1768,10 @@ const resolvers = {
                     .populate({
                         path: 'organization'
                     })
-                    .populate({
-                        path: 'client'
-                    })
                     .populate({path: 'agent',populate: [{path: 'user'}]})
                     .lean()
 
                 for(let i=0; i<data.length; i++) {
-                    if (!(data[i].client.name.toLowerCase()).includes('агент')&&!(data[i].client.name.toLowerCase()).includes('agent')) {
                         let type = data[i].agent&&!data[i].agent.user.role.includes('супер')?'оффлайн':'онлайн'
                         let id = `${type}${data[i].organization._id}`
                         if (!statistic[id]) statistic[id] = {
@@ -1837,7 +1788,6 @@ const resolvers = {
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                             statistic[id].consignmentPrice += data[i].consignmentPrice
                         }
-                    }
                 }
             }
             else {
@@ -1869,13 +1819,8 @@ const resolvers = {
                             agent: agents[i]._id
                         }
                     )
-                        .populate({
-                            path: 'client'
-                        })
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
-                        if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
-
                             if(!statistic[agents[i]._id].complet.includes(data[i1]._id.toString())) {
                                 statistic[agents[i]._id].complet.push(data[i1]._id.toString())
                             }
@@ -1883,8 +1828,6 @@ const resolvers = {
                             if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                                 statistic[agents[i]._id].consignmentPrice += data[i1].consignmentPrice
                             }
-
-                        }
                     }
                 }
 
@@ -1907,13 +1850,8 @@ const resolvers = {
                         ...(company==='super'?{}:{organization: company}),
                     }
                 )
-                    .populate({
-                        path: 'client'
-                    })
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
-                    if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
-
                         if(!statistic['without'].complet.includes(data[i1]._id.toString())) {
                             statistic['without'].complet.push(data[i1]._id.toString())
                         }
@@ -1921,8 +1859,6 @@ const resolvers = {
                         if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                             statistic['without'].consignmentPrice += data[i1].consignmentPrice
                         }
-
-                    }
                 }
 
             }
@@ -2272,7 +2208,7 @@ const resolvers = {
             return({data: urlMain + '/xlsx/' + xlsxname})
         }
     },
-    unloadingInvoices: async(parent, { organization, dateStart }, {user}) => {
+    unloadingInvoices: async(parent, { organization, dateStart, forwarder, all }, {user}) => {
         if(user.role==='admin'){
             let workbook = new ExcelJS.Workbook();
             let dateEnd
@@ -2314,46 +2250,48 @@ const resolvers = {
                     })
                     .lean()
             }
-            let distributers = await DistributerAzyk.findOne({
-                distributer: organization==='super'?null:organization
-            })
-            let clients = await DistrictAzyk.find({
-                organization: organization==='super'?null:organization,
-            }).distinct('client')
-            if(distributers){
-                for(let i = 0; i<distributers.organizations.length;i++) {
-                    data = [...(await InvoiceAzyk.find(
-                        {
-                            $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
-                            del: {$ne: 'deleted'},
-                            taken: true,
-                            organization: distributers.organizations[i],
-                            client: {$in: clients}
-                        }
-                    )
-                        .populate({
-                            path: 'orders',
-                            populate : [
-                                {
-                                    path : 'item',
-                                }
-                            ]
-                        })
-                        .populate({
-                            path : 'client'
-                        })
-                        .populate({
-                            path : 'forwarder'
-                        })
-                        .populate({
-                            path : 'agent'
-                        })
-                        .populate({
-                            path : 'adss'
-                        })
-                        .lean()),
-                        ...data
-                    ]
+            if(all){
+                let distributers = await DistributerAzyk.findOne({
+                    distributer: organization==='super'?null:organization
+                })
+                let clients = await DistrictAzyk.find({
+                    organization: organization==='super'?null:organization,
+                }).distinct('client')
+                if(distributers){
+                    for(let i = 0; i<distributers.organizations.length;i++) {
+                        data = [...(await InvoiceAzyk.find(
+                            {
+                                $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
+                                del: {$ne: 'deleted'},
+                                taken: true,
+                                organization: distributers.organizations[i],
+                                client: {$in: clients}
+                            }
+                        )
+                            .populate({
+                                path: 'orders',
+                                populate : [
+                                    {
+                                        path : 'item',
+                                    }
+                                ]
+                            })
+                            .populate({
+                                path : 'client'
+                            })
+                            .populate({
+                                path : 'forwarder'
+                            })
+                            .populate({
+                                path : 'agent'
+                            })
+                            .populate({
+                                path : 'adss'
+                            })
+                            .lean()),
+                            ...data
+                        ]
+                    }
                 }
             }
             if(organization!=='super') {
@@ -2379,31 +2317,26 @@ const resolvers = {
                 row+=2;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Продавец:';
-                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = organization.name;
                 if(organization.address&&organization.address.length>0) {
                     row += 1;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Адрес продавца:';
-                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = `${organization.address.toString()}`;
                 }
                 if(organization.phone&&organization.phone.length>0){
                     row+=1;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Телефон продавца:';
-                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = organization.phone.toString();
                 }
                 row+=2;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Получатель:';
-                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = data[i].client.name;
                 row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Адрес получателя:';
-                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`;
                 for(let i1=0; i1<data[i].client.phone.length; i1++) {
                     row+=1;
@@ -2411,20 +2344,21 @@ const resolvers = {
                         worksheet.getCell(`A${row}`).font = {bold: true};
                         worksheet.getCell(`A${row}`).value = 'Телефон получателя:';
                     }
-                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
+                }
+                if(forwarder){
+                    let district = await DistrictAzyk.findOne({client: data[i].client._id, organization: forwarder!=='super'?forwarder:null}).populate('ecspeditor').lean()
+                    data[i].forwarder = district?district.ecspeditor:null
                 }
                 if(data[i].forwarder){
                     row+=2;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Экспедитор:';
-                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = data[i].forwarder.name;
                     if(data[i].forwarder.phone&&data[i].forwarder.phone.length>0) {
                         row+=1;
                         worksheet.getCell(`A${row}`).font = {bold: true};
                         worksheet.getCell(`A${row}`).value = 'Тел:';
-                        worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                         worksheet.getCell(`B${row}`).value = data[i].forwarder.phone.toString()
                     }
                     auto = await AutoAzyk.findOne({employment: data[i].forwarder._id})
@@ -2438,8 +2372,8 @@ const resolvers = {
                         worksheet.getCell(`D${row}`).value = auto.number;
                     }
                 }
-                row+=1;
                 if(data[i].adss) {
+                    row+=1;
                     for(let i1=0; i1<data[i].adss.length; i1++) {
                         row+=1;
                         if(!i1) {

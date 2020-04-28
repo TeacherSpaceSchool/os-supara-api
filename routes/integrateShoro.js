@@ -11,8 +11,8 @@ router.post('/shoro/put/client', async (req, res, next) => {
         for(let i=0;i<req.body.elements[0].elements.length;i++) {
             await putOutXMLClientShoroAzyk({
                 guid: req.body.elements[0].elements[i].attributes.guid,
-                client: req.body.elements[0].elements[i].attributes.client,
-                addres: req.body.elements[0].elements[i].attributes.addres,
+                client: req.body.elements[0].elements[i].attributes.name,
+                addres: req.body.elements[0].elements[i].attributes.address,
                 agent: req.body.elements[0].elements[i].attributes.agent,
                 phone: req.body.elements[0].elements[i].attributes.phone
             })
