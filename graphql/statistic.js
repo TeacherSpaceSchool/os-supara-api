@@ -135,16 +135,16 @@ const resolvers = {
                     }
                 }
 
-                    if (type === 'повторяющиеся guid') {
-                        statistic = statistic.sort(function (a, b) {
-                            return a.data[0] - b.data[0]
-                        });
-                    }
-                    else {
-                        statistic = statistic.sort(function (a, b) {
-                            return a.data[1] - b.data[1]
-                        });
-                    }
+                if (type === 'повторяющиеся guid') {
+                    statistic = statistic.sort(function (a, b) {
+                        return a.data[0] - b.data[0]
+                    });
+                }
+                else {
+                    statistic = statistic.sort(function (a, b) {
+                        return a.data[1] - b.data[1]
+                    });
+                }
 
                 return {
                     columns: ['GUID', 'клиент'],
@@ -373,7 +373,7 @@ const resolvers = {
                                     profit = data.length
                                 profitAll+=profit
 
-                                    result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
+                                result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
                             }
                         }
                         else {
@@ -407,7 +407,7 @@ const resolvers = {
                                     profit = data.length
                                 profitAll+=profit
 
-                                    result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
+                                result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
                             }
                             if (!result[districts.length])
                                 result[districts.length] = {
@@ -438,7 +438,7 @@ const resolvers = {
                                 profit = data.length
                             profitAll+=profit
 
-                                result[districts.length].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
+                            result[districts.length].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
 
                         }
                         dateStart = dateEnd
@@ -486,7 +486,7 @@ const resolvers = {
                                     profit = data.length
                                 profitAll+=profit
 
-                                    result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                                result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                         }
                         else {
@@ -520,38 +520,38 @@ const resolvers = {
                                     profit = data.length
                                 profitAll+=profit
 
-                                    result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                                result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
-                                if (!result[districts.length])
-                                    result[districts.length] = {
-                                        label: 'Прочие',
-                                        data: []
-                                    }
-                                let data = await InvoiceAzyk.find(
-                                    {
-                                        $and: [
-                                            {createdAt: {$gte: dateStart}},
-                                            {createdAt: {$lt: dateEnd}}
-                                        ],
-                                        del: {$ne: 'deleted'},
-                                        taken: true,
-                                        client: {$nin: withoutDistricts},
-                                        organization: company,
-                                        agent: {$nin: agents}
-                                    }
-                                )
-                                    .lean()
-                                profit = 0
-                                if(type=='money') {
-                                    for (let i1 = 0; i1 < data.length; i1++) {
-                                        profit += data[i1].allPrice - data[i1].returnedPrice
-                                    }
+                            if (!result[districts.length])
+                                result[districts.length] = {
+                                    label: 'Прочие',
+                                    data: []
                                 }
-                                else
-                                    profit = data.length
-                                profitAll+=profit
+                            let data = await InvoiceAzyk.find(
+                                {
+                                    $and: [
+                                        {createdAt: {$gte: dateStart}},
+                                        {createdAt: {$lt: dateEnd}}
+                                    ],
+                                    del: {$ne: 'deleted'},
+                                    taken: true,
+                                    client: {$nin: withoutDistricts},
+                                    organization: company,
+                                    agent: {$nin: agents}
+                                }
+                            )
+                                .lean()
+                            profit = 0
+                            if(type=='money') {
+                                for (let i1 = 0; i1 < data.length; i1++) {
+                                    profit += data[i1].allPrice - data[i1].returnedPrice
+                                }
+                            }
+                            else
+                                profit = data.length
+                            profitAll+=profit
 
-                                result[districts.length].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                            result[districts.length].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
 
                         }
                         dateStart = dateEnd
@@ -626,39 +626,39 @@ const resolvers = {
                                     profit = data.length
                                 profitAll+=profit
 
-                                    result[i1].data.push([dateStart.getMonth()+1, profit])
+                                result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
 
-                                if (!result[districts.length])
-                                    result[districts.length] = {
-                                        label: 'Прочие',
-                                        data: []
-                                    }
-                                let data = await InvoiceAzyk.find(
-                                    {
-                                        $and: [
-                                            {createdAt: {$gte: dateStart}},
-                                            {createdAt: {$lt: dateEnd}}
-                                        ],
-                                        del: {$ne: 'deleted'},
-                                        taken: true,
-                                        client: {$nin: withoutDistricts},
-                                        organization: company,
-                                        agent: {$nin: agents}
-                                    }
-                                )
-                                    .lean()
-                                profit = 0
-                                if(type=='money') {
-                                    for (let i1 = 0; i1 < data.length; i1++) {
-                                        profit += data[i1].allPrice - data[i1].returnedPrice
-                                    }
+                            if (!result[districts.length])
+                                result[districts.length] = {
+                                    label: 'Прочие',
+                                    data: []
                                 }
-                                else
-                                    profit = data.length
-                                profitAll+=profit
+                            let data = await InvoiceAzyk.find(
+                                {
+                                    $and: [
+                                        {createdAt: {$gte: dateStart}},
+                                        {createdAt: {$lt: dateEnd}}
+                                    ],
+                                    del: {$ne: 'deleted'},
+                                    taken: true,
+                                    client: {$nin: withoutDistricts},
+                                    organization: company,
+                                    agent: {$nin: agents}
+                                }
+                            )
+                                .lean()
+                            profit = 0
+                            if(type=='money') {
+                                for (let i1 = 0; i1 < data.length; i1++) {
+                                    profit += data[i1].allPrice - data[i1].returnedPrice
+                                }
+                            }
+                            else
+                                profit = data.length
+                            profitAll+=profit
 
-                                result[districts.length].data.push([dateStart.getMonth()+1, profit])
+                            result[districts.length].data.push([dateStart.getMonth()+1, profit])
 
                         }
                     }
@@ -726,7 +726,7 @@ const resolvers = {
                                 profit = 0
                                 if(type=='money') {
                                     for (let i2 = 0; i2 < data.length; i2++) {
-                                         profit += data[i2].allPrice - data[i2].returnedPrice
+                                        profit += data[i2].allPrice - data[i2].returnedPrice
                                     }
                                 }
                                 else
@@ -735,36 +735,36 @@ const resolvers = {
                                 result[i1].data.push([dateStart.getFullYear(), profit])
                             }
 
-                                if (!result[districts.length])
-                                    result[districts.length] = {
-                                        label: 'Прочие',
-                                        data: []
-                                    }
-                                let data = await InvoiceAzyk.find(
-                                    {
-                                        $and: [
-                                            {createdAt: {$gte: dateStart}},
-                                            {createdAt: {$lt: dateEnd}}
-                                        ],
-                                        del: {$ne: 'deleted'},
-                                        client: {$nin: withoutDistricts},
-                                        organization: company,
-                                        taken: true,
-                                        agent: {$nin: agents}
-                                    }
-                                )
-                                    .lean()
-                                profit = 0
-                                if(type=='money') {
-                                    for (let i1 = 0; i1 < data.length; i1++) {
-                                        profit += data[i1].allPrice - data[i1].returnedPrice
-                                    }
+                            if (!result[districts.length])
+                                result[districts.length] = {
+                                    label: 'Прочие',
+                                    data: []
                                 }
-                                else
-                                    profit = data.length
-                                profitAll+=profit
+                            let data = await InvoiceAzyk.find(
+                                {
+                                    $and: [
+                                        {createdAt: {$gte: dateStart}},
+                                        {createdAt: {$lt: dateEnd}}
+                                    ],
+                                    del: {$ne: 'deleted'},
+                                    client: {$nin: withoutDistricts},
+                                    organization: company,
+                                    taken: true,
+                                    agent: {$nin: agents}
+                                }
+                            )
+                                .lean()
+                            profit = 0
+                            if(type=='money') {
+                                for (let i1 = 0; i1 < data.length; i1++) {
+                                    profit += data[i1].allPrice - data[i1].returnedPrice
+                                }
+                            }
+                            else
+                                profit = data.length
+                            profitAll+=profit
 
-                                result[districts.length].data.push([dateStart.getFullYear(), profit])
+                            result[districts.length].data.push([dateStart.getFullYear(), profit])
 
                         }
                     }
@@ -1507,7 +1507,7 @@ const resolvers = {
                 let districts = await DistrictAzyk.find({
                     ...(company!=='super'?{organization: company}:{organization: null}),
                     name: {$ne: 'super'}
-                    }).lean()
+                }).lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
@@ -1830,10 +1830,10 @@ const resolvers = {
                             consignmentPrice: 0,
                             organization: `${data[i].organization.name} ${type}`
                         }
-                            if(!statistic[id].complet.includes(data[i]._id.toString())) {
-                                statistic[id].complet.push(data[i]._id.toString())
-                            }
-                            statistic[id].profit += data[i].allPrice - data[i].returnedPrice
+                        if(!statistic[id].complet.includes(data[i]._id.toString())) {
+                            statistic[id].complet.push(data[i]._id.toString())
+                        }
+                        statistic[id].profit += data[i].allPrice - data[i].returnedPrice
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                             statistic[id].consignmentPrice += data[i].consignmentPrice
                         }
@@ -1876,13 +1876,13 @@ const resolvers = {
                     for(let i1=0; i1<data.length; i1++) {
                         if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
 
-                                if(!statistic[agents[i]._id].complet.includes(data[i1]._id.toString())) {
-                                    statistic[agents[i]._id].complet.push(data[i1]._id.toString())
-                                }
-                                statistic[agents[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
+                            if(!statistic[agents[i]._id].complet.includes(data[i1]._id.toString())) {
+                                statistic[agents[i]._id].complet.push(data[i1]._id.toString())
+                            }
+                            statistic[agents[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
                             if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                                 statistic[agents[i]._id].consignmentPrice += data[i1].consignmentPrice
-                                }
+                            }
 
                         }
                     }
@@ -1914,13 +1914,13 @@ const resolvers = {
                 for(let i1=0; i1<data.length; i1++) {
                     if (!(data[i1].client.name.toLowerCase()).includes('агент')&&!(data[i1].client.name.toLowerCase()).includes('agent')) {
 
-                            if(!statistic['without'].complet.includes(data[i1]._id.toString())) {
-                                statistic['without'].complet.push(data[i1]._id.toString())
-                            }
-                            statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
+                        if(!statistic['without'].complet.includes(data[i1]._id.toString())) {
+                            statistic['without'].complet.push(data[i1]._id.toString())
+                        }
+                        statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
                         if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                             statistic['without'].consignmentPrice += data[i1].consignmentPrice
-                            }
+                        }
 
                     }
                 }
@@ -1979,7 +1979,7 @@ const resolvers = {
             let agents = await UserAzyk.find({
                 ...(organization!=='super'?
                         {$or: [{role: 'агент'}, {role: 'суперагент'}]}
-                    :
+                        :
                         {role: 'суперагент'}
                 )
             }).distinct('_id').lean()
@@ -1990,16 +1990,16 @@ const resolvers = {
             }).lean()
             for (let i = 0; i < agents.length; i++) {
                 let orders = await InvoiceAzyk.find(
-                        {
-                            $and: [
-                                {createdAt: {$gte: dateStart}},
-                                {createdAt: {$lt: dateEnd}}
-                            ],
-                            del: {$ne: 'deleted'},
-                            taken: true,
-                            agent: agents[i]._id,
-                        }
-                    )
+                    {
+                        $and: [
+                            {createdAt: {$gte: dateStart}},
+                            {createdAt: {$lt: dateEnd}}
+                        ],
+                        del: {$ne: 'deleted'},
+                        taken: true,
+                        agent: agents[i]._id,
+                    }
+                )
                     .sort('createdAt')
                     .lean()
                 let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
@@ -2251,15 +2251,14 @@ const resolvers = {
                     worksheet.getCell(`E${row}`).font = {bold: true};
                     worksheet.getCell(`E${row}`).value = 'Консигнации:';
                 }
-                const keys1 = Object.keys(data[i].orders)
-                for(let i1=0; i1<keys1.length; i1++) {
+                for(let i1=0; i1<data[i].orders.length; i1++) {
                     row += 1;
                     worksheet.addRow([
-                        data[i].orders[keys1[i1]].name,
-                        `${data[i].orders[keys1[i1]].count} шт`,
-                        `${Math.round(data[i].orders[keys1[i1]].count/(data[i].orders[keys1[i1]].packaging?data[i].orders[keys1[i1]].packaging:1))} уп`,
-                        `${data[i].orders[keys1[i1]].allPrice} сом`,
-                        data[i].orders[keys1[i1]].consignmentPrice>0?`${data[i].orders[keys1[i1]].consignmentPrice} сом`:''
+                        data[i].orders[i1].item.name,
+                        `${data[i].orders[i1].count} шт`,
+                        `${Math.round(data[i].orders[i1].count/(data[i].orders[i1].packaging?data[i].orders[i1].packaging:1))} уп`,
+                        `${data[i].orders[i1].allPrice} сом`,
+                        data[i].orders[i1].consignmentPrice>0?`${data[i].orders[i1].consignmentPrice} сом`:''
                     ]);
                 }
             }
@@ -2380,26 +2379,31 @@ const resolvers = {
                 row+=2;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Продавец:';
+                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = organization.name;
                 if(organization.address&&organization.address.length>0) {
                     row += 1;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Адрес продавца:';
+                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = `${organization.address.toString()}`;
                 }
                 if(organization.phone&&organization.phone.length>0){
                     row+=1;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Телефон продавца:';
+                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = organization.phone.toString();
                 }
                 row+=2;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Получатель:';
+                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = data[i].client.name;
                 row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).value = 'Адрес получателя:';
+                worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                 worksheet.getCell(`B${row}`).value = `${data[i].address[2] ? `${data[i].address[2]}, ` : ''}${data[i].address[0]}`;
                 for(let i1=0; i1<data[i].client.phone.length; i1++) {
                     row+=1;
@@ -2407,17 +2411,21 @@ const resolvers = {
                         worksheet.getCell(`A${row}`).font = {bold: true};
                         worksheet.getCell(`A${row}`).value = 'Телефон получателя:';
                     }
+                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = data[i].client.phone[i1];
                 }
                 if(data[i].forwarder){
                     row+=2;
                     worksheet.getCell(`A${row}`).font = {bold: true};
                     worksheet.getCell(`A${row}`).value = 'Экспедитор:';
+                    worksheet.getCell(`B${row}`).alignment = { wrapText: true };
                     worksheet.getCell(`B${row}`).value = data[i].forwarder.name;
                     if(data[i].forwarder.phone&&data[i].forwarder.phone.length>0) {
-                        worksheet.getCell(`C${row}`).font = {bold: true};
-                        worksheet.getCell(`C${row}`).value = 'Тел:';
-                        worksheet.getCell(`D${row}`).value = data[i].forwarder.phone.toString()
+                        row+=1;
+                        worksheet.getCell(`A${row}`).font = {bold: true};
+                        worksheet.getCell(`A${row}`).value = 'Тел:';
+                        worksheet.getCell(`B${row}`).alignment = { wrapText: true };
+                        worksheet.getCell(`B${row}`).value = data[i].forwarder.phone.toString()
                     }
                     auto = await AutoAzyk.findOne({employment: data[i].forwarder._id})
                     row+=1;
@@ -2440,8 +2448,9 @@ const resolvers = {
                         }
                         worksheet.getCell(`B${row}`).value = data[i].adss[i1].title;
                     }
+                    row+=1;
                 }
-                row+=2;
+                row+=1;
                 worksheet.getCell(`A${row}`).font = {bold: true};
                 worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
                 worksheet.getCell(`A${row}`).value = 'Товар:';

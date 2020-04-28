@@ -14,6 +14,7 @@ const { pdDDMMYYYY, checkInt } = require('../module/const');
 const uuidv1 = require('uuid/v1.js');
 const xml = require('xml');
 const builder = require('xmlbuilder');
+const randomstring = require('randomstring');
 
 module.exports.setOutXMLReturnedShoroAzyk = async(returned) => {
     let outXMLReturnedShoroAzyk = await OutXMLReturnedShoroAzyk
@@ -370,6 +371,51 @@ module.exports.getOutXMLClientShoroAzyk = async() => {
     }
     result = result.end({ pretty: true})
     return result
+}
+
+module.exports.putOutXMLClientShoroAzyk = async({guid, client, addres, agent, phone}) => {
+    let organization = await OrganizationAzyk
+        .findOne({name: 'ЗАО «ШОРО»'})
+    let integrate1CAzyk = await Integrate1CAzyk.findOne({
+        organization: organization._id,
+        guid: guid
+    })
+    if(integrate1CAzyk){
+        let _client = await ClientAzyk.findOne({
+            _id: integrate1CAzyk.client
+        })
+        _client.name = `Изменение ${_client.name}`
+        _client.info = `агент шоро ${agent} магазин ${client} адресс ${addres} телефон ${phone}`
+    }
+    else {
+        let _client = new UserAzyk({
+            login: randomstring.generate(20),
+            role: 'client',
+            status: 'deactive',
+            password: '12345678',
+        });
+        _client = await UserAzyk.create(_client);
+        _client = new ClientAzyk({
+            name: 'Новый',
+            phone: [phone?phone:''],
+            city: 'Бишкек',
+            address: [[addres?addres:'', '', client?client:'']],
+            user: client._id,
+            notification: false,
+            info: `агент шоро ${agent}`
+        });
+        _client = await ClientAzyk.create(_client);
+        let _object = new Integrate1CAzyk({
+            item: null,
+            client: _client._id,
+            agent: null,
+            ecspeditor: null,
+            organization: organization,
+            guid: guid,
+        });
+        await Integrate1CAzyk.create(_object)
+
+    }
 }
 
 module.exports.getOutXMLReturnedShoroAzyk = async() => {
