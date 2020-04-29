@@ -2302,6 +2302,103 @@ const resolvers = {
             }
             let worksheet;
             let auto
+            let items = {}
+            let allCount = 0
+            let allPrice = 0
+            let allTonnage = 0
+            let allSize = 0
+            for(let i = 0; i<data.length;i++){
+                for(let i1 = 0; i1<data[i].orders.length;i1++) {
+                    if(!items[data[i].orders[i1].item._id])
+                        items[data[i].orders[i1].item._id] = {
+                            name: data[i].orders[i1].item.name,
+                            count: 0,
+                            allPrice: 0,
+                            packaging: data[i].orders[i1].item.packaging,
+                            allTonnage: 0,
+                            allSize: 0
+                        }
+                    items[data[i].orders[i1].item._id].count += data[i].orders[i1].count
+                    items[data[i].orders[i1].item._id].allPrice += data[i].orders[i1].allPrice
+                    items[data[i].orders[i1].item._id].allTonnage += data[i].orders[i1].allTonnage
+                    items[data[i].orders[i1].item._id].allSize += data[i].orders[i1].allSize
+                    allCount += data[i].orders[i1].count
+                    allPrice += data[i].orders[i1].allPrice
+                    allTonnage += data[i].orders[i1].allTonnage
+                    allSize += data[i].orders[i1].allSize
+                }
+            }
+            worksheet = await workbook.addWorksheet('Лист загрузки');
+            let row = 1;
+            worksheet.getColumn(1).width = 25;
+            worksheet.getColumn(2).width = 15;
+            worksheet.getColumn(3).width = 15;
+            worksheet.getColumn(4).width = 15;
+            worksheet.getColumn(5).width = 15;
+            worksheet.getCell(`A${row}`).font = {bold: true};
+            worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`A${row}`).value = 'Товар:';
+            worksheet.getCell(`B${row}`).font = {bold: true};
+            worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`B${row}`).value = 'Количество:';
+            worksheet.getCell(`C${row}`).font = {bold: true};
+            worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`C${row}`).value = 'Упаковок:';
+            worksheet.getCell(`D${row}`).font = {bold: true};
+            worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`D${row}`).value = 'Сумма:';
+            if(allTonnage){
+                worksheet.getCell(`E${row}`).font = {bold: true};
+                worksheet.getCell(`E${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`E${row}`).value = 'Тоннаж:';
+            }
+            if(allSize){
+                worksheet.getCell(`${allTonnage?'F':'E'}${row}`).font = {bold: true};
+                worksheet.getCell(`${allTonnage?'F':'E'}${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`${allTonnage?'F':'E'}${row}`).value = 'Кубатура:';
+            }
+            const keys = Object.keys(items)
+            for(let i=0; i<keys.length; i++){
+                row += 1;
+                worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`A${row}`).alignment = { wrapText: true };
+                worksheet.getCell(`A${row}`).value = items[keys[i]].name;
+                worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`B${row}`).value = `${items[keys[i]].count} шт`;
+                worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`C${row}`).value = `${Math.round(items[keys[i]].count/(items[keys[i]].packaging?items[keys[i]].packaging:1))} уп`;
+                worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`D${row}`).value = `${items[keys[i]].allPrice} сом`;
+                if(allTonnage){
+                    worksheet.getCell(`E${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`E${row}`).value = `${items[keys[i]].allTonnage} кг`;
+                }
+                if(allSize){
+                    worksheet.getCell(`${allTonnage?'F':'E'}${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                    worksheet.getCell(`${allTonnage?'F':'E'}${row}`).value = `${items[keys[i]].allSize} см³`
+                }
+            }
+            row += 1;
+            worksheet.getCell(`A${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`A${row}`).alignment = { wrapText: true };
+            worksheet.getCell(`A${row}`).font = {bold: true};
+            worksheet.getCell(`A${row}`).value = 'Итого';
+            worksheet.getCell(`B${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`B${row}`).value = `${allCount} шт`;
+            worksheet.getCell(`C${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`C${row}`).value = '';
+            worksheet.getCell(`D${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+            worksheet.getCell(`D${row}`).value = `${allPrice} сом`;
+            if(allTonnage){
+                worksheet.getCell(`E${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`E${row}`).value = `${allTonnage} кг`;
+            }
+            if(allSize){
+                worksheet.getCell(`${allTonnage?'F':'E'}${row}`).border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}};
+                worksheet.getCell(`${allTonnage?'F':'E'}${row}`).value = `${allSize} см³`
+            }
+
+
             for(let i = 0; i<data.length;i++){
                 worksheet = await workbook.addWorksheet(`Накладная ${data[i].number}`);
                 worksheet.getColumn(1).width = 25;
@@ -2309,7 +2406,7 @@ const resolvers = {
                 worksheet.getColumn(3).width = 15;
                 worksheet.getColumn(4).width = 15;
                 worksheet.getColumn(5).width = 15;
-                let row = 1;
+                row = 1;
                 let date = data[i].createdAt;
                 date = date.setDate(date.getDate() + 1)
                 worksheet.getCell(`A${row}`).font = {bold: true, size: 14};
