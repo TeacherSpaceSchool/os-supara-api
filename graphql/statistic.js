@@ -813,6 +813,7 @@ const resolvers = {
                     ...(organization?{organization: organization}:{})
                 }
             )
+                .select('client')
                 .distinct('client')
                 .lean()
             data = await ClientAzyk.find(
@@ -834,6 +835,7 @@ const resolvers = {
                         agent: {$nin: agents},
                         ...(organization?{organization: organization}:{})
                     })
+                        .select('createdAt')
                         .sort('-createdAt')
                         .lean()
                     lastActive = data[i].lastActive?parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)):9999
