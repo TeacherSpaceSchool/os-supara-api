@@ -2028,7 +2028,10 @@ const resolvers = {
     },
     statisticClientGeo: async(parent, { organization, item }, {user}) => {
         if(user.role==='admin'){
-            let clients = await ClientAzyk.find({del: {$ne: 'deleted'}}).lean()
+            let clients =
+                await ClientAzyk.find({del: {$ne: 'deleted'}})
+                    .select('address name _id notification')
+                    .lean()
             let address = []
             let good = 0
             let excellent = 0
@@ -2053,6 +2056,7 @@ const resolvers = {
                                     status: {$ne: 'отмена'},
                                     item: item
                                 })
+                                    .select('createdAt')
                                     .sort('-createdAt')
                                     .lean()
                             }
@@ -2063,6 +2067,7 @@ const resolvers = {
                                     del: {$ne: 'deleted'},
                                     taken: true
                                 })
+                                    .select('createdAt')
                                     .sort('-createdAt')
                                     .lean()
 
@@ -2073,7 +2078,10 @@ const resolvers = {
                                     del: {$ne: 'deleted'},
                                     taken: true
                                 })
+                                    .select('createdAt')
                                     .sort('-createdAt')
+                                    .lean()
+
                             }
                             if(invoice) {
                                 differenceDates = (now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)
