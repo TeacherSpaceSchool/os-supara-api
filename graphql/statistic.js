@@ -779,12 +779,6 @@ const resolvers = {
     statisticClientActivity: async(parent, { online, organization } , {user}) => {
         if(user.role==='admin'){
 
-            let dateEnd = new Date()
-            dateEnd.setDate(dateEnd.getDate() + 1)
-            dateEnd.setHours(3, 0, 0, 0)
-            let dateStart = new Date(dateEnd)
-            dateStart.setDate(dateStart.getDate() - 7)
-
             let now = new Date()
             now.setDate(now.getDate() + 1)
             now.setHours(3, 0, 0, 0)
@@ -792,11 +786,15 @@ const resolvers = {
             let noActive = 0;
             let todayActive = 0;
             let weekActive = 0;
+            let monthActive = 0;
+            let allActive = 0;
             let lastActive;
 
             let noOrder = 0;
             let todayOrder = 0;
             let weekOrder = 0;
+            let monthOrder = 0;
+            let allOrder = 0;
             let lastOrder;
 
             let agents = []
@@ -812,10 +810,6 @@ const resolvers = {
             let orderByClient = {}
             let data = await InvoiceAzyk.find(
                 {
-                    $and: [
-                        {createdAt: {$gte: dateStart}},
-                        {createdAt: {$lt: dateEnd}}
-                    ],
                     agent: {$nin: agents},
                     taken: true,
                     del: {$ne: 'deleted'},
@@ -831,13 +825,9 @@ const resolvers = {
             }
             data = await ClientAzyk.find(
                 {
+                    del: {$ne: 'deleted'},
                     $or: [
-                        {
-                            $and: [
-                                {lastActive: {$gte: dateStart}},
-                                {lastActive: {$lt: dateEnd}}
-                            ],
-                        },
+                        {lastActive: {$ne: null}},
                         {_id: {$in: orderClient}}
                     ]
                 }
@@ -846,7 +836,7 @@ const resolvers = {
                 .lean()
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
-                    let invoice = orderByClient[data[i].client.toString()]
+                    let invoice = orderByClient[data[i]._id.toString()]
                     lastActive = data[i].lastActive?parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)):9999
                     lastOrder = invoice?parseInt((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
                     if(lastActive===9999)
@@ -856,6 +846,9 @@ const resolvers = {
                             todayActive+=1
                         if (lastActive < 7)
                             weekActive += 1
+                        if (lastActive < 30)
+                            monthActive += 1
+                        allActive += 1
                     }
                     if(lastOrder===9999)
                         noOrder+=1
@@ -864,6 +857,9 @@ const resolvers = {
                             todayOrder+=1
                         if(lastOrder<7)
                             weekOrder += 1
+                        if (lastOrder < 30)
+                            monthOrder += 1
+                        allOrder += 1
                     }
                     statistic[data[i]._id] = {
                         lastOrder: lastOrder,
@@ -893,11 +889,15 @@ const resolvers = {
                     _id: 'All',
                     data: [
                         noActive,//0
-                        todayActive,//1
-                        weekActive,//2
-                        noOrder,//3
-                        todayOrder,//4
-                        weekOrder,//5
+                        noOrder,//1
+                        allActive,//2
+                        allOrder,//3
+                        todayActive,//4
+                        todayOrder,//5
+                        weekActive,//6
+                        weekOrder,//7
+                        monthActive,//8
+                        monthOrder,//9
                     ]
                 },
                 ...data
