@@ -805,27 +805,11 @@ const resolvers = {
                 }).distinct('_id').lean()
             }
             let statistic = {}
-            let data = await InvoiceAzyk.find(
-                {
-                    agent: {$nin: agents},
-                    taken: true,
-                    del: {$ne: 'deleted'},
-                    ...(organization?{organization: organization}:{})
-                }
-            )
-                .select('client')
-                .distinct('client')
-                .lean()
-            data = await ClientAzyk.find(
-                {
-                    $or: [
-                        {lastActive: {$ne: null}},
-                        {_id: {$in: data}}
-                    ]
-                }
-            )
+            let data = await ClientAzyk.find( )
                 .select('address _id name lastActive')
-                .lean()
+                .lean({
+                    del: {$ne: 'deleted'}
+                })
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
                     let invoice = await InvoiceAzyk.findOne({
@@ -862,10 +846,12 @@ const resolvers = {
                         if (lastOrder < 31)
                             monthOrder += 1
                     }
-                    statistic[data[i]._id] = {
-                        lastOrder: lastOrder,
-                        lastActive: lastActive,
-                        client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
+                    if(lastOrder!==9999&&lastActive!==9999){
+                        statistic[data[i]._id] = {
+                            lastOrder: lastOrder,
+                            lastActive: lastActive,
+                            client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
+                        }
                     }
                 }
             }
