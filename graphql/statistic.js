@@ -808,6 +808,8 @@ const resolvers = {
                 }).distinct('_id').lean()
             }
             let statistic = {}
+            let orderClient = []
+            let orderByClient = {}
             let data = await InvoiceAzyk.find(
                 {
                     $and: [
@@ -820,17 +822,23 @@ const resolvers = {
                     ...(organization?{organization: organization}:{})
                 }
             )
-                .distinct('client')
+                .select('client createdAt _id')
+                .sort('-createdAt')
                 .lean()
+            for(let i=0; i<data.length; i++) {
+                if(!orderClient.includes(data[i].client.toString())) orderClient.push(data[i].client.toString())
+                if(!orderByClient[data[i].client.toString()]) orderByClient[data[i].client.toString()] = data[i]
+            }
             data = await ClientAzyk.find(
                 {
-                    $and: [
-                        {lastActive: {$gte: dateStart}},
-                        {lastActive: {$lt: dateEnd}}
-                    ],
                     $or: [
-                        {lastActive: {$ne: null}},
-                        {_id: {$in: data}}
+                        {
+                            $and: [
+                                {lastActive: {$gte: dateStart}},
+                                {lastActive: {$lt: dateEnd}}
+                            ],
+                        },
+                        {_id: {$in: orderClient}}
                     ]
                 }
             )
@@ -838,16 +846,7 @@ const resolvers = {
                 .lean()
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
-                    let invoice = await InvoiceAzyk.findOne({
-                        client: data[i]._id,
-                        del: {$ne: 'deleted'},
-                        taken: true,
-                        agent: {$nin: agents},
-                        ...(organization?{organization: organization}:{})
-                    })
-                        .select('createdAt')
-                        .sort('-createdAt')
-                        .lean()
+                    let invoice = orderByClient[data[i].client.toString()]
                     lastActive = data[i].lastActive?parseInt((now - new Date(data[i].lastActive)) / (1000 * 60 * 60 * 24)):9999
                     lastOrder = invoice?parseInt((now - new Date(invoice.createdAt)) / (1000 * 60 * 60 * 24)):9999
                     if(lastActive===9999)
