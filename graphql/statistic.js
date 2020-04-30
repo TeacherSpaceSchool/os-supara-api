@@ -93,8 +93,10 @@ const resolvers = {
                         client: {$ne: null},
                     }
                 )
+                    .select('guid client')
                     .populate({
-                        path: 'client'
+                        path: 'client',
+                        select: '_id address'
                     })
                     .lean()
                 for (let i = 0; i < data.length; i++) {
@@ -163,6 +165,7 @@ const resolvers = {
                         organization: organization,
                         guid: rows[i][0]
                     })
+                        .select('guid client')
                         .populate({
                             path: 'client'
                         })
@@ -208,11 +211,20 @@ const resolvers = {
                     _id: agentRoute
                 }
             )
-                .populate({path: 'district', populate: [{path: 'client', populate: [{path: 'user'}]}]})
+                .select('clients district')
+                .populate({
+                    path: 'district',
+                    select: 'client',
+                    populate: [{
+                        path: 'client',
+                        select: '_id user name address',
+                        populate: [{
+                            path: 'user',
+                            select: 'status',
+                        }]
+                    }]
+                })
                 .lean()
-            console.log(
-                data.clients[0][1].toString()==data.district.client[0]._id.toString(),
-                data.clients[0].includes(data.district.client[0]._id.toString()))
             for(let i=0; i<data.district.client.length; i++) {
                 if(
                     data.district.client[i].user.status==='active'&&(
@@ -265,11 +277,14 @@ const resolvers = {
                     del: {$ne: 'deleted'}
                 }
             )
+                .select('client organization createdAt number sync')
                 .populate({
-                    path: 'client'
+                    path: 'client',
+                    select: '_id name address'
                 })
                 .populate({
-                    path: 'organization'
+                    path: 'organization',
+                    select: '_id name'
                 })
                 .lean()
             for(let i=0; i<data.length; i++) {
@@ -320,21 +335,15 @@ const resolvers = {
                 let districts
                 let withoutDistricts
                 if(!company){
-                    organizations = await InvoiceAzyk.find(
-                        {
-                            del: {$ne: 'deleted'},
-                            taken: true,
-                            agent: {$nin: agents}
-                        }
-                    ).distinct('organization').lean()
-                    organizations = await OrganizationAzyk.find(
-                        {
-                            _id: {$in: organizations}
-                        }
-                    ).lean()
+                    organizations = await OrganizationAzyk.find()
+                        .select('_id organization name')
+                        .lean()
                 }
                 else {
-                    districts = await DistrictAzyk.find({organization: company}).lean()
+                    districts = await DistrictAzyk
+                        .find({organization: company})
+                        .select('client name organization')
+                        .lean()
                     withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 }
                 dateStart = new Date(dateStart)
@@ -362,6 +371,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -372,7 +382,6 @@ const resolvers = {
                                 else
                                     profit = data.length
                                 profitAll+=profit
-
                                 result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
                             }
                         }
@@ -396,6 +405,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -406,7 +416,6 @@ const resolvers = {
                                 else
                                     profit = data.length
                                 profitAll+=profit
-
                                 result[i].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
                             }
                             if (!result[districts.length])
@@ -427,6 +436,7 @@ const resolvers = {
                                     agent: {$nin: agents}
                                 }
                             )
+                                .select('allPrice returnedPrice')
                                 .lean()
                             profit = 0
                             if(type=='money') {
@@ -437,7 +447,6 @@ const resolvers = {
                             else
                                 profit = data.length
                             profitAll+=profit
-
                             result[districts.length].data.push([`${dateStart.getHours()<10?'0':''}${dateStart.getHours()}-${dateEnd.getHours()<10?'0':''}${dateEnd.getHours()}`, profit])
 
                         }
@@ -475,6 +484,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -485,8 +495,7 @@ const resolvers = {
                                 else
                                     profit = data.length
                                 profitAll+=profit
-
-                                result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
+                               result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                         }
                         else {
@@ -509,6 +518,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -519,7 +529,6 @@ const resolvers = {
                                 else
                                     profit = data.length
                                 profitAll+=profit
-
                                 result[i].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
                             }
                             if (!result[districts.length])
@@ -540,6 +549,7 @@ const resolvers = {
                                     agent: {$nin: agents}
                                 }
                             )
+                                .select('allPrice returnedPrice')
                                 .lean()
                             profit = 0
                             if(type=='money') {
@@ -550,7 +560,6 @@ const resolvers = {
                             else
                                 profit = data.length
                             profitAll+=profit
-
                             result[districts.length].data.push([`${weekDay[dateStart.getDay()]}${dateStart.getDate()<10?'0':''}${dateStart.getDate()}.${dateStart.getMonth()<9?'0':''}${dateStart.getMonth()+1}`, profit])
 
                         }
@@ -582,6 +591,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -615,6 +625,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -625,7 +636,6 @@ const resolvers = {
                                 else
                                     profit = data.length
                                 profitAll+=profit
-
                                 result[i1].data.push([dateStart.getMonth()+1, profit])
                             }
 
@@ -647,6 +657,7 @@ const resolvers = {
                                     agent: {$nin: agents}
                                 }
                             )
+                                .select('allPrice returnedPrice')
                                 .lean()
                             profit = 0
                             if(type=='money') {
@@ -657,7 +668,6 @@ const resolvers = {
                             else
                                 profit = data.length
                             profitAll+=profit
-
                             result[districts.length].data.push([dateStart.getMonth()+1, profit])
 
                         }
@@ -689,6 +699,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -722,6 +733,7 @@ const resolvers = {
                                         agent: {$nin: agents}
                                     }
                                 )
+                                    .select('allPrice returnedPrice')
                                     .lean()
                                 profit = 0
                                 if(type=='money') {
@@ -753,6 +765,7 @@ const resolvers = {
                                     agent: {$nin: agents}
                                 }
                             )
+                                .select('allPrice returnedPrice')
                                 .lean()
                             profit = 0
                             if(type=='money') {
@@ -763,7 +776,6 @@ const resolvers = {
                             else
                                 profit = data.length
                             profitAll+=profit
-
                             result[districts.length].data.push([dateStart.getFullYear(), profit])
 
                         }
@@ -820,8 +832,10 @@ const resolvers = {
                 .sort('-createdAt')
                 .lean()
             for(let i=0; i<data.length; i++) {
-                if(!orderClient.includes(data[i].client.toString())) orderClient.push(data[i].client.toString())
-                if(!orderByClient[data[i].client.toString()]) orderByClient[data[i].client.toString()] = data[i]
+                if(!orderClient.includes(data[i].client.toString()))
+                    orderClient.push(data[i].client.toString())
+                if(!orderByClient[data[i].client.toString()])
+                    orderByClient[data[i].client.toString()] = data[i]
             }
             data = await ClientAzyk.find(
                 {
@@ -1170,8 +1184,10 @@ const resolvers = {
                     agent: {$nin: agents}
                 }
             )
+                .select('client returnedPrice _id allPrice paymentConsignation consignmentPrice')
                 .populate({
-                    path: 'client'
+                    path: 'client',
+                    select: 'name _id address'
                 })
                 .lean()
 
@@ -1271,8 +1287,10 @@ const resolvers = {
                     agent: {$nin: agents},
                 }
             )
+                .select('adss allPrice _id returnedPrice')
                 .populate({
-                    path: 'adss'
+                    path: 'adss',
+                    select: '_id title'
                 })
                 .lean()
             for(let i=0; i<data.length; i++) {
@@ -1361,11 +1379,14 @@ const resolvers = {
                     agent: {$nin: agents},
                 }
             )
+                .select('orders item _id')
                 .populate({
                     path: 'orders',
+                    select: 'item status allPrice count consignmentPrice',
                     populate : [
                         {
-                            path : 'item'
+                            path : 'item',
+                            select: 'name _id',
                         }
                     ]
                 })
@@ -1652,8 +1673,10 @@ const resolvers = {
                         del: {$ne: 'deleted'}
                     }
                 )
+                    .select('organization allPrice')
                     .populate({
-                        path: 'organization'
+                        path: 'organization',
+                        select: 'name _id'
                     })
                     .lean()
 
@@ -1668,7 +1691,10 @@ const resolvers = {
                 }
             }
             else {
-                let districts = await DistrictAzyk.find({organization: company}).lean()
+                let districts = await DistrictAzyk
+                    .find({organization: company})
+                    .select('_id name client organization')
+                    .lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
@@ -1688,6 +1714,7 @@ const resolvers = {
                             organization: districts[i].organization,
                         }
                     )
+                        .select('organization allPrice')
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
                             statistic[districts[i]._id].complet+=1
@@ -1712,6 +1739,7 @@ const resolvers = {
                         organization: company,
                     }
                 )
+                    .select('organization allPrice')
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
                         statistic['without'].complet+=1
@@ -1788,10 +1816,18 @@ const resolvers = {
                         del: {$ne: 'deleted'}
                     }
                 )
+                    .select('organization agent returnedPrice allPrice _id consignmentPrice paymentConsignation')
                     .populate({
-                        path: 'organization'
+                        path: 'organization',
+                        select: '_id name'
                     })
-                    .populate({path: 'agent',populate: [{path: 'user'}]})
+                    .populate({
+                        path: 'agent',
+                        select: 'user',
+                        populate: [{
+                            path: 'user',
+                            select: 'role',
+                        }]})
                     .lean()
 
                 for(let i=0; i<data.length; i++) {
@@ -1816,11 +1852,23 @@ const resolvers = {
             else {
                 let agents;
                 if(company==='super'){
-                    agents = await EmploymentAzyk.find({organization: null}).populate('user').lean()
+                    agents = await EmploymentAzyk.find({organization: null})
+                        .select('_id name user')
+                        .populate({
+                            path: 'user',
+                            select: 'role'
+                        })
+                        .lean()
                     agents = agents.filter(agent => agent.user.role === 'суперагент')
                 }
                 else {
-                    agents = await EmploymentAzyk.find({organization: company}).populate('user').lean()
+                    agents = await EmploymentAzyk.find({organization: company})
+                        .select('_id name user')
+                        .populate({
+                            path: 'user',
+                            select: 'role'
+                        })
+                        .lean()
                     agents = agents.filter(agent => agent.user.role === 'агент')
                 }
                 for(let i=0; i<agents.length; i++) {
@@ -1873,6 +1921,7 @@ const resolvers = {
                         ...(company==='super'?{}:{organization: company}),
                     }
                 )
+                    .select('returnedPrice allPrice _id consignmentPrice paymentConsignation')
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
                         if(!statistic['without'].complet.includes(data[i1]._id.toString())) {
@@ -1941,12 +1990,16 @@ const resolvers = {
                         :
                         {role: 'суперагент'}
                 )
-            }).distinct('_id').lean()
+            })
+                .distinct('_id')
+                .lean()
             agents = await EmploymentAzyk.find({
                 ...(organization&&organization!=='super'?{organization: organization}:{}),
                 user: {$in: agents},
                 del: {$ne: 'deleted'}
-            }).lean()
+            })
+                .select('_id name')
+                .lean()
             for (let i = 0; i < agents.length; i++) {
                 let orders = await InvoiceAzyk.find(
                     {
@@ -1959,12 +2012,14 @@ const resolvers = {
                         agent: agents[i]._id,
                     }
                 )
+                    .select('createdAt')
                     .sort('createdAt')
                     .lean()
                 let agentHistoryGeoAzyks = await AgentHistoryGeoAzyk.find({
                     $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
                     agent: agents[i]._id
                 })
+                    .distinct('_id')
                     .lean()
                 data.push({
                     _id: agents[i]._id,
@@ -2029,7 +2084,7 @@ const resolvers = {
         if(user.role==='admin'){
             let clients =
                 await ClientAzyk.find({del: {$ne: 'deleted'}})
-                    .select('address name _id notification')
+                    .select('address name _id notification lastActive')
                     .lean()
             let address = []
             let good = 0
@@ -2042,8 +2097,8 @@ const resolvers = {
                         let now = new Date()
                         now.setDate(now.getDate() + 1)
                         now.setHours(3, 0, 0, 0)
-                        let differenceDates = (now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24)
-                        if ((!clients[x].lastActive || differenceDates > 7)&&!item&&!organization) {
+                        let differenceDates = clients[x].lastActive?(now - new Date(clients[x].lastActive)) / (1000 * 60 * 60 * 24):999
+                        if (differenceDates > 7&&!item&&!organization) {
                             status = 'red'
                             bad+=1
                         }
