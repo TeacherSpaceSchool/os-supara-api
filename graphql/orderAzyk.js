@@ -1571,7 +1571,7 @@ const resolvers = {
                 return invoice
             else if(user.client&&user.client.toString()===invoice.client._id.toString())
                 return invoice
-            else if(user.organization&&['агент', 'организация', 'менеджер'].includes(user.role)&&user.organization.toString()===invoice.organization._id.toString())
+            else if(user.organization&&['агент', 'организация', 'менеджер'].includes(user.role)&&(user.organization.toString()===invoice.distributer._id.toString()&&user.organization.toString()===invoice.organization._id.toString()))
                 return invoice
         } else return null
     },

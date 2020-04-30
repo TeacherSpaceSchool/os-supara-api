@@ -812,7 +812,9 @@ const resolvers = {
                     del: {$ne: 'deleted'},
                     ...(organization?{organization: organization}:{})
                 }
-            ).distinct('client').lean()
+            )
+                .distinct('client')
+                .lean()
             data = await ClientAzyk.find(
                 {
                     $or: [
@@ -821,6 +823,7 @@ const resolvers = {
                     ]
                 }
             )
+                .select('address _id name lastActive')
                 .lean()
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
@@ -932,16 +935,20 @@ const resolvers = {
                     agent: {$nin: agents},
                 }
             )
+                .select('orders _id client')
                 .populate({
                     path: 'orders',
+                    select: 'item createdAt _id',
                     populate : [
                         {
-                            path : 'item'
+                            path : 'item',
+                            select: 'name createdAt _id',
                         }
                     ]
                 })
                 .populate({
-                    path: 'client'
+                    path: 'client',
+                    select: 'name createdAt _id',
                 })
                 .lean()
             for(let i=0; i<data.length; i++) {
@@ -1012,7 +1019,9 @@ const resolvers = {
                 }).distinct('_id').lean()
             }
             if(!organization){
-                organizations = await OrganizationAzyk.find().lean()
+                organizations = await OrganizationAzyk.find()
+                    .select('name _id')
+                    .lean()
                 for(let i=0; i<organizations.length; i++) {
                     orders = await InvoiceAzyk.find(
                         {
@@ -1022,7 +1031,9 @@ const resolvers = {
                             del: {$ne: 'deleted'},
                             taken: true
                         }
-                    ).lean()
+                    )
+                        .select('client')
+                        .lean()
                     clients = []
                     for(let i1=0; i1<orders.length; i1++) {
                         if(!clients.includes(orders[i1].client.toString()))
@@ -1044,7 +1055,9 @@ const resolvers = {
             }
             else {
                 allClients = 0
-                districts = await DistrictAzyk.find({organization: organization}).lean()
+                districts = await DistrictAzyk.find({organization: organization})
+                    .select('client _id name')
+                    .lean()
                 withoutDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     orders = await InvoiceAzyk.find(
@@ -1055,7 +1068,9 @@ const resolvers = {
                             agent: {$nin: agents},
                             taken: true
                         }
-                    ).lean()
+                    )
+                        .select('client _id name')
+                        .lean()
                     clients = []
                     for(let i1=0; i1<orders.length; i1++) {
                         if(!clients.includes(orders[i1].client.toString()))
@@ -1080,7 +1095,9 @@ const resolvers = {
                         agent: {$nin: agents},
                         taken: true
                     }
-                ).lean()
+                )
+                    .select('client _id name')
+                    .lean()
                 clients = []
                 for(let i1=0; i1<orders.length; i1++) {
                     if(!clients.includes(orders[i1].client.toString()))
@@ -1463,8 +1480,10 @@ const resolvers = {
                         agent: {$nin: agents}
                     }
                 )
+                    .select('organization _id allPrice returnedPrice consignmentPrice paymentConsignation')
                     .populate({
-                        path: 'organization'
+                        path: 'organization',
+                        select: '_id name'
                     })
                     .lean()
 
@@ -1489,7 +1508,9 @@ const resolvers = {
                 let districts = await DistrictAzyk.find({
                     ...(company!=='super'?{organization: company}:{organization: null}),
                     name: {$ne: 'super'}
-                }).lean()
+                })
+                    .select('_id name client')
+                    .lean()
                 let withDistricts = districts.reduce((acc, val) => acc.concat(val.client), []);
                 for(let i=0; i<districts.length; i++) {
                     if (!statistic[districts[i]._id]) statistic[districts[i]._id] = {
@@ -1512,6 +1533,7 @@ const resolvers = {
                             agent: {$nin: agents},
                         }
                     )
+                        .select('_id returnedPrice allPrice paymentConsignation consignmentPrice')
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
                        if(!statistic[districts[i]._id].complet.includes(data[i1]._id.toString())) {
