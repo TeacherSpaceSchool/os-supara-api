@@ -778,22 +778,25 @@ const resolvers = {
     },
     statisticClientActivity: async(parent, { online, organization } , {user}) => {
         if(user.role==='admin'){
+
+            let dateEnd = new Date()
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            dateEnd.setHours(3, 0, 0, 0)
+            let dateStart = new Date(dateEnd)
+            dateStart.setDate(dateStart.getDate() - 7)
+
             let now = new Date()
             now.setDate(now.getDate() + 1)
             now.setHours(3, 0, 0, 0)
 
-            let allActive = 0;
             let noActive = 0;
             let todayActive = 0;
             let weekActive = 0;
-            let monthActive = 0;
             let lastActive;
 
-            let allOrder = 0;
             let noOrder = 0;
             let todayOrder = 0;
             let weekOrder = 0;
-            let monthOrder = 0;
             let lastOrder;
 
             let agents = []
@@ -805,11 +808,34 @@ const resolvers = {
                 }).distinct('_id').lean()
             }
             let statistic = {}
-            let data = await ClientAzyk.find( )
+            let data = await InvoiceAzyk.find(
+                {
+                    $and: [
+                        {createdAt: {$gte: dateStart}},
+                        {createdAt: {$lt: dateEnd}}
+                    ],
+                    agent: {$nin: agents},
+                    taken: true,
+                    del: {$ne: 'deleted'},
+                    ...(organization?{organization: organization}:{})
+                }
+            )
+                .distinct('client')
+                .lean()
+            data = await ClientAzyk.find(
+                {
+                    $and: [
+                        {lastActive: {$gte: dateStart}},
+                        {lastActive: {$lt: dateEnd}}
+                    ],
+                    $or: [
+                        {lastActive: {$ne: null}},
+                        {_id: {$in: data}}
+                    ]
+                }
+            )
                 .select('address _id name lastActive')
-                .lean({
-                    del: {$ne: 'deleted'}
-                })
+                .lean()
             for(let i=0; i<data.length; i++) {
                 if (data[i].address[0]&&data[i].address[0][1]&&data[i].address[0][1].length>0&&!(data[i].name.toLowerCase()).includes('агент')&&!(data[i].name.toLowerCase()).includes('agent')) {
                     let invoice = await InvoiceAzyk.findOne({
@@ -827,31 +853,23 @@ const resolvers = {
                     if(lastActive===9999)
                         noActive+=1
                     else {
-                        allActive+=1
                         if(lastActive===0)
                             todayActive+=1
                         if (lastActive < 7)
                             weekActive += 1
-                        if (lastActive < 31)
-                            monthActive += 1
                     }
                     if(lastOrder===9999)
                         noOrder+=1
                     else {
-                        allOrder+=1
                         if(lastOrder===0)
                             todayOrder+=1
                         if(lastOrder<7)
                             weekOrder += 1
-                        if (lastOrder < 31)
-                            monthOrder += 1
                     }
-                    if(lastOrder!==9999&&lastActive!==9999){
-                        statistic[data[i]._id] = {
-                            lastOrder: lastOrder,
-                            lastActive: lastActive,
-                            client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
-                        }
+                    statistic[data[i]._id] = {
+                        lastOrder: lastOrder,
+                        lastActive: lastActive,
+                        client: `${data[i].name}${data[i].address&&data[i].address[0]?` (${data[i].address[0][2]?`${data[i].address[0][2]}, `:''}${data[i].address[0][0]})`:''}`
                     }
                 }
             }
@@ -875,16 +893,12 @@ const resolvers = {
                 {
                     _id: 'All',
                     data: [
-                        allActive,//0
+                        noActive,//0
                         todayActive,//1
                         weekActive,//2
-                        monthActive,//3
-                        noOrder,//4
-                        allOrder,//5
-                        todayOrder,//6
-                        weekOrder,//7
-                        monthOrder,//8
-                        noActive//9
+                        noOrder,//3
+                        todayOrder,//4
+                        weekOrder,//5
                     ]
                 },
                 ...data
