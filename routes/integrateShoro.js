@@ -14,7 +14,7 @@ router.post('/shoro/put/client', async (req, res, next) => {
                 client: req.body.elements[0].elements[i].attributes.name,
                 addres: req.body.elements[0].elements[i].attributes.address,
                 agent: req.body.elements[0].elements[i].attributes.agent,
-                phone: req.body.elements[0].elements[i].attributes.phone
+                phone: req.body.elements[0].elements[i].attributes.tel
             })
         }
         await res.status(200);

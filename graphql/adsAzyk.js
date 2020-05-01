@@ -1,5 +1,6 @@
 const AdsAzyk = require('../models/adsAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -37,12 +38,24 @@ const resolvers = {
             title: {'$regex': search, '$options': 'i'}
         }).populate('item').sort('-createdAt')
     },
-    adss: async(parent, {search, organization}) => {
-        return await AdsAzyk.find({
-            del: {$ne: 'deleted'},
-            title: {'$regex': search, '$options': 'i'},
-            organization: organization
-        }).populate('item').sort('-createdAt')
+    adss: async(parent, {search, organization}, {user}) => {
+        if(['admin', 'client', 'суперагент'].includes(user.role)){
+            return await AdsAzyk.find({
+                del: {$ne: 'deleted'},
+                title: {'$regex': search, '$options': 'i'},
+                organization: organization
+            }).populate('item').sort('-createdAt')
+        }
+        else if(['организация', 'менеджер', 'агент'].includes(user.role)){
+            let distributer = await DistributerAzyk.findOne({
+                organizations: organization
+            })
+            return await AdsAzyk.find({
+                del: {$ne: 'deleted'},
+                title: {'$regex': search, '$options': 'i'},
+                organization: {$in: [organization, ...distributer.organizations]}
+            }).populate('item').sort('-createdAt')
+        }
     },
     adsOrganizations: async() => {
         let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
