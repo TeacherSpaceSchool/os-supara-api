@@ -400,7 +400,7 @@ module.exports.putOutXMLClientShoroAzyk = async({guid, client, addres, agent, ph
             phone: [phone?phone:''],
             city: 'Бишкек',
             address: [[addres?addres:'', '', client?client:'']],
-            user: client._id,
+            user: _client._id,
             notification: false,
             info: `агент шоро ${agent}`
         });

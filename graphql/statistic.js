@@ -63,7 +63,7 @@ const query = `
     statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticAdss(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
-    statisticDistributer(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
+    statisticDistributer(distributer: ID!, organization: ID, dateStart: Date, dateType: String, type: String): Statistic
     statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgentsWorkTime(organization: String, date: Date): Statistic
@@ -1474,6 +1474,193 @@ const resolvers = {
             ]
             return {
                 columns: ['товар', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                row: data
+            };
+        }
+    },
+    statisticDistributer: async(parent, { distributer, organization, dateStart, dateType, type }, {user}) => {
+        if(user.role==='admin'){
+            let dateEnd
+            if(dateStart){
+                dateStart= new Date(dateStart)
+                dateStart.setHours(3, 0, 0, 0)
+                dateEnd = new Date(dateStart)
+                if(dateType==='year')
+                    dateEnd.setFullYear(dateEnd.getFullYear() + 1)
+                else if(dateType==='day')
+                    dateEnd.setDate(dateEnd.getDate() + 1)
+                else if(dateType==='week')
+                    dateEnd.setDate(dateEnd.getDate() + 7)
+                else
+                    dateEnd.setMonth(dateEnd.getMonth() + 1)
+            }
+            let statistic = {}, data = []
+            if(distributer){
+                let findDistributer = await DistributerAzyk.findOne(
+                    distributer!=='super'?
+                        {distributer: distributer}
+                        :
+                        {distributer: null}
+                )
+                    .populate('organizations')
+                if(findDistributer){
+                    if(type==='all') {
+                        let clients = await DistrictAzyk
+                            .find({organization: distributer!=='super'?distributer:null})
+                            .distinct('client')
+                        let organizations = []
+                        if(organization){
+                            for (let i = 0; i < findDistributer.organizations.length; i++) {
+                                if(findDistributer.organizations[i]._id.toString()===organization.toString())
+                                    organizations.push(findDistributer.organizations[i])
+                            }
+                        }
+                        else
+                            organizations = findDistributer.organizations
+                        data = await InvoiceAzyk.find(
+                            {
+                                $and: [
+                                    dateStart ? {createdAt: {$gte: dateStart}} : {},
+                                    dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                                ],
+                                taken: true,
+                                del: {$ne: 'deleted'},
+                                organization: {$in: organizations.map(element=>element._id)},
+                                client: {$in: clients}
+                            }
+                        )
+                            .select('organization agent returnedPrice allPrice _id consignmentPrice paymentConsignation')
+                            .populate({
+                                path: 'organization',
+                                select: '_id name'
+                            })
+                            .populate({
+                                path: 'agent',
+                                select: 'user',
+                                populate: [{
+                                    path: 'user',
+                                    select: 'role',
+                                }]})
+                            .lean()
+                        for (let i = 0; i < data.length; i++) {
+                            let type = data[i].agent&&!data[i].agent.user.role.includes('супер')?'оффлайн':'онлайн'
+                            let id = `${type}${data[i].organization._id}`
+                            if (!statistic[id]) statistic[id] = {
+                                profit: 0,
+                                cancel: [],
+                                complet: [],
+                                consignmentPrice: 0,
+                                organization: `${data[i].organization.name} ${type}`
+                            }
+                            if(!statistic[id].complet.includes(data[i]._id.toString())) {
+                                statistic[id].complet.push(data[i]._id.toString())
+                            }
+                            statistic[id].profit += data[i].allPrice - data[i].returnedPrice
+                            if (data[i].consignmentPrice && !data[i].paymentConsignation) {
+                                statistic[id].consignmentPrice += data[i].consignmentPrice
+                            }
+                        }
+                    }
+                    else if(type==='districts') {
+                        let districts = await DistrictAzyk
+                            .find({organization: distributer!=='super'?distributer:null})
+                        let organizations = []
+                        if(organization){
+                            for (let i = 0; i < findDistributer.organizations.length; i++) {
+                                if(findDistributer.organizations[i]._id.toString()===organization.toString())
+                                    organizations.push(findDistributer.organizations[i])
+                            }
+                        }
+                        else
+                            organizations = findDistributer.organizations
+                        for (let i = 0; i < districts.length; i++) {
+                            data = await InvoiceAzyk.find(
+                                {
+                                    $and: [
+                                        dateStart ? {createdAt: {$gte: dateStart}} : {},
+                                        dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                                    ],
+                                    taken: true,
+                                    del: {$ne: 'deleted'},
+                                    organization: {$in: organizations.map(element=>element._id)},
+                                    client: {$in: districts[i].client}
+                                }
+                            )
+                                .select('organization agent returnedPrice allPrice _id consignmentPrice paymentConsignation')
+                                .populate({
+                                    path: 'organization',
+                                    select: '_id name'
+                                })
+                                .populate({
+                                    path: 'agent',
+                                    select: 'user',
+                                    populate: [{
+                                        path: 'user',
+                                        select: 'role',
+                                    }]})
+                                .lean()
+                            for (let i1 = 0; i1 < data.length; i1++) {
+                                let type = data[i1].agent&&!data[i1].agent.user.role.includes('супер')?'оффлайн':'онлайн'
+                                let id = `${type}${districts[i]._id}`
+                                if (!statistic[id]) statistic[id] = {
+                                    profit: 0,
+                                    cancel: [],
+                                    complet: [],
+                                    consignmentPrice: 0,
+                                    organization: `${districts[i].name} ${type}`
+                                }
+                                if(!statistic[id].complet.includes(data[i1]._id.toString())) {
+                                    statistic[id].complet.push(data[i1]._id.toString())
+                                }
+                                statistic[id].profit += data[i1].allPrice - data[i1].returnedPrice
+                                if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
+                                    statistic[id].consignmentPrice += data[i1].consignmentPrice
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            const keys = Object.keys(statistic)
+            data = []
+
+            let profitAll = 0
+            let consignmentPriceAll = 0
+            let completAll = 0
+
+            for(let i=0; i<keys.length; i++){
+                profitAll += statistic[keys[i]].profit
+                consignmentPriceAll += statistic[keys[i]].consignmentPrice
+                completAll += statistic[keys[i]].complet.length
+                data.push({
+                    _id: keys[i],
+                    data: [
+                        statistic[keys[i]].organization,
+                        statistic[keys[i]].profit,
+                        statistic[keys[i]].complet.length,
+                        statistic[keys[i]].consignmentPrice,
+                    ]
+                })
+            }
+            data = data.sort(function(a, b) {
+                return b.data[1] - a.data[1]
+            });
+            data = [
+                {
+                    _id: 'All',
+                    data: [
+                        data.length,
+                        profitAll,
+                        completAll,
+                        consignmentPriceAll,
+                    ]
+                },
+                ...data
+            ]
+            return {
+                columns: [type==='districts'?'район':'организация', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)'],
                 row: data
             };
         }

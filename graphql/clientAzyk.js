@@ -649,13 +649,14 @@ const resolvers = {
         }
     },
     client: async(parent, {_id}) => {
-        if(mongoose.Types.ObjectId.isValid(_id))
+        if(mongoose.Types.ObjectId.isValid(_id)) {
             return await ClientAzyk.findOne({
-                $or:[
+                $or: [
                     {_id: _id},
                     {user: _id}
                 ]
-            }).populate({ path: 'user'})
+            }).populate({path: 'user'})
+        }
         else return null
     },
     sortClient: async(parent, ctx, {user}) => {

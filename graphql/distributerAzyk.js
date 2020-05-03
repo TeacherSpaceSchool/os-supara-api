@@ -12,7 +12,7 @@ const type = `
 `;
 
 const query = `
-    distributers(distributer: ID, search: String!): [Distributer]
+    distributers(sort: String!, search: String!): [Distributer]
     distributer(_id: ID!): Distributer
     organizationsWithoutDistributer(distributer: ID!): [Organization]
 `;
@@ -24,17 +24,14 @@ const mutation = `
 `;
 
 const resolvers = {
-    distributers: async(parent, {distributer, search, sort}, {user}) => {
+    distributers: async(parent, {search, sort}, {user}) => {
         if(user.role==='admin'){
-            let distributers = await DistributerAzyk.find({distributer: distributer})
+            let distributers = await DistributerAzyk.find()
                     .populate('organizations')
                     .populate('distributer')
                     .sort(sort)
-            distributers = distributers.filter(
-                distributer =>
-                        (distributer.organization && distributer.organization.name.toLowerCase().includes(search.toLowerCase()))
-                )
-                return distributers
+            distributers = distributers.filter(distributer => (distributer.distributer && distributer.distributer.name.toLowerCase().includes(search.toLowerCase())))
+            return distributers
         }
     },
     organizationsWithoutDistributer: async(parent, { distributer }, {user}) => {
