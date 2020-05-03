@@ -41,7 +41,7 @@ const resolvers = {
             )
             return agentRoutes
         }
-        else if(['организация'].includes(user.role)) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let agentRoutes = await AgentRouteAzyk.find({organization: organization})
                 .populate('district')
                 .populate('organization')
@@ -73,7 +73,7 @@ const resolvers = {
         let districts = await AgentRouteAzyk
             .find({organization: organization==='super'?null:organization})
             .distinct('district')
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             districts = await DistrictAzyk
                 .find({_id: { $nin: districts}, organization: organization==='super'?null:organization})
                 .populate({path: 'client', populate: [{path: 'user'}]})
@@ -97,7 +97,7 @@ const resolvers = {
                 .populate('organization')
             return res
         }
-        else if('организация'===user.role){
+        else if(['суперорганизация', 'организация'].includes(user.role)){
             return await AgentRouteAzyk.findOne({_id: _id, organization: user.organization})
                 .populate({path: 'district', populate: [{path: 'client', populate: [{path: 'user'}]}]})
                 .populate('organization')
@@ -124,7 +124,7 @@ const resolvers = {
 
 const resolversMutation = {
     addAgentRoute: async(parent, {organization, clients, name, district}, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)) {
+        if(['admin', 'суперорганизация', 'организация', 'менеджер'].includes(user.role)) {
             let _object = new AgentRouteAzyk({
                 name: name,
                 district: district,
@@ -137,7 +137,7 @@ const resolversMutation = {
     },
     setAgentRoute: async(parent, {_id, clients, name}, {user}) => {
         let object = await AgentRouteAzyk.findById(_id)
-        if(['admin', 'организация', 'менеджер', 'агент', 'суперагент'].includes(user.role)) {
+        if(['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(user.role)) {
             if(name)object.name = name
             if(clients)object.clients = clients
             await object.save();
@@ -147,7 +147,7 @@ const resolversMutation = {
     deleteAgentRoute: async(parent, { _id }, {user}) => {
         let objects = await AgentRouteAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&objects[i].organization.toString()===user.organization.toString())) {
+            if(user.role==='admin'||(['суперорганизация', 'организация', 'менеджер'].includes(user.role)&&objects[i].organization.toString()===user.organization.toString())) {
                 await AgentRouteAzyk.deleteMany({_id: objects[i]._id})
             }
         }

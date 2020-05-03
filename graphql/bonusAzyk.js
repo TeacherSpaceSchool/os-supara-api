@@ -32,7 +32,7 @@ const resolvers = {
                 .sort(sort)
             bonuses = bonuses.filter(basket => basket.organization)
         }
-        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
+        else if(['суперорганизация', 'организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
             bonuses =  await BonusAzyk.find({organization: user.organization})
                 .populate({
                     path: 'organization',
@@ -60,7 +60,7 @@ const resolvers = {
                     path: 'organization'
                 })
         }
-        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
+        else if(['суперорганизация', 'организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role)){
             bonus =  await BonusAzyk.findOne({organization: user.organization})
                 .populate({
                     path: 'organization'
@@ -94,9 +94,9 @@ const resolvers = {
 
 const resolversMutation = {
     setBonus: async(parent, {_id, target, bonus}, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)) {
+        if(['admin', 'суперорганизация', 'организация', 'менеджер'].includes(user.role)) {
             let bonusFind = await BonusAzyk.findOne({_id: _id})
-            if('admin'===user.role||(['организация', 'менеджер'].includes(user.role)&&bonusFind.organization.toString()===user.organization.toString())) {
+            if('admin'===user.role||(['суперорганизация', 'организация', 'менеджер'].includes(user.role)&&bonusFind.organization.toString()===user.organization.toString())) {
                 if(target!=undefined) bonusFind.target = target;
                 if(bonus!=undefined) bonusFind.bonus = bonus;
                 await bonusFind.save();

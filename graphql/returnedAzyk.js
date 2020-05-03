@@ -394,7 +394,7 @@ const resolvers = {
                     )
                 .lean()
         }
-        else if(['организация'].includes(user.role)) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             returneds =  await ReturnedAzyk.find(
                 {
                     del: {$ne: 'deleted'},
@@ -780,7 +780,7 @@ const resolvers = {
                 ])
             return returneds
         }
-        else if('организация'===user.role) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let returneds =  await ReturnedAzyk.aggregate(
                 [
                     {
@@ -881,7 +881,7 @@ const resolvers = {
         }
     },
     returnedHistorys: async(parent, {returned}, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+        if(['admin', 'менеджер', 'суперорганизация', 'организация'].includes(user.role)){
             let historyReturneds =  await HistoryReturnedAzyk.find({returned: returned})
             return historyReturneds
         }
@@ -1415,7 +1415,7 @@ const resolvers = {
                 ])
             return returneds
         }
-        else if('организация'===user.role) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let returneds =  await ReturnedAzyk.aggregate(
                 [
                     {
@@ -1735,7 +1735,7 @@ const resolversMutation = {
                 district = findDistrict
         }
         let editor;
-        if(items.length>0&&(['менеджер', 'организация', 'admin', 'агент', 'суперагент'].includes(user.role))){
+        if(items.length>0&&(['менеджер', 'admin', 'агент', 'суперагент', 'суперорганизация', 'организация'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
@@ -1809,7 +1809,7 @@ const resolversSubscription = {
                     (['admin', 'суперагент'].includes(user.role)||
                     (user.employment&&payload.reloadReturned.agent&&payload.reloadReturned.agent.toString()===user.employment.toString())||
                     (user.employment&&payload.reloadReturned.manager&&payload.reloadReturned.manager.toString()===user.employment.toString())||
-                    (user.organization&&payload.reloadReturned.organization&&'организация'===user.role&&payload.reloadReturned.organization.toString()===user.organization.toString()))
+                    (user.organization&&payload.reloadReturned.organization&&['суперорганизация', 'организация'].includes(user.role)&&payload.reloadReturned.organization.toString()===user.organization.toString()))
                 )
             },
         )

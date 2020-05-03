@@ -252,7 +252,7 @@ const resolvers = {
                     .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
                     .lean()
             }
-            else if('организация'===user.role) {
+            else if(['суперорганизация', 'организация'].includes(user.role)) {
                 invoices =  await InvoiceAzyk.find(
                     {
                         del: {$ne: 'deleted'},
@@ -1184,7 +1184,7 @@ const resolvers = {
                 ])
             return invoices
         }
-        else if('организация'===user.role) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -1453,7 +1453,7 @@ const resolvers = {
         }
     },
     orderHistorys: async(parent, {invoice}, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+        if(['admin', 'менеджер', 'суперорганизация', 'организация'].includes(user.role)){
             let historyOrders =  await HistoryOrderAzyk.find({invoice: invoice}).lean()
             return historyOrders
         }
@@ -1478,7 +1478,7 @@ const resolvers = {
         }
     },
     invoicesForRouting: async(parent, { organization }, {user}) => {
-        if(['организация', 'менеджер'].includes(user.role)) {
+        if(['менеджер', 'суперорганизация', 'организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.find({del: {$ne: 'deleted'}})
                 .populate({
                     path: 'orders',
@@ -1571,7 +1571,7 @@ const resolvers = {
                 return invoice
             else if(user.client&&user.client.toString()===invoice.client._id.toString())
                 return invoice
-            else if(user.organization&&['агент', 'организация', 'менеджер'].includes(user.role)&&((invoice.distributer&&user.organization.toString()===invoice.distributer._id.toString())||user.organization.toString()===invoice.organization._id.toString()))
+            else if(user.organization&&['агент', 'менеджер', 'суперорганизация', 'организация'].includes(user.role)&&((invoice.distributer&&user.organization.toString()===invoice.distributer._id.toString())||user.organization.toString()===invoice.organization._id.toString()))
                 return invoice
         } else return null
     },
@@ -1991,7 +1991,7 @@ const resolvers = {
                 ])
             return invoices
         }
-        else if('организация'===user.role) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let invoices =  await InvoiceAzyk.aggregate(
                 [
                     {
@@ -2456,7 +2456,7 @@ const resolversMutation = {
                 path: 'client'
             })
         let editor;
-        if(orders.length>0&&(['менеджер', 'организация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
+        if(orders.length>0&&(['менеджер', 'организация', 'суперорганизация', 'admin', 'client', 'агент', 'суперагент'].includes(user.role))){
             let allPrice = 0
             let allTonnage = 0
             let allSize = 0
@@ -2591,8 +2591,8 @@ const resolversMutation = {
         let order = await OrderAzyk.findOne({_id: object.orders[0]._id}).populate('item')
         let admin = ['admin', 'суперагент'].includes(user.role)
         let client = 'client'===user.role&&user.client.toString()===object.client._id.toString()
-        let undefinedClient = ['менеджер', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
-        let employment = ['менеджер', 'организация', 'агент', 'экспедитор'].includes(user.role)&&[order.item.organization.toString(), object.distributer?object.distributer.toString():'lol'].includes(user.organization.toString());
+        let undefinedClient = ['менеджер', 'суперорганизация', 'организация', 'экспедитор', 'агент'].includes(user.role)&&!object.client.user
+        let employment = ['менеджер', 'суперорганизация', 'организация', 'агент', 'экспедитор'].includes(user.role)&&[order.item.organization.toString(), object.distributer?object.distributer.toString():'lol'].includes(user.organization.toString());
         if(adss!=undefined&&(admin||undefinedClient||employment)) {
             object.adss = adss
         }
@@ -2737,7 +2737,7 @@ const resolversMutation = {
                     await InvoiceAzyk.update({_id: invoices[i]._id}, {dateDelivery: new Date()});
                 }
             }
-            else if(['менеджер', 'организация'].includes(user.role)){
+            else if(['менеджер', 'суперорганизация', 'организация'].includes(user.role)){
                 if(user.organization.toString()===invoices[i].orders[0].item.organization.toString()){
                     invoices[i].confirmationForwarder = true
                     if(invoices[i].confirmationClient) {
@@ -2792,8 +2792,8 @@ const resolversSubscription = {
                         (user.employment&&payload.reloadOrder.superagent&&payload.reloadOrder.superagent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.agent&&payload.reloadOrder.agent.toString()===user.employment.toString())||
                         (user.employment&&payload.reloadOrder.manager&&payload.reloadOrder.manager.toString()===user.employment.toString())||
-                        (user.organization&&payload.reloadOrder.distributer&&'организация'===user.role&&payload.reloadOrder.distributer.toString()===user.organization.toString())||
-                        (user.organization&&payload.reloadOrder.organization&&'организация'===user.role&&payload.reloadOrder.organization.toString()===user.organization.toString())
+                        (user.organization&&payload.reloadOrder.distributer&&['суперорганизация', 'организация'].includes(user.role)&&payload.reloadOrder.distributer.toString()===user.organization.toString())||
+                        (user.organization&&payload.reloadOrder.organization&&['суперорганизация', 'организация'].includes(user.role)&&payload.reloadOrder.organization.toString()===user.organization.toString())
                     )
                 )
             },

@@ -229,7 +229,7 @@ const resolvers = {
                         }*/
                     ])
             return [(clients.length).toString()]
-        } else if(['организация'].includes(user.role)) {
+        } else if(['суперорганизация', 'организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
             let clients;
             if(organization.accessToClient){
@@ -551,7 +551,7 @@ const resolvers = {
                     ])
             return clients
         }
-        else if(['организация'].includes(user.role)) {
+        else if(['суперорганизация', 'организация'].includes(user.role)) {
             let organization = await OrganizationAzyk.findOne({_id: user.organization})
             let clients;
             if(organization.accessToClient)
@@ -662,7 +662,7 @@ const resolvers = {
     sortClient: async(parent, ctx, {user}) => {
         let sort = [
         ]
-        if(['организация', 'менеджер', 'admin'].includes(user.role)) {
+        if(['суперорганизация', 'организация', 'менеджер', 'admin'].includes(user.role)) {
             sort = [
                 {
                     name: 'Имя',
@@ -724,7 +724,7 @@ const resolversMutation = {
     setClient: async(parent, {_id, image, name, email, address, info, newPass, phone, login, city, device}, {user, res}) => {
         let object = await ClientAzyk.findOne({_id: _id})
         if(
-            ['агент', 'admin', 'суперагент'].includes(user.role)||
+            ['суперорганизация', 'организация', 'агент', 'admin', 'суперагент'].includes(user.role)||
             object.user&&object.user.toString()===user._id.toString()
         ) {
             if (image) {

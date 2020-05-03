@@ -60,7 +60,7 @@ const resolvers = {
 
 const resolversMutation = {
     addAds: async(parent, {image, url, title, organization, item, count}, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
+        if(['суперорганизация', 'организация', 'admin'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
             let _object = new AdsAzyk({
@@ -72,13 +72,13 @@ const resolversMutation = {
             });
             if(count)
                 _object.count = count
-            if(['организация'].includes(user.role)) _object.organization = user.organization
+            if(['суперорганизация', 'организация'].includes(user.role)) _object.organization = user.organization
             await AdsAzyk.create(_object)
         }
         return {data: 'OK'};
     },
     setAds: async(parent, {_id, image, url, title, item, count}, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
+        if(['суперорганизация', 'организация', 'admin'].includes(user.role)){
             let object = await AdsAzyk.findById(_id)
             object.item = item
             if (image) {
@@ -101,7 +101,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteAds: async(parent, { _id }, {user}) => {
-        if(['организация', 'admin'].includes(user.role)){
+        if(['суперорганизация', 'организация', 'admin'].includes(user.role)){
             let objects = await AdsAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 await deleteFile(objects[i].image)

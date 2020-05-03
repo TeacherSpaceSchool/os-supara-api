@@ -111,7 +111,7 @@ const resolvers = {
                 return items
             }
         }
-        else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
+        else if(['экспедитор', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)){
             let organizations = await DistributerAzyk.findOne({
                 distributer: user.organization
             })
@@ -254,7 +254,7 @@ const resolvers = {
                 .sort('-priotiry')
                 .sort(sort)
         }
-        else if(['организация', 'менеджер', 'агент'].includes(user.role)){
+        else if(['суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)){
             brandOrganizations = await DistributerAzyk.findOne({
                 distributer: user.organization
             }).distinct('organizations')
@@ -302,7 +302,7 @@ const resolvers = {
     },
     filterItem: async(parent, ctx, {user}) => {
         let filter = []
-        if(!['экспедитор', 'организация'].includes(user.role)){
+        if(!['экспедитор', 'суперорганизация', 'организация'].includes(user.role)){
             filter = [
                 {
                     name: 'Все',
@@ -352,7 +352,7 @@ const resolvers = {
 
 const resolversMutation = {
     addItem: async(parent, {apiece, priotiry, stock, name, image, info, price, subCategory, organization, hit, latest, deliveryDays, packaging, weight, size}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
             let _object = new ItemAzyk({
@@ -373,7 +373,7 @@ const resolversMutation = {
                 size: Math.round(size),
                 priotiry: priotiry
             });
-            if(['организация'].includes(user.role)) _object.organization = user.organization
+            if(['суперорганизация', 'организация'].includes(user.role)) _object.organization = user.organization
             if(apiece!=undefined) _object.apiece = apiece
             _object = await ItemAzyk.create(_object)
         }
@@ -381,7 +381,7 @@ const resolversMutation = {
     },
     setItem: async(parent, {apiece, _id, priotiry, weight, size, stock, name, image, info, price, subCategory, organization, packaging, hit, latest, deliveryDays}, {user}) => {
         let object = await ItemAzyk.findById(_id)
-        if(user.role==='admin'||(['организация'].includes(user.role)&&user.organization.toString()===object.organization.toString())) {
+        if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===object.organization.toString())) {
             if (image) {
                 let {stream, filename} = await image;
                 await deleteFile(object.image)
@@ -411,7 +411,7 @@ const resolversMutation = {
     onoffItem: async(parent, { _id }, {user}) => {
         let objects = await ItemAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'|| (['организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
+            if(user.role==='admin'|| (['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
                 objects[i].status = objects[i].status==='active'?'deactive':'active'
                 await objects[i].save()
                 await BasketAzyk.deleteMany({item: {$in: objects[i]._id}})
@@ -422,7 +422,7 @@ const resolversMutation = {
     deleteItem: async(parent, { _id }, {user}) => {
         let objects = await ItemAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'||(['организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
+            if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
                 objects[i].del = 'deleted'
                 objects[i].status = 'deactive'
                 await objects[i].save()

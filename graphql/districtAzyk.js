@@ -91,7 +91,7 @@ const resolvers = {
                 return districts
             }
         }
-        else if(['организация'].includes(user.role)){
+        else if(['суперорганизация', 'организация'].includes(user.role)){
             let districts =  await DistrictAzyk.find({
                 $or: [
                     {organization: user.organization},
@@ -140,7 +140,7 @@ const resolvers = {
         }
     },
     clientsWithoutDistrict: async(parent, { organization }, {user}) => {
-        if(['admin', 'организация', 'менеджер'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация', 'менеджер'].includes(user.role)){
             if(user.organization)
                 organization = user.organization
             let clients = await DistrictAzyk
@@ -193,7 +193,7 @@ const resolvers = {
                 .populate('organization')
                 .populate('manager')
         }
-        else if(['организация'].includes(user.role)){
+        else if(['суперорганизация', 'организация'].includes(user.role)){
             return await DistrictAzyk.findOne({_id: _id, organization: user.organization})
                 .populate('agent')
                 .populate({path: 'client', populate: [{path: 'user'}]})
@@ -232,7 +232,7 @@ const resolvers = {
 
 const resolversMutation = {
     addDistrict: async(parent, {organization, client, name, agent, ecspeditor, manager}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let _object = new DistrictAzyk({
                 name: name,
                 client: client,
@@ -247,7 +247,7 @@ const resolversMutation = {
     },
     setDistrict: async(parent, {_id, client, ecspeditor, name, agent, manager}, {user}) => {
         let object = await DistrictAzyk.findById(_id)
-        if(object&&['admin', 'организация', 'менеджер'].includes(user.role)){
+        if(object&&['admin', 'суперорганизация', 'организация', 'менеджер'].includes(user.role)){
             if(name)object.name = name
             if(client){
                 let objectAgentRouteAzyk = await AgentRouteAzyk.findOne({district: object._id})
@@ -276,7 +276,7 @@ const resolversMutation = {
     deleteDistrict: async(parent, { _id }, {user}) => {
         let objects = await DistrictAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())) {
+            if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
                 await DistrictAzyk.deleteMany({_id: objects[i]._id})
                 await AgentRouteAzyk.deleteMany({district: objects[i]._id})
                 await OutXMLAdsShoroAzyk.deleteMany({district: objects[i]._id})

@@ -46,7 +46,7 @@ const resolvers = {
             )
             return equipments
         }
-        else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)){
+        else if(['экспедитор', 'менеджер', 'агент', 'суперорганизация', 'организация'].includes(user.role)){
             let equipments =  await EquipmentAzyk.find(
                 mongoose.Types.ObjectId.isValid(filter)?{client: filter, organization: user.organization}:{organization: user.organization}
             )
@@ -147,7 +147,7 @@ const resolvers = {
 
 const resolversMutation = {
     addEquipment: async(parent, {number, name, organization, client}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let _object = new EquipmentAzyk({
                 number: number,
                 name: name,
@@ -162,7 +162,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setEquipment: async(parent, {_id, number, name, organization, client}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)) {
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)) {
             let object = await EquipmentAzyk.findById(_id)
             if(number)object.number = number
             if(name)object.name = name
@@ -173,7 +173,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteEquipment: async(parent, { _id }, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let objects = await EquipmentAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 if(user.role==='admin'||user.organization.toString()===objects[i].organization.toString())

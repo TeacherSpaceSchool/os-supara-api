@@ -155,7 +155,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setOrganization: async(parent, {_id, priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
-        if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===_id.toString())) {
+        if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
                 let {stream, filename} = await image;

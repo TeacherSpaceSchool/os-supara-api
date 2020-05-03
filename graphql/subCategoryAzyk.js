@@ -58,7 +58,7 @@ const resolvers = {
                     ]
                 }
             }
-            else if(['экспедитор', 'организация', 'менеджер', 'агент'].includes(user.role)) {
+            else if(['экспедитор', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)) {
                 let subCategorys =  await ItemAzyk.find({organization: user.organization, del: {$ne: 'deleted'}}).distinct('subCategory')
                 if(category!=='all'){
                     return await SubCategoryAzyk.find({

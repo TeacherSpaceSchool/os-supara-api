@@ -27,7 +27,7 @@ const resolvers = {
         let typex = ''
         if(user.role==='client')
             typex='клиенты'
-        else if(['организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role))
+        else if(['суперорганизация', 'организация', 'менеджер', 'экспедитор', 'агент'].includes(user.role))
             typex='сотрудники'
         let res =  await FaqAzyk.find({
             title: {'$regex': search, '$options': 'i'},

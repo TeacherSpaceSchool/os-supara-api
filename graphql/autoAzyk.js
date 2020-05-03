@@ -49,7 +49,7 @@ const resolvers = {
             )
             return autos
         }
-        else if(['организация', 'менеджер'].includes(user.role)){
+        else if(['суперорганизация', 'организация', 'менеджер'].includes(user.role)){
             let autos =  await AutoAzyk.find(
                 mongoose.Types.ObjectId.isValid(filter)?{employment: filter, organization: user.organization}:{organization: user.organization}
             )
@@ -136,7 +136,7 @@ const resolvers = {
 
 const resolversMutation = {
     addAuto: async(parent, {number, tonnage, size, organization, employment}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let _object = new AutoAzyk({
                 number: number,
                 tonnage: Math.round(tonnage),
@@ -152,7 +152,7 @@ const resolversMutation = {
         return {data: 'OK'};
     },
     setAuto: async(parent, {_id, number, tonnage, size, organization, employment}, {user}) => {
-        if(['admin', 'организация'].includes(user.role)) {
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)) {
             let object = await AutoAzyk.findById(_id)
             if(number)object.number = number
             if(tonnage)object.tonnage = tonnage
@@ -164,7 +164,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteAuto: async(parent, { _id }, {user}) => {
-        if(['admin', 'организация'].includes(user.role)){
+        if(['admin', 'суперорганизация', 'организация'].includes(user.role)){
             let objects = await AutoAzyk.find({_id: {$in: _id}})
             for(let i=0; i<objects.length; i++){
                 if(user.role==='admin'||user.organization.toString()===objects[i].organization.toString())

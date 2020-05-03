@@ -128,7 +128,7 @@ const resolvers = {
 
             return routes
         }
-        else if(['организация', 'менеджер'].includes(user.role)) {
+        else if(['суперорганизация', 'организация', 'менеджер'].includes(user.role)) {
             let routes = await RouteAzyk.find(date===''?{status: {'$regex': filter, '$options': 'i'}}:{status: {'$regex': filter, '$options': 'i'}, $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]})
                 .populate({
                     path: 'invoices',
@@ -209,7 +209,7 @@ const resolvers = {
                 (
                     user.role === 'admin' ||
                     (user.role === 'экспедитор' && route.employment.user._id.toString() === user._id.toString()) ||
-                    (['организация', 'менеджер'].includes(user.role) && route.employment.organization._id.toString() === user.organization.toString())
+                    (['суперорганизация', 'организация', 'менеджер'].includes(user.role) && route.employment.organization._id.toString() === user.organization.toString())
                 )
             )
                 return route
@@ -262,9 +262,9 @@ const resolvers = {
 
 const resolversMutation = {
     addRoute: async(parent, {invoices, employment, dateStart}, {user}) => {
-        if(['менеджер', 'организация', 'admin'].includes(user.role)){
+        if(['менеджер', 'суперорганизация', 'организация', 'admin'].includes(user.role)){
             let employmentEcspeditor = await EmploymentAzyk.findOne({_id: employment})
-            if(['менеджер', 'организация'].includes(user.role)){
+            if(['менеджер', 'суперорганизация', 'организация'].includes(user.role)){
                 if(employmentEcspeditor.organization.toString()!==user.organization.toString())
                     return {data: 'OK'};
             }
@@ -297,7 +297,7 @@ const resolversMutation = {
     },
     setRoute: async(parent, {_id, invoices, employment, cancelInvoices, dateStart}, {user}) => {
         let object = await RouteAzyk.findById(_id).populate('employment');
-        if(user.role==='admin'||(['организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.employment.organization.toString())) {
+        if(user.role==='admin'||(['суперорганизация', 'организация', 'менеджер'].includes(user.role)&&user.organization.toString()===object.employment.organization.toString())) {
             if(employment&&object.status==='создан')object.employment = employment;
             if(dateStart&&object.status==='создан')object.dateStart = dateStart;
             if(cancelInvoices)
@@ -339,7 +339,7 @@ const resolversMutation = {
                 }
             }
         }
-        else if(['организация', 'менеджер'].includes(user.role)){
+        else if(['суперорганизация', 'организация', 'менеджер'].includes(user.role)){
             let objects = await RouteAzyk.find({_id: {$in: _id}})
                 .populate('invoices')
                 .populate({

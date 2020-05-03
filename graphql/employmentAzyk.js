@@ -105,7 +105,7 @@ const resolvers = {
                 return employments
             }
         }
-        else if(user.role==='организация'){
+        else if(['суперорганизация', 'организация'].includes(user.role)){
             let employments = await EmploymentAzyk.find({
                 organization: user.organization,
                 del: {$ne: 'deleted'}
@@ -157,7 +157,7 @@ const resolvers = {
             }
             else return []
         }
-        else if (['организация', 'менеджер', 'агент'].includes(user.role)) {
+        else if (['суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
                 organization: user.organization,
                 del: {$ne: 'deleted'}
@@ -189,7 +189,7 @@ const resolvers = {
             }
             else return []
         }
-        else if (['организация', 'менеджер'].includes(user.role)) {
+        else if (['суперорганизация', 'организация', 'менеджер'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
                 organization: user.organization,
                 del: {$ne: 'deleted'}
@@ -221,7 +221,7 @@ const resolvers = {
             }
             else return []
         }
-        else if (['организация', 'менеджер'].includes(user.role)) {
+        else if (['суперорганизация', 'организация', 'менеджер'].includes(user.role)) {
             let employments = await EmploymentAzyk.find({
                 organization: user.organization,
                 del: {$ne: 'deleted'}
@@ -237,11 +237,11 @@ const resolvers = {
             let result = await EmploymentAzyk.findOne({
                 user: _id
             }).populate({ path: 'user'}).populate({ path: 'organization' })
-            if(result === null||!['admin', 'организация'].includes(user.role))
+            if(result === null||!['admin', 'суперорганизация', 'организация'].includes(user.role))
                 return await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'user'}).populate({ path: 'organization' })
             if(user.role==='admin')
                 return result
-            else if(result&&'организация'===user.role&&user.organization.toString()===result.organization._id.toString())
+            else if(result&&['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===result.organization._id.toString())
                 return result
             else
                 return null
@@ -266,7 +266,7 @@ const resolvers = {
         return sort
     },
     filterEmployment: async(parent, ctx, {user}) => {
-        if(['организация', 'менеджер'].includes(user.role))
+        if(['суперорганизация', 'организация', 'менеджер'].includes(user.role)||user.role.includes('организация'))
             return [
                 {
                     name: 'Все',
@@ -318,8 +318,10 @@ const resolversMutation = {
         let object = await EmploymentAzyk.findById(_id)
         if(
             user.role==='admin'||
-            (user.role==='организация'&&user.organization.toString()===object.organization.toString())
+            (['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===object.organization.toString())
         ) {
+            if(role==='суперорганизация'&&user.role!=='admin')
+                role = 'организация'
             if (role || newPass || login) {
                 let objectUser = await UserAzyk.findById(object.user)
                 if(login)objectUser.login = login.trim()
@@ -339,7 +341,7 @@ const resolversMutation = {
     deleteEmployment: async(parent, { _id }, {user}) => {
         let objects = await EmploymentAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())){
+            if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())){
                 await EmploymentAzyk.update({_id: objects[i]._id}, {del: 'deleted'})
                 await UserAzyk.update({_id: objects[i].user}, {status: 'deactive'})
                 await Integrate1CAzyk.deleteOne({
@@ -385,7 +387,7 @@ const resolversMutation = {
     onoffEmployment: async(parent, { _id }, {user}) => {
         let objects = await EmploymentAzyk.find({_id: {$in: _id}})
         for(let i=0; i<objects.length; i++){
-            if(user.role==='admin'||(user.role==='организация'&&user.organization.toString()===objects[i].organization.toString())) {
+            if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===objects[i].organization.toString())) {
                 let object = await UserAzyk.findOne({_id: objects[i].user})
                 object.status = object.status === 'active' ? 'deactive' : 'active'
                 await object.save()
