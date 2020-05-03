@@ -1551,7 +1551,7 @@ const resolvers = {
                                 }]})
                             .lean()
                         for (let i = 0; i < data.length; i++) {
-                            let type = data[i].agent&&data[i].agent.organization.toString()===distributer.toString()&&!data[i].agent.user.role.includes('супер')?'оффлайн':'онлайн'
+                            let type = data[i].agent&&data[i].agent.organization&&data[i].agent.organization.toString()===distributer.toString()&&!data[i].agent.user.role.includes('супер')?'оффлайн':'онлайн'
                             let id = `${type}${data[i].organization._id}`
                             if (!statistic[id]) statistic[id] = {
                                 profit: 0,
@@ -1651,8 +1651,8 @@ const resolvers = {
                                 }]})
                             .lean()
                         for (let i1 = 0; i1 < data.length; i1++) {
-                            let name = data[i1].agent&&data[i1].agent.organization.toString()===distributer.toString()&&!data[i1].agent.user.role.includes('супер')?data[i1].agent.name:'AZYK.STORE'
-                            let id = data[i1].agent&&data[i1].agent.organization.toString()===distributer.toString()&&!data[i1].agent.user.role.includes('супер')?data[i1].agent._id:'AZYK.STORE'
+                            let name = data[i1].agent&&data[i1].agent.organization&&data[i1].agent.organization.toString()===distributer.toString()&&!data[i1].agent.user.role.includes('супер')?data[i1].agent.name:'AZYK.STORE'
+                            let id = data[i1].agent&&data[i1].agent.organization&&data[i1].agent.organization.toString()===distributer.toString()&&!data[i1].agent.user.role.includes('супер')?data[i1].agent._id:'AZYK.STORE'
                             if (!statistic[id]) statistic[id] = {
                                 profit: 0,
                                 cancel: [],
