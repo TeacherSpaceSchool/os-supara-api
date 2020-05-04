@@ -1,5 +1,6 @@
 const AdsAzyk = require('../models/adsAzyk');
 const OrganizationAzyk = require('../models/organizationAzyk');
+const DistributerAzyk = require('../models/distributerAzyk');
 const { saveImage, deleteFile, urlMain } = require('../module/const');
 
 const type = `
@@ -44,13 +45,28 @@ const resolvers = {
             organization: organization
         }).populate('item').sort('-createdAt')
     },
-    adsOrganizations: async() => {
-        let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
-        organizations = await OrganizationAzyk.find({
-            _id: {$in: organizations},
-            status: 'active',
-            del: {$ne: 'deleted'}}).sort('name')
-        return organizations
+    adsOrganizations: async(parent, ctx, {user}) => {
+        if(user.organization){
+            let distributer =  await DistributerAzyk.findOne({distributer: user.organization})
+                .populate('organizations')
+                .populate('distributer')
+            if(distributer){
+                return [distributer.distributer, ...distributer.organizations]
+            }
+            else{
+                distributer = await OrganizationAzyk.find({
+                    _id: user.organization})
+                return distributer
+            }
+        }
+        else {
+            let organizations = await AdsAzyk.find({del: {$ne: 'deleted'}}).distinct('organization')
+            organizations = await OrganizationAzyk.find({
+                _id: {$in: organizations},
+                status: 'active',
+                del: {$ne: 'deleted'}}).sort('name')
+            return organizations
+        }
     },
     ads: async() => {
         let ads = await AdsAzyk.findRandom().limit(1)

@@ -267,20 +267,17 @@ const resolvers = {
                                     {distributer: user.organization},
                                 ],
                             },
-                            {
-                                ...(search.length>0?{
-                                        $or: [
-                                            {number: {'$regex': search, '$options': 'i'}},
-                                            {info: {'$regex': search, '$options': 'i'}},
-                                            {address: {'$regex': search, '$options': 'i'}},
-                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                            {client: {$in: _clients}},
-                                            {agent: {$in: _agents}}
-                                        ]
-                                    }
-                                    :{
-                                    })
-                            }
+                            ...(search.length>0? [{
+                                $or: [
+                                    {number: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {address: {'$regex': search, '$options': 'i'}},
+                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                    {client: {$in: _clients}},
+                                    {organization: {$in: _organizations}},
+                                    {distributer: {$in: _organizations}},
+                                ]
+                            }]:[])
                         ],
                     })
                     .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
@@ -305,21 +302,18 @@ const resolvers = {
                                     {distributer: user.organization},
                                 ],
                             },
-                            {
-                                ...(search.length>0?{
-                                        $or: [
-                                            {number: {'$regex': search, '$options': 'i'}},
-                                            {info: {'$regex': search, '$options': 'i'}},
-                                            {address: {'$regex': search, '$options': 'i'}},
-                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                            {client: {$in: _clients}},
-                                            {agent: {$in: _agents}}
-                                        ]
-                                    }
-                                    :{})
-                            }
+                            ...(search.length>0? [{
+                                $or: [
+                                    {number: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {address: {'$regex': search, '$options': 'i'}},
+                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                    {client: {$in: _clients}},
+                                    {organization: {$in: _organizations}},
+                                    {distributer: {$in: _organizations}},
+                                ]
+                            }]:[])
                         ],
-
                     }
                 )
                     .select('returnedPrice allPrice orders allSize allTonnage consignmentPrice paymentConsignation')
@@ -360,22 +354,20 @@ const resolvers = {
                             {
                                 $or: [
                                     {organization: user.organization},
-                                    {distributer: user.organization},
+                                    {distributer: user.organization}
                                 ],
                             },
-                            {
-                                ...(search.length>0?{
-                                        $or: [
-                                            {number: {'$regex': search, '$options': 'i'}},
-                                            {info: {'$regex': search, '$options': 'i'}},
-                                            {address: {'$regex': search, '$options': 'i'}},
-                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                            {client: {$in: _clients}},
-                                        ]
-                                    }
-                                    :{
-                                    })
-                            }
+                            ...(search.length>0? [{
+                                $or: [
+                                    {number: {'$regex': search, '$options': 'i'}},
+                                    {info: {'$regex': search, '$options': 'i'}},
+                                    {address: {'$regex': search, '$options': 'i'}},
+                                    {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                    {client: {$in: _clients}},
+                                    {organization: {$in: _organizations}},
+                                    {distributer: {$in: _organizations}},
+                                ]
+                            }]:[])
                         ],
                     }
                 )
@@ -414,12 +406,6 @@ const resolvers = {
                         client: {$in: clients},
                         $and: [
                             {createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}},
-                            {
-                                $or: [
-                                    {organization: user.organization},
-                                    {distributer: user.organization},
-                                ],
-                            },
                             {
                                 ...(search.length>0?{
                                         $or: [
@@ -932,22 +918,20 @@ const resolvers = {
                                 {
                                     $or: [
                                         {organization: user.organization},
-                                        {distributer: user.organization},
+                                        {distributer: user.organization}
                                     ],
                                 },
-                                {
-                                    ...(search.length>0?{
-                                            $or: [
-                                                {number: {'$regex': search, '$options': 'i'}},
-                                                {info: {'$regex': search, '$options': 'i'}},
-                                                {address: {'$regex': search, '$options': 'i'}},
-                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                {client: {$in: _clients}},
-                                            ]
-                                        }
-                                        :{
-                                        })
-                                }
+                                ...(search.length>0? [{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                        {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
+                                    ]
+                                }]:[]),
                             ],
                         }
                     },
@@ -1073,19 +1057,18 @@ const resolvers = {
                                         {distributer: user.organization},
                                     ]
                                 },
-                                {
-                                    ...(search.length>0?{
-                                            $or: [
-                                                {number: {'$regex': search, '$options': 'i'}},
-                                                {info: {'$regex': search, '$options': 'i'}},
-                                                {address: {'$regex': search, '$options': 'i'}},
-                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                {client: {$in: _clients}},
-                                                {agent: {$in: _agents}},
-                                            ]
-                                        }
-                                        :{
-                                        })}],
+                                ...(search.length>0? [{
+                                    $or: [
+                                        {number: {'$regex': search, '$options': 'i'}},
+                                        {info: {'$regex': search, '$options': 'i'}},
+                                        {address: {'$regex': search, '$options': 'i'}},
+                                        {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                        {client: {$in: _clients}},
+                                        {organization: {$in: _organizations}},
+                                        {distributer: {$in: _organizations}},
+                                    ]
+                                }]:[])
+                            ],
                         }
                     },
                     { $sort : _sort },
@@ -1201,20 +1184,17 @@ const resolvers = {
                                         {distributer: user.organization},
                                     ]
                                 },
-                                {
-                                    ...(search.length>0?{
-                                            $or: [
-                                                {number: {'$regex': search, '$options': 'i'}},
-                                                {info: {'$regex': search, '$options': 'i'}},
-                                                {address: {'$regex': search, '$options': 'i'}},
-                                                {paymentMethod: {'$regex': search, '$options': 'i'}},
-                                                {client: {$in: _clients}},
-                                                {agent: {$in: _agents}}
-                                            ]
-                                        }
-                                        :{
-                                        })
-                                }
+                                ...(search.length>0? [{
+                                        $or: [
+                                            {number: {'$regex': search, '$options': 'i'}},
+                                            {info: {'$regex': search, '$options': 'i'}},
+                                            {address: {'$regex': search, '$options': 'i'}},
+                                            {paymentMethod: {'$regex': search, '$options': 'i'}},
+                                            {client: {$in: _clients}},
+                                            {organization: {$in: _organizations}},
+                                            {distributer: {$in: _organizations}},
+                                        ]
+                                    }]:[])
                             ]
                         }
                     },
