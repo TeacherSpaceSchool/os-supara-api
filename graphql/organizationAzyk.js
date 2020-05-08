@@ -5,6 +5,7 @@ const AutoAzyk = require('../models/autoAzyk');
 const EquipmentAzyk = require('../models/equipmentAzyk');
 const BonusClientAzyk = require('../models/bonusClientAzyk');
 const EmploymentAzyk = require('../models/employmentAzyk');
+const DeliveryDateAzyk = require('../models/deliveryDateAzyk');
 const DistributerAzyk = require('../models/distributerAzyk');
 const DistrictAzyk = require('../models/districtAzyk');
 const AgentRouteAzyk = require('../models/agentRouteAzyk');
@@ -184,35 +185,39 @@ const resolversMutation = {
     },
     deleteOrganization: async(parent, { _id }, {user}) => {
         if(user.role==='admin'){
-            let items = await ItemAzyk.find({organization: {$in: _id}})
-            items = items.map(element=>element._id)
-            await BasketAzyk.deleteMany({item: {$in: items}})
-            await ItemAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted', status: 'deactive'})
-            let users = await EmploymentAzyk.find({organization: {$in: _id}}).distinct('user')
-            await UserAzyk.updateMany({_id: {$in: users}}, {status: 'deactive'})
-            await EmploymentAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
-            await Integrate1CAzyk.deleteMany({organization: {$in: _id}})
-            await AgentRouteAzyk.deleteMany({organization: {$in: _id}})
-            await DistrictAzyk.deleteMany({organization: {$in: _id}})
-            await DistributerAzyk.deleteMany({distributer: {$in: _id}})
-            let distributers = await DistributerAzyk.findOne({
-                organizations: _id
-            })
-            for(let i=0; i<distributers.length; i++){
-                for(let i1=0; i1<_id.length; i1++) {
-                    distributers[i].organizations.splice(_id[i1], 1)
+            for(let i=0; i<_id.length; i++) {
+                let items = await ItemAzyk.find({organization: _id[i]}).distinct('_id')
+                await BasketAzyk.deleteMany({item: {$in: items}})
+                await ItemAzyk.updateMany({organization: _id[i]}, {del: 'deleted', status: 'deactive'})
+                let users = await EmploymentAzyk.find({organization: _id[i]}).distinct('user')
+                await UserAzyk.updateMany({_id: {$in: users}}, {status: 'deactive'})
+                await EmploymentAzyk.updateMany({organization: _id[i]}, {del: 'deleted'})
+                await Integrate1CAzyk.deleteMany({organization: _id[i]})
+                await AgentRouteAzyk.deleteMany({organization: _id[i]})
+                await DistrictAzyk.deleteMany({organization: _id[i]})
+                await DistributerAzyk.deleteMany({distributer: _id[i]})
+                let distributers = await DistributerAzyk.find({
+                    $or: [
+                        {sales: _id[i]},
+                        {provider: _id[i]}
+                    ]
+                })
+                for(let i=0; i<distributers.length; i++){
+                        distributers[i].sales.splice(_id[i], 1)
+                        distributers[i].provider.splice(_id[i], 1)
+                    await distributers[i].save()
                 }
-                await distributers[i].save()
+                let bonus = await BonusAzyk.find({organization: _id[i]});
+                bonus = bonus.map(element=>element._id)
+                await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
+                await BonusAzyk.deleteMany({organization: _id[i]})
+                await AutoAzyk.deleteMany({organization: _id[i]})
+                await EquipmentAzyk.deleteMany({organization: _id[i]})
+                await OrganizationAzyk.updateMany({_id: _id[i]}, {del: 'deleted', status: 'deactive'})
+                await AdsAzyk.updateMany({organization: _id[i]}, {del: 'deleted'})
+                await PlanAzyk.deleteMany({organization: _id[i]})
+                await DeliveryDateAzyk.deleteMany({organization: _id[i]})
             }
-            let bonus = await BonusAzyk.find({organization: {$in: _id}});
-            bonus = bonus.map(element=>element._id)
-            await BonusClientAzyk.deleteMany({bonus: {$in: bonus}})
-            await BonusAzyk.deleteMany({organization: {$in: _id}})
-            await AutoAzyk.deleteMany({organization: {$in: _id}})
-            await EquipmentAzyk.deleteMany({organization: {$in: _id}})
-            await OrganizationAzyk.updateMany({_id: {$in: _id}}, {del: 'deleted', status: 'deactive'})
-            await AdsAzyk.updateMany({organization: {$in: _id}}, {del: 'deleted'})
-            await PlanAzyk.deleteMany({organization: {$in: _id}})
         }
         return {data: 'OK'}
     },

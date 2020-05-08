@@ -36,7 +36,12 @@ const ReturnedAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
-    distributer: {
+    sale: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk',
+        default: null
+    },
+    provider: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk',
         default: null

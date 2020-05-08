@@ -115,28 +115,27 @@ const resolvers = {
             let organizations = await DistributerAzyk.findOne({
                 distributer: user.organization
             })
-                .populate({path: 'organizations', match: {del: {$ne: 'deleted'}, status: 'active'}})
-                .distinct('organizations')
-            organizations = organizations.filter(
-                organization => (
-                    organization
-                )
-            )
-            organizations = organizations.map(
-                organization => (
-                    organization._id
-                )
-            )
-            organizations = [...organizations, user.organization]
-            let items =  await ItemAzyk.find({
-                ...(filter.length===0?{}:{subCategory: filter}),
-                organization: {$in: organizations},
-                del: {$ne: 'deleted'}
-            })
-                .populate('subCategory')
-                .populate('organization')
-                .sort('-priotiry')
-                .sort(sort)
+                .distinct('sales')
+            let items =  [
+                ...(await ItemAzyk.find({
+                    ...(filter.length===0?{}:{subCategory: filter}),
+                    organization: user.organization,
+                    del: {$ne: 'deleted'}
+                })
+                    .populate('subCategory')
+                    .populate('organization')
+                    .sort('-priotiry')
+                    .sort(sort)),
+                ...(await ItemAzyk.find({
+                    ...(filter.length===0?{}:{subCategory: filter}),
+                    organization: {$in: organizations},
+                    del: {$ne: 'deleted'}
+                })
+                    .populate('subCategory')
+                    .populate('organization')
+                    .sort('-priotiry')
+                    .sort(sort))
+            ]
             items = items.filter(
                 item => (
                     (item.name.toLowerCase()).includes(search.toLowerCase()) ||
@@ -257,7 +256,7 @@ const resolvers = {
         else if(['суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)){
             brandOrganizations = await DistributerAzyk.findOne({
                 distributer: user.organization
-            }).distinct('organizations')
+            }).distinct('sales')
             brandOrganizations = [...brandOrganizations, user.organization]
             return await OrganizationAzyk.find({
                 _id: {$in: brandOrganizations},

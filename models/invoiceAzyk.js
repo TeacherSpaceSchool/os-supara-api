@@ -31,6 +31,10 @@ const InvoiceAzykSchema = mongoose.Schema({
         default: 0
     },
     usedBonus: Number,
+    inv: {
+        type: Number,
+        default: 0
+    },
     number: String,
     info: String,
     address: [String],
@@ -75,6 +79,16 @@ const InvoiceAzykSchema = mongoose.Schema({
         ref: 'OrganizationAzyk'
     },
     distributer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk',
+        default: null
+    },
+    provider: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk',
+        default: null
+    },
+    sale: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk',
         default: null

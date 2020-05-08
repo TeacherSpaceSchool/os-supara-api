@@ -48,10 +48,10 @@ const resolvers = {
     adsOrganizations: async(parent, ctx, {user}) => {
         if(user.organization){
             let distributer =  await DistributerAzyk.findOne({distributer: user.organization})
-                .populate('organizations')
+                .populate('sales')
                 .populate('distributer')
             if(distributer){
-                return [distributer.distributer, ...distributer.organizations]
+                return [distributer.distributer, ...distributer.sales]
             }
             else{
                 distributer = await OrganizationAzyk.find({

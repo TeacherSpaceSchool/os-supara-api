@@ -134,6 +134,7 @@ module.exports.setOutXMLShoroAzyk = async(invoice) => {
                         forwarder: guidEcspeditor.guid,
                         invoice: invoice._id,
                         status: 'create',
+                        inv: invoice.inv,
                     });
                     for (let i = 0; i < invoice.orders.length; i++) {
                         let guidItem = await Integrate1CAzyk
@@ -279,6 +280,8 @@ module.exports.getOutXMLShoroAzyk = async() => {
             item.att('del', '1')
         if(outXMLShoros[i].promo===1)
             item.att('promo', '1')
+        if(outXMLShoros[i].inv===1)
+            item.att('inv', '1')
         item.att('guid', outXMLShoros[i].guid)
         item.att('client', outXMLShoros[i].client)
         item.att('agent', outXMLShoros[i].agent)

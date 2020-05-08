@@ -63,6 +63,7 @@ const query = `
     statisticItem(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticAdss(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
     statisticOrder(company: String, dateStart: Date, dateType: String, online: Boolean): Statistic
+    statisticGeoOrder(organization: ID!, dateStart: Date): [[String]]
     statisticDistributer(distributer: ID!, organization: ID, dateStart: Date, dateType: String, type: String): Statistic
     statisticReturned(company: String, dateStart: Date, dateType: String): Statistic
     statisticAgents(company: String, dateStart: Date, dateType: String): Statistic
@@ -935,6 +936,9 @@ const resolvers = {
             dateStart.setDate(dateStart.getDate() - 7)
             let agents = []
             let statistic = {}
+            let allClients=[]
+            let allOrders=[]
+            let allProfit = 0
             if(online){
                 agents = await UserAzyk.find({$or: [{role: 'агент'}, {role: 'менеджер'}, {role: 'организация'}, {role: 'суперорганизация'}]}).distinct('_id').lean()
                 agents = await EmploymentAzyk.find({
@@ -974,19 +978,27 @@ const resolvers = {
             }
             data = data.reduce((acc, val) => acc.concat(val.orders), []);
             for(let i=0; i<data.length; i++) {
-                    if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
-                        client: [],
-                        invoice: [],
-                        item: data[i].item.name,
-                        profit: 0
-                    }
-                    statistic[data[i].item._id].profit += data[i].allPrice - (data[i].allPrice/data[i].count*data[i].returned)
-                    if (!statistic[data[i].item._id].client.includes(data[i].client.toString())) {
-                        statistic[data[i].item._id].client.push(data[i].client.toString())
-                    }
-                    if (!statistic[data[i].item._id].invoice.includes(data[i].invoice.toString())) {
-                        statistic[data[i].item._id].invoice.push(data[i].invoice.toString())
-                    }
+                if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
+                    client: [],
+                    invoice: [],
+                    item: data[i].item.name,
+                    profit: 0
+                }
+                statistic[data[i].item._id].profit += data[i].allPrice - (data[i].allPrice/data[i].count*data[i].returned)
+                allProfit += data[i].allPrice - (data[i].allPrice/data[i].count*data[i].returned)
+                if (!allClients.includes(data[i].client.toString())) {
+                    allClients.push(data[i].client.toString())
+                }
+                if (!allOrders.includes(data[i].invoice.toString())) {
+                    allOrders.push(data[i].invoice.toString())
+                }
+                if (!statistic[data[i].item._id].client.includes(data[i].client.toString())) {
+                    statistic[data[i].item._id].client.push(data[i].client.toString())
+                }
+                if (!statistic[data[i].item._id].invoice.includes(data[i].invoice.toString())) {
+                    statistic[data[i].item._id].invoice.push(data[i].invoice.toString())
+                }
+
             }
             const keys = Object.keys(statistic)
             data = []
@@ -999,14 +1011,26 @@ const resolvers = {
                         statistic[keys[i]].client.length,
                         statistic[keys[i]].invoice.length,
                         statistic[keys[i]].profit,
+                        statistic[keys[i]].profit/statistic[keys[i]].invoice.length
                     ]
                 })
             }
             data = data.sort(function(a, b) {
                 return b.data[1] - a.data[1]
             });
+            data = [
+                {
+                    _id: 'Всего',
+                    data: [
+                        allClients.length,
+                        allOrders.length,
+                        allProfit
+                    ]
+                },
+                ...data
+            ]
             return {
-                columns: ['товар', 'клиентов', 'заказов', 'выручка(сом)'],
+                columns: ['товар', 'клиентов', 'заказов', 'выручка(сом)', 'средний чек'],
                 row: data
             };
         }
@@ -1141,7 +1165,8 @@ const resolvers = {
                         'Прочие',
                         clients.length,
                         orders.length,
-                        profit
+                        profit,
+                        profit/orders.length
                     ]
                 })
             }
@@ -1160,7 +1185,7 @@ const resolvers = {
                 ...data
             ]
             data = {
-                columns: [organization?'район':'организация', 'клиенты', 'заказы', 'выручка(сом)'],
+                columns: [organization?'район':'организация', 'клиенты', 'заказы', 'выручка(сом)', 'средний чек'],
                 row: data
             }
             return data;
@@ -1510,7 +1535,7 @@ const resolvers = {
                         :
                         {distributer: null}
                 )
-                    .populate('organizations')
+                    .populate('sales')
                 if(findDistributer){
                     if(type==='all') {
                         let clients = await DistrictAzyk
@@ -1518,13 +1543,13 @@ const resolvers = {
                             .distinct('client')
                         let organizations = []
                         if(organization){
-                            for (let i = 0; i < findDistributer.organizations.length; i++) {
-                                if(findDistributer.organizations[i]._id.toString()===organization.toString())
-                                    organizations.push(findDistributer.organizations[i])
+                            for (let i = 0; i < findDistributer.sales.length; i++) {
+                                if(findDistributer.sales[i]._id.toString()===organization.toString())
+                                    organizations.push(findDistributer.sales[i])
                             }
                         }
                         else
-                            organizations = findDistributer.organizations
+                            organizations = findDistributer.sales
                         data = await InvoiceAzyk.find(
                             {
                                 $and: [
@@ -1574,13 +1599,13 @@ const resolvers = {
                             .find({organization: distributer!=='super'?distributer:null})
                         let organizations = []
                         if(organization){
-                            for (let i = 0; i < findDistributer.organizations.length; i++) {
-                                if(findDistributer.organizations[i]._id.toString()===organization.toString())
-                                    organizations.push(findDistributer.organizations[i])
+                            for (let i = 0; i < findDistributer.sales.length; i++) {
+                                if(findDistributer.sales[i]._id.toString()===organization.toString())
+                                    organizations.push(findDistributer.sales[i])
                             }
                         }
                         else
-                            organizations = findDistributer.organizations
+                            organizations = findDistributer.sales
                         for (let i = 0; i < districts.length; i++) {
                             data = await InvoiceAzyk.find(
                                 {
@@ -1622,13 +1647,13 @@ const resolvers = {
                             .distinct('client')
                         let organizations = []
                         if(organization){
-                            for (let i = 0; i < findDistributer.organizations.length; i++) {
-                                if(findDistributer.organizations[i]._id.toString()===organization.toString())
-                                    organizations.push(findDistributer.organizations[i])
+                            for (let i = 0; i < findDistributer.sales.length; i++) {
+                                if(findDistributer.sales[i]._id.toString()===organization.toString())
+                                    organizations.push(findDistributer.sales[i])
                             }
                         }
                         else
-                            organizations = findDistributer.organizations
+                            organizations = findDistributer.sales
                         data = await InvoiceAzyk.find(
                             {
                                 $and: [
@@ -1758,20 +1783,20 @@ const resolvers = {
                     .lean()
 
                 for(let i=0; i<data.length; i++) {
-                        if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
-                            profit: 0,
-                            cancel: [],
-                            complet: [],
-                            consignmentPrice: 0,
-                            organization: data[i].organization.name
-                        }
-                        if(!statistic[data[i].organization._id].complet.includes(data[i]._id.toString())) {
-                            statistic[data[i].organization._id].complet.push(data[i]._id.toString())
-                        }
-                        statistic[data[i].organization._id].profit += data[i].allPrice - data[i].returnedPrice
-                        if (data[i].consignmentPrice && !data[i].paymentConsignation) {
-                            statistic[data[i].organization._id].consignmentPrice += data[i].consignmentPrice
-                        }
+                    if (!statistic[data[i].organization._id]) statistic[data[i].organization._id] = {
+                        profit: 0,
+                        cancel: [],
+                        complet: [],
+                        consignmentPrice: 0,
+                        organization: data[i].organization.name
+                    }
+                    if(!statistic[data[i].organization._id].complet.includes(data[i]._id.toString())) {
+                        statistic[data[i].organization._id].complet.push(data[i]._id.toString())
+                    }
+                    statistic[data[i].organization._id].profit += data[i].allPrice - data[i].returnedPrice
+                    if (data[i].consignmentPrice && !data[i].paymentConsignation) {
+                        statistic[data[i].organization._id].consignmentPrice += data[i].consignmentPrice
+                    }
                 }
             }
             else {
@@ -1806,9 +1831,9 @@ const resolvers = {
                         .select('_id returnedPrice allPrice paymentConsignation consignmentPrice')
                         .lean()
                     for(let i1=0; i1<data.length; i1++) {
-                       if(!statistic[districts[i]._id].complet.includes(data[i1]._id.toString())) {
-                           statistic[districts[i]._id].complet.push(data[i1]._id.toString())
-                       }
+                        if(!statistic[districts[i]._id].complet.includes(data[i1]._id.toString())) {
+                            statistic[districts[i]._id].complet.push(data[i1]._id.toString())
+                        }
                         statistic[districts[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
                         if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                             statistic[districts[i]._id].consignmentPrice += data[i1].consignmentPrice
@@ -1838,12 +1863,12 @@ const resolvers = {
                 )
                     .lean()
                 for(let i1=0; i1<data.length; i1++) {
-                        if(!statistic['without'].complet.includes(data[i1]._id.toString()))
-                            statistic['without'].complet.push(data[i1]._id.toString())
+                    if(!statistic['without'].complet.includes(data[i1]._id.toString()))
+                        statistic['without'].complet.push(data[i1]._id.toString())
 
-                        statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
-                        if (data[i1].consignmentPrice && !data[i1].paymentConsignation)
-                            statistic['without'].consignmentPrice += data[i1].consignmentPrice
+                    statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
+                    if (data[i1].consignmentPrice && !data[i1].paymentConsignation)
+                        statistic['without'].consignmentPrice += data[i1].consignmentPrice
 
                 }
 
@@ -1889,6 +1914,27 @@ const resolvers = {
                 columns: [company?'район':'организация', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)'],
                 row: data
             };
+        }
+    },
+    statisticGeoOrder: async(parent, { organization, dateStart }, {user}) => {
+        if(['admin'].includes(user.role)){
+            dateStart= new Date(dateStart)
+            dateStart.setHours(3, 0, 0, 0)
+            let dateEnd = new Date(dateStart)
+            dateEnd.setDate(dateEnd.getDate() + 1)
+            let data = await InvoiceAzyk.find(
+                {
+                    $and: [
+                        dateStart ? {createdAt: {$gte: dateStart}} : {},
+                        dateEnd ? {createdAt: {$lt: dateEnd}} : {}
+                    ],
+                    taken: true,
+                    del: {$ne: 'deleted'},
+                    organization: organization
+                }
+            ).select('address').lean()
+            data = data.map(element=>element.address)
+            return data
         }
     },
     statisticReturned: async(parent, { company, dateStart, dateType }, {user}) => {
@@ -2598,13 +2644,13 @@ const resolvers = {
                     organization: organization==='super'?null:organization,
                 }).distinct('client')
                 if(distributers){
-                    for(let i = 0; i<distributers.organizations.length;i++) {
+                    for(let i = 0; i<distributers.provider.length;i++) {
                         data = [...(await InvoiceAzyk.find(
                             {
                                 $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}],
                                 del: {$ne: 'deleted'},
                                 taken: true,
-                                organization: distributers.organizations[i],
+                                organization: distributers.provider[i],
                                 client: {$in: clients}
                             }
                         )

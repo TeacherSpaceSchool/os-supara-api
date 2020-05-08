@@ -5,10 +5,14 @@ const DistributerAzykSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
     },
-    organizations: [{
+    sales: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'OrganizationAzyk'
-    }]
+    }],
+    provider: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrganizationAzyk'
+    }],
 }, {
     timestamps: true
 });
