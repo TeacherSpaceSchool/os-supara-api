@@ -203,6 +203,9 @@ const resolvers = {
             .sort('-priotiry')
             .sort('-updatedAt')
         items = items.filter(item => (item.organization))
+        items = items.sort( () => {
+            return Math.random() - 0.5;
+        });
         return items
     },
     brands: async(parent, {organization, search, sort}) => {
