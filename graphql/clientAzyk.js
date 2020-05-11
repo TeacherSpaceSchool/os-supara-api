@@ -79,7 +79,7 @@ const resolvers = {
             return [clients[0]?clients[0].clientCount.toString():'0']
         }
     },
-    clientsSimpleStatistic: async(parent, {search, date}, {user}) => {
+    clientsSimpleStatistic: async(parent, {search, date, filter}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date&&date!==''){
@@ -94,6 +94,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
                                 $or: [
@@ -120,6 +121,7 @@ const resolvers = {
                     .distinct('client')
                 clients = await ClientAzyk
                     .count({
+                        ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
                         _id: {$in: clients},
@@ -145,6 +147,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
                                 _id: {$in: clients},
@@ -159,7 +162,7 @@ const resolvers = {
                                 ]
                             }
                         },
-                        { $lookup:
+                        /*{ $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
                                 let: { user: '$user' },
@@ -175,7 +178,7 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        /*{
+                        {
                             $match:{
                                 'user.status': 'active'
                             }
@@ -192,6 +195,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
                                 _id: {$in: clients},
@@ -206,7 +210,7 @@ const resolvers = {
                                 ]
                             }
                         },
-                        { $lookup:
+                        /*{ $lookup:
                             {
                                 from: UserAzyk.collection.collectionName,
                                 let: { user: '$user' },
@@ -222,7 +226,7 @@ const resolvers = {
                                 path : '$user'
                             }
                         },
-                        /*{
+                        {
                             $match:{
                                 'user.status': 'active'
                             }
@@ -367,7 +371,7 @@ const resolvers = {
             return clients
         }
     },
-    clients: async(parent, {search, sort, date, skip}, {user}) => {
+    clients: async(parent, {search, sort, date, skip, filter}, {user}) => {
         let dateStart;
         let dateEnd;
         if(date&&date!==''){
@@ -384,6 +388,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
                                 $or: [
@@ -426,6 +431,7 @@ const resolvers = {
                     .distinct('client')
                 clients = await ClientAzyk
                     .find({
+                        ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                         ...(!date || date === '' ? {} : {$and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt: dateEnd}}]}),
                         del: {$ne: 'deleted'},
                         _id: {$in: clients},
@@ -458,6 +464,7 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
                                     _id: {$in: clients},
@@ -510,6 +517,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
                                 _id: {$in: clients},
@@ -560,6 +568,7 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
                                     $or: [
@@ -689,7 +698,16 @@ const resolvers = {
         return sort
     },
     filterClient: async() => {
-            return await []
+            return await [
+                {
+                    name: 'Все',
+                    value: ''
+                },
+                {
+                    name: 'Без геолокации',
+                    value: 'Без геолокации'
+                }
+            ]
     },
 };
 

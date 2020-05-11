@@ -32,6 +32,7 @@ const AgentRouteAzyk = require('./agentRouteAzyk');
 const DistrictAzyk = require('./districtAzyk');
 const Integrate1CAzyk = require('./integrate1CAzyk');
 const ErrorAzyk = require('./errorAzyk');
+const DeliveryDateAzyk = require('./deliveryDateAzyk');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
 //const logger = require('logger').createLogger('./public/error.log');
@@ -55,6 +56,7 @@ const typeDefs = gql`
         image: String
     }
     ${DistrictAzyk.type}
+    ${DeliveryDateAzyk.type}
     ${ErrorAzyk.type}
     ${AgentRouteAzyk.type}
     ${DistributerAzyk.type}
@@ -87,6 +89,7 @@ const typeDefs = gql`
     type Mutation {
         ${Integrate1CAzyk.mutation}
         ${DistrictAzyk.mutation}
+        ${DeliveryDateAzyk.mutation}
         ${ErrorAzyk.mutation}
         ${AgentRouteAzyk.mutation}
         ${DistributerAzyk.mutation}
@@ -119,6 +122,7 @@ const typeDefs = gql`
     type Query {
         ${Integrate1CAzyk.query}
         ${DistrictAzyk.query}
+        ${DeliveryDateAzyk.query}
         ${ErrorAzyk.query}
         ${AgentRouteAzyk.query}
         ${DistributerAzyk.query}
@@ -174,6 +178,7 @@ const resolvers = {
     Query: {
         ...Integrate1CAzyk.resolvers,
         ...DistrictAzyk.resolvers,
+        ...DeliveryDateAzyk.resolvers,
         ...ErrorAzyk.resolvers,
         ...AgentRouteAzyk.resolvers,
         ...DistributerAzyk.resolvers,
@@ -207,6 +212,7 @@ const resolvers = {
         ...Integrate1CAzyk.resolversMutation,
         ...AgentRouteAzyk.resolversMutation,
         ...DistrictAzyk.resolversMutation,
+        ...DeliveryDateAzyk.resolversMutation,
         ...ErrorAzyk.resolversMutation,
         ...DistributerAzyk.resolversMutation,
         ...FaqAzyk.resolversMutation,

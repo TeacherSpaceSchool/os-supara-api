@@ -32,12 +32,14 @@ const type = `
     minimumOrder: Int
     accessToClient: Boolean
     consignation: Boolean
+    onlyDistrict: Boolean
     del: String
     priotiry: Int
   }
 `;
 
 const query = `
+    brandOrganizations(search: String!, sort: String!, filter: String!): [Organization]
     organizations(search: String!, sort: String!, filter: String!): [Organization]
     organizationsTrash(search: String!): [Organization]
     organization(_id: ID!): Organization
@@ -46,14 +48,66 @@ const query = `
 `;
 
 const mutation = `
-    addOrganization(priotiry: Int, minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!): Data
-    setOrganization(_id: ID!, priotiry: Int, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean): Data
+    addOrganization(priotiry: Int, minimumOrder: Int, image: Upload!, name: String!, address: [String]!, email: [String]!, phone: [String]!, info: String!, accessToClient: Boolean!, consignation: Boolean!, onlyDistrict: Boolean!): Data
+    setOrganization(_id: ID!, priotiry: Int, minimumOrder: Int, image: Upload, name: String, address: [String], email: [String], phone: [String], info: String, accessToClient: Boolean, consignation: Boolean, onlyDistrict: Boolean): Data
     restoreOrganization(_id: [ID]!): Data
     deleteOrganization(_id: [ID]!): Data
     onoffOrganization(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    brandOrganizations: async(parent, {search, sort, filter}, {user}) => {
+        let brandOrganizations = await ItemAzyk.find({
+            status: 'active',
+            del: {$ne: 'deleted'}
+        }).distinct('organization')
+        if(user.role==='admin'){
+            return await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                del: {$ne: 'deleted'}
+            })
+                .sort('-priotiry')
+                .sort(sort)
+        }
+        else if(['суперорганизация', 'организация', 'менеджер', 'агент'].includes(user.role)){
+            brandOrganizations = await DistributerAzyk.findOne({
+                distributer: user.organization
+            }).distinct('sales')
+            brandOrganizations = [...brandOrganizations, user.organization]
+            return await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: filter.length===0?{'$regex': filter, '$options': 'i'}:filter,
+                del: {$ne: 'deleted'}
+            })
+                .sort('-priotiry')
+                .sort(sort)
+        }
+        else if(user.role==='client') {
+            let organizationsRes = []
+            const organizations = await OrganizationAzyk.find({
+                _id: {$in: brandOrganizations},
+                name: {'$regex': search, '$options': 'i'},
+                status: 'active',
+                del: {$ne: 'deleted'}
+            })
+                .sort('-priotiry')
+                .sort(sort)
+            for(let i=0; i<organizations.length; i++) {
+                if(organizations[i].onlyDistrict){
+                    let district = await DistrictAzyk.findOne({client: user.client, organization: organizations[i]._id}).select('_id').lean()
+                    if(district){
+                        organizationsRes.push(organizations[i])
+                    }
+                }
+                else organizationsRes.push(organizations[i])
+
+            }
+            return organizationsRes
+        }
+    },
     organizations: async(parent, {search, sort, filter}, {user}) => {
         if(user.role==='admin'){
             return await OrganizationAzyk.find({
@@ -127,7 +181,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addOrganization: async(parent, {priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
+    addOrganization: async(parent, {priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation, onlyDistrict}, {user}) => {
         if(user.role==='admin'){
             let { stream, filename } = await image;
             filename = await saveImage(stream, filename)
@@ -143,7 +197,8 @@ const resolversMutation = {
                 reiting: 0,
                 accessToClient: accessToClient,
                 consignation: consignation,
-                priotiry: priotiry
+                priotiry: priotiry,
+                onlyDistrict: onlyDistrict
             });
             objectOrganization = await OrganizationAzyk.create(objectOrganization)
             let objectBonus = new BonusAzyk({
@@ -155,7 +210,7 @@ const resolversMutation = {
         }
         return {data: 'OK'};
     },
-    setOrganization: async(parent, {_id, priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation}, {user}) => {
+    setOrganization: async(parent, {_id, priotiry, info, phone, email, address, image, name, minimumOrder, accessToClient, consignation, onlyDistrict}, {user}) => {
         if(user.role==='admin'||(['суперорганизация', 'организация'].includes(user.role)&&user.organization.toString()===_id.toString())) {
             let object = await OrganizationAzyk.findById(_id)
             if (image) {
@@ -169,6 +224,7 @@ const resolversMutation = {
             if(phone) object.phone = phone
             if(email) object.email = email
             if(address) object.address = address
+            if(onlyDistrict!=undefined) object.onlyDistrict = onlyDistrict
             if(priotiry!=undefined) object.priotiry = priotiry
             if(consignation!=undefined) object.consignation = consignation
             if(accessToClient!=undefined) object.accessToClient = accessToClient

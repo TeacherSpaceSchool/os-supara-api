@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "develop": "set URL=http://localhost&& nodemon ./bin/develop",
-    "start": "set URL=http://localhost&& node ./bin/www",
-    "start-on-server": "URL=https://azyk.store node ./bin/www",
+    "start": "set NODE_ENV=production&& set URL=http://localhost&& node ./bin/www",
+    "start-on-server": "NODE_ENV=production URL=https://azyk.store node ./bin/www",
     "test": "mocha --timeout 10000"
   },
   "dependencies": {
