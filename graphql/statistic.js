@@ -1011,7 +1011,7 @@ const resolvers = {
                         statistic[keys[i]].client.length,
                         statistic[keys[i]].invoice.length,
                         statistic[keys[i]].profit,
-                        statistic[keys[i]].profit/statistic[keys[i]].invoice.length
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].invoice.length)
                     ]
                 })
             }
@@ -1094,7 +1094,8 @@ const resolvers = {
                             organizations[i].name,
                             clients.length,
                             orders.length,
-                            profit
+                            profit,
+                            Math.round(profit/orders.length)
                         ]
                     })
                 }
@@ -1134,7 +1135,8 @@ const resolvers = {
                             districts[i].name,
                             clients.length,
                             orders.length,
-                            profit
+                            profit,
+                            Math.round(profit/orders.length)
                         ]
                     })
                 }
@@ -1166,7 +1168,7 @@ const resolvers = {
                         clients.length,
                         orders.length,
                         profit,
-                        profit/orders.length
+                        Math.round(profit/orders.length)
                     ]
                 })
             }

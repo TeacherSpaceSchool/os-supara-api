@@ -61,7 +61,7 @@ const resolvers = {
             status: 'active',
             del: {$ne: 'deleted'}
         }).distinct('organization')
-        if(user.role==='admin'){
+        if(['admin', 'суперагент'].includes(user.role)){
             return await OrganizationAzyk.find({
                 _id: {$in: brandOrganizations},
                 name: {'$regex': search, '$options': 'i'},
