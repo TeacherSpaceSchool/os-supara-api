@@ -459,11 +459,15 @@ const resolvers = {
                 }
                 else if(dateType==='day') {
                     let today = new Date();
-                    let month = 31;
+                    let month;
                     if(today.getDate()===dateStart.getDate()&&today.getMonth()===dateStart.getMonth()&&today.getFullYear()===dateStart.getFullYear()){
+                        month = 31;
                         dateStart.setDate(dateStart.getDate()-30)
                     }
                     else {
+                        dateStart.setMonth(dateStart.getMonth()+1)
+                        dateStart.setDate(0)
+                        month = dateStart.getDate();
                         dateStart.setDate(1)
                     }
                     for(let x=0; x<month; x++){
@@ -939,6 +943,7 @@ const resolvers = {
             let allClients=[]
             let allOrders=[]
             let allProfit = 0
+            let allReturned = 0
             if(online){
                 agents = await UserAzyk.find({$or: [{role: 'агент'}, {role: 'менеджер'}, {role: 'организация'}, {role: 'суперорганизация'}]}).distinct('_id').lean()
                 agents = await EmploymentAzyk.find({
@@ -982,10 +987,13 @@ const resolvers = {
                     client: [],
                     invoice: [],
                     item: data[i].item.name,
-                    profit: 0
+                    profit: 0,
+                    returned: 0
                 }
                 statistic[data[i].item._id].profit += data[i].allPrice - (data[i].allPrice/data[i].count*data[i].returned)
                 allProfit += data[i].allPrice - (data[i].allPrice/data[i].count*data[i].returned)
+                statistic[data[i].item._id].returned += data[i].allPrice/data[i].count*data[i].returned
+                allReturned += data[i].allPrice/data[i].count*data[i].returned
                 if (!allClients.includes(data[i].client.toString())) {
                     allClients.push(data[i].client.toString())
                 }
@@ -1011,6 +1019,7 @@ const resolvers = {
                         statistic[keys[i]].client.length,
                         statistic[keys[i]].invoice.length,
                         statistic[keys[i]].profit,
+                        statistic[keys[i]].returned,
                         Math.round(statistic[keys[i]].profit/statistic[keys[i]].invoice.length)
                     ]
                 })
@@ -1024,13 +1033,14 @@ const resolvers = {
                     data: [
                         allClients.length,
                         allOrders.length,
-                        allProfit
+                        allProfit,
+                        allReturned
                     ]
                 },
                 ...data
             ]
             return {
-                columns: ['товар', 'клиентов', 'заказов', 'выручка(сом)', 'средний чек'],
+                columns: ['товар', 'клиентов', 'заказов', 'выручка(сом)', 'возвратов(сом)', 'средний чек'],
                 row: data
             };
         }
@@ -1053,7 +1063,9 @@ const resolvers = {
             let allClients=[]
             let allOrders=0
             let profit = 0
+            let returned = 0
             let allProfit = 0
+            let allReturned = 0
             if(online){
                 agents = await UserAzyk.find({$or: [{role: 'агент'}, {role: 'менеджер'}, {role: 'организация'}, {role: 'суперорганизация'}]}).distinct('_id').lean()
                 agents = await EmploymentAzyk.find({
@@ -1079,15 +1091,18 @@ const resolvers = {
                         .lean()
                     clients = []
                     profit = 0
+                    returned = 0
                     for(let i1=0; i1<orders.length; i1++) {
                         if(!clients.includes(orders[i1].client.toString()))
                             clients.push(orders[i1].client.toString())
                         if(!allClients.includes(orders[i1].client.toString()))
                             allClients.push(orders[i1].client.toString())
                         profit += orders[i1].allPrice - orders[i1].returnedPrice
+                        returned += orders[i1].returnedPrice
                     }
                     allOrders += orders.length
                     allProfit += profit
+                    allReturned += returned
                     data.push({
                         _id: organizations[i]._id,
                         data: [
@@ -1095,6 +1110,7 @@ const resolvers = {
                             clients.length,
                             orders.length,
                             profit,
+                            returned,
                             Math.round(profit/orders.length)
                         ]
                     })
@@ -1121,14 +1137,17 @@ const resolvers = {
                         .lean()
                     clients = []
                     profit = 0
+                    returned = 0
                     for(let i1=0; i1<orders.length; i1++) {
                         profit += orders[i1].allPrice - orders[i1].returnedPrice
+                        returned += orders[i1].returnedPrice
                         if(!clients.includes(orders[i1].client.toString()))
                             clients.push(orders[i1].client.toString())
                     }
                     allClients += clients.length
                     allOrders += orders.length
                     allProfit += profit
+                    allReturned += returned
                     data.push({
                         _id: districts[i]._id,
                         data: [
@@ -1136,6 +1155,7 @@ const resolvers = {
                             clients.length,
                             orders.length,
                             profit,
+                            returned,
                             Math.round(profit/orders.length)
                         ]
                     })
@@ -1153,14 +1173,17 @@ const resolvers = {
                     .lean()
                 clients = []
                 profit = 0
+                returned = 0
                 for(let i1=0; i1<orders.length; i1++) {
                     profit += orders[i1].allPrice - orders[i1].returnedPrice
+                    returned += orders[i1].returnedPrice
                     if(!clients.includes(orders[i1].client.toString()))
                         clients.push(orders[i1].client.toString())
                 }
                 allClients += clients.length
                 allOrders += orders.length
                 allProfit += profit
+                allReturned += returned
                 data.push({
                     _id: 'Прочие',
                     data: [
@@ -1168,6 +1191,7 @@ const resolvers = {
                         clients.length,
                         orders.length,
                         profit,
+                        returned,
                         Math.round(profit/orders.length)
                     ]
                 })
@@ -1181,13 +1205,14 @@ const resolvers = {
                     data: [
                         allClients,
                         allOrders,
-                        allProfit
+                        allProfit,
+                        allReturned
                     ]
                 },
                 ...data
             ]
             data = {
-                columns: [organization?'район':'организация', 'клиенты', 'заказы', 'выручка(сом)', 'средний чек'],
+                columns: [organization?'район':'организация', 'клиенты', 'заказы', 'выручка(сом)', 'отказы(сом)', 'средний чек'],
                 row: data
             }
             return data;
@@ -1239,12 +1264,14 @@ const resolvers = {
                     if (!statistic[data[i].client._id])
                         statistic[data[i].client._id] = {
                             profit: 0,
+                            returned: 0,
                             complet: [],
                             consignmentPrice: 0,
                             client: `${data[i].client.name}${data[i].client.address&&data[i].client.address[0]?` (${data[i].client.address[0][2]?`${data[i].client.address[0][2]}, `:''}${data[i].client.address[0][0]})`:''}`
                         }
                     statistic[data[i].client._id].complet.push(data[i]._id)
                     statistic[data[i].client._id].profit += data[i].allPrice - data[i].returnedPrice
+                    statistic[data[i].client._id].returned += data[i].returnedPrice
                     if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                         statistic[data[i].client._id].consignmentPrice += data[i].consignmentPrice
                     }
@@ -1254,11 +1281,13 @@ const resolvers = {
             data = []
 
             let profitAll = 0
+            let returnedAll = 0
             let consignmentPriceAll = 0
             let completAll = 0
 
             for(let i=0; i<keys.length; i++){
                 profitAll += statistic[keys[i]].profit
+                returnedAll += statistic[keys[i]].returned
                 consignmentPriceAll += statistic[keys[i]].consignmentPrice
                 completAll += statistic[keys[i]].complet.length
                 data.push({
@@ -1267,7 +1296,9 @@ const resolvers = {
                         statistic[keys[i]].client,
                         statistic[keys[i]].profit,
                         statistic[keys[i]].complet.length,
+                        statistic[keys[i]].returned,
                         statistic[keys[i]].consignmentPrice,
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].complet.length)
                     ]
                 })
             }
@@ -1281,13 +1312,14 @@ const resolvers = {
                         data.length,
                         profitAll,
                         completAll,
+                        returnedAll,
                         consignmentPriceAll,
                     ]
                 },
                 ...data
             ]
             return {
-                columns: ['клиент', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)'],
+                columns: ['клиент', 'выручка(сом)', 'выполнен(шт)', 'отказы(сом)', 'конс(сом)', 'средний чек'],
                 row: data
             };
         }
@@ -1341,22 +1373,26 @@ const resolvers = {
                     for(let i1=0; i1<data[i].adss.length; i1++) {
                         if (!statistic[data[i].adss[i1]._id]) statistic[data[i].adss[i1]._id] = {
                             profit: 0,
+                            returned: 0,
                             complet: [],
                             ads: data[i].adss[i1].title
                         }
                         if(!statistic[data[i].adss[i1]._id].complet.includes(data[i]._id.toString()))
                             statistic[data[i].adss[i1]._id].complet.push(data[i]._id.toString())
                         statistic[data[i].adss[i1]._id].profit += data[i].allPrice - data[i].returnedPrice
+                        statistic[data[i].adss[i1]._id].returned += data[i].returnedPrice
                     }
             }
             const keys = Object.keys(statistic)
             data = []
 
             let profitAll = 0
+            let returnedAll = 0
             let completAll = 0
 
             for(let i=0; i<keys.length; i++){
                 profitAll += statistic[keys[i]].profit
+                returnedAll += statistic[keys[i]].returned
                 completAll += statistic[keys[i]].complet.length
                 data.push({
                     _id: keys[i],
@@ -1364,6 +1400,7 @@ const resolvers = {
                         statistic[keys[i]].ads,
                         statistic[keys[i]].profit,
                         statistic[keys[i]].complet.length,
+                        statistic[keys[i]].returned,
                     ]
                 })
             }
@@ -1377,6 +1414,7 @@ const resolvers = {
                         data.length,
                         profitAll,
                         completAll,
+                        returnedAll
                     ]
                 },
                 ...data
@@ -1446,6 +1484,7 @@ const resolvers = {
             for(let i=0; i<data.length; i++) {
                     if (!statistic[data[i].item._id]) statistic[data[i].item._id] = {
                         profit: 0,
+                        returned: 0,
                         cancel: [],
                         complet: [],
                         consignmentPrice: 0,
@@ -1461,6 +1500,7 @@ const resolvers = {
                             statistic[data[i].item._id].complet.push(data[i].invoice.toString())
                         }
                         statistic[data[i].item._id].profit += (data[i].allPrice - data[i].returned * (data[i].allPrice/data[i].count))
+                        statistic[data[i].item._id].returned += data[i].returned * (data[i].allPrice/data[i].count)
                         if (data[i].consignmentPrice) {
                             statistic[data[i].item._id].consignmentPrice += data[i].consignmentPrice
                         }
@@ -1470,12 +1510,14 @@ const resolvers = {
             data = []
 
             let profitAll = 0
+            let returnedAll = 0
             let consignmentPriceAll = 0
             let completAll = 0
             let cancelAll = 0
 
             for(let i=0; i<keys.length; i++){
                 profitAll += statistic[keys[i]].profit
+                returnedAll += statistic[keys[i]].returned
                 completAll += statistic[keys[i]].complet.length
                 consignmentPriceAll += statistic[keys[i]].consignmentPrice
                 cancelAll += statistic[keys[i]].cancel.length
@@ -1485,8 +1527,10 @@ const resolvers = {
                         statistic[keys[i]].item,
                         statistic[keys[i]].profit,
                         statistic[keys[i]].complet.length,
+                        statistic[keys[i]].returned,
                         statistic[keys[i]].consignmentPrice,
                         statistic[keys[i]].cancel.length,
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].complet.length)
                     ]
                 })
             }
@@ -1500,6 +1544,7 @@ const resolvers = {
                         data.length,
                         profitAll,
                         completAll,
+                        returnedAll,
                         consignmentPriceAll,
                         cancelAll,
                     ]
@@ -1507,7 +1552,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: ['товар', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)', 'отмена(шт)'],
+                columns: ['товар', 'выручка(сом)', 'выполнен(шт)', 'отказов(шт)', 'конс(сом)', 'отмена(шт)', 'средний чек'],
                 row: data
             };
         }
@@ -1582,6 +1627,7 @@ const resolvers = {
                             let id = `${type}${data[i].organization._id}`
                             if (!statistic[id]) statistic[id] = {
                                 profit: 0,
+                                returned: 0,
                                 cancel: [],
                                 complet: [],
                                 consignmentPrice: 0,
@@ -1591,6 +1637,7 @@ const resolvers = {
                                 statistic[id].complet.push(data[i]._id.toString())
                             }
                             statistic[id].profit += data[i].allPrice - data[i].returnedPrice
+                            statistic[id].returned += data[i].returnedPrice
                             if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                                 statistic[id].consignmentPrice += data[i].consignmentPrice
                             }
@@ -1627,6 +1674,7 @@ const resolvers = {
                                 let id = districts[i]._id
                                 if (!statistic[id]) statistic[id] = {
                                     profit: 0,
+                                    returned: 0,
                                     cancel: [],
                                     complet: [],
                                     consignmentPrice: 0,
@@ -1635,6 +1683,7 @@ const resolvers = {
                                 if(!statistic[id].complet.includes(data[i1]._id.toString())) {
                                     statistic[id].complet.push(data[i1]._id.toString())
                                 }
+                                statistic[id].returned += data[i].returnedPrice
                                 statistic[id].profit += data[i1].allPrice - data[i1].returnedPrice
                                 if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                                     statistic[id].consignmentPrice += data[i1].consignmentPrice
@@ -1682,6 +1731,7 @@ const resolvers = {
                             let id = data[i1].agent&&data[i1].agent.organization&&data[i1].agent.organization.toString()===distributer.toString()&&!data[i1].agent.user.role.includes('супер')?data[i1].agent._id:'AZYK.STORE'
                             if (!statistic[id]) statistic[id] = {
                                 profit: 0,
+                                returned: 0,
                                 cancel: [],
                                 complet: [],
                                 consignmentPrice: 0,
@@ -1690,6 +1740,7 @@ const resolvers = {
                             if(!statistic[id].complet.includes(data[i1]._id.toString())) {
                                 statistic[id].complet.push(data[i1]._id.toString())
                             }
+                            statistic[id].returned += data[i1].returnedPrice
                             statistic[id].profit += data[i1].allPrice - data[i1].returnedPrice
                             if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                                 statistic[id].consignmentPrice += data[i1].consignmentPrice
@@ -1703,11 +1754,13 @@ const resolvers = {
             data = []
 
             let profitAll = 0
+            let returnedAll = 0
             let consignmentPriceAll = 0
             let completAll = 0
 
             for(let i=0; i<keys.length; i++){
                 profitAll += statistic[keys[i]].profit
+                returnedAll += statistic[keys[i]].returned
                 consignmentPriceAll += statistic[keys[i]].consignmentPrice
                 completAll += statistic[keys[i]].complet.length
                 data.push({
@@ -1716,7 +1769,9 @@ const resolvers = {
                         statistic[keys[i]].organization,
                         statistic[keys[i]].profit,
                         statistic[keys[i]].complet.length,
+                        statistic[keys[i]].returned,
                         statistic[keys[i]].consignmentPrice,
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].complet.length)
                     ]
                 })
             }
@@ -1730,13 +1785,14 @@ const resolvers = {
                         data.length,
                         profitAll,
                         completAll,
+                        returnedAll,
                         consignmentPriceAll,
                     ]
                 },
                 ...data
             ]
             return {
-                columns: [type==='districts'?'район':type==='agents'?'агент':'организация', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)'],
+                columns: [type==='districts'?'район':type==='agents'?'агент':'организация', 'выручка(сом)', 'выполнен(шт)', 'отказов(сом)', 'конс(сом)', 'средний чек(сом)'],
                 row: data
             };
         }
@@ -1902,6 +1958,7 @@ const resolvers = {
                         statistic[keys[i]].complet.length,
                         statistic[keys[i]].returnedPrice,
                         statistic[keys[i]].consignmentPrice,
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].complet.length)
                     ]
                 })
             }
@@ -1922,7 +1979,7 @@ const resolvers = {
                 ...data
             ]
             return {
-                columns: [company?'район':'организация', 'выручка(сом)', 'выполнен(шт)', 'отказы(сом)', 'конс(сом)'],
+                columns: [company?'район':'организация', 'выручка(сом)', 'выполнен(шт)', 'отказы(сом)', 'конс(сом)', 'средний чек(сом)'],
                 row: data
             };
         }
@@ -2142,6 +2199,7 @@ const resolvers = {
                         let id = `${type}${data[i].organization._id}`
                         if (!statistic[id]) statistic[id] = {
                             profit: 0,
+                            returned: 0,
                             cancel: [],
                             complet: [],
                             consignmentPrice: 0,
@@ -2150,7 +2208,8 @@ const resolvers = {
                         if(!statistic[id].complet.includes(data[i]._id.toString())) {
                             statistic[id].complet.push(data[i]._id.toString())
                         }
-                        statistic[id].profit += data[i].allPrice - data[i].returnedPrice
+                    statistic[id].profit += data[i].allPrice - data[i].returnedPrice
+                    statistic[id].returned += data[i].returnedPrice
                         if (data[i].consignmentPrice && !data[i].paymentConsignation) {
                             statistic[id].consignmentPrice += data[i].consignmentPrice
                         }
@@ -2181,6 +2240,7 @@ const resolvers = {
                 for(let i=0; i<agents.length; i++) {
                     if (!statistic[agents[i]._id]) statistic[agents[i]._id] = {
                         profit: 0,
+                        returned: 0,
                         cancel: [],
                         complet: [],
                         consignmentPrice: 0,
@@ -2202,7 +2262,8 @@ const resolvers = {
                             if(!statistic[agents[i]._id].complet.includes(data[i1]._id.toString())) {
                                 statistic[agents[i]._id].complet.push(data[i1]._id.toString())
                             }
-                            statistic[agents[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
+                        statistic[agents[i]._id].profit += data[i1].allPrice - data[i1].returnedPrice
+                        statistic[agents[i]._id].returned += data[i1].returnedPrice
                             if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                                 statistic[agents[i]._id].consignmentPrice += data[i1].consignmentPrice
                             }
@@ -2211,6 +2272,7 @@ const resolvers = {
 
                 statistic['without'] = {
                     profit: 0,
+                    returned: 0,
                     cancel: [],
                     complet: [],
                     consignmentPrice: 0,
@@ -2234,7 +2296,8 @@ const resolvers = {
                         if(!statistic['without'].complet.includes(data[i1]._id.toString())) {
                             statistic['without'].complet.push(data[i1]._id.toString())
                         }
-                        statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
+                    statistic['without'].profit += data[i1].allPrice - data[i1].returnedPrice
+                    statistic['without'].returned += data[i1].returnedPrice
                         if (data[i1].consignmentPrice && !data[i1].paymentConsignation) {
                             statistic['without'].consignmentPrice += data[i1].consignmentPrice
                         }
@@ -2246,11 +2309,13 @@ const resolvers = {
             data = []
 
             let profitAll = 0
+            let returnedAll = 0
             let consignmentPriceAll = 0
             let completAll = 0
 
             for(let i=0; i<keys.length; i++){
                 profitAll += statistic[keys[i]].profit
+                returnedAll += statistic[keys[i]].returned
                 consignmentPriceAll += statistic[keys[i]].consignmentPrice
                 completAll += statistic[keys[i]].complet.length
                 data.push({
@@ -2259,7 +2324,9 @@ const resolvers = {
                         statistic[keys[i]].organization,
                         statistic[keys[i]].profit,
                         statistic[keys[i]].complet.length,
+                        statistic[keys[i]].returned,
                         statistic[keys[i]].consignmentPrice,
+                        Math.round(statistic[keys[i]].profit/statistic[keys[i]].complet.length)
                     ]
                 })
             }
@@ -2273,13 +2340,14 @@ const resolvers = {
                         data.length,
                         profitAll,
                         completAll,
-                        consignmentPriceAll,
+                        returnedAll,
+                        consignmentPriceAll
                     ]
                 },
                 ...data
             ]
             return {
-                columns: [company?'агент':'агент', 'выручка(сом)', 'выполнен(шт)', 'конс(сом)'],
+                columns: [company?'агент':'агент', 'выручка(сом)', 'выполнен(шт)', 'отказов(сом)', 'конс(сом)', 'средний чек(сом)'],
                 row: data
             };
         }

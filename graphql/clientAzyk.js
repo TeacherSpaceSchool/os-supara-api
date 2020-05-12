@@ -94,6 +94,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                 ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
@@ -130,7 +131,32 @@ const resolvers = {
                                             'user.status': 'active'
                                         }
                                     }
-                                ]:[]
+                                ] :
+                                filter==='Выключенные'?
+                                    [
+                                        { $lookup:
+                                            {
+                                                from: UserAzyk.collection.collectionName,
+                                                let: { user: '$user' },
+                                                pipeline: [
+                                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                path : '$user'
+                                            }
+                                        },
+                                        {
+                                            $match:{
+                                                'user.status': 'deactive'
+                                            }
+                                        }
+                                    ]
+                                    :[]
                         ),
                         {
                             $count :  'clientCount'
@@ -147,6 +173,7 @@ const resolvers = {
                     [
                             {
                                 $match:{
+                                    ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                     ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
@@ -184,7 +211,32 @@ const resolvers = {
                                             'user.status': 'active'
                                         }
                                     }
-                                ]:[]
+                                ] :
+                                    filter==='Выключенные'?
+                                        [
+                                            { $lookup:
+                                                {
+                                                    from: UserAzyk.collection.collectionName,
+                                                    let: { user: '$user' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$user'
+                                                }
+                                            },
+                                            {
+                                                $match:{
+                                                    'user.status': 'deactive'
+                                                }
+                                            }
+                                        ]
+                                        :[]
                             ),
                             {
                                 $count :  'clientCount'
@@ -201,6 +253,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                 ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
@@ -238,7 +291,32 @@ const resolvers = {
                                         'user.status': 'active'
                                     }
                                 }
-                            ]:[]
+                            ] :
+                                filter==='Выключенные'?
+                                    [
+                                        { $lookup:
+                                            {
+                                                from: UserAzyk.collection.collectionName,
+                                                let: { user: '$user' },
+                                                pipeline: [
+                                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                path : '$user'
+                                            }
+                                        },
+                                        {
+                                            $match:{
+                                                'user.status': 'deactive'
+                                            }
+                                        }
+                                    ]
+                                    :[]
                         ),
                     ])
             return [(clients.length).toString()]
@@ -252,6 +330,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                 ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
@@ -289,7 +368,32 @@ const resolvers = {
                                         'user.status': 'active'
                                     }
                                 }
-                            ]:[]
+                            ] :
+                                filter==='Выключенные'?
+                                    [
+                                        { $lookup:
+                                            {
+                                                from: UserAzyk.collection.collectionName,
+                                                let: { user: '$user' },
+                                                pipeline: [
+                                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                path : '$user'
+                                            }
+                                        },
+                                        {
+                                            $match:{
+                                                'user.status': 'deactive'
+                                            }
+                                        }
+                                    ]
+                                    :[]
                         ),
                     ])
             return [(clients.length).toString()]
@@ -303,6 +407,8 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
+                                    ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
                                     $or: [
@@ -338,7 +444,33 @@ const resolvers = {
                                             'user.status': 'active'
                                         }
                                     }
-                                ]:[]
+                                ]
+                                    :
+                                    filter==='Выключенные'?
+                                        [
+                                            { $lookup:
+                                                {
+                                                    from: UserAzyk.collection.collectionName,
+                                                    let: { user: '$user' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$user'
+                                                }
+                                            },
+                                            {
+                                                $match:{
+                                                    'user.status': 'deactive'
+                                                }
+                                            }
+                                        ]
+                                        :[]
                             ),
                            ])
                 clients = clients.length
@@ -431,6 +563,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                 ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
@@ -470,7 +603,35 @@ const resolvers = {
                                 },
                                     { $skip : skip!=undefined?skip:0 },
                                     { $limit : skip!=undefined?15:10000000000 },
-                            ]:
+                            ]
+                                :
+                                filter==='Выключенные'?
+                                    [
+                                        { $lookup:
+                                            {
+                                                from: UserAzyk.collection.collectionName,
+                                                let: { user: '$user' },
+                                                pipeline: [
+                                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                path : '$user'
+                                            }
+                                        },
+                                        {
+                                            $match:{
+                                                'user.status': 'deactive'
+                                            }
+                                        },
+                                        { $skip : skip!=undefined?skip:0 },
+                                        { $limit : skip!=undefined?15:10000000000 },
+                                    ]
+                                    :
                             [
                                 { $skip : skip!=undefined?skip:0 },
                                 { $limit : skip!=undefined?15:10000000000 },
@@ -505,6 +666,7 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                     ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
@@ -545,7 +707,35 @@ const resolvers = {
                                         },
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
-                                    ]:
+                                    ]
+                                    :
+                                    filter==='Выключенные'?
+                                        [
+                                            { $lookup:
+                                                {
+                                                    from: UserAzyk.collection.collectionName,
+                                                    let: { user: '$user' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$user'
+                                                }
+                                            },
+                                            {
+                                                $match:{
+                                                    'user.status': 'deactive'
+                                                }
+                                            },
+                                            { $skip : skip!=undefined?skip:0 },
+                                            { $limit : skip!=undefined?15:10000000000 },
+                                        ]
+                                        :
                                     [
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
@@ -581,6 +771,7 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                     ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
@@ -622,7 +813,35 @@ const resolvers = {
                                         },
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
-                                    ]:
+                                    ]
+                                    :
+                                    filter==='Выключенные'?
+                                        [
+                                            { $lookup:
+                                                {
+                                                    from: UserAzyk.collection.collectionName,
+                                                    let: { user: '$user' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$user'
+                                                }
+                                            },
+                                            {
+                                                $match:{
+                                                    'user.status': 'deactive'
+                                                }
+                                            },
+                                            { $skip : skip!=undefined?skip:0 },
+                                            { $limit : skip!=undefined?15:10000000000 },
+                                        ]
+                                        :
                                     [
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
@@ -658,6 +877,7 @@ const resolvers = {
                     [
                         {
                             $match:{
+                                ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                 ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                 ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                 del: {$ne: 'deleted'},
@@ -674,7 +894,8 @@ const resolvers = {
                             }
                         },
                         { $sort : _sort },
-                        ...(filter==='Без геолокации'?[
+                        ...(filter==='Без геолокации'?
+                                [
                                     { $lookup:
                                         {
                                             from: UserAzyk.collection.collectionName,
@@ -698,7 +919,35 @@ const resolvers = {
                                     },
                                     { $skip : skip!=undefined?skip:0 },
                                     { $limit : skip!=undefined?15:10000000000 },
-                                ]:
+                                ]
+                                :
+                                filter==='Выключенные'?
+                                    [
+                                        { $lookup:
+                                            {
+                                                from: UserAzyk.collection.collectionName,
+                                                let: { user: '$user' },
+                                                pipeline: [
+                                                    { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                ],
+                                                as: 'user'
+                                            }
+                                        },
+                                        {
+                                            $unwind:{
+                                                preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                path : '$user'
+                                            }
+                                        },
+                                        {
+                                            $match:{
+                                                'user.status': 'deactive'
+                                            }
+                                        },
+                                        { $skip : skip!=undefined?skip:0 },
+                                        { $limit : skip!=undefined?15:10000000000 },
+                                    ]
+                                    :
                                 [
                                     { $skip : skip!=undefined?skip:0 },
                                     { $limit : skip!=undefined?15:10000000000 },
@@ -732,6 +981,7 @@ const resolvers = {
                         [
                             {
                                 $match:{
+                                    ...(filter==='Выключенные'?{image: {$ne: null}}:{}),
                                     ...(filter==='Без геолокации'?{address: {$elemMatch: {$elemMatch: {$eq: ''}}}}:{}),
                                     ...(!date||date===''?{}:{ $and: [{createdAt: {$gte: dateStart}}, {createdAt: {$lt:dateEnd}}]}),
                                     del: {$ne: 'deleted'},
@@ -747,7 +997,8 @@ const resolvers = {
                                 }
                             },
                             { $sort : _sort },
-                            ...(filter==='Без геолокации'?[
+                            ...(filter==='Без геолокации'?
+                                    [
                                         { $lookup:
                                             {
                                                 from: UserAzyk.collection.collectionName,
@@ -771,7 +1022,35 @@ const resolvers = {
                                         },
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
-                                    ]:
+                                    ]
+                                    :
+                                    filter==='Выключенные'?
+                                        [
+                                            { $lookup:
+                                                {
+                                                    from: UserAzyk.collection.collectionName,
+                                                    let: { user: '$user' },
+                                                    pipeline: [
+                                                        { $match: {$expr:{$eq:['$$user', '$_id']}} },
+                                                    ],
+                                                    as: 'user'
+                                                }
+                                            },
+                                            {
+                                                $unwind:{
+                                                    preserveNullAndEmptyArrays : true, // this remove the object which is null
+                                                    path : '$user'
+                                                }
+                                            },
+                                            {
+                                                $match:{
+                                                    'user.status': 'deactive'
+                                                }
+                                            },
+                                            { $skip : skip!=undefined?skip:0 },
+                                            { $limit : skip!=undefined?15:10000000000 },
+                                        ]
+                                        :
                                     [
                                         { $skip : skip!=undefined?skip:0 },
                                         { $limit : skip!=undefined?15:10000000000 },
@@ -893,6 +1172,10 @@ const resolvers = {
                 {
                     name: 'Без геолокации',
                     value: 'Без геолокации'
+                },
+                {
+                    name: 'Выключенные',
+                    value: 'Выключенные'
                 }
             ]
     },
