@@ -19,6 +19,7 @@ const type = `
 
 const query = `
     adss(search: String!, organization: ID!): [Ads]
+    allAdss: [Ads]
     adssTrash(search: String!): [Ads]
     adsOrganizations: [Organization]
     ads: Ads
@@ -44,6 +45,16 @@ const resolvers = {
             title: {'$regex': search, '$options': 'i'},
             organization: organization
         }).populate('item').sort('-createdAt')
+    },
+    allAdss: async() => {
+        let adss = await AdsAzyk.find({
+            del: {$ne: 'deleted'}
+        }).sort('-createdAt')
+        adss = adss.sort( () => {
+            return Math.random() - 0.5;
+        });
+        console.log(adss)
+        return adss
     },
     adsOrganizations: async(parent, ctx, {user}) => {
         if(user.organization){

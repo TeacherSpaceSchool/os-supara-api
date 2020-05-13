@@ -12,6 +12,7 @@ const OrganizationAzykSchema = mongoose.Schema({
     email: [String],
     phone: [String],
     info: String,
+    miniInfo: String,
     reiting: Number,
     status: String,
     minimumOrder: Number,
