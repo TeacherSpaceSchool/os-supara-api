@@ -2,41 +2,29 @@ const { gql, ApolloServer,  } = require('apollo-server-express');
 const { RedisPubSub } = require('graphql-redis-subscriptions');
 const pubsub = new RedisPubSub();
 module.exports.pubsub = pubsub;
-const AdsAzyk = require('./adsAzyk');
-const IntegrateOutShoroAzyk = require('./integrateOutShoroAzyk');
-const DistributerAzyk = require('./distributerAzyk');
-const BlogAzyk = require('./blogAzyk');
-const OutXMLAdsAzyk = require('./outXMLAdsAzyk');
-const CategoryAzyk = require('./categoryAzyk');
-const SubCategoryAzyk = require('./subCategoryAzyk');
-const ReturnedAzyk = require('./returnedAzyk');
-const OrganizationAzyk = require('./organizationAzyk');
-const AgentHistoryGeoAzyk = require('./agentHistoryGeoAzyk');
-const ContactAzyk = require('./contactAzyk');
-const FaqAzyk = require('./faqAzyk');
-const ClientAzyk = require('./clientAzyk');
-const EmploymentAzyk = require('./employmentAzyk');
-const AutoAzyk = require('./autoAzyk');
-const ItemAzyk = require('./itemAzyk');
-const BasketAzyk = require('./basketAzyk');
-const OrderAzyk = require('./orderAzyk');
-const BonusAzyk = require('./bonusAzyk');
-const BonusClientAzyk = require('./bonusClientAzyk');
-const EquipmentAzyk = require('./equipmentAzyk');
-const PassportAzyk = require('./passport');
-const RouteAzyk = require('./routeAzyk');
-const NotificationStatisticAzyk = require('./notificationStatisticAzyk');
-const StatisticAzyk = require('./statistic');
-const SubscriberAzyk = require('./subscriberAzyk');
-const AgentRouteAzyk = require('./agentRouteAzyk');
-const DistrictAzyk = require('./districtAzyk');
-const Integrate1CAzyk = require('./integrate1CAzyk');
-const ErrorAzyk = require('./errorAzyk');
-const DeliveryDateAzyk = require('./deliveryDateAzyk');
+const CashConsumableCantSyt = require('./cashConsumableCantSyt');
+const RouteCantSyt = require('./routeCantSyt');
+const StatisticCantSyt = require('./statisticCantSyt');
+const CategoryCantSyt = require('./categoryCantSyt');
+const DivisionCantSyt = require('./divisionCantSyt');
+const ErrorCantSyt = require('./errorCantSyt');
+const FaqCantSyt = require('./faqCantSyt');
+const ItemCantSyt = require('./itemCantSyt');
+const RoleCantSyt = require('./roleCantSyt');
+const UnitCantSyt = require('./unitCantSyt');
+const BalanceCantSyt = require('./balanceCantSyt');
+const UserCantSyt = require('./userCantSyt');
+const ApplicationCantSyt = require('./applicationCantSyt');
+const WaybillCantSyt = require('./waybillCantSyt');
+const ExpenseReportCantSyt = require('./expenseReportCantSyt');
+const SettingCantSyt = require('./settingCantSyt');
+const PassportCantSyt = require('./passport');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
-//const logger = require('logger').createLogger('./public/error.log');
-const ModelsErrorAzyk = require('../models/errorAzyk');
+const ModelsErrorCantSyt = require('../models/errorCantSyt');
+const { withFilter } = require('graphql-subscriptions');
+const RELOAD_DATA = 'RELOAD_DATA';
+let onlineUser = []
 
 const typeDefs = gql`
     scalar Date
@@ -51,110 +39,113 @@ const typeDefs = gql`
         name: String
         value: String
     }
-    type Social {
-        url: String
-        image: String
+    type Currency {
+        name: String
+        value: Int
     }
-    ${DistrictAzyk.type}
-    ${DeliveryDateAzyk.type}
-    ${ErrorAzyk.type}
-    ${AgentRouteAzyk.type}
-    ${DistributerAzyk.type}
-    ${Integrate1CAzyk.type}
-    ${AdsAzyk.type}
-    ${IntegrateOutShoroAzyk.type}
-    ${SubscriberAzyk.type}
-    ${NotificationStatisticAzyk.type}
-    ${FaqAzyk.type}
-    ${AutoAzyk.type}
-    ${EquipmentAzyk.type}
-    ${ClientAzyk.type}
-    ${OrganizationAzyk.type}
-    ${AgentHistoryGeoAzyk.type}
-    ${BlogAzyk.type}
-    ${OutXMLAdsAzyk.type}
-    ${PassportAzyk.type}
-    ${CategoryAzyk.type}
-    ${SubCategoryAzyk.type}
-    ${ReturnedAzyk.type}
-    ${EmploymentAzyk.type}
-    ${ItemAzyk.type}
-    ${ContactAzyk.type}
-    ${BasketAzyk.type}
-    ${OrderAzyk.type}
-    ${RouteAzyk.type}
-    ${BonusAzyk.type}
-    ${BonusClientAzyk.type}
-    ${StatisticAzyk.type}
+    input InputCurrency {
+        name: String
+        value: Int
+    }
+    type ReloadData {
+        who: ID
+        type: String
+        ids: [ID]
+        roles: [String]
+        application: Application
+        cashConsumable: CashConsumable 
+        waybill: Waybill
+        expenseReport: ExpenseReport
+        balance: Balance
+    }
+  type UsedItems {
+    name: String
+    unit: String
+    price: Int
+    count: Int
+    currency: String
+    comment: String
+    status: String
+    GUID: String
+  }
+  input InputItems {
+    name: String
+    unit: String
+    price: Int
+    count: Int
+    currency: String
+    comment: String
+    status: String
+    GUID: String
+  }
+  type UsedRoutes {
+    role: String
+    confirmation: Date
+    cancel: Date
+    comment: String
+  }
+  input InputRoutes {
+    role: String
+    confirmation: Date
+    cancel: Date
+    comment: String
+  }
+    ${ErrorCantSyt.type}
+    ${RouteCantSyt.type}
+    ${StatisticCantSyt.type}
+    ${CashConsumableCantSyt.type}
+    ${FaqCantSyt.type}
+    ${PassportCantSyt.type}
+    ${CategoryCantSyt.type}
+    ${ItemCantSyt.type}
+    ${DivisionCantSyt.type}
+    ${RoleCantSyt.type}
+    ${UnitCantSyt.type}
+    ${BalanceCantSyt.type}
+    ${UserCantSyt.type}
+    ${ApplicationCantSyt.type}
+    ${WaybillCantSyt.type}
+    ${ExpenseReportCantSyt.type}
+    ${SettingCantSyt.type}
     type Mutation {
-        ${Integrate1CAzyk.mutation}
-        ${DistrictAzyk.mutation}
-        ${DeliveryDateAzyk.mutation}
-        ${ErrorAzyk.mutation}
-        ${AgentRouteAzyk.mutation}
-        ${DistributerAzyk.mutation}
-        ${AdsAzyk.mutation}
-        ${IntegrateOutShoroAzyk.mutation}
-        ${SubscriberAzyk.mutation}
-        ${NotificationStatisticAzyk.mutation}
-        ${FaqAzyk.mutation}
-        ${AutoAzyk.mutation}
-        ${EquipmentAzyk.mutation}
-        ${ClientAzyk.mutation}
-        ${OrganizationAzyk.mutation}
-        ${AgentHistoryGeoAzyk.mutation}
-        ${CategoryAzyk.mutation}
-        ${SubCategoryAzyk.mutation}
-        ${ReturnedAzyk.mutation}
-        ${BlogAzyk.mutation}
-        ${OutXMLAdsAzyk.mutation}
-        ${PassportAzyk.mutation}
-        ${EmploymentAzyk.mutation}
-        ${ItemAzyk.mutation}
-        ${ContactAzyk.mutation}
-        ${BasketAzyk.mutation}
-        ${OrderAzyk.mutation}
-        ${RouteAzyk.mutation}
-        ${BonusAzyk.mutation}
-        ${BonusClientAzyk.mutation}
-        ${StatisticAzyk.mutation}
+        ${ErrorCantSyt.mutation}
+        ${FaqCantSyt.mutation}
+        ${CategoryCantSyt.mutation}
+        ${PassportCantSyt.mutation}
+        ${ItemCantSyt.mutation}
+        ${DivisionCantSyt.mutation}
+        ${RouteCantSyt.mutation}
+        ${StatisticCantSyt.mutation}
+        ${CashConsumableCantSyt.mutation}
+        ${RoleCantSyt.mutation}
+        ${UnitCantSyt.mutation}
+        ${UserCantSyt.mutation}
+        ${ApplicationCantSyt.mutation}
+        ${WaybillCantSyt.mutation}
+        ${ExpenseReportCantSyt.mutation}
+        ${SettingCantSyt.mutation}
     }
     type Query {
-        ${Integrate1CAzyk.query}
-        ${DistrictAzyk.query}
-        ${DeliveryDateAzyk.query}
-        ${ErrorAzyk.query}
-        ${AgentRouteAzyk.query}
-        ${DistributerAzyk.query}
-        ${ClientAzyk.query}
-        ${FaqAzyk.query}
-        ${AutoAzyk.query}
-        ${EquipmentAzyk.query}
-        ${OrganizationAzyk.query}
-        ${AgentHistoryGeoAzyk.query}
-        ${AdsAzyk.query}
-        ${IntegrateOutShoroAzyk.query}
-        ${SubscriberAzyk.query}
-        ${NotificationStatisticAzyk.query}
-        ${CategoryAzyk.query}
-        ${SubCategoryAzyk.query}
-        ${ReturnedAzyk.query}
-        ${BlogAzyk.query}
-        ${OutXMLAdsAzyk.query}
-        ${PassportAzyk.query}
-        ${EmploymentAzyk.query}
-        ${ItemAzyk.query}
-        ${ContactAzyk.query}
-        ${BasketAzyk.query}
-        ${OrderAzyk.query}
-        ${RouteAzyk.query}
-        ${BonusAzyk.query}
-        ${BonusClientAzyk.query}
-        ${StatisticAzyk.query}
+        ${ErrorCantSyt.query}
+        ${FaqCantSyt.query}
+        ${CategoryCantSyt.query}
+        ${PassportCantSyt.query}
+        ${ItemCantSyt.query}
+        ${DivisionCantSyt.query}
+        ${RouteCantSyt.query}
+        ${StatisticCantSyt.query}
+        ${CashConsumableCantSyt.query}
+        ${RoleCantSyt.query}
+        ${UnitCantSyt.query}
+        ${BalanceCantSyt.query}
+        ${UserCantSyt.query}
+        ${ApplicationCantSyt.query}
+        ${WaybillCantSyt.query}
+        ${ExpenseReportCantSyt.query}
+        ${SettingCantSyt.query}
     }
     type Subscription {
-        ${OrderAzyk.subscription}
-        ${ReturnedAzyk.subscription}
+        reloadData: ReloadData
     }
 `;
 
@@ -176,74 +167,57 @@ const resolvers = {
         },
     }),
     Query: {
-        ...Integrate1CAzyk.resolvers,
-        ...DistrictAzyk.resolvers,
-        ...DeliveryDateAzyk.resolvers,
-        ...ErrorAzyk.resolvers,
-        ...AgentRouteAzyk.resolvers,
-        ...DistributerAzyk.resolvers,
-        ...FaqAzyk.resolvers,
-        ...AutoAzyk.resolvers,
-        ...EquipmentAzyk.resolvers,
-        ...ClientAzyk.resolvers,
-        ...OrganizationAzyk.resolvers,
-        ...AgentHistoryGeoAzyk.resolvers,
-        ...BlogAzyk.resolvers,
-        ...OutXMLAdsAzyk.resolvers,
-        ...AdsAzyk.resolvers,
-        ...IntegrateOutShoroAzyk.resolvers,
-        ...SubscriberAzyk.resolvers,
-        ...NotificationStatisticAzyk.resolvers,
-        ...PassportAzyk.resolvers,
-        ...CategoryAzyk.resolvers,
-        ...EmploymentAzyk.resolvers,
-        ...SubCategoryAzyk.resolvers,
-        ...ReturnedAzyk.resolvers,
-        ...ItemAzyk.resolvers,
-        ...ContactAzyk.resolvers,
-        ...BasketAzyk.resolvers,
-        ...OrderAzyk.resolvers,
-        ...RouteAzyk.resolvers,
-        ...BonusAzyk.resolvers,
-        ...BonusClientAzyk.resolvers,
-        ...StatisticAzyk.resolvers,
+        ...ErrorCantSyt.resolvers,
+        ...FaqCantSyt.resolvers,
+        ...PassportCantSyt.resolvers,
+        ...CategoryCantSyt.resolvers,
+        ...ItemCantSyt.resolvers,
+        ...CashConsumableCantSyt.resolvers,
+        ...RouteCantSyt.resolvers,
+        ...StatisticCantSyt.resolvers,
+        ...DivisionCantSyt.resolvers,
+        ...RoleCantSyt.resolvers,
+        ...UserCantSyt.resolvers,
+        ...ApplicationCantSyt.resolvers,
+        ...WaybillCantSyt.resolvers,
+        ...ExpenseReportCantSyt.resolvers,
+        ...SettingCantSyt.resolvers,
+        ...UnitCantSyt.resolvers,
+        ...BalanceCantSyt.resolvers,
     },
     Mutation: {
-        ...Integrate1CAzyk.resolversMutation,
-        ...AgentRouteAzyk.resolversMutation,
-        ...DistrictAzyk.resolversMutation,
-        ...DeliveryDateAzyk.resolversMutation,
-        ...ErrorAzyk.resolversMutation,
-        ...DistributerAzyk.resolversMutation,
-        ...FaqAzyk.resolversMutation,
-        ...ClientAzyk.resolversMutation,
-        ...AutoAzyk.resolversMutation,
-        ...EquipmentAzyk.resolversMutation,
-        ...OrganizationAzyk.resolversMutation,
-        ...AgentHistoryGeoAzyk.resolversMutation,
-        ...CategoryAzyk.resolversMutation,
-        ...SubCategoryAzyk.resolversMutation,
-        ...ReturnedAzyk.resolversMutation,
-        ...BlogAzyk.resolversMutation,
-        ...OutXMLAdsAzyk.resolversMutation,
-        ...AdsAzyk.resolversMutation,
-        ...IntegrateOutShoroAzyk.resolversMutation,
-        ...SubscriberAzyk.resolversMutation,
-        ...NotificationStatisticAzyk.resolversMutation,
-        ...EmploymentAzyk.resolversMutation,
-        ...PassportAzyk.resolversMutation,
-        ...ItemAzyk.resolversMutation,
-        ...ContactAzyk.resolversMutation,
-        ...BasketAzyk.resolversMutation,
-        ...OrderAzyk.resolversMutation,
-        ...RouteAzyk.resolversMutation,
-        ...BonusAzyk.resolversMutation,
-        ...BonusClientAzyk.resolversMutation,
-        ...StatisticAzyk.resolversMutation,
+        ...ErrorCantSyt.resolversMutation,
+        ...FaqCantSyt.resolversMutation,
+        ...CategoryCantSyt.resolversMutation,
+        ...PassportCantSyt.resolversMutation,
+        ...ItemCantSyt.resolversMutation,
+        ...CashConsumableCantSyt.resolversMutation,
+        ...RouteCantSyt.resolversMutation,
+        ...StatisticCantSyt.resolversMutation,
+        ...DivisionCantSyt.resolversMutation,
+        ...RoleCantSyt.resolversMutation,
+        ...UnitCantSyt.resolversMutation,
+        ...UserCantSyt.resolversMutation,
+        ...ApplicationCantSyt.resolversMutation,
+        ...WaybillCantSyt.resolversMutation,
+        ...ExpenseReportCantSyt.resolversMutation,
+        ...SettingCantSyt.resolversMutation,
     },
     Subscription: {
-        ...OrderAzyk.resolversSubscription,
-        ...ReturnedAzyk.resolversSubscription
+        reloadData: {
+            subscribe: withFilter(
+                () => pubsub.asyncIterator(RELOAD_DATA),
+                (payload, variables, {user} ) => {
+                    return (
+                        user&&user.role&&user._id&&user._id.toString()!==payload.reloadData.who&&
+                        (
+                            payload.reloadData.roles.includes(user.role)||
+                            payload.reloadData.ids.toString().includes(user._id.toString())
+                        )
+                    )
+                },
+            )
+        },
     }
 };
 
@@ -284,11 +258,11 @@ const run = (app)=>{
             console.error(err)
 
             //logger.info(err.message);
-            let _object = new ModelsErrorAzyk({
+            let _object = new ModelsErrorCantSyt({
                 err: err.message,
                 path: err.path
             });
-            ModelsErrorAzyk.create(_object)
+            ModelsErrorCantSyt.create(_object)
 
             return err;
         }
@@ -299,3 +273,4 @@ const run = (app)=>{
 }
 
 module.exports.run = run;
+module.exports.onlineUser = onlineUser;

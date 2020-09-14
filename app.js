@@ -7,6 +7,7 @@ const connectDB = require('./models/index');
 const app = express();
 app.use(cookieParser());
 const usersRouter = require('./routes/users');
+const integrateRouter = require('./routes/integrate');
 const passportEngine = require('./module/passport');
 const cors = require('cors');
 const adminRouter = require('./routes/admin');
@@ -16,7 +17,6 @@ const bodyParser = require('body-parser');
 let graphql  = require('./graphql/index');
 const subscribe = require('./routes/subscribe');
 const push = require('./routes/push');
-const integrateShoroRouter = require('./routes/integrateShoro');
 require('body-parser-xml-json')(bodyParser);
 
 passportEngine.start();
@@ -74,9 +74,9 @@ app.use(cors(corsOptions));
 let serverGQL = graphql.run(app)
 app.use('/', adminRouter);
 app.use('/users', usersRouter);
+app.use('/integrate', integrateRouter);
 app.use('/subscribe', subscribe);
 app.use('/push', push);
-app.use('/integrate', integrateShoroRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

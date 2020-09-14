@@ -1,36 +1,25 @@
-const SubscriberAzyk = require('../models/subscriberAzyk');
-const NotificationStatisticAzyk = require('../models/notificationStatisticAzyk');
+const SubscriberCantSyt = require('../models/subscriberCantSyt');
+const UserCantSyt = require('../models/userCantSyt');
 const q = require('q');
 const webPush = require('web-push');
-const keys = require((process.env.URL).trim()==='https://azyk.store'?'./../config/keys_prod':'./../config/keys_dev');
+const keys = require((process.env.URL).trim()==='https://cant.syt'?'./../config/keys_prod':'./../config/keys_dev');
 
-module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
+let sendWebPush = async({title, message, tag, url, icon, user}) => {
     const payload = {
         title: title?title:title,
         message: message?message:message,
-        url: url?url:'https://azyk.store',
-        icon: icon?icon:'https://azyk.store/static/192x192.png',
-        tag: tag?tag:'AZYK.STORE'
+        url: url?url:'https://cant.syt',
+        icon: icon?icon:'https://cant.syt/static/192x192.png',
+        tag: tag?tag:'cant.syt'
     };
-    let _object = new NotificationStatisticAzyk({
-        tag: payload.tag,
-        url: payload.url,
-        icon: payload.icon,
-        title: payload.title,
-        text: payload.message,
-        delivered: 0,
-        failed: 0,
-    });
-    _object = await NotificationStatisticAzyk.create(_object)
-    payload._id = _object._id
     if(user==='all'){
-        SubscriberAzyk.find({}, (err, subscriptions) => {
+        SubscriberCantSyt.find({}, (err, subscriptions) => {
             if (err) {
                 console.error('Error occurred while getting subscriptions');
             } else {
-                let parallelSubscriberAzykCalls = subscriptions.map((subscription) => {
+                let parallelSubscriberCantSytCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
-                        const pushSubscriberAzyk = {
+                        const pushSubscriberCantSyt = {
                             endpoint: subscription.endpoint,
                             keys: {
                                 p256dh: subscription.keys.p256dh,
@@ -41,14 +30,14 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                         const pushPayload = JSON.stringify(payload);
                         const pushOptions = {
                             vapidDetails: {
-                                subject: 'https://azyk.store',
+                                subject: 'https://CantSyt.store',
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
                             headers: {}
                         };
                         webPush.sendNotification(
-                            pushSubscriberAzyk,
+                            pushSubscriberCantSyt,
                             pushPayload,
                             pushOptions
                         ).then((value) => {
@@ -66,46 +55,20 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberAzykCalls).then(async(pushResults) => {
-                    try{
-                        let delivered = 0;
-                        let failed = 0;
-                        for(let i=0; i<pushResults.length; i++){
-                            let endpoint = pushResults[i].reason?pushResults[i].reason.endpoint:pushResults[i].value?pushResults[i].value.endpoint:undefined
-                            let subscriberAzyk = await SubscriberAzyk.findOne({endpoint: endpoint})
-                            if(pushResults[i].state === 'rejected'||pushResults[i].reason){
-                                failed+=1
-                                if(subscriberAzyk){
-                                    subscriberAzyk.status = 'провалено'
-                                    await subscriberAzyk.save()
-                                }
-                            }
-                            else {
-                                delivered += 1
-                                if(subscriberAzyk){
-                                    subscriberAzyk.status = 'доставлено'
-                                    await subscriberAzyk.save()
-                                }
-                            }
-                        }
-                        _object.delivered = delivered
-                        _object.failed = failed
-                        await _object.save()
-                    } catch (err) {
-                        console.error(err)
-                    }
+                q.allSettled(parallelSubscriberCantSytCalls).then(async(pushResults) => {
+                    //console.log(pushResults)
                 });
             }
         });
     }
     else {
-        SubscriberAzyk.find({user: user}, (err, subscriptions) => {
+        SubscriberCantSyt.find({user: user}, (err, subscriptions) => {
             if (err) {
                 console.error('Error occurred while getting subscriptions');
             } else {
-                let parallelSubscriberAzykCalls = subscriptions.map((subscription) => {
+                let parallelSubscriberCantSytCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
-                        const pushSubscriberAzyk = {
+                        const pushSubscriberCantSyt = {
                             endpoint: subscription.endpoint,
                             keys: {
                                 p256dh: subscription.keys.p256dh,
@@ -116,14 +79,14 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                         const pushPayload = JSON.stringify(payload);
                         const pushOptions = {
                             vapidDetails: {
-                                subject: 'https://azyk.store',
+                                subject: 'https://CantSyt.store',
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
                             headers: {}
                         };
                         webPush.sendNotification(
-                            pushSubscriberAzyk,
+                            pushSubscriberCantSyt,
                             pushPayload,
                             pushOptions
                         ).then((value) => {
@@ -141,37 +104,29 @@ module.exports.sendWebPush = async({title, message, tag, url, icon, user}) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberAzykCalls).then(async (pushResults) => {
-                    try{
-                        let delivered = 0;
-                        let failed = 0;
-                        for(let i=0; i<pushResults.length; i++){
-                            let endpoint = pushResults[i].reason?pushResults[i].reason.endpoint:pushResults[i].value?pushResults[i].value.endpoint:undefined
-                            let subscriberAzyk = await SubscriberAzyk.findOne({endpoint: endpoint})
-                            if(pushResults[i].state === 'rejected'||pushResults[i].reason){
-                                failed+=1
-                                if(subscriberAzyk){
-                                    subscriberAzyk.status = 'провалено'
-                                    await subscriberAzyk.save()
-                                }
-                            }
-                            else {
-                                delivered += 1
-                                if(subscriberAzyk){
-                                    subscriberAzyk.status = 'доставлено'
-                                    await subscriberAzyk.save()
-                                }
-                            }
-                        }
-                        _object.delivered = delivered
-                        _object.failed = failed
-                        await _object.save()
-                    } catch (err) {
-                        console.error(err)
-                    }
+                q.allSettled(parallelSubscriberCantSytCalls).then(async (pushResults) => {
+                    //console.log(pushResults)
                 });
             }
         });
     }
 
- }
+}
+
+
+let sendWebPushByRolesIds = async ({title, message, url, roles, _ids})=>{
+    for(let i = 0; i<roles.length; i++){
+        let users
+        users = await UserCantSyt.find({role: roles[i]}).distinct('_id').lean()
+        for(let i1 = 0; i1<users.length; i1++) {
+            await sendWebPush({title, message, url, user: users[i1]})
+        }
+    }
+    for(let i = 0; i<_ids.length; i++) {
+        await sendWebPush({title, message, url, user: _ids[i]})
+    }
+
+}
+
+module.exports.sendWebPush = sendWebPush
+module.exports.sendWebPushByRolesIds = sendWebPushByRolesIds

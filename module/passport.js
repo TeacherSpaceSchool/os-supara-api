@@ -3,10 +3,7 @@ const LocalStrategy = require('passport-local');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwtsecret = '@615141ViDiK141516@';
-const UserAzyk = require('../models/userAzyk');
-const ClientAzyk = require('../models/clientAzyk');
-const EmploymentAzyk = require('../models/employmentAzyk');
-const { setProfile, getProfile } = require('../redis/profile');
+const UserCantSyt = require('../models/userCantSyt');
 const jwt = require('jsonwebtoken');
 
 let start = () => {
@@ -17,7 +14,7 @@ let start = () => {
             session: false
         },
         function (login, password, done) {
-            UserAzyk.findOne({login: login}, (err, user) => {
+            UserCantSyt.findOne({login: login}, (err, user) => {
                 if (err) {
                     return done(err);
                 }
@@ -34,7 +31,7 @@ let start = () => {
     jwtOptions.jwtFromRequest= ExtractJwt.fromAuthHeaderAsBearerToken();
     jwtOptions.secretOrKey=jwtsecret;
     passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
-        UserAzyk.findOne({login:payload.login}, (err, user) => {
+        UserCantSyt.findOne({login:payload.login}, (err, user) => {
                 if (err) {
                     return done(err)
                 }
@@ -101,32 +98,7 @@ const verifydeuserGQL = async (req, res) => {
     return new Promise((resolve) => { passport.authenticate('jwt', async function (err, user) {
         try{
             if (user&&user.status==='active') {
-                if('admin'===user.role)
-                    resolve(user)
-                else if('client'===user.role) {
-                    let client = await ClientAzyk.findOne({user: user._id})
-                    user.client = client._id
-                    client.lastActive = new Date()
-                    client.save()
-                    resolve(user)
-
-                }
-                else if(['суперагент', 'суперменеджер'].includes(user.role)) {
-                    let employment = await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'organization' })
-                    user.employment = employment._id
-                    resolve(user)
-                }
-                else {
-                    let employment = await EmploymentAzyk.findOne({user: user._id}).populate({ path: 'organization' })
-                    if(employment.organization.status==='active') {
-                        user.organization = employment.organization._id
-                        user.employment = employment._id
-                        resolve(user)
-                    }
-                    else {
-                        resolve({})
-                    }
-                }
+                resolve(user)
             } else {
                 resolve({})
             }
@@ -188,13 +160,13 @@ const getstatus = async (req, res) => {
 
 const signupuser = async (req, res) => {
     try{
-        let _user = new UserAzyk({
+        let _user = new UserCantSyt({
             login: req.query.login,
             role: 'client',
             status: 'active',
             password: req.query.password,
         });
-        const user = await UserAzyk.create(_user);
+        const user = await UserCantSyt.create(_user);
         const payload = {
             id: user._id,
             login: user.login,
@@ -212,51 +184,6 @@ const signupuser = async (req, res) => {
     }
 }
 
-const signupuserGQL = async ({password, login}, res) => {
-    try{
-        //await UserAzyk.deleteMany()
-        let user = new UserAzyk({
-            login: login.trim(),
-            role: 'client',
-            status: 'active',
-            password: password,
-        });
-        user = await UserAzyk.create(user);
-        const client = new ClientAzyk({
-            name: '',
-            email: '',
-            address: [],
-            info: '',
-            reiting: 0,
-            image: '/static/add.png',
-            user: user._id,
-            phone: [],
-            city: '',
-            notification: false
-        });
-        await ClientAzyk.create(client);
-        const payload = {
-            id: user._id,
-            login: user.login,
-            status: user.status,
-            role: user.role
-        };
-        const token = jwt.sign(payload, jwtsecret); //здесь создается JWT*/
-        await res.clearCookie('jwt');
-        await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 })
-        return {
-            role: user.role,
-            status: user.status,
-            login: user.login,
-            organization: user.organization,
-            _id: user._id
-        }
-    } catch (err) {
-        console.error(err)
-        return {role: 'Проверьте данные'}
-    }
-}
-
 const signinuserGQL = (req, res) => {
     return new Promise((resolve) => {
         passport.authenticate('local', async function (err, user) {
@@ -271,15 +198,10 @@ const signinuserGQL = (req, res) => {
                     const token = await jwt.sign(payload, jwtsecret); //здесь создается JWT
                     await res.clearCookie('jwt');
                     await res.cookie('jwt', token, {maxAge: 500*24*60*60*1000 });
-                    if(!['admin', 'client'].includes(user.role)) {
-                        let employment = await EmploymentAzyk.findOne({user: user._id})
-                        user.organization = employment.organization
-                    }
                     resolve({
                         role: user.role,
                         status: user.status,
                         login: user.login,
-                        organization: user.organization,
                         _id: user._id
                     })
                 } else {
@@ -308,7 +230,6 @@ const createJwtGQL = async (res, user) => {
 module.exports.getuser = getuser;
 module.exports.createJwtGQL = createJwtGQL;
 module.exports.verifydrole = verifydrole;
-module.exports.signupuserGQL = signupuserGQL;
 module.exports.getstatus = getstatus;
 module.exports.verifydeuserGQL = verifydeuserGQL;
 module.exports.start = start;

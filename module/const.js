@@ -7,7 +7,7 @@ const path = require('path');
 const urlMain = `${process.env.URL.trim()}:3000`,
     adminLogin = 'admin',
     skip = 1,
-    adminPass = 'hGNSKtmSBG'
+    adminPass = '6FjHxteZVp'
 const validMail = (mail) =>
 {
     return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(mail);

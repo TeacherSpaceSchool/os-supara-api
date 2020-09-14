@@ -5,9 +5,6 @@ const type = `
     role: String
     status: String
     login: String
-    organization: ID
-    client: ID
-    employment: ID
     _id: ID
   }
 `;
@@ -19,12 +16,9 @@ const query = `
 const resolvers = {
     getStatus: async(parent, args, {user}) => {
         return {
-            client: user.client,
-            employment: user.employment,
             role: user.role,
             status: user.status,
             login: user.login,
-            organization: user.organization,
             _id: user._id
         }
     },

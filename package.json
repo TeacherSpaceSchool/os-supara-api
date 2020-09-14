@@ -1,11 +1,11 @@
 {
-  "name": "azyk-api",
+  "name": "cantsyt-api",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "develop": "set URL=http://localhost&& nodemon ./bin/develop",
     "start": "set NODE_ENV=production&& set URL=http://localhost&& node ./bin/www",
-    "start-on-server": "NODE_ENV=production URL=https://azyk.store node ./bin/www",
+    "start-on-server": "NODE_ENV=production URL=https://cant.syt node ./bin/www",
     "test": "mocha --timeout 10000"
   },
   "dependencies": {

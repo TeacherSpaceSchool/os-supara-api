@@ -1,4 +1,4 @@
 module.exports = {
-    privateKey: 'yT-De14BQWByWrguoq2-R9KHPRc1Dl80pwMVagalxAI' || process.env.VAPID_PRIVATE_KEY,
-    publicKey: 'BDbYgfB_0iu1aqu7AHHTervMZnvSjYQtZsm-kKCQ9NH58DU-iRKDk0U-tiio1NzHi25ceaatYrM4c6Oqj1KvnXM' || process.env.VAPID_PUBLIC_KEY
+    privateKey: 'GPKl_rQEFp4r1I2wudwfMOzMAyS950tyhN-CtxM1vNI' || process.env.VAPID_PRIVATE_KEY,
+    publicKey: 'BGAa2sPjcH6RvApWTvZYAQrukcpGsXG2FEk4FIj5j6JWLBjHtaJBPFyPrZH63ku9jFX-k0oNh923YtrGf-a42rU' || process.env.VAPID_PUBLIC_KEY
 }
