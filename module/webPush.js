@@ -2,15 +2,15 @@ const SubscriberCantSyt = require('../models/subscriberCantSyt');
 const UserCantSyt = require('../models/userCantSyt');
 const q = require('q');
 const webPush = require('web-push');
-const keys = require((process.env.URL).trim()==='https://cant.syt'?'./../config/keys_prod':'./../config/keys_dev');
+const keys = require((process.env.URL).trim()==='https://os-kantsut.xyz'?'./../config/keys_prod':'./../config/keys_dev');
 
 let sendWebPush = async({title, message, tag, url, icon, user}) => {
     const payload = {
         title: title?title:title,
         message: message?message:message,
-        url: url?url:'https://cant.syt',
-        icon: icon?icon:'https://cant.syt/static/192x192.png',
-        tag: tag?tag:'cant.syt'
+        url: url?url:'https://os-kantsut.xyz',
+        icon: icon?icon:'https://os-kantsut.xyz/static/192x192.png',
+        tag: tag?tag:'os-kantsut.xyz'
     };
     if(user==='all'){
         SubscriberCantSyt.find({}, (err, subscriptions) => {

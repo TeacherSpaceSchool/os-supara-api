@@ -5,7 +5,7 @@
   "scripts": {
     "develop": "set URL=http://localhost&& nodemon ./bin/develop",
     "start": "set NODE_ENV=production&& set URL=http://localhost&& node ./bin/www",
-    "start-on-server": "NODE_ENV=production URL=https://cant.syt node ./bin/www",
+    "start-on-server": "NODE_ENV=production URL=https://os-kantsut.xyz node ./bin/www",
     "test": "mocha --timeout 10000"
   },
   "dependencies": {
