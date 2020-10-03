@@ -15,7 +15,7 @@ const type = `
 `;
 
 const query = `
-    users(search: String!, filter: String!): [User]
+    users(search: String!, filter: String!, skip: Int): [User]
     usersTrash(search: String!): [User]
     user(_id: ID!): User
     heads: [User]
@@ -47,7 +47,7 @@ const resolvers = {
             return users
         }
     },
-    users: async(parent, {search, filter}) => {
+    users: async(parent, {search, filter, skip}) => {
         let users = await UserCantSyt.find({
             del: {$ne: 'deleted'},
             $and: [
@@ -59,7 +59,10 @@ const resolvers = {
                 {login: {'$regex': search, '$options': 'i'}},
             ]
         })
-            .sort('name').lean()
+            .sort('name')
+            .skip(skip!=undefined?skip:0)
+            .limit(skip!=undefined?15:10000000000)
+            .lean()
         return users
     },
     specialists: async() => {

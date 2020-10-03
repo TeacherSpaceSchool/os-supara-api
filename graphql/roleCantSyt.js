@@ -11,7 +11,7 @@ const type = `
 
 const query = `
     role(_id: ID!): Role
-    roles(search: String!): [Role]
+    roles(search: String!, skip: Int): [Role]
 `;
 
 const mutation = `
@@ -21,10 +21,13 @@ const mutation = `
 `;
 
 const resolvers = {
-    roles: async(parent, {search}) => {
+    roles: async(parent, {search, skip}) => {
         return await RoleCantSyt.find({
             name: {'$regex': search, '$options': 'i'}
-        }).sort('name').lean()
+        }).sort('name')
+            .skip(skip!=undefined?skip:0)
+            .limit(skip!=undefined?15:10000000000)
+            .lean()
     },
     role: async(parent, {_id}) => {
         if(mongoose.Types.ObjectId.isValid(_id)) {

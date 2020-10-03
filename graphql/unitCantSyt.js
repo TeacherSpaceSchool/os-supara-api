@@ -10,7 +10,7 @@ const type = `
 `;
 
 const query = `
-    units(search: String!): [Division]
+    units(search: String!, skip: Int): [Division]
     unit(_id: ID!): Unit
 `;
 
@@ -21,10 +21,14 @@ const mutation = `
 `;
 
 const resolvers = {
-    units: async(parent, {search}) => {
+    units: async(parent, {search, skip}) => {
         return await UnitCantSyt.find({
             name: {'$regex': search, '$options': 'i'}
-        }).sort('name').lean()
+        })
+            .sort('name')
+            .skip(skip!=undefined?skip:0)
+            .limit(skip!=undefined?15:10000000000)
+            .lean()
     },
     unit: async(parent, {_id}) => {
         if(mongoose.Types.ObjectId.isValid(_id)) {

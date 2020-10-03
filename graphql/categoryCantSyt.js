@@ -14,7 +14,7 @@ const type = `
 `;
 
 const query = `
-    categorys(search: String!): [Category]
+    categorys(search: String!, skip: Int): [Category]
     categorysTrash(search: String!): [Category]
     category(_id: ID!): Category
 `;
@@ -39,13 +39,16 @@ const resolvers = {
             return categorys
         }
     },
-    categorys: async(parent, {search}) => {
+    categorys: async(parent, {search, skip}) => {
         return await CategoryCantSyt.find({
             name: {'$regex': search, '$options': 'i'},
             del: {$ne: 'deleted'},
         })
             .populate('suppliers')
-            .sort('name').lean()
+            .sort('name')
+            .skip(skip!=undefined?skip:0)
+            .limit(skip!=undefined?15:10000000000)
+            .lean()
     },
     category: async(parent, {_id}) => {
         return await CategoryCantSyt.findOne({

@@ -11,7 +11,7 @@ const type = `
 `;
 
 const query = `
-    routes(search: String!): [Route]
+    routes(search: String!, skip: Int): [Route]
 `;
 
 const mutation = `
@@ -21,7 +21,7 @@ const mutation = `
 `;
 
 const resolvers = {
-    routes: async(parent, {search}, {user}) => {
+    routes: async(parent, {search, skip}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)) {
             let divisions
             if(search.length){
@@ -29,7 +29,10 @@ const resolvers = {
             }
             return await RouteCantSyt.find({
                 ...search.length?{division: {$in: divisions}}:{}
-            }).populate('division').lean()
+            }).populate('division')
+                .skip(skip!=undefined?skip:0)
+                .limit(skip!=undefined?15:10000000000)
+                .lean()
         }
     }
 };

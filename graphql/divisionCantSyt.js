@@ -14,7 +14,7 @@ const type = `
 `;
 
 const query = `
-    divisions(search: String!): [Division]
+    divisions(search: String!, skip: Int): [Division]
     divisionsForRoute: [Division]
     divisionsTrash(search: String!): [Division]
     division(_id: ID!): Division
@@ -54,7 +54,7 @@ const resolvers = {
             .lean()
         return divisions
     },
-    divisions: async(parent, {search}) => {
+    divisions: async(parent, {search, skip}) => {
         let divisions =  await DivisionCantSyt.find({
             del: {$ne: 'deleted'},
             name: {'$regex': search, '$options': 'i'}
@@ -63,6 +63,8 @@ const resolvers = {
             .populate('specialists')
             .populate('head')
             .sort('name')
+            .skip(skip!=undefined?skip:0)
+            .limit(skip!=undefined?15:10000000000)
             .lean()
         return divisions
     },

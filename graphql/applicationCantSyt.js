@@ -39,6 +39,7 @@ const type = `
 `;
 
 const query = `
+    itemsFromApplications: [[String]]
     applications(search: String!, filter: String!, sort: String!, date: String!, dateEnd: String, supplier: ID, skip: Int!): [Application]
     applicationsForWaybill: [Application]
     application(_id: ID!): Application
@@ -190,6 +191,22 @@ const resolvers = {
         }
 
         return applications
+    },
+    itemsFromApplications: async(parent, ctx, {user}) => {
+        if(user.role==='снабженец') {
+            let res = []
+            let applications = await ApplicationCantSyt.find({
+                //status: 'принят',
+                supplier: user._id
+            }).lean()
+            console.log(applications)
+            for(let i = 0; i<applications.length; i++){
+                for(let i1 = 0; i1<applications[i].items.length; i1++){
+                    res.push([applications[i]._id, applications[i].number, applications[i].items[i1].name, `${applications[i].items[i1].count} ${applications[i].items[i1].unit}`])
+                }
+            }
+            return res
+        }
     },
     application: async(parent, {_id}) => {
         if(mongoose.Types.ObjectId.isValid(_id)) {

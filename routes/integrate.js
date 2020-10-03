@@ -66,7 +66,6 @@ router.post('/put/nomenclature', async (req, res, next) => {
                 _object = await ItemCantSyt.findOne({GUID: req.body.elements[0].elements[i].attributes.guid})
                 if (!_object) {
                     let category = await CategoryCantSyt.findOne({GUID: req.body.elements[0].elements[i].attributes.categoryGuid}).lean()
-                    console.log(category)
                     if (!category) {
                         category = new CategoryCantSyt({
                             term: 1,
