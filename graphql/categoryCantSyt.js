@@ -9,7 +9,6 @@ const type = `
       del: String
       term: Int
       suppliers: [User]
-      GUID: String
  }
 `;
 
@@ -20,8 +19,8 @@ const query = `
 `;
 
 const mutation = `
-    addCategory(term: Int!, name: String!, suppliers: [ID]!, GUID: String): Category
-    setCategory(_id: ID!, term: Int, name: String, suppliers: [ID], GUID: String): Data
+    addCategory(term: Int!, name: String!, suppliers: [ID]!): Category
+    setCategory(_id: ID!, term: Int, name: String, suppliers: [ID]): Data
     deleteCategory(_id: [ID]!): Data
     restoreCategory(_id: [ID]!): Data
 `;
@@ -60,24 +59,22 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addCategory: async(parent, {term, name, suppliers, GUID}, {user}) => {
+    addCategory: async(parent, {term, name, suppliers}, {user}) => {
         if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)){
             let _object = new CategoryCantSyt({
                 term: term,
                 name: name,
-                suppliers: suppliers,
-                GUID: GUID
+                suppliers: suppliers
             });
             _object = await CategoryCantSyt.create(_object)
             return _object;
         }
     },
-    setCategory: async(parent, {_id, term, name, suppliers, GUID}, {user}) => {
+    setCategory: async(parent, {_id, term, name, suppliers}, {user}) => {
         if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)) {
             let object = await CategoryCantSyt.findById(_id)
             if (term!=undefined) object.term = term
             if(name) object.name = name
-            if(GUID) object.GUID = GUID
             object.suppliers= suppliers
             object.save();
         }

@@ -57,54 +57,6 @@ router.post('/put/employment', async (req, res, next) => {
     }
 });
 
-router.post('/put/nomenclature', async (req, res, next) => {
-    res.set('Content+Type', 'application/xml');
-    let _object
-    try{
-        for(let i=0;i<req.body.elements[0].elements.length;i++) {
-            if(req.body.elements[0].elements[i].attributes.del!=='1') {
-                _object = await ItemCantSyt.findOne({GUID: req.body.elements[0].elements[i].attributes.guid})
-                if (!_object) {
-                    let category = await CategoryCantSyt.findOne({GUID: req.body.elements[0].elements[i].attributes.categoryGuid}).lean()
-                    if (!category) {
-                        category = new CategoryCantSyt({
-                            term: 1,
-                            name: req.body.elements[0].elements[i].attributes.categoryName,
-                            suppliers: [],
-                            GUID: req.body.elements[0].elements[i].attributes.categoryGuid
-                        });
-                        category = await CategoryCantSyt.create(category)
-                    }
-                    _object = new ItemCantSyt({
-                        name: req.body.elements[0].elements[i].attributes.name,
-                        category: category._id,
-                        GUID: req.body.elements[0].elements[i].attributes.guid
-                    });
-                    _object = await ItemCantSyt.create(_object)
-                }
-                else {
-                    _object.name = req.body.elements[0].elements[i].attributes.name
-                    await _object.save();
-                }
-            }
-            else {
-                await ItemCantSyt.deleteMany({GUID: req.body.elements[0].elements[i].attributes.guid})
-            }
-        }
-        await res.status(200);
-        await res.end('success')
-    } catch (err) {
-        _object = new ModelsErrorCantSyt({
-            err: err.message,
-            path: 'put nomenclature'
-        });
-        await ModelsErrorCantSyt.create(_object)
-        console.error(err)
-        res.status(501);
-        res.end('error')
-    }
-});
-
 router.post('/put/cashconsumable', async (req, res, next) => {
     res.set('Content+Type', 'application/xml');
     let _object
@@ -266,7 +218,6 @@ router.get('/out/expensereport', async (req, res, next) => {
                         .att('comment', _objects[i].waybills[i1].application.comment)
                     for(let i2 = 0; i2<_objects[i].waybills[i1].items.length; i2++) {
                         waybill.ele('item')
-                            .att('guid', _objects[i].waybills[i1].items[i2].GUID)
                             .att('name', _objects[i].waybills[i1].items[i2].name)
                             .att('unit', _objects[i].waybills[i1].items[i2].unit)
                             .att('price', _objects[i].waybills[i1].items[i2].price)
@@ -280,7 +231,6 @@ router.get('/out/expensereport', async (req, res, next) => {
                     waybill = waybills.ele('waybill')
                     for (let i1 = 0; i1 < _objects[i].addedItems.length; i1++) {
                         waybill.ele('item')
-                            .att('GUID', _objects[i].addedItems[i1].GUID)
                             .att('name', _objects[i].addedItems[i1].name)
                             .att('unit', _objects[i].addedItems[i1].unit)
                             .att('price', _objects[i].addedItems[i1].price)

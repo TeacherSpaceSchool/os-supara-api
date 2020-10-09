@@ -1,4 +1,5 @@
 const { createAdmin } = require('../module/user');
+const { createCategoryOther } = require('../module/categoryCantSyt');
 const { createSetting } = require('../module/settingCantSyt');
 const { Worker, isMainThread } = require('worker_threads');
 
@@ -19,6 +20,7 @@ let startResetUnloading = async () => {
 
 let start = async () => {
     await startResetUnloading();
+    await createCategoryOther();
     await createAdmin();
     await createSetting();
 }

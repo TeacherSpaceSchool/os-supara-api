@@ -165,7 +165,9 @@ const resolvers = {
                 .lean()
         }
         else {
+            let divisions = await DivisionCantSyt.find({staffs: user._id}).distinct('_id').lean()
             applications = await ApplicationCantSyt.find({
+                ...divisions.length?{division: {$in: divisions}}:{},
                 routes: {$elemMatch: {role: user.role}},
                 ...filter.length?{status: filter}:{},
                 ...search.length?{
@@ -199,7 +201,6 @@ const resolvers = {
                 //status: 'принят',
                 supplier: user._id
             }).lean()
-            console.log(applications)
             for(let i = 0; i<applications.length; i++){
                 for(let i1 = 0; i1<applications[i].items.length; i1++){
                     res.push([applications[i]._id, applications[i].number, applications[i].items[i1].name, `${applications[i].items[i1].count} ${applications[i].items[i1].unit}`])

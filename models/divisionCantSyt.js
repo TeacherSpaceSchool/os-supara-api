@@ -15,6 +15,10 @@ const DivisionCantSytSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserCantSyt'
     }],
+    staffs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserCantSyt'
+    }],
 }, {
     timestamps: true
 });

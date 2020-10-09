@@ -532,7 +532,7 @@ const resolversMutation = {
             });
             newExpenseReport = await ExpenseReportCantSyt.create(newExpenseReport);
 
-            await sendWebPushByRolesIds({title: 'Авансовый отчет добавлен', message: `Авансовый отчет №${newExpenseReport.number} добавлен`, url: `${process.env.URL.trim()}/expensereports/${newExpenseReport._id}`, roles: ['admin', 'менеджер', 'начальник отдела'], _ids: []} )
+            await sendWebPushByRolesIds({title: 'Авансовый отчет добавлен', message: `Авансовый отчет №${newExpenseReport.number} добавлен`, url: `${process.env.URL.trim()}/expensereport/${newExpenseReport._id}`, roles: ['admin', 'менеджер', 'начальник отдела'], _ids: []} )
 
             pubsub.publish(RELOAD_DATA, { reloadData: {
                 type: 'ADD',
@@ -585,7 +585,7 @@ const resolversMutation = {
                 await sendWebPushByRolesIds({
                     title: 'Авансовый отчет принят',
                     message: `Авансовый отчет №${object.number} принят`,
-                    url: `${process.env.URL.trim()}/expensereports/${object._id}`,
+                    url: `${process.env.URL.trim()}/expensereport/${object._id}`,
                     roles: ['admin', 'менеджер'],
                     _ids: [object.supplier]
                 })
@@ -594,7 +594,7 @@ const resolversMutation = {
                 await sendWebPushByRolesIds({
                     title: 'Авансовый отчет изменен',
                     message: `Авансовый отчет №${object.number} изменен`,
-                    url: `${process.env.URL.trim()}/expensereports/${object._id}`,
+                    url: `${process.env.URL.trim()}/expensereport/${object._id}`,
                     roles: ['admin', 'менеджер', 'начальник отдела'],
                     _ids: []
                 })

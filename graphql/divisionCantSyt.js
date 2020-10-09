@@ -10,6 +10,7 @@ const type = `
     head: User
     suppliers: [User]
     specialists: [User]
+    staffs: [User]
   }
 `;
 
@@ -21,8 +22,8 @@ const query = `
 `;
 
 const mutation = `
-    addDivision( name: String!, suppliers: [ID]!, specialists: [ID]!, head: ID): Division
-    setDivision(_id: ID!, name: String, suppliers: [ID], specialists: [ID], head: ID): Data
+    addDivision( name: String!, suppliers: [ID]!, specialists: [ID]!, head: ID, staffs: [ID]!): Division
+    setDivision(_id: ID!, name: String, suppliers: [ID], specialists: [ID], head: ID, staffs: [ID]): Data
     deleteDivision(_id: [ID]!): Data
     restoreDivision(_id: [ID]!): Data
 `;
@@ -37,6 +38,7 @@ const resolvers = {
                 .populate('suppliers')
                 .populate('specialists')
                 .populate('head')
+                .populate('staffs')
                 .sort('name')
                 .lean()
             return divisions
@@ -50,6 +52,7 @@ const resolvers = {
             .populate('suppliers')
             .populate('specialists')
             .populate('head')
+            .populate('staffs')
             .sort('name')
             .lean()
         return divisions
@@ -62,6 +65,7 @@ const resolvers = {
             .populate('suppliers')
             .populate('specialists')
             .populate('head')
+            .populate('staffs')
             .sort('name')
             .skip(skip!=undefined?skip:0)
             .limit(skip!=undefined?15:10000000000)
@@ -74,30 +78,34 @@ const resolvers = {
         })
             .populate('suppliers')
             .populate('specialists')
+            .populate('head')
+            .populate('staffs')
             .lean()
     }
 };
 
 const resolversMutation = {
-    addDivision: async(parent, {name, suppliers, specialists, head}, {user}) => {
+    addDivision: async(parent, {name, suppliers, specialists, head, staffs}, {user}) => {
         if(['admin'].includes(user.role)){
             let _object = new DivisionCantSyt({
                 name: name,
                 suppliers: suppliers,
                 specialists: specialists,
-                head: head
+                head: head,
+                staffs: staffs
             });
             _object = await DivisionCantSyt.create(_object)
             return _object
         }
     },
-    setDivision: async(parent, {_id, name, suppliers, specialists, head}, {user}) => {
+    setDivision: async(parent, {_id, name, suppliers, specialists, head, staffs}, {user}) => {
         let object = await DivisionCantSyt.findById(_id)
         if(['admin', 'менеджер'].includes(user.role)) {
             if(name)object.name = name
             object.suppliers = suppliers
             object.specialists = specialists
             object.head = head
+            object.staffs = staffs
             await object.save();
         }
         return {data: 'OK'}

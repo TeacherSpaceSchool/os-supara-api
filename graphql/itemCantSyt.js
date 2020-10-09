@@ -12,7 +12,6 @@ const type = `
       createdAt: Date
       name: String
       category: Category
-      GUID: String
  }
 `;
 
@@ -23,8 +22,8 @@ const query = `
 `;
 
 const mutation = `
-    addItem( name: String!, category: ID!, GUID: String ): Item
-    setItem(_id: ID!, name: String, category: ID, GUID: String ): Data
+    addItem( name: String!, category: ID! ): Item
+    setItem(_id: ID!, name: String, category: ID ): Data
     deleteItem(_id: [ID]!): Data
     unloadingItem(document: Upload!): Data
 `;
@@ -77,20 +76,18 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addItem: async(parent, {name, category, GUID}, {user}) => {
+    addItem: async(parent, {name, category, }, {user}) => {
             let _object = new ItemCantSyt({
                 name: name,
-                category: category,
-                GUID: GUID
+                category: category
             });
             _object = await ItemCantSyt.create(_object)
             return _object
     },
-    setItem: async(parent, {_id, name, category, GUID}, {user}) => {
+    setItem: async(parent, {_id, name, category, }, {user}) => {
         let object = await ItemCantSyt.findById(_id)
         if(name)object.name = name
         if(category)object.category = category
-        if(GUID)object.GUID = GUID
         await object.save();
         return {data: 'OK'}
     },
@@ -106,28 +103,14 @@ const resolversMutation = {
             let rows = await readXlsxFile(xlsxpath)
             let _object
             for(let i = 0;i<rows.length;i++){
-                _object = await ItemCantSyt.findOne({GUID: rows[i][1]})
+                _object = await ItemCantSyt.findOne({name: rows[i][0]}).lean()
                 if (!_object) {
-                    let category = await CategoryCantSyt.findOne({GUID: rows[i][3]}).lean()
-                    if (!category) {
-                        category = new CategoryCantSyt({
-                            term: 1,
-                            name: rows[i][2],
-                            suppliers: [],
-                            GUID: rows[i][3]
-                        });
-                        category = await CategoryCantSyt.create(category)
-                    }
+                    let category = await CategoryCantSyt.findOne({name: 'Прочие'}).lean()
                     _object = new ItemCantSyt({
                         name: rows[i][0],
-                        category: category._id,
-                        GUID: rows[i][1]
+                        category: category._id
                     });
                     _object = await ItemCantSyt.create(_object)
-                }
-                else {
-                    _object.name = rows[i][0]
-                    await _object.save();
                 }
             }
             await deleteFile(filename)

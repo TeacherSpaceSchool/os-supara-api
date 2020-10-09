@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const ItemCantSytSchema = mongoose.Schema({
     name: String,
-    GUID: String,
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CategoryCantSyt'

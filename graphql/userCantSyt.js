@@ -20,6 +20,7 @@ const query = `
     user(_id: ID!): User
     heads: [User]
     suppliers: [User]
+    staffs: [User]
     specialists: [User]
     filterUser: [Filter]
 `;
@@ -69,6 +70,13 @@ const resolvers = {
         let users = await UserCantSyt.find({
             del: {$ne: 'deleted'},
             role: 'специалист'
+        }).lean()
+        return users
+    },
+    staffs: async() => {
+        let users = await UserCantSyt.find({
+            del: {$ne: 'deleted'},
+            $and: [{role: {$ne: 'специалист'}}, {role: {$ne: 'снабженец'}}, {role: {$ne: 'начальник отдела'}}, {role: {$ne: 'admin'}}]
         }).lean()
         return users
     },
