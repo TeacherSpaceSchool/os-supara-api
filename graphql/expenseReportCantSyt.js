@@ -408,7 +408,7 @@ const resolversMutation = {
                 status: 'принят',
                 application: {$in: applications.map(application=>application._id)}
             }).lean()
-            let cashConsumables = await CashConsumableCantSyt.find({supplier: user._id, ...lastExpenseReport?{createdAt: {$gt: lastExpenseReport.createdAt}}:{}}).lean()
+            let cashConsumables = await CashConsumableCantSyt.find({supplier: user._id, ...lastExpenseReport?{createdAt: {$gte: lastExpenseReport.createdAt}}:{}}).lean()
             let balance = await BalanceCantSyt.findOne({supplier: user._id})
 
             let balanceEnd1 = {}, balanceEnd2 = {}, balanceEnd = []

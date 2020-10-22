@@ -12,6 +12,7 @@ const userCantSytSchema = mongoose.Schema({
     del: String,
     role: String,
     status: String,
+    phone: String,
     passwordHash: String,
     GUID: String,
     salt: String,

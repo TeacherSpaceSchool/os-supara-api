@@ -1,12 +1,12 @@
 const RouteCantSyt = require('../models/routeCantSyt');
-const DivisionCantSyt = require('../models/divisionCantSyt');
+const UserCantSyt = require('../models/userCantSyt');
 
 const type = `
   type Route {
     _id: ID
     createdAt: Date
     roles: [String]
-    division: Division
+    specialists: [User]
   }
 `;
 
@@ -15,45 +15,46 @@ const query = `
 `;
 
 const mutation = `
-    setRoute(_id: ID!, roles: [String]!, division: ID): Data
-    addRoute(roles: [String]!, division: ID!): Route
+    setRoute(_id: ID!, roles: [String]!, specialists: [ID]): Data
+    addRoute(roles: [String]!, specialists: [ID]!): Route
     deleteRoute(_id: [ID]!): Data
 `;
 
 const resolvers = {
     routes: async(parent, {search, skip}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)) {
-            let divisions
+            let specialists
             if(search.length){
-                divisions = await DivisionCantSyt.find({name: {'$regex': search, '$options': 'i'}}).distinct('_id').lean()
+                specialists = await UserCantSyt.find({name: {'$regex': search, '$options': 'i'}}).distinct('_id').lean()
             }
-            return await RouteCantSyt.find({
-                ...search.length?{division: {$in: divisions}}:{}
-            }).populate('division')
+            let res = await RouteCantSyt.find({
+                ...search.length?{specialists: {$in: specialists}}:{}
+            }).populate('specialists')
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?15:10000000000)
                 .lean()
+            return res
         }
     }
 };
 
 const resolversMutation = {
-    addRoute: async(parent, {roles, division}, {user}) => {
+    addRoute: async(parent, {roles, specialists}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)){
             let object = new RouteCantSyt({
                     roles: roles,
-                    division: division
+                specialists: specialists
                 });
             object = await RouteCantSyt.create(object);
             return object
         }
     },
-    setRoute: async(parent, {_id, roles, division}, {user}) => {
+    setRoute: async(parent, {_id, roles, specialists}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)){
             let object = await RouteCantSyt.findById(_id)
             object.roles = roles;
-            if(division){
-                object.division = division
+            if(specialists){
+                object.specialists = specialists
             }
             await object.save();
         }

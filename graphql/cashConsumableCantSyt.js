@@ -45,7 +45,8 @@ const resolvers = {
         if(user.role==='снабженец') {
             let res = await ExpenseReportCantSyt.findOne({supplier: user._id, status: 'принят'}).sort('-createdAt')
             res = await CashConsumableCantSyt.find({
-                ...res?{createdAt: {$gt: res.createdAt}}:{}
+                supplier: user._id,
+                ...res?{createdAt: {$gte: res.createdAt}}:{}
             })
                 .populate('supplier')
                 .sort('createdAt')
@@ -95,7 +96,6 @@ const resolvers = {
                 .limit(skip!=undefined?15:10000000000)
                 .lean()
         }
-        console.log(await CashConsumableCantSyt.find())
         return cashConsumables
     },
     cashConsumable: async(parent, {_id}) => {

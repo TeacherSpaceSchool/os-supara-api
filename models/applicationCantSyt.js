@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const ApplicationCantSytSchema = mongoose.Schema({
     status: String,
     number: String,
+    subdivision: String,
     division: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'DivisionCantSyt'

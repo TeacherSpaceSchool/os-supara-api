@@ -83,7 +83,8 @@ const resolversMutation = {
     deleteCategory: async(parent, { _id }, {user}) => {
         if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)){
             await CategoryCantSyt.updateMany({_id: {$in: _id}}, {del: 'deleted'})
-            await ItemCantSyt.updateMany({category: {$in: _id}}, {del: 'deleted'})
+            let category = await CategoryCantSyt.findOne({name: 'Прочие'}).lean()
+            await ItemCantSyt.updateMany({category: {$in: _id}}, {category: category})
         }
         return {data: 'OK'}
     },

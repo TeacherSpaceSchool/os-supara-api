@@ -25,6 +25,7 @@ const type = `
     patent: String
     specialist: User
     supplier: User
+    comment: String
     items: [UsedItems]
     amount: [Currency]
  }
@@ -41,7 +42,7 @@ const query = `
 
 const mutation = `
     addWaybill(application: ID!, seller: String!, patent: Upload, items: [InputItems]!): Data
-    setWaybill(_id: ID!, acceptSpecialist: Date, seller: String, patent: Upload, items: [InputItems]): Data
+    setWaybill(_id: ID!, comment: String, acceptSpecialist: Date, seller: String, patent: Upload, items: [InputItems]): Data
     deleteWaybill(_id: [ID]!): Data
 `;
 
@@ -328,9 +329,12 @@ const resolversMutation = {
             return {data: 'OK'}
         }
     },
-    setWaybill: async(parent, {_id, acceptSpecialist, seller, patent, items}, {user}) => {
+    setWaybill: async(parent, {_id, comment, acceptSpecialist, seller, patent, items}, {user}) => {
         if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)) {
             let object = await WaybillCantSyt.findById(_id)
+            if(comment){
+                object.comment = comment
+            }
             if (acceptSpecialist) {
                 object.acceptSpecialist = new Date()
             }

@@ -22,6 +22,7 @@ const type = `
     status: String
     number: String
     division: Division
+    subdivision: String
     category: Category
     budget: Boolean
     note: String
@@ -49,7 +50,7 @@ const query = `
 `;
 
 const mutation = `
-    addApplication(category: ID!, comment: String!, items: [InputItems]!): Data
+    addApplication(category: ID!, division: ID!, subdivision: String, comment: String!, items: [InputItems]!, note: Upload, budget: Boolean, paymentType: String, official: Boolean): Data
     setApplication(_id: ID!, comment: String, note: Upload, budget: Boolean, paymentType: String, official: Boolean, supplier: ID, items: [InputItems], routes: [InputRoutes]): Data
     deleteApplication(_id: [ID]!): Data
 `;
@@ -198,7 +199,7 @@ const resolvers = {
         if(user.role==='снабженец') {
             let res = []
             let applications = await ApplicationCantSyt.find({
-                //status: 'принят',
+                status: 'принят',
                 supplier: user._id
             }).lean()
             for(let i = 0; i<applications.length; i++){
@@ -309,8 +310,9 @@ const resolvers = {
             worksheet.getCell(`C${row}`).font = {bold: true};
             worksheet.getCell(`C${row}`).value = `Заявка на закуп №${application.number}`;
             row += 2;
-            worksheet.getCell(`A${row}`).value = `Подразделение: ${application.division.name}`;
-            worksheet.getCell(`D${row}`).value = `Специалист: ${application.specialist.name}`;
+            worksheet.getCell(`A${row}`).value = `Подразделение: ${application.division.name}${application.subdivision&&application.subdivision.length?`|${application.subdivision}`:''}`;
+            row += 1;
+            worksheet.getCell(`A${row}`).value = `Специалист: ${application.specialist.name}`;
             row += 1;
             worksheet.getCell(`A${row}`).value = `Дата: ${pdDDMMYYYY(application.createdAt)}`;
             if(application.term) {
@@ -372,9 +374,9 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addApplication: async(parent, {category, items, comment}, {user}) => {
+    addApplication: async(parent, {category, division, subdivision, items, comment, note, budget, paymentType, official}, {user}) => {
         if('специалист'===user.role) {
-            let division = await DivisionCantSyt.findOne({specialists: user._id}).lean()
+            division = await DivisionCantSyt.findById(division).lean()
             category = await CategoryCantSyt.findById(category).lean()
             if(division){
                 let setting = await SettingCantSyt.findOne().lean()
@@ -399,59 +401,69 @@ const resolversMutation = {
                     for (let i = 0; i < keys.length; i++) {
                         amount.push({name: keys[i], value: amount1[keys[i]]})
                     }
-                    let roles = (await RouteCantSyt.findOne().lean()).roles
-                    let route = []
-                    for (let i = 0; i < roles.length; i++) {
-                        route.push({role: roles[i], confirmation: undefined, cancel: undefined, comment: ''})
-                    }
-                    let newApplication = new ApplicationCantSyt({
-                        status: 'обработка',
-                        number: number,
-                        division: division._id,
-                        category: category._id,
-                        amount: amount,
-                        specialist: user._id,
-                        supplier: supplier,
-                        items: items,
-                        routes: route,
-                        budget: true,
-                        paymentType:  'наличные',
-                        official: true,
-                        comment: comment
-                    });
-                    newApplication = await ApplicationCantSyt.create(newApplication);
-                    pubsub.publish(RELOAD_DATA, {
-                        reloadData: {
-                            type: 'ADD',
-                            who: user._id,
-                            ids: [newApplication.supplier],
-                            roles: [...roles, 'admin', 'менеджер'],
-                            application: await ApplicationCantSyt.findById(newApplication._id)
-                                .populate('specialist')
-                                .populate('supplier')
-                                .populate({
-                                    path: 'division',
-                                    populate: [
-                                        {
-                                            path: 'suppliers'
-                                        }
-                                    ]
-                                })
-                                .populate('category')
-                                .lean(),
-                            cashConsumable: undefined,
-                            waybill: undefined,
-                            expenseReport: undefined,
-                            balance: undefined,
+                    let roles = (await RouteCantSyt.findOne({specialists: user._id}).lean())
+                    if(roles) {
+                        roles = roles.roles
+                        let route = []
+                        for (let i = 0; i < roles.length; i++) {
+                            route.push({role: roles[i], confirmation: undefined, cancel: undefined, comment: ''})
                         }
-                    });
-                    await sendWebPushByRolesIds({
-                        title: 'Заявка добавлена',
-                        message: `Заявка №${newApplication.number} добавлена`,
-                        url: `${process.env.URL.trim()}/application/${newApplication._id}`,
-                        roles: [roles[0], 'admin', 'менеджер'],
-                        _ids: []
-                    })
+                        let object = {
+                            status: 'обработка',
+                            number: number,
+                            division: division._id,
+                            subdivision: subdivision,
+                            category: category._id,
+                            amount: amount,
+                            specialist: user._id,
+                            supplier: supplier,
+                            items: items,
+                            routes: route,
+                            budget: budget,
+                            paymentType: paymentType,
+                            official: official,
+                            comment: comment
+                        }
+                        if (note) {
+                            let {stream, filename} = await note;
+                            filename = await saveFile(stream, filename)
+                            object.note = urlMain + filename
+                        }
+                        let newApplication = new ApplicationCantSyt(object);
+                        newApplication = await ApplicationCantSyt.create(newApplication);
+                        pubsub.publish(RELOAD_DATA, {
+                            reloadData: {
+                                type: 'ADD',
+                                who: user._id,
+                                ids: [newApplication.supplier],
+                                roles: [...roles, 'admin', 'менеджер'],
+                                application: await ApplicationCantSyt.findById(newApplication._id)
+                                    .populate('specialist')
+                                    .populate('supplier')
+                                    .populate({
+                                        path: 'division',
+                                        populate: [
+                                            {
+                                                path: 'suppliers'
+                                            }
+                                        ]
+                                    })
+                                    .populate('category')
+                                    .lean(),
+                                cashConsumable: undefined,
+                                waybill: undefined,
+                                expenseReport: undefined,
+                                balance: undefined,
+                            }
+                        });
+                        await sendWebPushByRolesIds({
+                            title: 'Заявка добавлена',
+                            message: `Заявка №${newApplication.number} добавлена`,
+                            url: `${process.env.URL.trim()}/application/${newApplication._id}`,
+                            roles: [roles[0], 'admin', 'менеджер'],
+                            _ids: []
+                        })
+                    }
                 }
             }
             return {data: 'OK'}

@@ -1,4 +1,5 @@
 const UserCantSyt = require('../models/userCantSyt');
+const DivisionCantSyt = require('../models/divisionCantSyt');
 const mongoose = require('mongoose')
 
 const type = `
@@ -11,6 +12,7 @@ const type = `
     status: String
     del: String
     GUID: String
+    phone: String
   }
 `;
 
@@ -26,8 +28,8 @@ const query = `
 `;
 
 const mutation = `
-    addUser(login: String!, GUID: String, name: String!, role: String!, password: String!): User
-    setUser(_id: ID!, login: String, GUID: String, name: String, role: String, password: String): Data
+    addUser(login: String!, GUID: String, name: String!, role: String!, password: String!, phone: String): User
+    setUser(_id: ID!, login: String, GUID: String, name: String, role: String, password: String, phone: String): Data
     deleteUser(_id: [ID]!): Data
     restoreUser(_id: [ID]!): Data
     onoffUser(_id: [ID]!): Data
@@ -48,22 +50,55 @@ const resolvers = {
             return users
         }
     },
-    users: async(parent, {search, filter, skip}) => {
-        let users = await UserCantSyt.find({
-            del: {$ne: 'deleted'},
-            $and: [
-                {role: {$ne: 'admin'}},
-                {role: {'$regex': filter, '$options': 'i'}}
-            ],
-            $or: [
-                {name: {'$regex': search, '$options': 'i'}},
-                {login: {'$regex': search, '$options': 'i'}},
-            ]
-        })
-            .sort('name')
-            .skip(skip!=undefined?skip:0)
-            .limit(skip!=undefined?15:10000000000)
-            .lean()
+    users: async(parent, {search, filter, skip}, {user}) => {
+        let users = []
+        if(['admin', 'менеджер'].includes(user.role)){
+            users = await UserCantSyt.find({
+                del: {$ne: 'deleted'},
+                $and: [
+                    {role: {$ne: 'admin'}},
+                    {role: {'$regex': filter, '$options': 'i'}}
+                ],
+                $or: [
+                    {name: {'$regex': search, '$options': 'i'}},
+                    {login: {'$regex': search, '$options': 'i'}},
+                ]
+            })
+                .sort('name')
+                .skip(skip != undefined ? skip : 0)
+                .limit(skip != undefined ? 15 : 10000000000)
+                .lean()
+        }
+        else {
+            users = []
+            let divisions =  await DivisionCantSyt.find({
+                del: {$ne: 'deleted'},
+                $or: [{head: user._id}, {suppliers: user._id}, {specialists: user._id}, {staffs:user._id}]
+            })
+                .select('head suppliers specialists staffs')
+                .lean()
+            for(let i = 0; i<divisions.length; i++) {
+                users = [
+                    ...users,
+                    ...divisions[i].head?[divisions[i].head]:[],
+                    ...divisions[i].suppliers?divisions[i].suppliers:[],
+                    ...divisions[i].specialists?divisions[i].specialists:[],
+                    ...divisions[i].staffs?divisions[i].staffs:[]]
+            }
+            users = await UserCantSyt.find({
+                del: {$ne: 'deleted'},
+                $and: [
+                    {role: {$ne: 'admin'}},
+                    {role: {'$regex': filter, '$options': 'i'}}
+                ],
+                name: {'$regex': search, '$options': 'i'},
+                _id: {$in: users}
+            })
+                .sort('name')
+                .skip(skip != undefined ? skip : 0)
+                .limit(skip != undefined ? 15 : 10000000000)
+                .lean()
+        }
         return users
     },
     specialists: async() => {
@@ -121,7 +156,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addUser: async(parent, {login, GUID, name, role, password}, {user}) => {
+    addUser: async(parent, {login, GUID, name, role, password, phone}, {user}) => {
         if(['admin'].includes(user.role)) {
             let newUser = new UserCantSyt({
                 login: login.trim(),
@@ -129,13 +164,14 @@ const resolversMutation = {
                 status: 'active',
                 password: password,
                 name: name,
-                GUID: GUID
+                GUID: GUID,
+                phone: phone
             });
             newUser = await UserCantSyt.create(newUser);
             return newUser
         }
     },
-    setUser: async(parent, {_id, GUID, login, name, role, password}, {user}) => {
+    setUser: async(parent, {_id, GUID, login, name, role, password, phone}, {user}) => {
         if('admin'===user.role) {
             let object = await UserCantSyt.findById(_id)
             if(name) object.name = name
@@ -143,6 +179,7 @@ const resolversMutation = {
             if(role)object.role = role
             if(login)object.login = login.trim()
             if(GUID)object.GUID = GUID
+            if(phone)object.phone = phone
             await object.save();
         }
         return {data: 'OK'}

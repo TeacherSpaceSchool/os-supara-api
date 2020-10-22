@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const ApplicationRouteCantSytSchema = mongoose.Schema({
     roles: [String],
-    division: {
+    specialists: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DivisionCantSyt'
-    },
+        ref: 'UserCantSyt'
+    }],
 }, {
     timestamps: true
 });

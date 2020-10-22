@@ -10,6 +10,7 @@ const DivisionCantSyt = require('./divisionCantSyt');
 const ErrorCantSyt = require('./errorCantSyt');
 const FaqCantSyt = require('./faqCantSyt');
 const ItemCantSyt = require('./itemCantSyt');
+const SubdivisionCantSyt = require('./subdivisionCantSyt');
 const RoleCantSyt = require('./roleCantSyt');
 const UnitCantSyt = require('./unitCantSyt');
 const BalanceCantSyt = require('./balanceCantSyt');
@@ -98,6 +99,7 @@ const typeDefs = gql`
     ${PassportCantSyt.type}
     ${CategoryCantSyt.type}
     ${ItemCantSyt.type}
+    ${SubdivisionCantSyt.type}
     ${DivisionCantSyt.type}
     ${RoleCantSyt.type}
     ${UnitCantSyt.type}
@@ -113,6 +115,7 @@ const typeDefs = gql`
         ${CategoryCantSyt.mutation}
         ${PassportCantSyt.mutation}
         ${ItemCantSyt.mutation}
+        ${SubdivisionCantSyt.mutation}
         ${DivisionCantSyt.mutation}
         ${RouteCantSyt.mutation}
         ${StatisticCantSyt.mutation}
@@ -131,6 +134,7 @@ const typeDefs = gql`
         ${CategoryCantSyt.query}
         ${PassportCantSyt.query}
         ${ItemCantSyt.query}
+        ${SubdivisionCantSyt.query}
         ${DivisionCantSyt.query}
         ${RouteCantSyt.query}
         ${StatisticCantSyt.query}
@@ -172,6 +176,7 @@ const resolvers = {
         ...PassportCantSyt.resolvers,
         ...CategoryCantSyt.resolvers,
         ...ItemCantSyt.resolvers,
+        ...SubdivisionCantSyt.resolvers,
         ...CashConsumableCantSyt.resolvers,
         ...RouteCantSyt.resolvers,
         ...StatisticCantSyt.resolvers,
@@ -191,6 +196,7 @@ const resolvers = {
         ...CategoryCantSyt.resolversMutation,
         ...PassportCantSyt.resolversMutation,
         ...ItemCantSyt.resolversMutation,
+        ...SubdivisionCantSyt.resolversMutation,
         ...CashConsumableCantSyt.resolversMutation,
         ...RouteCantSyt.resolversMutation,
         ...StatisticCantSyt.resolversMutation,

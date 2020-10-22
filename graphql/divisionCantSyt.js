@@ -1,5 +1,4 @@
 const DivisionCantSyt = require('../models/divisionCantSyt');
-const RouteCantSyt = require('../models/routeCantSyt');
 
 const type = `
   type Division {
@@ -16,7 +15,6 @@ const type = `
 
 const query = `
     divisions(search: String!, skip: Int): [Division]
-    divisionsForRoute: [Division]
     divisionsTrash(search: String!): [Division]
     division(_id: ID!): Division
 `;
@@ -44,21 +42,9 @@ const resolvers = {
             return divisions
         }
     },
-    divisionsForRoute: async() => {
-        let divisions = await RouteCantSyt.find().distinct('division').lean()
-        divisions =  await DivisionCantSyt.find({
-            _id: {$nin: divisions}
-        })
-            .populate('suppliers')
-            .populate('specialists')
-            .populate('head')
-            .populate('staffs')
-            .sort('name')
-            .lean()
-        return divisions
-    },
-    divisions: async(parent, {search, skip}) => {
+    divisions: async(parent, {search, skip}, {user}) => {
         let divisions =  await DivisionCantSyt.find({
+            ...user.role==='специалист'?{specialists: user._id}:{},
             del: {$ne: 'deleted'},
             name: {'$regex': search, '$options': 'i'}
         })
@@ -113,7 +99,6 @@ const resolversMutation = {
     deleteDivision: async(parent, { _id }, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)) {
             await DivisionCantSyt.updateMany({_id: {$in: _id}}, {del: 'deleted', suppliers: []})
-            await RouteCantSyt.deleteMany({division: {$in: _id}})
         }
         return {data: 'OK'}
     },

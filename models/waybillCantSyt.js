@@ -5,6 +5,7 @@ const WaybillCantSytSchema = mongoose.Schema({
     number: String,
     dateClose: Date,
     acceptSpecialist: Date,
+    comment: String,
     application: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'ApplicationCantSyt'
