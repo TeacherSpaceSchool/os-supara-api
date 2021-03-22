@@ -8,7 +8,6 @@ const StatisticOsSupara = require('./statistic');
 const CategoryOsSupara = require('./category');
 const DivisionOsSupara = require('./division');
 const ErrorOsSupara = require('./error');
-const Scanner = require('./scanner');
 const FaqOsSupara = require('./faq');
 const ItemOsSupara = require('./item');
 const CashExchange = require('./cashExchange');
@@ -152,7 +151,6 @@ const typeDefs = gql`
     }
     type Query {
         ${ErrorOsSupara.query}
-        ${Scanner.query}
         ${FaqOsSupara.query}
         ${CategoryOsSupara.query}
         ${PassportOsSupara.query}
@@ -202,7 +200,6 @@ const resolvers = {
     }),
     Query: {
         ...ErrorOsSupara.resolvers,
-        ...Scanner.resolvers,
         ...FaqOsSupara.resolvers,
         ...PassportOsSupara.resolvers,
         ...CategoryOsSupara.resolvers,
