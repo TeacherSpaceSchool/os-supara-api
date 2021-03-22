@@ -7,7 +7,8 @@ const path = require('path');
 const urlMain = `${process.env.URL.trim()}:3000`,
     adminLogin = 'admin',
     skip = 1,
-    adminPass = '6FjHxteZVp'
+    adminPass = '7dsdcsz4c57',
+    adminPin = '9506'
 const validMail = (mail) =>
 {
     return /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()\.,;\s@\"]+\.{0,1})+([^<>()\.,;:\s@\"]{2,}|[\d\.]+))$/.test(mail);
@@ -37,7 +38,7 @@ const getGeoDistance = (lat1, lon1, lat2, lon2) => {
     return parseInt(diam * Math.asin(Math.sqrt(a)));
 }
 module.exports.weekDay = [
-    'BC',
+    'ВС',
     'ПН',
     'ВТ',
     'СР',
@@ -48,6 +49,11 @@ module.exports.weekDay = [
 
 const checkInt = (int) => {
     return isNaN(parseInt(int))?0:parseInt(int)
+}
+
+const checkFloat = (float) => {
+    float = parseFloat(float)
+    return isNaN(float)?0:Math.round(float * 1000)/1000
 }
 
 module.exports.saveFile = (stream, filename) => {
@@ -114,9 +120,66 @@ const pdHHMM = (date) =>
     return date
 }
 
+module.exports.codeByCurrencys = {
+    'сом': '417',
+    'тенге': '398',
+    'рубль': '643',
+    'доллар': '840',
+    'евро': '978',
+    'вон': '410',
+    'гривна': '980',
+    'дирхам': '784',
+    'драм': '051',
+    'иена': '392',
+    'крона': '203',
+    'лари': '981',
+    'лев': '975',
+    'манат': '944',
+    'песо': '032',
+    'реал': '986',
+    'рупия': '356',
+    'сомони': '972',
+    'сум': '860',
+    'форинт': '348',
+    'франк': '756',
+    'шекель': '376',
+    'шиллинг': '404',
+    'юань': '156',
+    'фунт': '826'
+}
+
+module.exports.currencysByCode = {
+    '417': 'сом',
+    '398': 'тенге',
+    '643': 'рубль',
+    '840': 'доллар',
+    '978': 'евро',
+    '410': 'вон',
+    '980': 'гривна',
+    '784': 'дирхам',
+    '051': 'драм',
+    '392': 'иена',
+    '203': 'крона',
+    '981': 'лари',
+    '975': 'лев',
+    '944': 'манат',
+    '032': 'песо',
+    '986': 'реал',
+    '356': 'рупия',
+    '972': 'сомони',
+    '860': 'сум',
+    '348': 'форинт',
+    '756': 'франк',
+    '376': 'шекель',
+    '404': 'шиллинг',
+    '156': 'юань',
+    '826': 'фунт'
+}
+
 
 module.exports.getGeoDistance = getGeoDistance;
 module.exports.checkInt = checkInt;
+module.exports.checkFloat = checkFloat;
 module.exports.pdHHMM = pdHHMM;
 module.exports.pdDDMMYYYY = pdDDMMYYYY;
 module.exports.pdDDMMYYHHMM = pdDDMMYYHHMM;
@@ -124,5 +187,6 @@ module.exports.skip = skip;
 module.exports.validPhone = validPhone;
 module.exports.validMail = validMail;
 module.exports.adminPass = adminPass;
+module.exports.adminPin = adminPin;
 module.exports.adminLogin = adminLogin;
 module.exports.urlMain = urlMain;

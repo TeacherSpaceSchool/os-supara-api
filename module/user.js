@@ -1,7 +1,8 @@
-const UserCantSyt = require('../models/userCantSyt');
+const UserOsSupara = require('../models/user');
 let adminId = '';
 const adminLogin = require('./const').adminLogin,
-    adminPass = require('./const').adminPass;
+    adminPass = require('./const').adminPass,
+    adminPin = require('./const').adminPin;
 
 
 let getAdminId = () => {
@@ -13,16 +14,17 @@ let checkAdmin = async (role, status) => {
 }
 
 module.exports.createAdmin = async () => {
-    await UserCantSyt.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
-    let findAdmin = await UserCantSyt.findOne({login: adminLogin});
+    await UserOsSupara.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
+    let findAdmin = await UserOsSupara.findOne({login: adminLogin});
     if(!findAdmin){
-        const _user = new UserCantSyt({
+        const _user = new UserOsSupara({
             login: adminLogin,
             role: 'admin',
             status: 'active',
             password: adminPass,
+            pinCode: adminPin
         });
-        findAdmin = await UserCantSyt.create(_user);
+        findAdmin = await UserOsSupara.create(_user);
     }
     adminId = findAdmin._id.toString();
 }

@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { sendWebPush } = require('../module/webPush');
-const UserCantSyt = require('../models/userCantSyt');
-const ModelsErrorCantSyt = require('../models/errorCantSyt');
+const UserOsSupara = require('../models/user');
+const ModelsErrorOsSupara = require('../models/error');
 
 router.get('/admin', async (req, res) => {
     try{
-        let user = await UserCantSyt.findOne({role: 'admin'})
+        let user = await UserOsSupara.findOne({role: 'admin'})
         if(user){
             sendWebPush({title: 'TEST', message: 'TEST', user: user._id})
             res.json('Push triggered');
@@ -15,11 +15,11 @@ router.get('/admin', async (req, res) => {
             res.json('Push error');
         }
     } catch (err) {
-        let _object = new ModelsErrorCantSyt({
+        let _object = new ModelsErrorOsSupara({
             err: err.message,
             path: err.path
         });
-        ModelsErrorCantSyt.create(_object)
+        ModelsErrorOsSupara.create(_object)
         console.error(err)
         res.status(501);
         res.end('error')
@@ -31,11 +31,11 @@ router.get('/all', (req, res) => {
         sendWebPush({title: 'TEST', message: 'TEST', user: 'all'})
         res.json('Push triggered');
     } catch (err) {
-        let _object = new ModelsErrorCantSyt({
+        let _object = new ModelsErrorOsSupara({
             err: err.message,
             path: err.path
         });
-        ModelsErrorCantSyt.create(_object)
+        ModelsErrorOsSupara.create(_object)
         console.error(err)
         res.status(501);
         res.end('error')

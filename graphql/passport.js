@@ -10,7 +10,8 @@ const type = `
 `;
 
 const query = `
-       getStatus: Status
+    getStatus: Status
+    sendPinCode(pinCode: String): Boolean
 `;
 
 const resolvers = {
@@ -21,6 +22,12 @@ const resolvers = {
             login: user.login,
             _id: user._id
         }
+    },
+    sendPinCode: async(parent, {pinCode}, {user, res}) => {
+        let check = user.pinCode === pinCode
+        if(check)
+            await res.cookie('pinCode', pinCode);
+        return check
     },
 };
 

@@ -2,7 +2,7 @@
 
 let app = require('../app').app;
 let serverGQL = require('../app').serverGQL;
-let debug = require('debug')('cant-syt-api:server');
+let debug = require('debug')('os-supara-api:server');
 let http = require('http');
 const start = require('../module/start');
 

@@ -1,25 +1,25 @@
-const SubscriberCantSyt = require('../models/subscriberCantSyt');
-const UserCantSyt = require('../models/userCantSyt');
+const SubscriberOsSupara = require('../models/subscriber');
+const UserOsSupara = require('../models/user');
 const q = require('q');
 const webPush = require('web-push');
-const keys = require((process.env.URL).trim()==='https://os-kantsut.xyz'?'./../config/keys_prod':'./../config/keys_dev');
+const keys = require((process.env.URL).trim()==='https://os-supara.xyz'?'./../config/keys_prod':'./../config/keys_dev');
 
 let sendWebPush = async({title, message, tag, url, icon, user}) => {
     const payload = {
         title: title?title:title,
         message: message?message:message,
-        url: url?url:'https://os-kantsut.xyz',
-        icon: icon?icon:'https://os-kantsut.xyz/static/192x192.png',
-        tag: tag?tag:'os-kantsut.xyz'
+        url: url?url:'https://os-supara.xyz',
+        icon: icon?icon:'https://os-supara.xyz/static/192x192.png',
+        tag: tag?tag:'os-supara.xyz'
     };
     if(user==='all'){
-        SubscriberCantSyt.find({}, (err, subscriptions) => {
+        SubscriberOsSupara.find({}, (err, subscriptions) => {
             if (err) {
                 console.error('Error occurred while getting subscriptions');
             } else {
-                let parallelSubscriberCantSytCalls = subscriptions.map((subscription) => {
+                let parallelSubscriberOsSuparaCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
-                        const pushSubscriberCantSyt = {
+                        const pushSubscriberOsSupara = {
                             endpoint: subscription.endpoint,
                             keys: {
                                 p256dh: subscription.keys.p256dh,
@@ -30,14 +30,14 @@ let sendWebPush = async({title, message, tag, url, icon, user}) => {
                         const pushPayload = JSON.stringify(payload);
                         const pushOptions = {
                             vapidDetails: {
-                                subject: 'https://CantSyt.store',
+                                subject: 'https://OsSupara.store',
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
                             headers: {}
                         };
                         webPush.sendNotification(
-                            pushSubscriberCantSyt,
+                            pushSubscriberOsSupara,
                             pushPayload,
                             pushOptions
                         ).then((value) => {
@@ -55,20 +55,20 @@ let sendWebPush = async({title, message, tag, url, icon, user}) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberCantSytCalls).then(async(pushResults) => {
+                q.allSettled(parallelSubscriberOsSuparaCalls).then(async(pushResults) => {
                     //console.log(pushResults)
                 });
             }
         });
     }
     else {
-        SubscriberCantSyt.find({user: user}, (err, subscriptions) => {
+        SubscriberOsSupara.find({user: user}, (err, subscriptions) => {
             if (err) {
                 console.error('Error occurred while getting subscriptions');
             } else {
-                let parallelSubscriberCantSytCalls = subscriptions.map((subscription) => {
+                let parallelSubscriberOsSuparaCalls = subscriptions.map((subscription) => {
                     return new Promise((resolve, reject) => {
-                        const pushSubscriberCantSyt = {
+                        const pushSubscriberOsSupara = {
                             endpoint: subscription.endpoint,
                             keys: {
                                 p256dh: subscription.keys.p256dh,
@@ -79,14 +79,14 @@ let sendWebPush = async({title, message, tag, url, icon, user}) => {
                         const pushPayload = JSON.stringify(payload);
                         const pushOptions = {
                             vapidDetails: {
-                                subject: 'https://CantSyt.store',
+                                subject: 'https://OsSupara.store',
                                 privateKey: keys.privateKey,
                                 publicKey: keys.publicKey
                             },
                             headers: {}
                         };
                         webPush.sendNotification(
-                            pushSubscriberCantSyt,
+                            pushSubscriberOsSupara,
                             pushPayload,
                             pushOptions
                         ).then((value) => {
@@ -104,7 +104,7 @@ let sendWebPush = async({title, message, tag, url, icon, user}) => {
                         });
                     });
                 });
-                q.allSettled(parallelSubscriberCantSytCalls).then(async (pushResults) => {
+                q.allSettled(parallelSubscriberOsSuparaCalls).then(async (pushResults) => {
                     //console.log(pushResults)
                 });
             }
@@ -117,7 +117,7 @@ let sendWebPush = async({title, message, tag, url, icon, user}) => {
 let sendWebPushByRolesIds = async ({title, message, url, roles, _ids})=>{
     for(let i = 0; i<roles.length; i++){
         let users
-        users = await UserCantSyt.find({role: roles[i]}).distinct('_id').lean()
+        users = await UserOsSupara.find({role: roles[i]}).distinct('_id').lean()
         for(let i1 = 0; i1<users.length; i1++) {
             await sendWebPush({title, message, url, user: users[i1]})
         }

@@ -5,7 +5,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const connectDB = require('./models/index');
 const app = express();
-app.use(cookieParser());
 const usersRouter = require('./routes/users');
 const integrateRouter = require('./routes/integrate');
 const passportEngine = require('./module/passport');
@@ -22,6 +21,7 @@ require('body-parser-xml-json')(bodyParser);
 passportEngine.start();
 
 connectDB.connect()
+app.use(cookieParser());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(logger('dev'));
@@ -57,14 +57,6 @@ app.use(bodyParser.xml());
 app.use(express.static(path.join(__dirname, 'admin')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(compression());
-/*// parse data with connect-multiparty.
-app.use(formData.parse(options));
-// clear from the request and delete all empty files (size == 0)
-app.use(formData.format());
-// change file objects to stream.Readable
-app.use(formData.stream());
-// union body and files
-app.use(formData.union());*/
 app.set('trust proxy', true)
 const corsOptions = {
     origin: process.env.URL.trim(),

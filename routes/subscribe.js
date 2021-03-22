@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const randomstring = require('randomstring');
-const SubscriberCantSyt = require('../models/subscriberCantSyt');
+const SubscriberOsSupara = require('../models/subscriber');
 const passportEngine = require('../module/passport');
-const ModelsErrorCantSyt = require('../models/errorCantSyt');
+const ModelsErrorOsSupara = require('../models/error');
 
 router.post('/register', async (req, res) => {
     await passportEngine.getuser(req, res, async (user)=> {
         try {
             let subscriptionModel;
             let number = req.body.number
-            subscriptionModel = await SubscriberCantSyt.findOne({$or: [{number: number}, {endpoint: req.body.endpoint}]})
+            subscriptionModel = await SubscriberOsSupara.findOne({$or: [{number: number}, {endpoint: req.body.endpoint}]})
             if (subscriptionModel) {
                 if (user) subscriptionModel.user = user._id
                 subscriptionModel.endpoint = req.body.endpoint
@@ -18,9 +18,9 @@ router.post('/register', async (req, res) => {
             }
             else {
                 number = randomstring.generate({length: 20, charset: 'numeric'});
-                while (await SubscriberCantSyt.findOne({number: number}))
+                while (await SubscriberOsSupara.findOne({number: number}))
                     number = randomstring.generate({length: 20, charset: 'numeric'});
-                subscriptionModel = new SubscriberCantSyt({
+                subscriptionModel = new SubscriberOsSupara({
                     endpoint: req.body.endpoint,
                     keys: req.body.keys,
                     number: number,
@@ -39,11 +39,11 @@ router.post('/register', async (req, res) => {
                 }
             });
         } catch (err) {
-            let _object = new ModelsErrorCantSyt({
+            let _object = new ModelsErrorOsSupara({
                 err: err.message,
                 path: err.path
             });
-            ModelsErrorCantSyt.create(_object)
+            ModelsErrorOsSupara.create(_object)
             console.error(err)
             res.status(501);
             res.end('error')
@@ -53,15 +53,15 @@ router.post('/register', async (req, res) => {
 
 router.post('/unregister', async (req, res) => {
     try{
-        let subscriptionModel = await SubscriberCantSyt.findOne({number: req.body.number}).populate({ path: 'user'})
+        let subscriptionModel = await SubscriberOsSupara.findOne({number: req.body.number}).populate({ path: 'user'})
         subscriptionModel.user = null
         subscriptionModel.save()
     } catch (err) {
-        let _object = new ModelsErrorCantSyt({
+        let _object = new ModelsErrorOsSupara({
             err: err.message,
             path: err.path
         });
-        ModelsErrorCantSyt.create(_object)
+        ModelsErrorOsSupara.create(_object)
         console.error(err)
         res.status(501);
         res.end('error')
@@ -70,13 +70,13 @@ router.post('/unregister', async (req, res) => {
 
 router.post('/delete', async (req, res) => {
     try{
-        await SubscriberCantSyt.deleteMany({number: req.body.number})
+        await SubscriberOsSupara.deleteMany({number: req.body.number})
     } catch (err) {
-        let _object = new ModelsErrorCantSyt({
+        let _object = new ModelsErrorOsSupara({
             err: err.message,
             path: err.path
         });
-        ModelsErrorCantSyt.create(_object)
+        ModelsErrorOsSupara.create(_object)
         console.error(err)
         res.status(501);
         res.end('error')

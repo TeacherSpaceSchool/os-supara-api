@@ -3,7 +3,7 @@ const LocalStrategy = require('passport-local');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const jwtsecret = '@615141ViDiK141516@';
-const UserCantSyt = require('../models/userCantSyt');
+const UserOsSupara = require('../models/user');
 const jwt = require('jsonwebtoken');
 
 let start = () => {
@@ -14,7 +14,7 @@ let start = () => {
             session: false
         },
         function (login, password, done) {
-            UserCantSyt.findOne({login: login}, (err, user) => {
+            UserOsSupara.findOne({login: login}, (err, user) => {
                 if (err) {
                     return done(err);
                 }
@@ -31,7 +31,7 @@ let start = () => {
     jwtOptions.jwtFromRequest= ExtractJwt.fromAuthHeaderAsBearerToken();
     jwtOptions.secretOrKey=jwtsecret;
     passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
-        UserCantSyt.findOne({login:payload.login}, (err, user) => {
+        UserOsSupara.findOne({login:payload.login}, (err, user) => {
                 if (err) {
                     return done(err)
                 }
@@ -98,6 +98,7 @@ const verifydeuserGQL = async (req, res) => {
     return new Promise((resolve) => { passport.authenticate('jwt', async function (err, user) {
         try{
             if (user&&user.status==='active') {
+                user.checkedPinCode = req.cookies&&req.cookies.pinCode===user.pinCode
                 resolve(user)
             } else {
                 resolve({})
@@ -160,13 +161,13 @@ const getstatus = async (req, res) => {
 
 const signupuser = async (req, res) => {
     try{
-        let _user = new UserCantSyt({
+        let _user = new UserOsSupara({
             login: req.query.login,
             role: 'client',
             status: 'active',
             password: req.query.password,
         });
-        const user = await UserCantSyt.create(_user);
+        const user = await UserOsSupara.create(_user);
         const payload = {
             id: user._id,
             login: user.login,

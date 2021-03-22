@@ -1,31 +1,38 @@
-const { gql, ApolloServer,  } = require('apollo-server-express');
+const { gql, ApolloServer } = require('apollo-server-express');
 const { RedisPubSub } = require('graphql-redis-subscriptions');
 const pubsub = new RedisPubSub();
 module.exports.pubsub = pubsub;
-const CashConsumableCantSyt = require('./cashConsumableCantSyt');
-const RouteCantSyt = require('./routeCantSyt');
-const StatisticCantSyt = require('./statisticCantSyt');
-const CategoryCantSyt = require('./categoryCantSyt');
-const DivisionCantSyt = require('./divisionCantSyt');
-const ErrorCantSyt = require('./errorCantSyt');
-const FaqCantSyt = require('./faqCantSyt');
-const ItemCantSyt = require('./itemCantSyt');
-const SubdivisionCantSyt = require('./subdivisionCantSyt');
-const RoleCantSyt = require('./roleCantSyt');
-const UnitCantSyt = require('./unitCantSyt');
-const BalanceCantSyt = require('./balanceCantSyt');
-const UserCantSyt = require('./userCantSyt');
-const ApplicationCantSyt = require('./applicationCantSyt');
-const WaybillCantSyt = require('./waybillCantSyt');
-const ExpenseReportCantSyt = require('./expenseReportCantSyt');
-const SettingCantSyt = require('./settingCantSyt');
-const PassportCantSyt = require('./passport');
+const CashConsumableOsSupara = require('./cashConsumable');
+const RouteOsSupara = require('./route');
+const StatisticOsSupara = require('./statistic');
+const CategoryOsSupara = require('./category');
+const DivisionOsSupara = require('./division');
+const ErrorOsSupara = require('./error');
+const Scanner = require('./scanner');
+const FaqOsSupara = require('./faq');
+const ItemOsSupara = require('./item');
+const CashExchange = require('./cashExchange');
+const SubdivisionOsSupara = require('./subdivision');
+const RoleOsSupara = require('./role');
+const UnitOsSupara = require('./unit');
+const SellerOsSupara = require('./seller');
+const BalanceOsSupara = require('./balance');
+const BalanceHistoryOsSupara = require('./balanceHistory');
+const Balance1CHistoryOsSupara = require('./balance1CHistory');
+const UserOsSupara = require('./user');
+const ApplicationOsSupara = require('./application');
+const StorageOsSupara = require('./storage');
+const MemorandumOsSupara = require('./memorandum');
+const AutoApplicationOsSupara = require('./autoApplication');
+const WaybillOsSupara = require('./waybill');
+const ExpenseReportOsSupara = require('./expenseReport');
+const SettingOsSupara = require('./setting');
+const PassportOsSupara = require('./passport');
 const { verifydeuserGQL } = require('../module/passport');
 const { GraphQLScalarType } = require('graphql');
-const ModelsErrorCantSyt = require('../models/errorCantSyt');
+const ModelsErrorOsSupara = require('../models/error');
 const { withFilter } = require('graphql-subscriptions');
 const RELOAD_DATA = 'RELOAD_DATA';
-let onlineUser = []
 
 const typeDefs = gql`
     scalar Date
@@ -42,11 +49,11 @@ const typeDefs = gql`
     }
     type Currency {
         name: String
-        value: Int
+        value: Float
     }
     input InputCurrency {
         name: String
-        value: Int
+        value: Float
     }
     type ReloadData {
         who: ID
@@ -58,12 +65,14 @@ const typeDefs = gql`
         waybill: Waybill
         expenseReport: ExpenseReport
         balance: Balance
+        cashExchange: CashExchange
+        memorandum: Memorandum
     }
   type UsedItems {
     name: String
     unit: String
-    price: Int
-    count: Int
+    price: Float
+    count: Float
     currency: String
     comment: String
     status: String
@@ -72,8 +81,8 @@ const typeDefs = gql`
   input InputItems {
     name: String
     unit: String
-    price: Int
-    count: Int
+    price: Float
+    count: Float
     currency: String
     comment: String
     status: String
@@ -81,72 +90,93 @@ const typeDefs = gql`
   }
   type UsedRoutes {
     role: String
+    user: User
     confirmation: Date
     cancel: Date
     comment: String
   }
   input InputRoutes {
     role: String
+    user: ID
     confirmation: Date
     cancel: Date
     comment: String
   }
-    ${ErrorCantSyt.type}
-    ${RouteCantSyt.type}
-    ${StatisticCantSyt.type}
-    ${CashConsumableCantSyt.type}
-    ${FaqCantSyt.type}
-    ${PassportCantSyt.type}
-    ${CategoryCantSyt.type}
-    ${ItemCantSyt.type}
-    ${SubdivisionCantSyt.type}
-    ${DivisionCantSyt.type}
-    ${RoleCantSyt.type}
-    ${UnitCantSyt.type}
-    ${BalanceCantSyt.type}
-    ${UserCantSyt.type}
-    ${ApplicationCantSyt.type}
-    ${WaybillCantSyt.type}
-    ${ExpenseReportCantSyt.type}
-    ${SettingCantSyt.type}
+    ${ErrorOsSupara.type}
+    ${RouteOsSupara.type}
+    ${StatisticOsSupara.type}
+    ${CashConsumableOsSupara.type}
+    ${FaqOsSupara.type}
+    ${PassportOsSupara.type}
+    ${CategoryOsSupara.type}
+    ${ItemOsSupara.type}
+    ${CashExchange.type}
+    ${SubdivisionOsSupara.type}
+    ${DivisionOsSupara.type}
+    ${RoleOsSupara.type}
+    ${UnitOsSupara.type}
+    ${SellerOsSupara.type}
+    ${BalanceOsSupara.type}
+    ${BalanceHistoryOsSupara.type}
+    ${Balance1CHistoryOsSupara.type}
+    ${UserOsSupara.type}
+    ${AutoApplicationOsSupara.type}
+    ${StorageOsSupara.type}
+    ${ApplicationOsSupara.type}
+    ${MemorandumOsSupara.type}
+    ${WaybillOsSupara.type}
+    ${ExpenseReportOsSupara.type}
+    ${SettingOsSupara.type}
     type Mutation {
-        ${ErrorCantSyt.mutation}
-        ${FaqCantSyt.mutation}
-        ${CategoryCantSyt.mutation}
-        ${PassportCantSyt.mutation}
-        ${ItemCantSyt.mutation}
-        ${SubdivisionCantSyt.mutation}
-        ${DivisionCantSyt.mutation}
-        ${RouteCantSyt.mutation}
-        ${StatisticCantSyt.mutation}
-        ${CashConsumableCantSyt.mutation}
-        ${RoleCantSyt.mutation}
-        ${UnitCantSyt.mutation}
-        ${UserCantSyt.mutation}
-        ${ApplicationCantSyt.mutation}
-        ${WaybillCantSyt.mutation}
-        ${ExpenseReportCantSyt.mutation}
-        ${SettingCantSyt.mutation}
+        ${ErrorOsSupara.mutation}
+        ${FaqOsSupara.mutation}
+        ${CategoryOsSupara.mutation}
+        ${PassportOsSupara.mutation}
+        ${ItemOsSupara.mutation}
+        ${CashExchange.mutation}
+        ${SubdivisionOsSupara.mutation}
+        ${DivisionOsSupara.mutation}
+        ${RouteOsSupara.mutation}
+        ${StatisticOsSupara.mutation}
+        ${CashConsumableOsSupara.mutation}
+        ${RoleOsSupara.mutation}
+        ${UnitOsSupara.mutation}
+        ${SellerOsSupara.mutation}
+        ${UserOsSupara.mutation}
+        ${AutoApplicationOsSupara.mutation}
+        ${ApplicationOsSupara.mutation}
+        ${MemorandumOsSupara.mutation}
+        ${WaybillOsSupara.mutation}
+        ${ExpenseReportOsSupara.mutation}
+        ${SettingOsSupara.mutation}
     }
     type Query {
-        ${ErrorCantSyt.query}
-        ${FaqCantSyt.query}
-        ${CategoryCantSyt.query}
-        ${PassportCantSyt.query}
-        ${ItemCantSyt.query}
-        ${SubdivisionCantSyt.query}
-        ${DivisionCantSyt.query}
-        ${RouteCantSyt.query}
-        ${StatisticCantSyt.query}
-        ${CashConsumableCantSyt.query}
-        ${RoleCantSyt.query}
-        ${UnitCantSyt.query}
-        ${BalanceCantSyt.query}
-        ${UserCantSyt.query}
-        ${ApplicationCantSyt.query}
-        ${WaybillCantSyt.query}
-        ${ExpenseReportCantSyt.query}
-        ${SettingCantSyt.query}
+        ${ErrorOsSupara.query}
+        ${Scanner.query}
+        ${FaqOsSupara.query}
+        ${CategoryOsSupara.query}
+        ${PassportOsSupara.query}
+        ${ItemOsSupara.query}
+        ${CashExchange.query}
+        ${SubdivisionOsSupara.query}
+        ${DivisionOsSupara.query}
+        ${RouteOsSupara.query}
+        ${StatisticOsSupara.query}
+        ${CashConsumableOsSupara.query}
+        ${RoleOsSupara.query}
+        ${UnitOsSupara.query}
+        ${SellerOsSupara.query}
+        ${BalanceOsSupara.query}
+        ${BalanceHistoryOsSupara.query}
+        ${Balance1CHistoryOsSupara.query}
+        ${UserOsSupara.query}
+        ${AutoApplicationOsSupara.query}
+        ${StorageOsSupara.query}
+        ${ApplicationOsSupara.query}
+        ${MemorandumOsSupara.query}
+        ${WaybillOsSupara.query}
+        ${ExpenseReportOsSupara.query}
+        ${SettingOsSupara.query}
     }
     type Subscription {
         reloadData: ReloadData
@@ -171,43 +201,55 @@ const resolvers = {
         },
     }),
     Query: {
-        ...ErrorCantSyt.resolvers,
-        ...FaqCantSyt.resolvers,
-        ...PassportCantSyt.resolvers,
-        ...CategoryCantSyt.resolvers,
-        ...ItemCantSyt.resolvers,
-        ...SubdivisionCantSyt.resolvers,
-        ...CashConsumableCantSyt.resolvers,
-        ...RouteCantSyt.resolvers,
-        ...StatisticCantSyt.resolvers,
-        ...DivisionCantSyt.resolvers,
-        ...RoleCantSyt.resolvers,
-        ...UserCantSyt.resolvers,
-        ...ApplicationCantSyt.resolvers,
-        ...WaybillCantSyt.resolvers,
-        ...ExpenseReportCantSyt.resolvers,
-        ...SettingCantSyt.resolvers,
-        ...UnitCantSyt.resolvers,
-        ...BalanceCantSyt.resolvers,
+        ...ErrorOsSupara.resolvers,
+        ...Scanner.resolvers,
+        ...FaqOsSupara.resolvers,
+        ...PassportOsSupara.resolvers,
+        ...CategoryOsSupara.resolvers,
+        ...ItemOsSupara.resolvers,
+        ...CashExchange.resolvers,
+        ...SubdivisionOsSupara.resolvers,
+        ...CashConsumableOsSupara.resolvers,
+        ...RouteOsSupara.resolvers,
+        ...StatisticOsSupara.resolvers,
+        ...DivisionOsSupara.resolvers,
+        ...RoleOsSupara.resolvers,
+        ...UserOsSupara.resolvers,
+        ...AutoApplicationOsSupara.resolvers,
+        ...StorageOsSupara.resolvers,
+        ...ApplicationOsSupara.resolvers,
+        ...MemorandumOsSupara.resolvers,
+        ...WaybillOsSupara.resolvers,
+        ...ExpenseReportOsSupara.resolvers,
+        ...SettingOsSupara.resolvers,
+        ...UnitOsSupara.resolvers,
+        ...SellerOsSupara.resolvers,
+        ...BalanceOsSupara.resolvers,
+        ...BalanceHistoryOsSupara.resolvers,
+        ...Balance1CHistoryOsSupara.resolvers,
     },
     Mutation: {
-        ...ErrorCantSyt.resolversMutation,
-        ...FaqCantSyt.resolversMutation,
-        ...CategoryCantSyt.resolversMutation,
-        ...PassportCantSyt.resolversMutation,
-        ...ItemCantSyt.resolversMutation,
-        ...SubdivisionCantSyt.resolversMutation,
-        ...CashConsumableCantSyt.resolversMutation,
-        ...RouteCantSyt.resolversMutation,
-        ...StatisticCantSyt.resolversMutation,
-        ...DivisionCantSyt.resolversMutation,
-        ...RoleCantSyt.resolversMutation,
-        ...UnitCantSyt.resolversMutation,
-        ...UserCantSyt.resolversMutation,
-        ...ApplicationCantSyt.resolversMutation,
-        ...WaybillCantSyt.resolversMutation,
-        ...ExpenseReportCantSyt.resolversMutation,
-        ...SettingCantSyt.resolversMutation,
+        ...ErrorOsSupara.resolversMutation,
+        ...FaqOsSupara.resolversMutation,
+        ...CategoryOsSupara.resolversMutation,
+        ...PassportOsSupara.resolversMutation,
+        ...ItemOsSupara.resolversMutation,
+        ...CashExchange.resolversMutation,
+        ...SubdivisionOsSupara.resolversMutation,
+        ...CashConsumableOsSupara.resolversMutation,
+        ...RouteOsSupara.resolversMutation,
+        ...StatisticOsSupara.resolversMutation,
+        ...DivisionOsSupara.resolversMutation,
+        ...RoleOsSupara.resolversMutation,
+        ...UnitOsSupara.resolversMutation,
+        ...SellerOsSupara.resolversMutation,
+        ...UserOsSupara.resolversMutation,
+        ...AutoApplicationOsSupara.resolversMutation,
+        ...ApplicationOsSupara.resolversMutation,
+        ...MemorandumOsSupara.resolversMutation,
+        ...WaybillOsSupara.resolversMutation,
+        ...ExpenseReportOsSupara.resolversMutation,
+        ...SettingOsSupara.resolversMutation,
     },
     Subscription: {
         reloadData: {
@@ -251,7 +293,6 @@ const run = (app)=>{
             },
         },
         context: async (ctx) => {
-            //console.log(ctx)
             if (ctx.connection) {
                 return ctx.connection.context;
             }
@@ -264,11 +305,11 @@ const run = (app)=>{
             console.error(err)
 
             //logger.info(err.message);
-            let _object = new ModelsErrorCantSyt({
+            let _object = new ModelsErrorOsSupara({
                 err: err.message,
                 path: err.path
             });
-            ModelsErrorCantSyt.create(_object)
+            ModelsErrorOsSupara.create(_object)
 
             return err;
         }
@@ -279,4 +320,3 @@ const run = (app)=>{
 }
 
 module.exports.run = run;
-module.exports.onlineUser = onlineUser;

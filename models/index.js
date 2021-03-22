@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var connect = function() {
+let mongoose = require('mongoose');
+let connect = function() {
         mongoose.connect('mongodb://localhost:27017/admin', {
                 keepAlive: 1,
                 useCreateIndex: true,
