@@ -205,7 +205,12 @@ const resolversMutation = {
     },
     deleteUser: async(parent, { _id }, {user}) => {
         if(user.role==='admin'&&user.checkedPinCode) {
-            await UserOsSupara.updateMany({_id: {$in: _id}}, {del: 'deleted'})
+            let users = await UserOsSupara.find({_id: {$in: _id}})
+            for(let i = 0; i<users.length; i++) {
+                users[i].del = 'deleted'
+                users[i].login = `${users[i]._id}deleted`
+                await users[i].save()
+            }
         }
         return {data: 'OK'}
     },

@@ -14,12 +14,13 @@ let checkAdmin = async (role, status) => {
 }
 
 module.exports.createAdmin = async () => {
-    await UserOsSupara.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
+    await UserOsSupara.deleteMany({$or:[{login: 'admin', role: {$ne: 'admin'}}, {role: 'admin', login: 'admin', name: {$ne: 'admin'}}, {role: 'admin', login: {$ne: 'admin'}}]});
     let findAdmin = await UserOsSupara.findOne({login: adminLogin});
     if(!findAdmin){
         const _user = new UserOsSupara({
             login: adminLogin,
             role: 'admin',
+            name: 'admin',
             status: 'active',
             password: adminPass,
             pinCode: adminPin
