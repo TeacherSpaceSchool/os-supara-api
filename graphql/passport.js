@@ -5,6 +5,7 @@ const type = `
     role: String
     status: String
     login: String
+    addApplication: Boolean
     _id: ID
   }
 `;
@@ -16,12 +17,7 @@ const query = `
 
 const resolvers = {
     getStatus: async(parent, args, {user}) => {
-        return {
-            role: user.role,
-            status: user.status,
-            login: user.login,
-            _id: user._id
-        }
+        return user
     },
     sendPinCode: async(parent, {pinCode}, {user, res}) => {
         let check = user.pinCode === pinCode

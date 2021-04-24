@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const ApplicationRouteOsSuparaSchema = mongoose.Schema({
     roles: [String],
-    division: {
+    specialists: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'DivisionOsSupara'
-    },
+        ref: 'UserOsSupara'
+    }]
 }, {
     timestamps: true
 });

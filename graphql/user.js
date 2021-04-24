@@ -13,6 +13,7 @@ const type = `
     login: String
     name: String
     role: String
+    addApplication: Boolean
     status: String
     del: String
     phone: String
@@ -33,8 +34,8 @@ const query = `
 `;
 
 const mutation = `
-    addUser(login: String!, name: String!, role: String!, password: String!, phone: String): User
-    setUser(_id: ID!, login: String, name: String, role: String, password: String, phone: String): Data
+    addUser(login: String!, name: String!, addApplication: Boolean!, role: String!, password: String!, phone: String): User
+    setUser(_id: ID!, login: String, name: String, addApplication: Boolean, role: String, password: String, phone: String): Data
     deleteUser(_id: [ID]!): Data
     restoreUser(_id: [ID]!): Data
     onoffUser(_id: [ID]!): Data
@@ -101,7 +102,7 @@ const resolvers = {
         if(user.checkedPinCode) {
             res = await UserOsSupara.find({
                 del: {$ne: 'deleted'},
-                role: 'специалист'
+                addApplication: true
             })
                 .sort('name')
                 .lean()
@@ -113,7 +114,7 @@ const resolvers = {
         if(user.checkedPinCode) {
             res = await UserOsSupara.find({
                 del: {$ne: 'deleted'},
-                $and: [{role: {$ne: 'специалист'}}, {role: {$ne: 'снабженец'}}, {role: {$ne: 'начальник отдела'}}, {role: {$ne: 'admin'}}]
+                $and: [{role: {$ne: 'снабженец'}}, {role: {$ne: 'начальник отдела'}}, {role: {$ne: 'admin'}}]
             })
                 .sort('name')
                 .lean()
@@ -173,7 +174,7 @@ const resolvers = {
 };
 
 const resolversMutation = {
-    addUser: async(parent, {login, name, role, password, phone}, {user}) => {
+    addUser: async(parent, {login, name, role, password, phone, addApplication}, {user}) => {
         if(['admin'].includes(user.role)&&user.checkedPinCode) {
             let newUser = new UserOsSupara({
                 login: login.trim(),
@@ -182,6 +183,7 @@ const resolversMutation = {
                 password: password,
                 name: name,
                 phone: phone,
+                addApplication,
                 pinCode: randomstring.generate({
                     length: 4,
                     charset: 'numeric'
@@ -191,7 +193,7 @@ const resolversMutation = {
             return newUser
         }
     },
-    setUser: async(parent, {_id, login, name, role, password, phone}, {user}) => {
+    setUser: async(parent, {_id, login, name, role, password, phone, addApplication}, {user}) => {
         if('admin'===user.role&&user.checkedPinCode) {
             let object = await UserOsSupara.findById(_id)
             if(name) object.name = name
@@ -199,6 +201,7 @@ const resolversMutation = {
             if(role)object.role = role
             if(login)object.login = login.trim()
             if(phone)object.phone = phone
+            if(addApplication!==undefined)object.addApplication = addApplication
             await object.save();
         }
         return {data: 'OK'}

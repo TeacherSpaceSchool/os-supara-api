@@ -17,6 +17,7 @@ const userOsSuparaSchema = mongoose.Schema({
     GUID: String,
     salt: String,
     pinCode: String,
+    addApplication: Boolean,
 }, {
     timestamps: true
 });

@@ -1,64 +1,74 @@
 const RouteOsSupara = require('../models/route');
-const DivisionOsSupara = require('../models/division');
+const UserOsSupara = require('../models/user');
 
 const type = `
   type Route {
     _id: ID
     createdAt: Date
     roles: [String]
-    division: Division
+    specialists: [User]
   }
 `;
 
 const query = `
     routes(search: String!, skip: Int): [Route]
+    specialistsForRoute: [User]
+    
 `;
 
 const mutation = `
-    setRoute(_id: ID!, roles: [String]!, division: ID): Data
-    addRoute(roles: [String]!, division: ID!): Route
+    setRoute(_id: ID!, roles: [String]!, specialists: [ID]): Data
+    addRoute(roles: [String]!, specialists: [ID]!): Route
     deleteRoute(_id: [ID]!): Data
 `;
 
 const resolvers = {
+    specialistsForRoute: async(parent, ctx, {user}) => {
+        if(['admin', 'менеджер'].includes(user.role)&&user.checkedPinCode) {
+            let specialists = await RouteOsSupara.find()
+                .distinct('specialists')
+                .lean()
+            return await UserOsSupara.find({addApplication: true, _id: {$nin: specialists}})
+                .sort('name')
+                .lean()
+        }
+    },
     routes: async(parent, {search, skip}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)&&user.checkedPinCode) {
-            let divisions
+            let specialists
             if(search.length){
-                divisions = await DivisionOsSupara.find({name: {'$regex': search, '$options': 'i'}}).distinct('_id').lean()
+                specialists = await UserOsSupara.find({name: {'$regex': search, '$options': 'i'}}).distinct('_id').lean()
             }
             return await RouteOsSupara.find({
-                ...search.length?{division: {$in: divisions}}:{}
+                ...search.length?{specialists: {$in: specialists}}:{}
             })
                 .populate({
-                    path: 'division',
+                    path: 'specialists',
                     select: '_id name',
                 })
                 .skip(skip!=undefined?skip:0)
                 .limit(skip!=undefined?15:10000000000)
                 .lean()
         }
-    }
+    },
 };
 
 const resolversMutation = {
-    addRoute: async(parent, {roles, division}, {user}) => {
+    addRoute: async(parent, {roles, specialists}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)&&user.checkedPinCode){
             let object = new RouteOsSupara({
-                    roles: roles,
-                    division: division
-                });
+                roles,
+                specialists
+            });
             object = await RouteOsSupara.create(object);
             return object
         }
     },
-    setRoute: async(parent, {_id, roles, division}, {user}) => {
+    setRoute: async(parent, {_id, roles, specialists}, {user}) => {
         if(['admin', 'менеджер'].includes(user.role)&&user.checkedPinCode){
             let object = await RouteOsSupara.findById(_id)
             object.roles = roles;
-            if(division){
-                object.division = division
-            }
+            if(specialists) object.specialists = specialists
             await object.save();
             return {data: 'OK'}
         }

@@ -11,10 +11,6 @@ const DivisionOsSuparaSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserOsSupara'
     }],
-    specialists: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserOsSupara'
-    }],
     staffs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserOsSupara'

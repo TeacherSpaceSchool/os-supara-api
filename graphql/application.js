@@ -96,21 +96,26 @@ const resolvers = {
                     }
                 }).distinct('_id').lean()
             }
-            if(!['специалист', 'снабженец', 'admin', 'менеджер'].includes(user.role)){
+            if(!['снабженец', 'admin', 'менеджер'].includes(user.role)){
                 divisions = await DivisionOsSupara.find({staffs: user._id}).distinct('_id').lean()
             }
             applications = await ApplicationOsSupara.find({
                 ...user.role==='снабженец'?{supplier: user._id}:{},
-                ...user.role==='специалист'?{specialist: user._id}:{},
                 ...filter.length ? {status: filter} : {},
                 ...supplier&&['admin', 'менеджер'].includes(user.role)? {supplier: supplier} : {},
-                ...!['специалист', 'снабженец', 'admin', 'менеджер'].includes(user.role)?{division: {$in: divisions}, routes: {$elemMatch: {role: user.role}}}:{},
+                ...!['снабженец', 'admin', 'менеджер'].includes(user.role)?{
+                    division: {$in: divisions},
+                    $or: [
+                        ...user.addApplication?[{specialist: user._id}]:[],
+                        {routes: {$elemMatch: {role: user.role}}}
+                    ]
+                }:{},
                 ...search.length ? {
                     $or: [
                         {number: {'$regex': search, '$options': 'i'}},
                         {specialist: {$in: users}},
                         ...supplier&&['admin', 'менеджер'].includes(user.role)?[]:[{supplier: {$in: users}}],
-                        {division: {$in: divisions}},
+                        ...['admin', 'менеджер'].includes(user.role)?[{division: {$in: divisions}}]:[],
                         {category: {$in: categorys}},
                         {items: {$elemMatch: {name: {'$regex': search, '$options': 'i'}}}},
                     ]
@@ -284,7 +289,7 @@ const resolvers = {
 
 const resolversMutation = {
     addApplication: async(parent, {category, division, subdivision, items, comment, note, budget, paymentType, official, term}, {user}) => {
-        if('специалист'===user.role&&user.checkedPinCode) {
+        if(user.addApplication&&user.checkedPinCode) {
             division = await DivisionOsSupara.findById(division).select('suppliers _id').lean()
             if(division){
                 let supplier = division.suppliers[0]
@@ -304,7 +309,7 @@ const resolversMutation = {
                     for (let i = 0; i < keys.length; i++) {
                         amount.push({name: keys[i], value: checkFloat(amount1[keys[i]])})
                     }
-                    let roles = await RouteOsSupara.findOne({division: division._id}).select('roles').lean()
+                    let roles = await RouteOsSupara.findOne({specialists: user._id}).select('roles').lean()
                     if(roles) {
                         roles = roles.roles
                         let routes = []
@@ -378,7 +383,7 @@ const resolversMutation = {
     setApplication: async(parent, {_id, budget, note, paymentType, comment, official, supplier, items, routes, term}, {user}) => {
         if(user.checkedPinCode) {
             let object = await ApplicationOsSupara.findById(_id).populate('category')
-            if (['специалист', 'снабженец', 'admin', 'менеджер', ...object.routes.map(route => route.role)].includes(user.role)) {
+            if (['снабженец', 'admin', 'менеджер', ...object.routes.map(route => route.role)].includes(user.role)||user.addApplication) {
                 if (supplier) object.supplier = supplier
                 if (note) object.note = note
                 let amount1 = {}, amount = []
@@ -512,7 +517,7 @@ const resolversMutation = {
         }
     },
     deleteApplication: async(parent, { _id }, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode) {
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode) {
             let applications = await ApplicationOsSupara.find({_id: {$in: _id}}).select('supplier specialist _id routes').lean()
             for(let i = 0; i<applications.length; i++) {
                 pubsub.publish(RELOAD_DATA, { reloadData: {

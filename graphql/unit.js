@@ -43,7 +43,7 @@ const resolvers = {
 
 const resolversMutation = {
     addUnit: async(parent, {name}, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode){
             let _object = new UnitOsSupara({
                 name: name
             });
@@ -52,7 +52,7 @@ const resolversMutation = {
         }
     },
     setUnit: async(parent, {_id,  name}, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode){
             let object = await UnitOsSupara.findById(_id)
             if(name) object.name = name
             object.save();
@@ -60,7 +60,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteUnit: async(parent, { _id }, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode){
             await UnitOsSupara.deleteMany({_id: {$in: _id}})
         }
         return {data: 'OK'}

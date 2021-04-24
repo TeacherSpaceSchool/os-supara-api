@@ -79,7 +79,7 @@ const resolvers = {
             }
             let waybills
             waybills = await WaybillOsSupara.find({
-                ...user.role === 'специалист'?{specialist: user._id}:{},
+                ...user.addApplication?{specialist: user._id}:{},
                 ...user.role === 'снабженец'?{supplier: user._id}:{},
                 ...filter.length ? {status: filter} : {},
                 ...search.length ? {
@@ -307,7 +307,7 @@ const resolversMutation = {
         }
     },
     setWaybill: async(parent, {_id, comment, acceptSpecialist, seller, patent, items}, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode) {
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode) {
             let object = await WaybillOsSupara.findById(_id)
             if(comment){
                 object.comment = comment

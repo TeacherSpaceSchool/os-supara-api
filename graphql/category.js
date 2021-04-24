@@ -65,7 +65,7 @@ const resolvers = {
 
 const resolversMutation = {
     addCategory: async(parent, {name, GUID}, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&name!=='Прочие'&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&name!=='Прочие'&&user.checkedPinCode){
             let _object = new CategoryOsSupara({
                 name: name,
                 GUID: GUID
@@ -75,7 +75,7 @@ const resolversMutation = {
         }
     },
     setCategory: async(parent, {_id, name, GUID}, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&name!=='Прочие'&&user.checkedPinCode) {
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&name!=='Прочие'&&user.checkedPinCode) {
             let object = await CategoryOsSupara.findById(_id)
             if(name) object.name = name
             if(GUID) object.GUID = GUID
@@ -84,7 +84,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     deleteCategory: async(parent, { _id }, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode){
             await CategoryOsSupara.updateMany({_id: {$in: _id}, name: {$ne: 'Прочие'}}, {del: 'deleted'})
             let category = await CategoryOsSupara.findOne({name: 'Прочие'}).lean()
             await ItemOsSupara.updateMany({category: {$in: _id}}, {category: category})
@@ -92,7 +92,7 @@ const resolversMutation = {
         return {data: 'OK'}
     },
     restoreCategory: async(parent, { _id }, {user}) => {
-        if(['admin', 'менеджер', 'специалист', 'снабженец'].includes(user.role)&&user.checkedPinCode){
+        if((['admin', 'менеджер', 'снабженец'].includes(user.role)||user.addApplication)&&user.checkedPinCode){
             await CategoryOsSupara.updateMany({_id: {$in: _id}}, {del: null})
         }
         return {data: 'OK'}
