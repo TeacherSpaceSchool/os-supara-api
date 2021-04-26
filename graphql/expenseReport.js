@@ -546,7 +546,7 @@ const resolversMutation = {
         }
     },
     setExpenseReport: async(parent, {_id, acceptHead}, {user}) => {
-        if(['admin', 'менеджер', 'начальник отдела'].includes(user.role)&&user.checkedPinCode) {
+        if(/*['admin', 'менеджер', 'начальник отдела'].includes(user.role)&&*/user.checkedPinCode) {
             let object = await ExpenseReportOsSupara.findById(_id).populate('waybills')
             if (acceptHead) {
                 object.acceptHead = new Date()
