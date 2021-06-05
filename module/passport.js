@@ -30,8 +30,9 @@ let start = () => {
     const jwtOptions = {};
     jwtOptions.jwtFromRequest= ExtractJwt.fromAuthHeaderAsBearerToken();
     jwtOptions.secretOrKey=jwtsecret;
-    passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
-        UserOsSupara.findOne({login:payload.login}, (err, user) => {
+    passport.use(
+        new JwtStrategy(jwtOptions, function (payload, done) {
+            UserOsSupara.findOne({login:payload.login}, (err, user) => {
                 if (err) {
                     return done(err)
                 }
@@ -40,7 +41,7 @@ let start = () => {
                 } else {
                     return done(null, false)
                 }
-            })
+            }).lean()
         })
     );
 }
