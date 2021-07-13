@@ -18,7 +18,6 @@ let start = () => {
                 if (err) {
                     return done(err);
                 }
-
                 if (!user || !user.checkPassword(password) || user.status!=='active') {
                     return done(null, false, {message: 'Нет такого пользователя или пароль неверен.'});
                 }
@@ -36,7 +35,7 @@ let start = () => {
                 if (err) {
                     return done(err)
                 }
-                if (user) {
+                if (user&&user.status==='active') {
                     return done(null, user)
                 } else {
                     return done(null, false)
@@ -98,12 +97,8 @@ const getuser = async (req, res, func) => {
 const verifydeuserGQL = async (req, res) => {
     return new Promise((resolve) => { passport.authenticate('jwt', async function (err, user) {
         try{
-            if (user&&user.status==='active') {
-                user.checkedPinCode = req.cookies&&req.cookies.pinCode===user.pinCode
-                resolve(user)
-            } else {
-                resolve({})
-            }
+            user.checkedPinCode = req.cookies&&req.cookies.pinCode===user.pinCode
+            resolve(user)
         } catch (err) {
             console.error(err)
             resolve({})
